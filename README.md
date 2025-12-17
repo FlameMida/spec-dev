@@ -73,10 +73,10 @@ export EXA_API_KEY="your-exa-api-key"
 
 ```bash
 # 添加为 marketplace
-/plugin add-marketplace https://github.com/FlameMida/feature-dev
+/plugin marketplace add https://github.com/FlameMida/feature-dev
 
 # 安装插件
-/plugin install feature-dev@FlameMida/feature-dev
+/plugin install GodV-plugins/feature-dev
 ```
 
 ### 方式 2: 本地安装

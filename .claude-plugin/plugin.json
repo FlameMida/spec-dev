@@ -6,10 +6,7 @@
     "name": "FlameMida",
     "email": ""
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/FlameMida/feature-dev"
-  },
+  "repository": "https://github.com/FlameMida/feature-dev",
   "keywords": [
     "feature-development",
     "code-review",
