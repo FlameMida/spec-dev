@@ -76,7 +76,7 @@ export EXA_API_KEY="your-exa-api-key"
 /plugin marketplace add https://github.com/FlameMida/feat-dev
 
 # 安装插件
-/plugin install GodV-plugins/feat-dev
+/plugin install feat-dev@GodV-plugins
 ```
 
 ### 方式 2: 本地安装
