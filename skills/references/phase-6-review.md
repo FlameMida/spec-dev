@@ -15,6 +15,7 @@
 ```
 Task tool:
 - subagent_type: feat-dev:code-reviewer
+- model: haiku
 - prompt: "审查焦点：Bug 和逻辑错误
 
 审查范围：
@@ -40,6 +41,7 @@ Task tool:
 ```
 Task tool:
 - subagent_type: feat-dev:code-reviewer
+- model: haiku
 - prompt: "审查焦点：代码风格和质量
 
 审查范围：
@@ -65,6 +67,7 @@ Task tool:
 ```
 Task tool:
 - subagent_type: feat-dev:code-reviewer
+- model: haiku
 - prompt: "审查焦点：项目规范遵循
 
 CLAUDE.md 规范：

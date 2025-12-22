@@ -7,6 +7,66 @@
 
 ---
 
+## [3.1.2] - 2025-12-22
+
+### 🐛 修复 (Fixed)
+
+#### 🔧 修复 Agent Model 参数传递问题
+
+**问题描述**：
+- skills/skill.md:76 错误地声称"Model 从 agent 文件的 YAML frontmatter 自动读取"
+- 所有 Task 工具调用示例都缺少 `model` 参数
+- 导致 code-explorer 和 code-reviewer agents 使用 sonnet 而不是配置的 haiku
+
+**实际行为**：
+- Task 工具的 `model` 参数如果不指定，会从父进程继承（使用当前对话的 model）
+- **不会**自动读取 agent 文件 YAML frontmatter 中的 `model` 配置
+
+**影响范围**：
+- code-explorer (配置 `model: haiku`)
+- code-reviewer (配置 `model: haiku`)
+- code-architect (配置 `model: sonnet`) - 架构设计使用更强大的 model
+
+**修复内容**：
+
+1. **修正说明文档** (skills/skill.md:74-77)
+   ```diff
+   - Model 从 agent 文件的 YAML frontmatter 自动读取
+   + 必须显式指定 `model` 参数（如 `model: "haiku"`），否则会从父进程继承（使用 sonnet）
+   ```
+
+2. **添加 model 参数到所有调用示例**：
+   - skills/skill.md：code-explorer x3 (haiku)、code-architect x1 (sonnet)、code-reviewer x3 (haiku)
+   - skills/references/phase-2-exploration.md：code-explorer x3 (haiku)
+   - skills/references/phase-4-design.md：code-architect x1 (sonnet)
+   - skills/references/phase-6-review.md：code-reviewer x3 (haiku)
+
+3. **示例修改**：
+   ```markdown
+   Task tool:
+   - subagent_type: feat-dev:code-explorer
+   + model: haiku  # 新增：显式指定 model
+   - prompt: "..."
+   - run_in_background: true
+   ```
+
+**修复后效果**：
+- ✅ code-explorer 和 code-reviewer 使用 haiku（快速、低成本）
+- ✅ code-architect 使用 sonnet（架构设计需要更强推理能力）
+- ✅ 降低整体 Token 消耗（探索和审查任务占大多数）
+- ✅ 提升探索和审查速度
+- ✅ 符合 agent 设计意图（不同任务使用不同 model）
+
+**修改文件**：
+- `skills/skill.md`：修正说明 + 6 处示例
+- `skills/references/phase-2-exploration.md`：3 处示例
+- `skills/references/phase-4-design.md`：1 处示例
+- `skills/references/phase-6-review.md`：3 处示例
+
+**总计**：4 个文件，15 行新增，1 行修改
+
+---
+
 ## [3.1.1] - 2025-12-22
 
 ### 🔧 改进 (Changed)
