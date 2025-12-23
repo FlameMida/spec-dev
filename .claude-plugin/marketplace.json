@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "GodV-plugins",
-  "description": "开发工作流插件",
+  "description": "开发工作流插件集 - 功能开发与需求分析",
   "owner": {
     "name": "FlameMida",
     "email": ""
@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "feat-dev",
-      "description": "完整的功能开发工作流 - 7阶段系统化开发流程，包含代码探索、架构设计、实施和质量审查",
+      "description": "开发工作流插件集 - 包含功能开发和需求分析两大系统化工作流",
       "author": {
         "name": "FlameMida",
         "email": ""
@@ -19,19 +19,15 @@
       "homepage": "https://github.com/FlameMida/feat-dev",
       "tags": [
         "feature-development",
+        "requirement-analysis",
         "code-review",
         "architecture",
         "chinese",
-        "ultrathink"
-      ]
-    },
-    {
-      "name": "requirement-analysis-skills",
-      "description": "系统化需求分析工作流",
-      "category": "development",
-      "source": "./",
-      "strict": false,
+        "ultrathink",
+        "workflow"
+      ],
       "skills": [
+        "./skills/feat-dev",
         "./skills/requirement-analysis"
       ]
     }
