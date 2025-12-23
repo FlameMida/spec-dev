@@ -41,10 +41,10 @@
 ## 安装
 ```bash
 # 添加为 marketplace
-/plugin marketplace add https://github.com/FlameMida/feat-dev
+/plugin marketplace add https://github.com/FlameMida/spec-dev
 
-# 安装插件
-/plugin install feat-dev@GodV-plugins
+# 安装skill spec-dev
+/plugin install spec-dev@SPEC-plugins
 ```
 
 直接使用插件，无需任何 MCP 配置即可获得完整功能（降级方案自动生效）。

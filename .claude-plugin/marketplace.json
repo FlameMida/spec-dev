@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "GodV-plugins",
+  "name": "SPEC-plugins",
   "description": "开发工作流插件集 - 功能开发与需求分析",
   "owner": {
     "name": "FlameMida",
@@ -8,7 +8,7 @@
   },
   "plugins": [
     {
-      "name": "feat-dev",
+      "name": "spec-dev",
       "description": "开发工作流插件集 - 包含功能开发和需求分析两大系统化工作流",
       "author": {
         "name": "FlameMida",
