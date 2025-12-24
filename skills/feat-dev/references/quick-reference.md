@@ -180,7 +180,7 @@
 ### code-architect
 - **用途**：设计架构蓝图，制定实施方案
 - **使用阶段**：4
-- **并行数量**：1 个（可选）
+- **并行数量**：2-3 个（可选）
 - **配置**：model 从 `agents/code-architect.md` YAML 读取
 
 ### code-reviewer
@@ -321,27 +321,6 @@ npm test -- <file> / go test -run <test> / pytest <file>
 npm run coverage / go test -cover / pytest --cov
 ```
 
-### 数据库迁移（示例）
-```bash
-# 创建迁移
-npm run migration:create / make migration / alembic revision
-
-# 运行迁移
-npm run migration:up / go run main.go migrate / alembic upgrade
-
-# 回滚迁移
-npm run migration:down / alembic downgrade
-```
-
-### 文档生成（示例）
-```bash
-# OpenAPI/Swagger
-swag init / npm run docs:generate
-
-# 代码文档
-npm run docs / godoc / pydoc
-```
-
 ---
 
 ## 重要原则
@@ -362,4 +341,4 @@ npm run docs / godoc / pydoc
 - **MCP 工具详细说明**：[mcp-tools.md](mcp-tools.md)
 - **各阶段详细指南**：[phase-1-discovery.md](phase-1-discovery.md) ~ [phase-7-summary.md](phase-7-summary.md)
 - **故障排查**：[troubleshooting.md](troubleshooting.md)
-- **输出模板**：[../assets/output-template.md](../assets/output-template.md)
+- **输出模板**：[output-template.md](../assets/output-template.md)

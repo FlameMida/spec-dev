@@ -248,26 +248,6 @@ pwd
 - 查询返回过多数据
 - 没有使用分页
 
-**解决方案**：
-1. **使用 ORM 的 Preload**：
-   ```go
-   db.Preload("Widgets").Find(&dashboards)
-   ```
-
-2. **添加适当的索引**：
-   ```go
-   `gorm:"index"`
-   ```
-
-3. **使用分页**：
-   ```go
-   db.Limit(pageSize).Offset(offset)
-   ```
-
-4. **只查询需要的字段**：
-   ```go
-   db.Select("id, name").Find(&dashboards)
-   ```
 
 ---
 
