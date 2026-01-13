@@ -1,7 +1,7 @@
 ---
 name: code-explorer
 description: 深度分析代码库，追踪执行路径，映射架构层次，理解设计模式和抽象
-tools: Glob, Grep, LS, Read, NotebookRead, WebFetch, TodoWrite, WebSearch
+tools: LSP, Glob, Grep, LS, Read, NotebookRead, WebFetch, TodoWrite, WebSearch
 model: haiku
 color: yellow
 ---
