@@ -17,9 +17,10 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
 ```
 
 **核心特性**：
-- 🧠 **ultrathink 深度分析**：复杂需求和架构设计阶段使用 sequential-thinking
-- 🔧 **MCP 工具增强**：优先使用 context7、exa、sequential-thinking，自动降级保证可用性
-- 🤖 **并行 agents**：使用专门化 agents（code-explorer、code-architect、code-reviewer）提升效率
+- **ultrathink 深度分析**：复杂需求和架构设计阶段使用 sequential-thinking
+- **MCP 工具增强**：优先使用 context7、exa、sequential-thinking，自动降级保证可用性
+- **并行 agents**：使用专门化 agents（code-explorer、code-architect、code-reviewer）提升效率
+- **Task list 自动管理**：进度可视化、工作流透明化、断点恢复
 - **自适应语言**：根据用户的 Claude 语言设置和输入语言回应
 
 **手动触发**：
@@ -34,66 +35,27 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
 
 ---
 
+## Task List 集成
+
+本 skill 自动管理任务列表，提供进度可视化、工作流透明化、断点恢复和任务可复用功能。
+
+**详细指南**：[Task List 管理](references/task-list-management.md)
+
+---
+
 ## MCP 工具集成
 
-本 skill 优先使用 MCP 工具，但**所有功能在无 MCP 环境下完全可用**。
+本 skill 优先使用 MCP 工具（context7、exa、sequential-thinking），但**所有功能在无 MCP 环境下完全可用**。
 
-### 工具清单
-
-| MCP 工具 | 用途 | 降级方案 | 使用阶段 |
-|---------|------|---------|---------|
-| **context7** | 获取最新库文档和 API 参考 | WebSearch + Grep + Read | 2、4、5 |
-| **exa** | 高质量网页搜索和代码示例 | WebSearch | 1、4、6 |
-| **sequential-thinking** | 深度结构化思考（ultrathink） | EnterPlanMode + 思维链分析 | 1、4 |
-
-### 降级策略
-
-```
-尝试 MCP 工具 → 失败 → 立即切换降级方案 → 继续工作流（不中断）
-```
-
-**重要**：不要因为 MCP 工具不可用而中断工作流。
-
-**详细说明**：[references/mcp-tools.md](references/mcp-tools.md)
+- **MCP 工具和降级策略**：[references/mcp-tools.md](references/mcp-tools.md)
 
 ---
 
 ## 专门化 Agents
 
-三个外部 agents（位于 `agents/` 目录）：
+本 skill 使用三个外部专门化 agents（code-explorer、code-architect、code-reviewer）提升效率和质量。
 
-| Agent | 用途 | 使用阶段 | 并行数量 |
-|-------|------|---------|---------|
-| **code-explorer** | 深度分析代码库，追踪执行路径 | 2 | 2-3 个 |
-| **code-architect** | 设计架构蓝图，制定实施方案 | 4 | 1 个 |
-| **code-reviewer** | 代码审查，识别 bug 和规范问题 | 6 | 3 个 |
-
-### 调用方式
-
-**基本原则**：
-- 使用 **Task 工具**调用 agents
-- **必须显式指定 `model` 参数**（如 `model: "haiku"`），否则会从父进程继承（使用 sonnet）
-- 并行执行时必须设置 `run_in_background: true`
-
-**并行调用（阶段 2 和 6）**：
-```markdown
-⚠️ 关键要求：必须在单个消息中发起所有 Task 调用
-
-示例（启动 3 个并行 agents）：
-1. 在一个消息中发起 3 个 Task 工具调用
-2. 每个 Task 设置 run_in_background: true
-3. 继续其他工作（如阅读文件）
-4. 使用 TaskOutput 收集每个 agent 的结果
-```
-
-**单个调用（阶段 4）**：
-```markdown
-启动 1 个 agent，阻塞等待结果：
-- run_in_background: false（或省略此参数）
-- 等待 agent 完成后继续
-```
-
-详见各阶段的参考文档。
+**详细指南**：[专门化 Agents](references/specialized-agents.md)
 
 ---
 
@@ -102,6 +64,17 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
 ### 阶段 1: 需求理解
 
 **目标**：全面理解用户需求
+
+**任务管理**：
+```markdown
+# 开始阶段时
+tasks = TaskList()
+task = findTaskBySubject(tasks, "阶段 1: 需求理解")
+TaskUpdate(task.id, status="in_progress", owner="feat-dev")
+
+# 完成阶段时
+TaskUpdate(task.id, status="completed")
+```
 
 **执行要点**：
 - 识别核心功能、业务实体、API 端点、业务规则、集成点
@@ -118,49 +91,26 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
 
 **目标**：深入理解现有代码库
 
+**任务管理**：
+```markdown
+# 开始阶段时
+tasks = TaskList()
+task = findTaskBySubject(tasks, "阶段 2: 代码库探索")
+TaskUpdate(task.id, status="in_progress", owner="feat-dev")
+
+# 完成阶段时
+TaskUpdate(task.id, status="completed")
+```
+
 **执行要点**：
 1. **首要任务**：查找并阅读项目根目录的 CLAUDE.md 文件
 
 2. **并行启动 2-3 个 code-explorer agents**：
-
-   **⚠️ 并行执行要求**（关键）：
-   - **必须在单个消息中**发起 2-3 个 Task 工具调用
+   - **必须在单个消息中**发起所有 Task 调用
    - **每个 Task 必须设置** `run_in_background: true`
    - **然后使用 TaskOutput** 收集每个 agent 的结果
-
-   **Agent 分工**：
-   - Agent 1: 数据层 - 全面追踪实体、数据库模式、数据关联
-   - Agent 2: 业务逻辑层 - 全面追踪服务、Repository、业务流程
-   - Agent 3: API 层 - 全面追踪控制器、路由、请求处理
-   - **要求每个 agent 返回 5-10 个关键文件路径**
-
-   **并行调用示例**：
-   ```markdown
-   在单个消息中发起所有 Task 调用：
-
-   Task 1: 探索数据层
-   - description: "探索数据层架构"
-   - prompt: "分析数据层：实体、数据库模式、数据关联。返回5-10个关键文件路径。"
-   - subagent_type: "spec-dev:code-explorer"
-   - model: "haiku"
-   - run_in_background: true
-
-   Task 2: 探索业务逻辑层
-   - description: "探索业务逻辑层架构"
-   - prompt: "分析业务逻辑层：服务、Repository、业务流程。返回5-10个关键文件路径。"
-   - subagent_type: "spec-dev:code-explorer"
-   - model: "haiku"
-   - run_in_background: true
-
-   Task 3: 探索API层
-   - description: "探索API层架构"
-   - prompt: "分析API层：控制器、路由、请求处理。返回5-10个关键文件路径。"
-   - subagent_type: "spec-dev:code-explorer"
-   - model: "haiku"
-   - run_in_background: true
-
-   等待所有 agents 完成后，使用 TaskOutput 收集结果。
-   ```
+   - **Agent 分工**：数据层、业务逻辑层、API 层
+   - **并行调用示例和详细指南**：[并行模式指南](../requirement-analysis/references/parallel-patterns.md)
 
 3. **读取所有 agent 识别的文件** - 主进程必须亲自阅读这些文件建立深度理解
 
@@ -182,6 +132,17 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
 
 **目标**：填补需求空白，解决模糊和歧义
 
+**任务管理**：
+```markdown
+# 开始阶段时
+tasks = TaskList()
+task = findTaskBySubject(tasks, "阶段 3: 澄清问题")
+TaskUpdate(task.id, status="in_progress", owner="feat-dev")
+
+# 用户回应后完成
+TaskUpdate(task.id, status="completed")
+```
+
 **执行要点**：
 - 识别需要澄清的情况：
   - 模糊或规格不足的需求
@@ -201,6 +162,17 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
 ### 阶段 4: 架构设计
 
 **目标**：设计详细的实施方案
+
+**任务管理**：
+```markdown
+# 开始阶段时
+tasks = TaskList()
+task = findTaskBySubject(tasks, "阶段 4: 架构设计")
+TaskUpdate(task.id, status="in_progress", owner="feat-dev")
+
+# 用户确认后完成（最关键的检查点）
+TaskUpdate(task.id, status="completed")
+```
 
 **执行要点**：
 
@@ -226,11 +198,11 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
 
 **复杂需求**（使用**模式2：多方案设计**）：
 满足以下**任一**条件：
-- ✅ 有**多种明显不同的实现路径**（技术方案差异大）
-- ✅ 存在**重大架构权衡**（性能vs复杂度、时间vs质量）
-- ✅ **影响多个核心模块**（3个以上模块需要重大修改）
-- ✅ **引入新的技术或架构模式**
-- ✅ **用户明确要求**对比多个方案
+- 有**多种明显不同的实现路径**（技术方案差异大）
+- 存在**重大架构权衡**（性能vs复杂度、时间vs质量）
+- **影响多个核心模块**（3个以上模块需要重大修改）
+- **引入新的技术或架构模式**
+- **用户明确要求**对比多个方案
 
 **步骤 3: 执行对应的设计模式**
 
@@ -262,11 +234,11 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
 ### 模式2：多方案设计（复杂需求）
 
 1. **并行启动 2-3 个 code-architect agents**：
-   - ⚠️ **不使用主进程 ultrathink**（agents 会各自进行深度分析）
-   - ⚠️ **使用结构化上下文**：将步骤1整理的完整上下文传递给每个 agent
+   - **不使用主进程 ultrathink**（agents 会各自进行深度分析）
+   - **使用结构化上下文**：将步骤1整理的完整上下文传递给每个 agent
    - **并行执行**：每个 agent 负责设计一个备选方案
 
-   **⚠️ 并行执行要求**（关键）：
+   **并行执行要求**（关键）：
    - **必须在单个消息中**发起 2-3 个 Task 工具调用
    - **每个 Task 必须设置** `run_in_background: true`
    - **然后使用 TaskOutput** 收集每个 agent 的结果
@@ -276,38 +248,7 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
    - Agent 2: 清晰架构方案 - 追求最佳实践和长期可维护性
    - Agent 3: 实用平衡方案 - 在速度和质量之间找平衡（通常推荐）
 
-   **并行调用示例**：
-   ```markdown
-   在单个消息中发起所有 Task 调用：
-
-   Task 1: 设计最小改动方案
-   - description: "设计最小改动架构方案"
-   - prompt: [使用 phase-4-design.md 中的结构化上下文模板]
-     - 将"方案类型"设置为"最小改动方案"
-     - 填充阶段 1-3 的完整上下文信息
-     - 如适用，包含阶段 2.5 的外部资源研究结果
-   - subagent_type: "spec-dev:code-architect"
-   - model: "sonnet"
-   - run_in_background: true
-
-   Task 2: 设计清晰架构方案
-   - description: "设计清晰架构方案"
-   - prompt: [使用相同的结构化模板，但方案类型为"清晰架构方案"]
-   - subagent_type: "spec-dev:code-architect"
-   - model: "sonnet"
-   - run_in_background: true
-
-   Task 3: 设计实用平衡方案
-   - description: "设计实用平衡方案"
-   - prompt: [使用相同的结构化模板，但方案类型为"实用平衡方案"]
-   - subagent_type: "spec-dev:code-architect"
-   - model: "sonnet"
-   - run_in_background: true
-
-   ⚠️ 关键：完整的 prompt 模板见 phase-4-design.md
-
-   等待所有 agents 完成后，使用 TaskOutput 收集结果。
-   ```
+   - **详细调用示例**：[专门化 Agents](../shared/references/specialized-agents.md) 或 [phase-4-design.md](references/phase-4-design.md)
 
 2. **读取所有 agents 推荐的架构文件** - 理解现有架构模式
 
@@ -326,26 +267,26 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
 **产出**（根据模式选择）：
 
 **模式1产出**（简单/中等需求）：
-- ✅ 主进程 ultrathink 的深度分析结果
-- ✅ 单个 code-architect agent 的详细架构设计
-- ✅ 读取的架构相关文件理解
-- ✅ 数据库设计（实体/表结构、字段、关联、索引）
-- ✅ API 端点设计（方法、路径、请求/响应、认证）
-- ✅ 服务层设计（服务接口、依赖关系、业务逻辑流程）
-- ✅ **详细实施步骤**（编号列表，每步明确任务和产出）
-- ✅ 设计理由和说明
-- ✅ 用户确认
+- 主进程 ultrathink 的深度分析结果
+- 单个 code-architect agent 的详细架构设计
+- 读取的架构相关文件理解
+- 数据库设计（实体/表结构、字段、关联、索引）
+- API 端点设计（方法、路径、请求/响应、认证）
+- 服务层设计（服务接口、依赖关系、业务逻辑流程）
+- **详细实施步骤**（编号列表，每步明确任务和产出）
+- 设计理由和说明
+- 用户确认
 
 **模式2产出**（复杂需求）：
-- ✅ 2-3 个 code-architect agents 的深度架构设计和建议
-- ✅ 读取的架构相关文件理解
-- ✅ **多方案对比和权衡分析**（对比表格 + 优劣势分析）
-- ✅ [针对每个方案] 数据库设计（实体/表结构、字段、关联、索引）
-- ✅ [针对每个方案] API 端点设计（方法、路径、请求/响应、认证）
-- ✅ [针对每个方案] 服务层设计（服务接口、依赖关系、业务逻辑流程）
-- ✅ [针对每个方案] **详细实施步骤**（编号列表，每步明确任务和产出）
-- ✅ **推荐意见及理由**（基于权衡分析）
-- ✅ 用户选择确认
+- 2-3 个 code-architect agents 的深度架构设计和建议
+- 读取的架构相关文件理解
+- **多方案对比和权衡分析**（对比表格 + 优劣势分析）
+- [针对每个方案] 数据库设计（实体/表结构、字段、关联、索引）
+- [针对每个方案] API 端点设计（方法、路径、请求/响应、认证）
+- [针对每个方案] 服务层设计（服务接口、依赖关系、业务逻辑流程）
+- [针对每个方案] **详细实施步骤**（编号列表，每步明确任务和产出）
+- **推荐意见及理由**（基于权衡分析）
+- 用户选择确认
 
 **详细指南**：[references/phase-4-design.md](references/phase-4-design.md)
 
@@ -356,6 +297,17 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
 **目标**：按照架构设计实施功能
 
 **前置条件**：用户已确认架构方案
+
+**任务管理**：
+```markdown
+# 开始阶段时
+tasks = TaskList()
+task = findTaskBySubject(tasks, "阶段 5: 实施开发")
+TaskUpdate(task.id, status="in_progress", owner="feat-dev")
+
+# 完成阶段时
+TaskUpdate(task.id, status="completed")
+```
 
 **执行要点**：
 - 按阶段 4 规划的步骤顺序实施（通常为）：
@@ -384,47 +336,24 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
 
 **目标**：确保代码质量
 
+**任务管理**：
+```markdown
+# 开始阶段时
+tasks = TaskList()
+task = findTaskBySubject(tasks, "阶段 6: 质量审查")
+TaskUpdate(task.id, status="in_progress", owner="feat-dev")
+
+# 完成阶段时
+TaskUpdate(task.id, status="completed")
+```
+
 **执行要点**：
 1. **并行启动 3 个 code-reviewer agents**：
-
-   **⚠️ 并行执行要求**（关键）：
-   - **必须在单个消息中**发起 3 个 Task 工具调用
+   - **必须在单个消息中**发起所有 Task 调用
    - **每个 Task 必须设置** `run_in_background: true`
    - **然后使用 TaskOutput** 收集每个 reviewer 的结果
-
-   **Reviewer 分工**：
-   - Reviewer 1: Bug 和逻辑错误 - 关注功能正确性
-   - Reviewer 2: 代码风格和质量 - 关注简洁性/DRY/优雅性
-   - Reviewer 3: 项目规范遵循 - 关注项目约定和抽象
-   - **要求每个 reviewer 返回问题列表并标注严重性和置信度**
-
-   **并行调用示例**：
-   ```markdown
-   在单个消息中发起所有 Task 调用：
-
-   Task 1: Bug 和逻辑错误审查
-   - description: "审查Bug和逻辑错误"
-   - prompt: "审查代码中的Bug、逻辑错误、空值处理等问题。返回问题列表，每个问题标注严重性（高/中/低）和置信度（0-100）。"
-   - subagent_type: "spec-dev:code-reviewer"
-   - model: "haiku"
-   - run_in_background: true
-
-   Task 2: 代码风格和质量审查
-   - description: "审查代码风格和质量"
-   - prompt: "审查代码重复、函数复杂度、命名清晰度等质量问题。返回问题列表，每个问题标注严重性和置信度。"
-   - subagent_type: "spec-dev:code-reviewer"
-   - model: "haiku"
-   - run_in_background: true
-
-   Task 3: 项目规范遵循审查
-   - description: "审查项目规范遵循"
-   - prompt: "审查是否遵循项目规范（CLAUDE.md等）、架构模式、命名约定等。返回问题列表，每个问题标注严重性和置信度。"
-   - subagent_type: "spec-dev:code-reviewer"
-   - model: "haiku"
-   - run_in_background: true
-
-   等待所有 reviewers 完成后，使用 TaskOutput 收集结果。
-   ```
+   - **Reviewer 分工**：Bug 和逻辑错误、代码风格和质量、项目规范遵循
+   - **并行调用示例和详细指南**：[并行模式指南](../requirement-analysis/references/parallel-patterns.md)
 
 2. **整合审查结果**：
    - 收集所有 reviewers 的发现
@@ -463,6 +392,18 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
 
 **目标**：全面总结实施成果
 
+**任务管理**：
+```markdown
+# 开始阶段时
+tasks = TaskList()
+task = findTaskBySubject(tasks, "阶段 7: 总结")
+TaskUpdate(task.id, status="in_progress", owner="feat-dev")
+
+# 完成阶段时
+TaskUpdate(task.id, status="completed")
+# 显示最终进度：100% 完成
+```
+
 **输出内容**：
 1. **变更摘要**：实现了什么功能
 2. **修改文件列表**：所有新增和修改的文件
@@ -486,7 +427,7 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
 
 ## 工作流控制
 
-⚠️ **关键执行规则**：
+**关键执行规则**：
 - 必须严格按照 1→2→3→4→5→6→7 的顺序执行
 - 每个阶段必须完整执行，禁止跳过
 - 在关键检查点（阶段3→4，阶段4→5）必须等待用户输入
@@ -495,7 +436,7 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
 
 **关键检查点**：
 - **阶段 3 → 4**：如使用 AskUserQuestion，必须等待用户回应
-- **阶段 4 → 5**：⚠️ 最关键检查点 - 必须等待用户明确确认架构方案后才能开始实施
+- **阶段 4 → 5**：最关键检查点 - 必须等待用户明确确认架构方案后才能开始实施
 - **阶段 5 → 6**：实施完成后进入审查
 
 ---
@@ -520,18 +461,19 @@ description: 提供完整的 7 阶段功能开发工作流（需求理解、代�
 6. **等待确认**：架构设计确认后才开始实施（阶段 4 → 5）
 7. **质量把关**：实施后必须进行代码审查（阶段 6）
 8. **不中断工作流**：MCP 工具不可用时立即使用降级方案
+9. **善用 Task list**：自动管理任务状态，提供进度可视化和断点恢复能力
 
 ---
 
 ## 何时使用 ultrathink
 
-### ✅ 应该使用
+### [完成] 应该使用
 - **阶段 1（需求理解）**：需求涉及多个模块或系统集成、包含复杂业务逻辑、描述模糊或不完整
 - **阶段 4（架构设计）**：
   - **简单/中等需求使用模式1**：主进程必须使用 ultrathink 进行深度分析
   - **复杂需求使用模式2**：不使用主进程 ultrathink（agents 各自进行深度分析）
 
-### ❌ 不需要使用
+### [跳过] 不需要使用
 - **阶段 1**：单一、明确的简单需求（如简单 CRUD、字段添加等）
 - **阶段 4**：复杂需求的多方案设计（使用模式2时，主进程不用 ultrathink）
 

@@ -7,6 +7,54 @@
 
 ---
 
+## [4.2.0] - 2026-01-27
+
+### ✨ 新增 (Added)
+
+#### Skill 文件结构优化
+
+根据 [Claude Code 官方文档](https://code.claude.com/docs/en/skills)规范优化文件结构。
+
+**新增共享参考文档**：
+- `task-list-management.md` - Task List 管理完整指南（3.1KB x 2）
+- `specialized-agents.md` - 专门化 Agents 完整指南（7.0KB）
+
+#### Task List 管理功能
+
+**新增文档内容**：
+- Task List 核心功能说明（进度可视化、工作流透明化、断点恢复、任务可复用）
+- 进度显示格式和示例
+- 断点恢复机制详细说明
+- 错误处理与降级策略
+- 最终进度显示模板
+
+**Task List 操作规范**：
+- 基本任务管理操作（开始阶段、完成阶段）
+- 条件执行阶段的处理（外部资源研究）
+- 等待用户确认的处理
+- 错误处理与降级机制
+
+### 🔧 改进 (Changed)
+
+**优化主文件大小**：
+- `requirement-analysis/SKILL.md`：587 → 460 行（-21.6%）
+- `feat-dev/skill.md`：710 → 500 行（-29.6%）
+- **总计**：1297 → 960 行（**-26.0%**）
+
+**优化内容**：
+- 提取 Task List 集成章节（共131行）到独立文档
+  - requirement-analysis：Task List 章节优化（67行 → 引用文档）
+  - feat-dev：Task List 章节优化（64行 → 引用文档）
+- 提取专门化 Agents 说明到独立文档
+- 简化并行调用示例代码，引用详细指南
+- 所有引用路径已更新为 `references/task-list-management.md`
+
+**Task List 相关优化**：
+- 从主文件提取：131 行 → 简化为 2 行引用
+- 新增独立文档：3.1KB（复制到 2 个 skill）
+- 总体效果：主文件精简，功能完整性保持
+---
+
 ## [4.1.0] - 2026-01-13
 
 ### 🌟 主要变更 (Major Changes)
@@ -786,6 +834,13 @@ skills/requirement-analysis/
 
 ---
 
+[4.2.0]: https://github.com/FlameMida/feat-dev/compare/v4.1.0...v4.2.0
+[4.1.0]: https://github.com/FlameMida/feat-dev/compare/v4.0.0...v4.1.0
+[4.0.0]: https://github.com/FlameMida/feat-dev/compare/v3.1.2...v4.0.0
+[3.1.2]: https://github.com/FlameMida/feat-dev/compare/v3.1.1...v3.1.2
+[3.1.1]: https://github.com/FlameMida/feat-dev/compare/v3.1.0...v3.1.1
+[3.1.0]: https://github.com/FlameMida/feat-dev/compare/v3.0.1...v3.1.0
+[3.0.1]: https://github.com/FlameMida/feat-dev/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/FlameMida/feat-dev/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/FlameMida/feat-dev/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/FlameMida/feat-dev/compare/v1.0.0...v1.1.0
