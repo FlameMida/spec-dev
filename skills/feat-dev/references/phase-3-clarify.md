@@ -1,4 +1,4 @@
-# 阶段 3: 澄清问题 (Clarifying Questions)
+# 阶段 3: 澄清问题
 
 ## 目标
 
@@ -91,153 +91,33 @@ AskUserQuestion:
 
 ---
 
-## 示例场景
+## 典型场景示例
 
 ### 场景 1: 认证方式选择
 
-```
-AskUserQuestion:
-  questions: [
-    {
-      question: "用户认证应该使用哪种方式？",
-      header: "认证方式",
-      options: [
-        {
-          label: "JWT Token (推荐)",
-          description: "无状态，适合分布式系统。Token 存储在客户端，服务器无需维护会话。"
-        },
-        {
-          label: "Session",
-          description: "传统方式，需要服务器端会话存储。适合单体应用，更容易管理用户登录状态。"
-        }
-      ],
-      multiSelect: false
-    }
-  ]
-```
+**问题**：用户认证应该使用哪种方式？
+
+**选项**：
+- JWT Token (推荐)：无状态，适合分布式系统
+- Session：传统方式，需要服务器端会话存储，适合单体应用
 
 ### 场景 2: 数据同步策略
 
-```
-AskUserQuestion:
-  questions: [
-    {
-      question: "用户数据更新后，如何同步到前端？",
-      header: "数据同步",
-      options: [
-        {
-          label: "轮询 (推荐)",
-          description: "客户端定期请求数据。实现简单，但可能有延迟。适合更新不频繁的场景。"
-        },
-        {
-          label: "WebSocket",
-          description: "实时双向通信。即时更新，但需要维护长连接。适合实时性要求高的场景。"
-        },
-        {
-          label: "Server-Sent Events",
-          description: "服务器主动推送。单向通信，比 WebSocket 简单。适合只需要服务器推送的场景。"
-        }
-      ],
-      multiSelect: false
-    }
-  ]
-```
+**问题**：用户数据更新后，如何同步到前端？
+
+**选项**：
+- 轮询 (推荐)：实现简单，适合更新不频繁的场景
+- WebSocket：实时双向通信，即时更新，需要维护长连接
+- Server-Sent Events：服务器主动推送，比 WebSocket 简单
 
 ### 场景 3: 权限控制粒度
 
-```
-AskUserQuestion:
-  questions: [
-    {
-      question: "权限控制应该到什么粒度？",
-      header: "权限粒度",
-      options: [
-        {
-          label: "角色级别 (推荐)",
-          description: "基于用户角色（管理员、用户等）控制。实现简单，易于管理。"
-        },
-        {
-          label: "资源级别",
-          description: "针对每个资源单独授权。更灵活，但管理复杂度高。"
-        },
-        {
-          label: "字段级别",
-          description: "控制到具体字段的访问。最细粒度，实现和维护成本最高。"
-        }
-      ],
-      multiSelect: false
-    }
-  ]
-```
+**问题**：权限控制应该到什么粒度？
 
-### 场景 4: 多个相关问题
-
-```
-AskUserQuestion:
-  questions: [
-    {
-      question: "是否需要支持文件上传？",
-      header: "文件上传",
-      options: [
-        {
-          label: "需要",
-          description: "用户可以上传头像、附件等文件"
-        },
-        {
-          label: "不需要",
-          description: "暂时不支持文件上传功能"
-        }
-      ],
-      multiSelect: false
-    },
-    {
-      question: "如果需要文件上传，应该存储在哪里？",
-      header: "存储位置",
-      options: [
-        {
-          label: "对象存储 (推荐)",
-          description: "使用 S3/OSS 等对象存储。适合生产环境，可扩展性好。"
-        },
-        {
-          label: "本地文件系统",
-          description: "存储在服务器本地。实现简单，但不适合分布式部署。"
-        }
-      ],
-      multiSelect: false
-    }
-  ]
-```
-
-### 场景 5: 功能范围确认
-
-```
-AskUserQuestion:
-  questions: [
-    {
-      question: "这个功能需要包含哪些操作？",
-      header: "功能范围",
-      options: [
-        {
-          label: "创建",
-          description: "允许用户创建新的记录"
-        },
-        {
-          label: "读取",
-          description: "允许用户查看记录"
-        },
-        {
-          label: "更新",
-          description: "允许用户修改记录"
-        },
-        {
-          label: "删除",
-          description: "允许用户删除记录"
-        }
-      ],
-      multiSelect: true  // 可多选
-    }
-  ]
-```
+**选项**：
+- 角色级别 (推荐)：基于用户角色控制，实现简单
+- 资源级别：针对每个资源单独授权，更灵活但复杂
+- 字段级别：控制到具体字段，最细粒度但成本高
 
 ---
 
