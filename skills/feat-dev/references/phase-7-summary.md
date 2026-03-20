@@ -47,7 +47,7 @@
 
 记录使用的 MCP 工具和 agents：
 - MCP 工具（context7、exa、sequential-thinking）
-- Agents（code-explorer、code-architect、code-reviewer）
+- 子代理（exploration、architecture、review）
 
 ---
 

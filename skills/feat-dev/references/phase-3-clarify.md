@@ -8,7 +8,7 @@
 
 ## 何时提问
 
-在以下情况下**必须**使用 **AskUserQuestion 工具**向用户提问：
+在以下情况下**必须**向用户提问：
 
 ### ✅ 必须澄清的情况
 
@@ -41,34 +41,26 @@
 
 - 需求已经非常明确
 - 有明显的最佳实践可遵循
-- CLAUDE.md 或项目规范已经规定
+- `AGENTS.md` / `CLAUDE.md` 或项目规范已经规定
 - 可以从现有代码推断出模式
 
 ---
 
-## 使用 AskUserQuestion 工具
+## 兼容的提问方式
 
-### 工具用法
+### 工具映射
 
 ```
-AskUserQuestion:
-  questions: [
-    {
-      question: "完整的问题？",
-      header: "简短标签（≤12字符）",
-      options: [
-        {
-          label: "选项 1",
-          description: "选项 1 的说明和影响"
-        },
-        {
-          label: "选项 2",
-          description: "选项 2 的说明和影响"
-        }
-      ],
-      multiSelect: false  // true 表示可多选
-    }
-  ]
+Claude Code:
+- AskUserQuestion(...)
+
+Codex Plan 模式:
+- request_user_input(...)
+
+Codex Default 模式:
+- 直接发送简洁的纯文本问题
+- 尽量一次提出 1-3 个相关问题
+- 有选项时给出推荐项、影响和取舍
 ```
 
 ### 最佳实践
@@ -167,7 +159,7 @@ AskUserQuestion:
 
 **⚠️ MANDATORY CHECKPOINT（强制检查点）**：
 ```markdown
-如果在阶段 3 使用了 AskUserQuestion：
+如果在阶段 3 向用户发起了澄清：
 
 1. MUST 停止并等待用户回应
 2. 收到回应后 MUST 输出：
@@ -198,7 +190,7 @@ AskUserQuestion:
 2. **数据同步**：数据更新后如何同步到前端？
 3. **权限控制**：权限控制应该到什么粒度？
 
-[使用 AskUserQuestion 工具提问]
+[使用兼容的提问方式向用户提问]
 
 ---
 

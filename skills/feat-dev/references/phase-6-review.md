@@ -6,30 +6,39 @@
 
 ---
 
-## 并行 Code-Reviewer Agents
+## 并行审查子代理
 
-启动 **3 个 code-reviewer agents** 并行审查不同方面:
+启动 **2-3 个审查子代理** 并行审查不同方面；默认 2 个，只有改动面较大时才用 3 个:
 
 ### Reviewer 示例(根据审查焦点调整)
 
 ```
-Task:
-- subagent_type: spec-dev:code-reviewer
-- model: haiku
-- prompt: "审查焦点: [Bug和逻辑错误/代码风格和质量/项目规范遵循]
+Claude Code:
+- Task + subagent_type=spec-dev:code-reviewer + run_in_background=true
+
+Codex:
+- 使用 spawn_agent(agent_type="default", fork_context=true, ...)，提示词中明确审查焦点、范围和输出格式
+
+提示词示例:
+"审查焦点: [Bug和逻辑错误/代码风格和质量/项目规范遵循]
 
   审查范围: [列出本次实施的所有文件路径]
 
   审查要点: [根据焦点列出具体检查项]
 
   请识别所有问题,按严重程度和置信度排序。"
-- run_in_background: true
 ```
 
 **建议分工**:
 - Reviewer 1: Bug 和逻辑错误(空指针、资源泄漏、并发问题、逻辑错误)
 - Reviewer 2: 代码风格和质量(命名规范、代码重复、函数复杂度、性能问题)
 - Reviewer 3: 项目规范遵循(文件组织、命名约定、API 设计、错误处理)
+
+**稳定性要求**:
+- 每个审查子代理聚焦一个主维度，不要让多个子代理做完全重复的“全面审查”
+- 主进程必须提供完整文件列表；没有文件列表时不要启动审查子代理
+- 任何审查结果都必须由主进程去重和复核
+- 子代理超时或结果明显跑偏时，缩小范围重试 1 次，否则主进程手动审查
 
 ---
 
@@ -38,7 +47,7 @@ Task:
 ### 🔍 优先尝试:exa.web_search_exa
 
 **目的**:搜索已知安全漏洞和常见 bug 模式
-**降级方案**:WebSearch
+**降级方案**:网页搜索
 
 ---
 

@@ -7,6 +7,50 @@
 
 ---
 
+## [4.2.1] - 2026-03-20
+
+### 🔧 改进 (Changed)
+
+#### Skill 内容同步更新（基于 `git diff -- skills`）
+
+**变更规模**：
+- `skills/` 下共 **21 个文件**改动
+- 总计：**+447 / -563**
+
+**核心调整方向**：
+- 强化 Claude Code / Codex 双环境兼容描述（工具映射、提问方式、并行子任务、进度管理）
+- 统一项目规范文件表述：从仅 `CLAUDE.md` 扩展为 `AGENTS.md` / `CLAUDE.md`
+- 统一外部调研降级术语：`exa/WebSearch` 相关描述改为“网页搜索工具”与显式降级路径
+- 统一并行执行和审查指引：强调“单个响应中发起并行任务”与失败重试策略
+
+**主要文件**：
+- `skills/requirement-analysis/SKILL.md`
+- `skills/feat-dev/skill.md`
+- `skills/feat-dev/references/*.md`
+- `skills/feat-dev/assets/*.md`
+- `skills/requirement-analysis/references/*.md`
+- `skills/requirement-analysis/assets/output-template.md`
+
+#### README 文档重构（Claude Code / Codex 分区）
+
+- 将快速开始重构为折叠面板，按平台区分 `Claude Code` 与 `Codex` 的安装、使用和 MCP 配置
+- 明确 Codex 官方 plugin bundle 使用方式，基于 `.codex-plugin/plugin.json` 与 `skills` 自动发现
+- 补充 Codex 启用 `plugins` 特性的可选命令示例
+- 同步 skill 使用示例：区分 Claude 命令触发与 Codex 自然语言触发（如“使用需求分析skill”）
+- 修正 README 目录结构描述，使其与当前仓库结构一致
+
+### 📝 文档 (Documentation)
+
+- 更新 `README.md`，统一安装说明与平台差异说明
+- 提升首次接入可读性，减少 Codex / Claude Code 混合说明带来的歧义
+
+### 🔨 技术细节 (Technical)
+
+- 更新 `.codex-plugin/plugin.json` 版本号至 `4.2.1`
+- 更新 `.claude-plugin/marketplace.json` 版本号至 `4.2.1`
+
+---
+
 ## [4.2.0] - 2026-01-27
 
 ### ✨ 新增 (Added)
@@ -834,6 +878,7 @@ skills/requirement-analysis/
 
 ---
 
+[4.2.1]: https://github.com/FlameMida/feat-dev/compare/v4.2.0...v4.2.1
 [4.2.0]: https://github.com/FlameMida/feat-dev/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/FlameMida/feat-dev/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/FlameMida/feat-dev/compare/v3.1.2...v4.0.0

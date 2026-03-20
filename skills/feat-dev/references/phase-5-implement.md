@@ -105,9 +105,9 @@ context7.query-docs: libraryId="/gin-gonic/gin", query="request validation and b
 
 ```bash
 # context7 不可用时
-1. WebSearch: "ORM associations documentation latest version"
-2. Grep: "HasMany|BelongsTo" 查找项目中的关联示例
-3. Read: 查找项目中的关联示例
+1. 网页搜索: "ORM associations documentation latest version"
+2. `rg "HasMany|BelongsTo"` 查找项目中的关联示例
+3. 阅读项目中的关联示例文件
 ```
 
 ### 🔍 优先尝试：exa.get_code_context_exa
@@ -123,14 +123,14 @@ context7.query-docs: libraryId="/gin-gonic/gin", query="request validation and b
 
 **降级方案**：
 ```
-WebSearch: [相同查询内容]
+网页搜索: [相同查询内容]
 ```
 
 ---
 
 ## 实施原则
 
-### 1. 严格遵循 CLAUDE.md 规范
+### 1. 严格遵循项目规范
 
 - 代码组织结构
 - 命名约定
@@ -169,7 +169,7 @@ WebSearch: [相同查询内容]
 
 ---
 
-A: 根据项目要求。如果 CLAUDE.md 要求测试，必须编写。否则可选。
+A: 根据项目要求。如果 `AGENTS.md` / `CLAUDE.md` 或其他规范要求测试，必须编写。否则可选。
 
 ---
 

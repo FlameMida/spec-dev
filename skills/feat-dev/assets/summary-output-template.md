@@ -105,10 +105,10 @@
 - **exa**：搜索了 [主题] 最佳实践
 - **sequential-thinking**：用于 [阶段] 的深度分析
 
-#### Agents
-- **code-explorer**：探索了 [模块] 代码
-- **code-architect**：设计了 [方案类型] 架构
-- **code-reviewer**：审查了 [维度] 代码
+#### 子代理
+- **exploration 子代理**：探索了 [模块] 代码
+- **architecture 子代理**：设计了 [方案类型] 架构
+- **review 子代理**：审查了 [维度] 代码
 
 ---
 

@@ -6,31 +6,37 @@
 
 ---
 
-## 首要任务:查找 CLAUDE.md
+## 首要任务:查找项目规范文件
 
 **必须首先执行**:
 
 ```bash
-Read: /path/to/project/CLAUDE.md
+Codex: 先读 /path/to/project/AGENTS.md，不存在再读 /path/to/project/CLAUDE.md
+Claude Code: 先读 /path/to/project/CLAUDE.md，不存在再读 /path/to/project/AGENTS.md
 ```
 
-**CLAUDE.md 包含**:项目架构规范、代码组织约定、API 设计规范、数据库设计规范、依赖注入模式、测试要求等
+**规范文件通常包含**:项目架构规范、代码组织约定、API 设计规范、数据库设计规范、依赖注入模式、测试要求等
 
-**如果不存在**:通过代码探索推断规范,在总结阶段建议创建 CLAUDE.md
+**如果不存在**:通过代码探索推断规范,在总结阶段建议创建 `AGENTS.md` 或 `CLAUDE.md`
 
 ---
 
 ## 并行 Agent 执行
 
-启动 **2-3 个 code-explorer agents** 并行探索不同层面:
+启动 **1-2 个探索子代理** 并行探索不同层面；只有代码面明显分层且互不阻塞时才扩到 3 个:
 
 ### Agent 示例(根据需要调整探索焦点)
 
 ```
-Task:
-- subagent_type: spec-dev:code-explorer
-- model: haiku
-- prompt: "探索 [实体层/服务层/API层]
+Claude Code:
+- Task + subagent_type=spec-dev:code-explorer + run_in_background=true
+
+Codex:
+- spawn_agent(agent_type="explorer", fork_context=true)，提示词中明确探索焦点和返回格式
+- 需要结果时使用 wait_agent
+
+提示词示例:
+"围绕 [实体层/服务层/API层] 做探索，找出入口文件、核心抽象、关键数据流，以及 5-10 个关键文件。
 
   要求:
   1. 查找现有实现
@@ -42,13 +48,18 @@ Task:
   - 文件位置和命名规范
   - 设计模式和架构
   - 依赖注入和错误处理"
-- run_in_background: true
 ```
 
 **建议分工**:
 - Agent 1: 探索实体和数据模型
 - Agent 2: 探索服务层和业务逻辑
 - Agent 3: 探索 API 层和控制器
+
+**稳定性要求**:
+- 每个子代理负责一个清晰主题，不要让多个子代理重复覆盖同一片区域
+- 如果主进程下一步立刻依赖某个答案，优先自己读文件，不要等待子代理
+- 子代理未返回关键文件列表时，视为失败
+- 失败后先缩小任务重试 1 次，再由主进程接管
 
 ---
 
@@ -69,10 +80,10 @@ Task:
 
 ## 读取 Agent 识别的文件
 
-**必须执行**:主进程必须亲自阅读 agents 返回的所有关键文件
+**必须执行**:主进程必须亲自阅读子代理返回的所有关键文件
 
 ```
-1. 收集所有 agents 返回的文件列表
+1. 收集所有子代理返回的文件列表
 2. 去重合并
 3. 批量读取:Read: /path/to/file1, Read: /path/to/file2, ...
 4. 分析理解:识别命名约定、设计模式、代码风格
@@ -91,12 +102,12 @@ Task:
 2. context7.query-docs: libraryId="/库路径", query="具体的查询问题"
 ```
 
-**降级方案**:WebSearch + Grep + Read
+**降级方案**:网页搜索 + `rg` + 文件阅读
 
 ### 优先尝试:exa.get_code_context_exa
 
 **目的**:搜索特定框架/库的代码示例
-**降级方案**:WebSearch
+**降级方案**:网页搜索
 
 ---
 
@@ -105,7 +116,7 @@ Task:
 ```markdown
 ## 🔍 阶段 2: 代码库探索结果
 
-### CLAUDE.md 规范
+### 项目规范文件
 [存在/不存在]
 关键规范要点: [...]
 

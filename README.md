@@ -1,6 +1,6 @@
 # spec-dev-skills
 
-完整的功能开发工作流插件 - 7阶段系统化开发流程，包含代码探索、架构设计、实施和质量审查。
+面向 Claude Code 和 Codex 的功能开发 skills 集合，包含系统化的功能开发与需求分析工作流。
 
 **中文版** | 融合 ultrathink 深度分析 | MCP 工具增强 | 语言无关
 
@@ -39,28 +39,28 @@
 | 架构深度分析 | ✅ 结构化 ultrathink | ⚠️ 常规思维链 |
 | 整体工作流 | 🌟 最佳体验 | ✅ 完全可用 |
 
-### 🚀 快速开始（无需配置）
-## 安装
+## 🚀 快速开始（无需配置）
+
+<details>
+<summary><strong>Claude Code</strong></summary>
+
+### 安装
+
 ```bash
 # 添加为 marketplace
 /plugin marketplace add https://github.com/FlameMida/spec-dev
 
-# 安装skill spec-dev
+# 安装 skill 包
 /plugin install spec-dev@SPEC-plugins
 ```
 
-直接使用插件，无需任何 MCP 配置即可获得完整功能（降级方案自动生效）。
+### 使用示例
 
+```bash
+/requirement-analysis 分析用户权限系统的实现方案
+```
 
-### 💡 推荐配置（最佳体验）
-
-如果您想获得最佳开发体验，建议在**全局配置**中安装 MCP 服务器。
-
-#### 配置步骤
-
-
-
-**1. 编辑全局配置文件**
+### 可选：MCP 增强配置
 
 编辑 `~/.claude.json`（Windows 用户为 `%USERPROFILE%\.claude.json`）：
 
@@ -89,7 +89,69 @@
 }
 ```
 
-**2. 配置环境变量**
+### 检查 MCP 配置状态
+
+```bash
+/check-mcp
+```
+
+</details>
+
+<details>
+<summary><strong>Codex</strong></summary>
+
+### 安装（官方 Plugins 机制）
+
+本仓库已使用 Codex 官方 plugin bundle 机制，核心入口为：
+- `.codex-plugin/plugin.json`
+- `"skills": "./skills/"`
+
+```bash
+git clone https://github.com/FlameMida/spec-dev.git
+cd spec-dev
+codex
+```
+
+Codex 在仓库根目录启动后会自动读取 plugin bundle 并加载：
+- `feat-dev`
+- `requirement-analysis`
+
+`plugin.json` 的 `defaultPrompt` 已设置为 `使用需求分析skill`，开箱即可按需求分析流程工作。
+
+### 可选：显式启用 plugins 特性
+
+```bash
+codex features enable plugins
+codex features list
+```
+
+如果 `plugins` 行状态为 `true`，表示已启用。
+
+### 使用示例
+
+```text
+使用需求分析skill，分析用户权限系统的实现方案
+```
+
+### 可选：MCP 增强配置
+
+```bash
+codex mcp add context7 -- npx -y @upstash/context7-mcp
+codex mcp add exa --env EXA_API_KEY=your-exa-api-key -- npx -y exa-mcp-server
+codex mcp add sequential-thinking -- npx -y @modelcontextprotocol/server-sequential-thinking
+```
+
+### 检查 MCP 配置状态
+
+```bash
+/check-mcp
+```
+
+</details>
+
+直接使用 skills，无需任何 MCP 配置即可获得完整功能（降级方案自动生效）。
+
+### 通用环境变量（MCP 可选）
 
 在 `~/.zshrc`（macOS/Linux）或 `~/.bashrc`（Linux）或系统环境变量（Windows）中添加：
 
@@ -101,20 +163,6 @@ export EXA_API_KEY="your-exa-api-key"
 **获取 API Key**：
 - Context7: https://context7.com/
 - Exa: https://exa.ai/
-
-#### 检查 MCP 配置状态
-
-运行以下命令检查当前 MCP 配置状态：
-
-```bash
-/check-mcp
-```
-
-该命令会显示：
-- 哪些 MCP 已配置
-- 哪些 MCP 正在使用
-- 哪些功能使用降级方案
-- 配置建议和优化提示
 
 ### ⚠️ 关于 MCP 重复安装
 如果您：
@@ -160,9 +208,14 @@ export EXA_API_KEY="your-exa-api-key"
 
 **适用场景**：复杂功能开发、多模块实施、需要架构设计的任务
 
-**使用方式**：
+**使用方式（Claude Code）**：
 ```bash
 /feat-dev 实现用户认证功能
+```
+
+**使用方式（Codex）**：
+```text
+使用 feat-dev skill，实现用户认证功能
 ```
 
 **工作流程**：7 个完整阶段（需求理解 → 代码探索 → 澄清问题 → 架构设计 → 实施 → 质量审查 → 总结）
@@ -176,9 +229,14 @@ export EXA_API_KEY="your-exa-api-key"
 
 **适用场景**：快速需求分析、前期设计规划、需要深度分析但不立即实施的场景
 
-**使用方式**：
+**使用方式（Claude Code）**：
 ```bash
 /requirement-analysis 分析用户权限系统的实现方案
+```
+
+**使用方式（Codex）**：
+```text
+使用需求分析skill，分析用户权限系统的实现方案
 ```
 
 **工作流程**：9 个完整阶段（需求理解 → 代码探索 → 外部资源研究 → 澄清问题 → 深度分析 → 展示计划 → 可选实施 → 可选审查 → 总结）
@@ -354,7 +412,9 @@ code-explorer agent 支持创建细粒度的子任务跟踪：
 ## 目录结构
 
 ```
-feat-dev/
+spec-dev/
+├── .codex-plugin/
+│   └── plugin.json        # Codex plugin bundle manifest
 ├── .claude-plugin/
 │   └── marketplace.json    # Marketplace 配置
 ├── agents/
@@ -365,7 +425,7 @@ feat-dev/
 │   └── check-mcp.md        # /check-mcp 命令 - 检查 MCP 配置状态
 ├── skills/
 │   ├── feat-dev/           # 完整功能开发工作流 skill
-│   │   ├── skill.md        # 主技能文件
+│   │   ├── skill.md        # Claude 现有主技能文件
 │   │   ├── references/     # 参考文档
 │   │   │   ├── phase-1-discovery.md
 │   │   │   ├── phase-2-exploration.md
@@ -381,9 +441,11 @@ feat-dev/
 │   │   │   ├── troubleshooting.md
 │   │   │   └── workflow-control.md
 │   │   └── assets/
-│   │       └── output-template.md
+│   │       ├── output-template.md
+│   │       ├── summary-examples.md
+│   │       └── summary-output-template.md
 │   └── requirement-analysis/  # 需求分析工作流 skill
-│       ├── skill.md        # 主技能文件
+│       ├── SKILL.md        # 主技能文件
 │       ├── references/     # 参考文档
 │       │   ├── parallel-patterns.md
 │       │   ├── task-list-management.md

@@ -1,0 +1,32 @@
+{
+  "name": "spec-dev",
+  "version": "4.2.1",
+  "description": "开发工作流插件集，包含 feat-dev 和 requirement-analysis 两套系统化工作流。",
+  "author": {
+    "name": "FlameMida",
+    "url": "https://github.com/FlameMida"
+  },
+  "homepage": "https://github.com/FlameMida/spec-dev",
+  "repository": "https://github.com/FlameMida/spec-dev",
+  "keywords": [
+    "codex",
+    "skills",
+    "development",
+    "requirements"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Spec Dev",
+    "shortDescription": "中文功能开发与需求分析工作流。",
+    "longDescription": "Spec Dev 为 Codex 和 Claude Code 提供中文开发工作流，包含完整功能开发和需求分析两套 skill，并可结合 MCP 获得更强的调研与执行能力。",
+    "developerName": "FlameMida",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/FlameMida/spec-dev",
+    "defaultPrompt": "使用需求分析skill"
+  }
+}
