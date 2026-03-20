@@ -66,26 +66,29 @@
 
 ```json
 {
-  "mcpServers": {
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"],
-      "env": {
-        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
+   "mcpServers": {
+      "context7": {
+         "command": "npx",
+         "args": [
+            "-y",
+            "@upstash/context7-mcp"
+         ],
+         "env": {
+            "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
+         }
+      },
+      "exa": {
+         "type": "http",
+         "url": "https://mcp.exa.ai/mcp?exaApiKey=${EXA_API_KEY}"
+      },
+      "sequential-thinking": {
+         "command": "npx",
+         "args": [
+            "-y",
+            "@modelcontextprotocol/server-sequential-thinking"
+         ]
       }
-    },
-    "exa": {
-      "command": "npx",
-      "args": ["-y", "exa-mcp-server"],
-      "env": {
-        "EXA_API_KEY": "${EXA_API_KEY}"
-      }
-    },
-    "sequential-thinking": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-    }
-  }
+   }
 }
 ```
 
@@ -100,45 +103,18 @@
 <details>
 <summary><strong>Codex</strong></summary>
 
-### 安装（官方 Plugins 机制）
-
-本仓库已使用 Codex 官方 plugin bundle 机制，核心入口为：
-- `.codex-plugin/plugin.json`
-- `"skills": "./skills/"`
+### 安装
 
 ```bash
 git clone https://github.com/FlameMida/spec-dev.git
-cd spec-dev
+cp spec-dev ~/.codex/skills/
 codex
 ```
-
-Codex 在仓库根目录启动后会自动读取 plugin bundle 并加载：
-- `feat-dev`
-- `requirement-analysis`
-
-`plugin.json` 的 `defaultPrompt` 已设置为 `使用需求分析skill`，开箱即可按需求分析流程工作。
-
-### 可选：显式启用 plugins 特性
-
-```bash
-codex features enable plugins
-codex features list
-```
-
-如果 `plugins` 行状态为 `true`，表示已启用。
 
 ### 使用示例
 
 ```text
 使用需求分析skill，分析用户权限系统的实现方案
-```
-
-### 可选：MCP 增强配置
-
-```bash
-codex mcp add context7 -- npx -y @upstash/context7-mcp
-codex mcp add exa --env EXA_API_KEY=your-exa-api-key -- npx -y exa-mcp-server
-codex mcp add sequential-thinking -- npx -y @modelcontextprotocol/server-sequential-thinking
 ```
 
 ### 检查 MCP 配置状态
