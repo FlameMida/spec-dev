@@ -51,7 +51,7 @@
 /plugin marketplace add https://github.com/FlameMida/spec-dev
 
 # 安装 skill 包
-/plugin install spec-dev@SPEC-plugins
+/plugin install spec-dev@spec-agent-skills
 ```
 
 ### 使用示例
