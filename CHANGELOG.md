@@ -7,6 +7,73 @@
 
 ---
 
+## [5.0.0] - 2026-04-11
+
+### 💥 破坏性变更 (Breaking Changes)
+
+- **移除 `feat-dev` skill** — 被 `spec-flow` 替代，原有 7 阶段开发工作流不再维护
+  - 删除 `skills/feat-dev/` 全部文件（skill.md、18 个 references/assets 文件）
+  - 原因：`spec-flow` 提供更完善的跨会话持久化、独立验收和归档能力
+
+### ✨ 新增 (Added)
+
+#### spec-flow skill — 跨会话 spec 生命周期管理
+
+全新的 action-first 生命周期工作流，围绕 `explore → plan → implement → accept → archive` 五个 action 维护持久化 `.specs/` 状态。
+
+**核心能力**：
+- 跨会话持久化 — workspace-local runtime + 原子写入，会话中断不丢失上下文
+- 独立验收 — 专用 `spec-acceptance-reviewer` agent，findings-first 报告
+- 可归档 — 完整的归档流程，保留未完成项和遗留风险
+- 5 领域覆盖 — 软件、研究、运维/流程、文档、跨团队协作
+
+**新增文件**（18 个）：
+
+| 层级 | 文件 | 说明 |
+|------|------|------|
+| Skill | `skills/spec-flow/SKILL.md` | 入口定义（94 行） |
+| Runtime | `skills/spec-flow/assets/runtime/spec-flow-runtime.mjs` | 状态管理 CLI（773 行 Node.js） |
+| Templates | `skills/spec-flow/assets/spec-template.md` | 正式 spec 模板 |
+| | `skills/spec-flow/assets/plan-template.md` | 可执行 plan 模板 |
+| | `skills/spec-flow/assets/acceptance-report-template.md` | 验收报告模板 |
+| | `skills/spec-flow/assets/archive-summary-template.md` | 归档总结模板 |
+| References | `skills/spec-flow/references/spec-schema.md` | 数据结构定义 |
+| | `skills/spec-flow/references/command-contract.md` | CLI 命令约定 |
+| | `skills/spec-flow/references/action-explore.md` | 探索 action 规则 |
+| | `skills/spec-flow/references/action-plan.md` | 规划 action 规则 |
+| | `skills/spec-flow/references/action-implement.md` | 实施 action 规则 |
+| | `skills/spec-flow/references/action-accept.md` | 验收 action 规则 |
+| | `skills/spec-flow/references/action-archive.md` | 归档 action 规则 |
+| | `skills/spec-flow/references/recovery-rules.md` | 中断恢复规则 |
+| Agent 配置 | `skills/spec-flow/agents/openai.yaml` | OpenAI 兼容接口 |
+
+#### 新增 Agents
+
+- `agents/spec-acceptance-reviewer.md` — 独立验收 agent（findings-first、evidence-first、无自评）
+- `agents/external-resource-explorer.md` — 外部资源探索 agent（三层搜索优先级、可引用证据）
+
+#### 新增 Slash Command
+
+- `commands/spec-flow.md` — `/spec-flow` 命令路由（init/explore/plan/implement/accept/archive/status/resume）
+
+### 🔧 改进 (Changed)
+
+#### requirement-analysis skill 文本优化
+
+- 精简主文档和参考文档中的重复内容
+- 更新并行探索和审查策略描述
+
+#### 路径可移植性修复
+
+- `SKILL.md`：agent 引用从绝对路径改为 agent 名称引用
+- `commands/spec-flow.md`：所有链接去掉绝对路径硬编码
+
+#### recovery-rules 补全
+
+- `recovery-rules.md`：补充 `idle` 和 `completed` runState 的恢复优先级，与 runtime 实现对齐
+
+---
+
 ## [4.2.0] - 2026-01-27
 
 ### ✨ 新增 (Added)
@@ -834,6 +901,7 @@ skills/requirement-analysis/
 
 ---
 
+[5.0.0]: https://github.com/FlameMida/spec-dev/compare/v4.2.0...v5.0.0
 [4.2.0]: https://github.com/FlameMida/feat-dev/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/FlameMida/feat-dev/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/FlameMida/feat-dev/compare/v3.1.2...v4.0.0

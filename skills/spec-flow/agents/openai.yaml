@@ -1,0 +1,7 @@
+interface:
+  display_name: "Spec Flow"
+  short_description: "管理 explore-plan-implement-accept-archive 全流程"
+  default_prompt: "Use $spec-flow to manage a long-running task through explore, plan, implement, accept, and archive."
+
+policy:
+  allow_implicit_invocation: true

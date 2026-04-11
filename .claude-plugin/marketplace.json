@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "spec-coding agent skills",
-    "version": "4.2.0"
+    "version": "5.0.0"
   },
   "plugins": [
     {
@@ -16,8 +16,8 @@
       "category": "development",
       "homepage": "https://github.com/FlameMida/spec-dev",
       "skills": [
-        "./skills/feat-dev",
-        "./skills/requirement-analysis"
+        "./skills/requirement-analysis",
+        "./skills/spec-flow"
       ]
     }
   ]
