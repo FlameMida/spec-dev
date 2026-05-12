@@ -16,12 +16,39 @@
 
 ## 安装
 
+### Claude Code
+
 ```bash
 # 添加为 marketplace
 /plugin marketplace add https://github.com/FlameMida/spec-dev
 
 # 安装插件
 /plugin install spec-dev@SPEC-plugins
+```
+
+### Codex
+
+仓库已包含 Codex 插件清单：`.codex-plugin/plugin.json`。该清单会暴露：
+
+- `skills/`：`spec-flow` 与 `requirement-analysis`
+- `.mcp.json`：context7、exa、sequential-thinking 的可选 MCP 配置
+- 插件 UI 元数据：展示名称、分类、能力、默认提示词
+
+如果通过 Codex marketplace 分发，请将本仓库作为插件目录放在 marketplace 根目录的 `plugins/spec-dev/` 下，并在 `<marketplace-root>/.agents/plugins/marketplace.json` 中添加：
+
+```json
+{
+  "name": "spec-dev",
+  "source": {
+    "source": "local",
+    "path": "./plugins/spec-dev"
+  },
+  "policy": {
+    "installation": "AVAILABLE",
+    "authentication": "ON_INSTALL"
+  },
+  "category": "Developer Tools"
+}
 ```
 
 ## Skill 对比
@@ -159,6 +186,9 @@ explore → plan → implement → accept → archive
 spec-dev/
 ├── .claude-plugin/
 │   └── marketplace.json         # Marketplace 配置
+├── .codex-plugin/
+│   └── plugin.json              # Codex 插件清单
+├── .mcp.json                    # Codex 插件内 MCP 配置
 ├── agents/
 │   ├── spec-acceptance-reviewer.md   # 独立验收 agent
 │   ├── external-resource-explorer.md # 外部资源探索 agent

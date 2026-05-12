@@ -1,6 +1,6 @@
 {
   "name": "spec-dev",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "开发工作流插件集，包含 spec-flow 和 requirement-analysis 两套系统化工作流。",
   "author": {
     "name": "FlameMida",
@@ -8,17 +8,21 @@
   },
   "homepage": "https://github.com/FlameMida/spec-dev",
   "repository": "https://github.com/FlameMida/spec-dev",
+  "license": "MIT",
   "keywords": [
     "codex",
+    "plugins",
     "skills",
+    "spec-flow",
     "development",
     "requirements"
   ],
   "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Spec Dev",
-    "shortDescription": "中文功能开发与需求分析工作流。",
-    "longDescription": "Spec Dev 为 Codex 和 Claude Code 提供中文开发工作流，包含完整功能开发和需求分析两套 skill，并可结合 MCP 获得更强的调研与执行能力。",
+    "shortDescription": "中文 spec 生命周期与需求分析工作流。",
+    "longDescription": "Spec Dev 为 Codex 提供中文开发工作流，包含可恢复、可验收、可归档的 spec-flow，以及系统化 requirement-analysis，并可通过插件内 MCP 配置增强文档检索、网页研究和深度思考。",
     "developerName": "FlameMida",
     "category": "Developer Tools",
     "capabilities": [
@@ -27,6 +31,11 @@
       "Write"
     ],
     "websiteURL": "https://github.com/FlameMida/spec-dev",
-    "defaultPrompt": "使用需求分析skill"
+    "defaultPrompt": [
+      "使用 spec-flow 为这个任务建立可恢复计划",
+      "使用 requirement-analysis 分析这个功能方案",
+      "检查当前工作区 MCP 配置与降级方案"
+    ],
+    "brandColor": "#2563EB"
   }
 }

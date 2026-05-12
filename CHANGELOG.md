@@ -7,6 +7,21 @@
 
 ---
 
+## [5.1.0] - 2026-05-12
+
+### ✨ 新增 (Added)
+
+- **Codex 插件能力补全** — `.codex-plugin/plugin.json` 增加 Codex 插件分发所需的完整展示元数据、默认提示词和品牌色
+- **插件内 MCP 配置** — 新增 `.mcp.json`，声明 context7、exa、sequential-thinking 三个可选 MCP server
+- **Codex 安装说明** — README 增加 Codex marketplace 分发结构、插件清单能力和目录结构说明
+
+### 🔧 改进 (Changed)
+
+- `plugin.json` 增加 `license`、`mcpServers`、`plugins` / `spec-flow` 关键词，提升 Codex 插件发现与展示质量
+- 同步更新 Claude marketplace 元数据版本到 `5.1.0`
+
+---
+
 ## [5.0.0] - 2026-04-11
 
 ### 💥 破坏性变更 (Breaking Changes)
@@ -901,6 +916,7 @@ skills/requirement-analysis/
 
 ---
 
+[5.1.0]: https://github.com/FlameMida/spec-dev/compare/v5.0.0...v5.1.0
 [5.0.0]: https://github.com/FlameMida/spec-dev/compare/v4.2.0...v5.0.0
 [4.2.0]: https://github.com/FlameMida/feat-dev/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/FlameMida/feat-dev/compare/v4.0.0...v4.1.0
