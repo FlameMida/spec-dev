@@ -8,7 +8,7 @@
       "name": "spec-dev",
       "source": {
         "source": "local",
-        "path": "./"
+        "path": "./plugins/spec-dev"
       },
       "policy": {
         "installation": "AVAILABLE",

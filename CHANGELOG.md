@@ -13,6 +13,7 @@
 
 - **Codex marketplace 入口** — 新增 `.agents/plugins/marketplace.json`，使本仓库可以直接通过 `codex plugin marketplace add https://github.com/FlameMida/spec-dev` 添加为 Codex marketplace
 - **Codex 安装说明** — README 改为 Codex CLI 可直接执行的 marketplace 添加命令，并说明独立 marketplace 仓库的 `plugins/spec-dev/` 布局
+- **Codex marketplace 路径修正** — 将 `source.path` 改为 `./plugins/spec-dev`，避免 `./` 被 Codex 规范化为空路径后在 `/plugin` 列表中被过滤
 
 ---
 

@@ -40,7 +40,9 @@
 codex plugin marketplace add https://github.com/FlameMida/spec-dev
 ```
 
-本仓库同时作为 marketplace 根目录和插件根目录，marketplace 中的 `source.path` 指向 `./`。如果你维护独立 marketplace 仓库，也可以把本插件放到该仓库的 `plugins/spec-dev/` 下，并使用等价条目：
+Codex marketplace 使用 `plugins/spec-dev/` 作为插件入口。该目录指向仓库根目录中的实际插件文件，避免 `source.path` 使用 `./` 时被 Codex 规范化为空路径而在 `/plugin` 中被过滤。
+
+如果本地已经添加过旧版本 marketplace，请在新版本发布后执行 `codex plugin marketplace upgrade spec-agent-skills`；本地开发验证可先移除旧源，再添加当前仓库路径。
 
 ```json
 {
@@ -207,6 +209,8 @@ spec-dev/
 ├── commands/
 │   ├── spec-flow.md             # /spec-flow 命令
 │   └── check-mcp.md             # /check-mcp 命令
+├── plugins/
+│   └── spec-dev/                # Codex marketplace 插件入口
 ├── skills/
 │   ├── spec-flow/               # Spec 生命周期工作流
 │   │   ├── SKILL.md
