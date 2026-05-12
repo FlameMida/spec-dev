@@ -34,7 +34,13 @@
 - `.mcp.json`：context7、exa、sequential-thinking 的可选 MCP 配置
 - 插件 UI 元数据：展示名称、分类、能力、默认提示词
 
-如果通过 Codex marketplace 分发，请将本仓库作为插件目录放在 marketplace 根目录的 `plugins/spec-dev/` 下，并在 `<marketplace-root>/.agents/plugins/marketplace.json` 中添加：
+仓库也包含 Codex marketplace 清单：`.agents/plugins/marketplace.json`。可以直接添加本仓库作为 marketplace：
+
+```bash
+codex plugin marketplace add https://github.com/FlameMida/spec-dev
+```
+
+本仓库同时作为 marketplace 根目录和插件根目录，marketplace 中的 `source.path` 指向 `./`。如果你维护独立 marketplace 仓库，也可以把本插件放到该仓库的 `plugins/spec-dev/` 下，并使用等价条目：
 
 ```json
 {
@@ -186,6 +192,9 @@ explore → plan → implement → accept → archive
 spec-dev/
 ├── .claude-plugin/
 │   └── marketplace.json         # Marketplace 配置
+├── .agents/
+│   └── plugins/
+│       └── marketplace.json      # Codex marketplace 配置
 ├── .codex-plugin/
 │   └── plugin.json              # Codex 插件清单
 ├── .mcp.json                    # Codex 插件内 MCP 配置

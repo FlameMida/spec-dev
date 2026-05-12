@@ -7,6 +7,15 @@
 
 ---
 
+## [5.1.1] - 2026-05-12
+
+### 🔧 修复 (Fixed)
+
+- **Codex marketplace 入口** — 新增 `.agents/plugins/marketplace.json`，使本仓库可以直接通过 `codex plugin marketplace add https://github.com/FlameMida/spec-dev` 添加为 Codex marketplace
+- **Codex 安装说明** — README 改为 Codex CLI 可直接执行的 marketplace 添加命令，并说明独立 marketplace 仓库的 `plugins/spec-dev/` 布局
+
+---
+
 ## [5.1.0] - 2026-05-12
 
 ### ✨ 新增 (Added)
