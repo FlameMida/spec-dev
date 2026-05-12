@@ -28,7 +28,7 @@
 ## ❓ 需要澄清的问题
 [用户澄清结果，或 "无疑问 - 需求很清楚"]
 
-## 🧠 深度分析 (使用 ultrathink)
+## 🧠 深度分析 (使用 Sequential Thinking)
 [Sequential Thinking 顺序思考结果 - 技术设计决策，必须体现如何遵循项目规范]
 
 ## 📋 实施计划
