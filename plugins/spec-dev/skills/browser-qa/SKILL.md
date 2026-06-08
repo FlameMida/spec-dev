@@ -5,10 +5,11 @@ description: >
   "UI自动化验收"、"browser test"、"acceptance test"、"playwright测试"、"前端测试"、
   "验收这个功能"、"测试这个页面"、"跑一下测试"、"浏览器测试"时触发。
   支持三个层级：Layer 1 确定性E2E、Layer 2 AI自主验收、Layer 3 调试诊断。
-argument-hint: "[layer1|layer2|layer3|all] <target-description>"
 ---
 
 # 浏览器三层测试工作流
+
+参数格式：`[layer1|layer2|layer3|all] <target-description>`。
 
 根据 `$ARGUMENTS` 执行浏览器测试，默认执行所有层级。
 

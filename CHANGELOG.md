@@ -7,6 +7,22 @@
 
 ---
 
+## [5.2.2] - 2026-06-08
+
+### ✨ 新增 (Added)
+
+- **Codex 分发包同步脚本** — 新增 `scripts/sync-codex-package.mjs`，将根目录源码同步生成到 `plugins/spec-dev/`
+- **官方 CLI 安装校验** — 同步脚本支持 `--codex-validate`，通过临时 `CODEX_HOME` 调用 `codex plugin marketplace add` 与 `codex plugin add` 验证真实安装路径
+- **skill-creator 校验集成** — 新增 `scripts/validate-skills.mjs`，复用 `skill-creator/scripts/quick_validate.py` 校验根目录和 Codex 分发包中的 skill
+- **提交前自动校验** — 新增版本化 `.githooks/pre-commit` 与 `scripts/install-git-hooks.mjs`，提交前自动同步并校验 Codex 分发包和 skill
+
+### 🔧 改进 (Changed)
+
+- 将 `plugins/spec-dev/` 明确为生成产物，降低双入口插件分发的维护成本
+- `.gitignore` 忽略 `.DS_Store`，避免 macOS 元数据文件进入发布差异
+
+---
+
 ## [5.2.1] - 2026-06-08
 
 ### 🔧 修复 (Fixed)
