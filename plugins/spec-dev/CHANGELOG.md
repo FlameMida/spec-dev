@@ -7,6 +7,39 @@
 
 ---
 
+## [5.2.1] - 2026-06-08
+
+### 🔧 修复 (Fixed)
+
+- **Codex 分发包同步** — 将 `.codex-plugin/plugin.json` 与 `plugins/spec-dev/` marketplace 入口同步到 5.2.x，避免 Codex 继续安装 5.1.1 旧缓存
+- **browser-qa Codex 可见性** — 将 `browser-qa` skill、E2E 模板和参考文档同步进 Codex marketplace 插件入口
+- **MCP 配置同步** — Codex marketplace 入口补齐 `playwright` 与 `chrome-devtools` MCP server 配置
+
+### 🔧 改进 (Changed)
+
+- 更新 Codex 插件展示文案、关键词和默认提示词，明确包含 `spec-flow`、`requirement-analysis`、`browser-qa` 三套工作流
+
+---
+
+## [5.2.0] - 2026-06-08
+
+### ✨ 新增 (Added)
+
+- **browser-qa skill** — 浏览器三层测试工作流（E2E + AI 验收 + 调试诊断）
+  - Layer 1: Playwright 原生确定性 E2E 测试
+  - Layer 2: Playwright MCP AI 自主验收
+  - Layer 3: Chrome DevTools MCP 调试诊断 + Browser Harness Shadow DOM 穿透
+  - 包含 E2E 测试模板 (`templates/e2e-test.ts`)、代码模式参考 (`references/e2e-patterns.md`)、MCP 配置指南 (`references/mcp-setup.md`)
+- **MCP Server 扩展** — `.mcp.json` 新增 `playwright`（Layer 2）和 `chrome-devtools`（Layer 3）两个 MCP Server
+- **marketplace 注册** — `browser-qa` 注册到 `spec-dev` 插件，可通过 `/spec-dev:browser-qa` 触发
+
+### 🔧 改进 (Changed)
+
+- **Rule: 测试左移** — 全局 Rule (`browser-qa-methodology.mdc`) 在需求分析的设计阶段自动注入测试计划，实现 Shift Left
+- **requirement-analysis 衔接** — 设计阶段自动追加三层测试计划，实施阶段同步添加 `data-testid`，代码审查阶段检查遗漏，总结阶段引导执行 `/browser-qa`
+
+---
+
 ## [5.1.1] - 2026-05-12
 
 ### 🔧 修复 (Fixed)

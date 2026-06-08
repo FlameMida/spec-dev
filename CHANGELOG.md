@@ -7,6 +7,20 @@
 
 ---
 
+## [5.2.1] - 2026-06-08
+
+### 🔧 修复 (Fixed)
+
+- **Codex 分发包同步** — 将 `.codex-plugin/plugin.json` 与 `plugins/spec-dev/` marketplace 入口同步到 5.2.x，避免 Codex 继续安装 5.1.1 旧缓存
+- **browser-qa Codex 可见性** — 将 `browser-qa` skill、E2E 模板和参考文档同步进 Codex marketplace 插件入口
+- **MCP 配置同步** — Codex marketplace 入口补齐 `playwright` 与 `chrome-devtools` MCP server 配置
+
+### 🔧 改进 (Changed)
+
+- 更新 Codex 插件展示文案、关键词和默认提示词，明确包含 `spec-flow`、`requirement-analysis`、`browser-qa` 三套工作流
+
+---
+
 ## [5.2.0] - 2026-06-08
 
 ### ✨ 新增 (Added)
