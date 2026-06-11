@@ -13,7 +13,7 @@
 | T3.3 | 阶段 8 重写为伪代码编排（对抗复核+枯竭循环） | ✅ | 2026-06-12 |
 | T3.4 | spec-flow accept 重写为伪代码编排 | ✅ | 2026-06-12 |
 | T3.5 | browser-qa Layer 2 重写（证据契约+串行复核） | ✅ | 2026-06-12 |
-| T3.6 | deep 档：judge panel + multi-modal sweep | ⬜ | — |
+| T3.6 | deep 档：judge panel + multi-modal sweep | ✅ | 2026-06-12 |
 | T3.7 | runtime: checkpoint 增加 --evidence | ✅ | 2026-06-12 |
 | T3.8 | runtime: 新增 doctor 子命令 | ⬜ | — |
 | T3.9 | runtime: 小修集（百分比校验/summary-path/时区/并发声明） | ⬜ | — |
@@ -230,9 +230,9 @@
 
 ---
 
-### T3.6 deep 档：judge panel + multi-modal sweep ⬜
+### T3.6 deep 档：judge panel + multi-modal sweep ✅
 
-- **状态**: ⬜ 待办　**预估**: 2h　**依赖**: T2.3（档位已落）、T2.4（architect 已接入）
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 2h　**依赖**: T2.3（档位已落）、T2.4（architect 已接入）
 - **目标文件**: `skills/requirement-analysis/SKILL.md`（阶段 2、阶段 5 的 deep 分支）、`skills/requirement-analysis/references/parallel-patterns.md`
 - **改动步骤**:
   1. **阶段 2 deep 档 = multi-modal sweep**（替换"按架构层次分解"的单一策略）：
@@ -256,9 +256,10 @@
      ```
   3. parallel-patterns.md 增补两个模式的何时使用/不使用（light/standard 禁用 judge panel——多方案对小需求是浪费）。
 - **验收标准**:
-  - [ ] deep 档两个模式有完整伪代码与触发边界（仅 deep）
-  - [ ] 模态分解不再绑定"数据层/服务层/API 层"的后端假设（前端/CLI/库项目同样适用）
-  - [ ] judge panel 的评分维度与合成规则明确（不是简单三选一）
+  - [x] deep 档两个模式有完整伪代码与触发边界（仅 deep；light/standard 禁用并说明理由——模态盲扫对小范围重叠浪费、多方案竞争对小需求浪费）
+  - [x] 模态分解不再绑定"数据层/服务层/API 层"的后端假设（已写明：前端项目模态 1 是路由/页面入口，CLI 是命令注册表，库是公开 API 面）
+  - [x] judge panel 的评分维度与合成规则明确（4 维评分 [模式一致性/风险面/实施成本/可测试性] + "最高分出发吸收落选可取局部"合成规则 + 评分依据进阶段 6 展示，不是简单三选一）
+  - 备注：sweep 输出走 exploration-report 契约校验；judge panel 含失败处理（视角缺失降级比对）。编排细节集中在 parallel-patterns.md，SKILL.md 仅留档位分支引用控制行数。
 
 ---
 
