@@ -7,9 +7,9 @@
 
 ---
 
-## [未发布]
+## [5.3.0] - 2026-06-12
 
-### ✨ 新增 (Added) — 第三期编排方法论增强（2026-06-12）
+### ✨ 新增 (Added) — 第三期编排方法论增强
 
 把 Workflow 的编排方法论（契约化输出、对抗复核、枯竭循环、失败隔离、覆盖声明、声明式控制流）内化为 skill 自己的纪律。实现形态 = **prompt 层伪代码 + 确定性校验脚本**，不调用 Workflow 工具，Claude Code 与 Codex 跑同一套编排逻辑（设计决策 D1/D2）；对抗验证只落在三个质量关口并按 severity 分级触发（D3）；deep 档才启用完整编排（D4）；browser-qa Layer 2 永远串行（D5）。
 
@@ -28,7 +28,7 @@
 - **T3.14 触发优化** — browser-qa 20 条 trigger evals 基线；新 description should-trigger 10/10、near-miss 误触发 0/10（旧版 8/10、约 3-4/10）；requirement-analysis ↔ spec-flow 互斥条件写入双方 description
 - **T3.15 detect-env.mjs** — browser-qa 前置环境检测脚本化（一次输出全部文件系统可判定项），手工清单保留为降级路径
 
-### 🔧 改进 (Changed) — 第二期结构重构（2026-06-12）
+### 🔧 改进 (Changed) — 第二期结构重构
 
 - **T2.1 双环境样板抽离** — 新建 `skills/requirement-analysis/references/codex-compat.md` 集中收纳 Codex 环境判定、工具映射、提问规范与任务管理细则；删除跨版本脆弱的 `multi_tool_use.parallel` 内部命名
 - **T2.2 requirement-analysis SKILL.md 瘦身** — 510 行 → 300 行内：9 阶段内重复的双环境任务管理样板下沉到统一节与 codex-compat.md；3 处无解释的 MUST 改写为"约束 + why"（深度思考带降级路径、单响应并行发起带理由、审查后先确认再修带理由）
@@ -42,7 +42,7 @@
 - **T2.10 参数解析意图推断** — browser-qa 改为"显式前缀 > 意图推断 > 询问"三级解析，自然语言触发不再一律跑全部层级
 - **T2.11 Codex 元数据补齐** — requirement-analysis 与 browser-qa 新增 `agents/openai.yaml`（与 spec-flow 结构一致）
 
-### 🔧 修复 (Fixed) — 第一期 P0 修错（2026-06-12）
+### 🔧 修复 (Fixed) — 第一期 P0 修错
 
 - **T1.1 spec-flow command 插件资源路径** — `commands/spec-flow.md` 中全部 `skills/spec-flow/...` 路径加 `${CLAUDE_PLUGIN_ROOT}/` 前缀并补兜底说明，`/spec-flow init` 不再需要模型自行摸索插件安装目录；验证确认 Codex 端不加载 commands 目录，无需同步转换
 - **T1.2 browser-qa MCP 配置位置** — `mcp-setup.md` 的 MCP 配置位置由错误的 `settings.json` 修正为项目级 `.mcp.json` / 用户级 `~/.claude.json`（与 README 一致），并补充 `claude mcp add` 快捷方式

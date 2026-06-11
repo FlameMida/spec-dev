@@ -7,10 +7,12 @@
 ## 特性
 
 - **Spec Flow** — 5 action 生命周期（explore → plan → implement → accept → archive），workspace-local runtime 原子写入
-- **独立验收** — 专用 `spec-acceptance-reviewer` agent，findings-first 报告，实现者不自评
-- **跨会话恢复** — 会话中断后通过 `progress.json` 和 `resumePoint` 精确恢复
-- **需求分析** — 9 阶段系统化分析工作流（可选实施）
-- **浏览器三层测试** — `browser-qa` 覆盖 Playwright E2E、AI 自主验收和调试诊断
+- **独立验收** — 专用 `spec-acceptance-reviewer` agent，findings-first 报告，实现者不自评；skeptic + coverage critic 双向对抗复核
+- **跨会话恢复** — 会话中断后通过 `progress.json` 和 `resumePoint` 精确恢复；编排子任务 journal 化，已完成的 fan-out 不重派
+- **证据链** — implement 阶段 `--evidence` 累积证据，accept 阶段直接消费；`doctor` 命令检测并修复状态不一致
+- **需求分析** — 9 阶段系统化分析工作流，light / standard / deep 三档复杂度路由，按需派发探索与审查
+- **浏览器三层测试** — `browser-qa` 覆盖 Playwright E2E、AI 自主验收（证据强制 + 串行复核）和调试诊断
+- **契约化编排** — 子代理输出走 JSON Schema 契约，`validate-output.mjs` 确定性校验，失败退回补全
 - **5 领域覆盖** — 软件、研究、运维/流程、文档、跨团队协作
 - **MCP 工具增强** — 集成 context7、exa、sequential-thinking、playwright、chrome-devtools（可选，智能降级）
 - **5 个专门化 Agents** — spec-acceptance-reviewer、external-resource-explorer、code-explorer、code-architect、code-reviewer
@@ -182,11 +184,12 @@ explore → plan → implement → accept → archive
 | `init` | 初始化 `.specs/` 工作区 |
 | `new` | 创建新 spec |
 | `status` | 查看所有活跃 spec 状态 |
-| `checkpoint` | 写入执行检查点 |
+| `checkpoint` | 写入执行检查点；`--evidence` 登记可验证证据，`--dispatch` 登记编排子任务 |
 | `amend` | 升版重大变更 |
 | `accept` | 记录验收结果 |
-| `archive` | 归档已验收 spec |
-| `resume` | 恢复中断的工作 |
+| `archive` | 归档已验收 spec（`--summary-path` 校验存在性并返回迁移后路径） |
+| `resume` | 恢复中断的工作；存在编排记录时返回 `pendingDispatch` |
+| `doctor` | 检测 registry 与目录的 7 类不一致；`--fix` 仅执行安全修复 |
 
 ## requirement-analysis 使用方法
 
@@ -196,18 +199,25 @@ explore → plan → implement → accept → archive
 
 9 阶段工作流：需求理解 → 代码探索 → 外部资源研究 → 澄清问题 → 深度分析 → 展示计划 → 可选实施 → 可选审查 → 总结
 
+阶段 1 结束时自动判定执行档位并向用户声明（允许覆盖）：
+
+- **light** — 单文件/单模块小改动：跳过外部研究与并行编排，全流程 ≤ 2 次交互
+- **standard** — 默认档：并行探索 + code-architect 架构蓝图 + 3 路维度审查
+- **deep** — 跨层架构变更/新技术栈：multi-modal sweep 盲扫探索 + judge panel 多视角方案评分 + 5 路审查与对抗复核
+
 ## browser-qa 使用方法
 
 ```bash
 /browser-qa all 验收登录页面
 /browser-qa layer1 为购物车流程补充 E2E 测试
 /browser-qa layer3 诊断按钮点击后页面无响应
+/browser-qa 验收一下购物车页面          # 无前缀时按意图推断路由层级
 ```
 
 三层测试工作流：
 
-- Layer 1：Playwright 原生确定性 E2E 测试
-- Layer 2：Playwright MCP AI 自主验收
+- Layer 1：Playwright 原生确定性 E2E 测试（只运行本次生成的测试文件）
+- Layer 2：Playwright MCP AI 自主验收——动态验收清单、每项结论强制证据引用、fail/warn 项串行对抗复核
 - Layer 3：Chrome DevTools MCP 调试诊断，可配合 Browser Harness 处理 Shadow DOM / iframe
 
 ## MCP 工具增强（推荐但可选）
@@ -297,19 +307,27 @@ spec-dev/
 ├── scripts/
 │   ├── sync-codex-package.mjs   # 同步并校验 Codex 分发包
 │   ├── validate-skills.mjs      # 复用 skill-creator 校验所有 skill
+│   ├── validate-output.mjs      # 子代理输出契约校验器（随分发包分发）
+│   ├── schemas/                 # 4 类输出契约 schema + 使用说明
 │   └── install-git-hooks.mjs    # 启用版本化 Git hooks
 ├── skills/
 │   ├── spec-flow/               # Spec 生命周期工作流
 │   │   ├── SKILL.md
 │   │   ├── agents/openai.yaml
+│   │   ├── evals/               # 行为评测用例基线
 │   │   ├── references/          # 8 个参考文档
 │   │   └── assets/              # 模板 + runtime
-│   ├── requirement-analysis/    # 需求分析工作流
+│   ├── requirement-analysis/    # 需求分析工作流（三档复杂度路由）
 │   │   ├── SKILL.md
-│   │   ├── references/
+│   │   ├── agents/openai.yaml
+│   │   ├── evals/
+│   │   ├── references/          # 含 codex-compat.md 双环境指南
 │   │   └── assets/
 │   └── browser-qa/              # 浏览器三层测试工作流
 │       ├── SKILL.md
+│       ├── agents/openai.yaml
+│       ├── evals/               # 行为用例 + trigger evals
+│       ├── scripts/             # detect-env.mjs 前置环境检测
 │       ├── references/
 │       └── templates/
 ├── CHANGELOG.md
