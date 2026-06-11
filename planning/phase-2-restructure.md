@@ -7,7 +7,7 @@
 
 | ID | 任务 | 状态 | 完成日期 |
 |----|------|------|----------|
-| T2.1 | 创建 codex-compat.md，抽离双环境样板 | ⬜ | — |
+| T2.1 | 创建 codex-compat.md，抽离双环境样板 | ✅ | 2026-06-12 |
 | T2.2 | requirement-analysis SKILL.md 瘦身重写 | ⬜ | — |
 | T2.3 | 引入三档复杂度路由（light/standard/deep） | ⬜ | — |
 | T2.4 | 阶段 5 接入 code-architect agent | ⬜ | — |
@@ -22,9 +22,9 @@
 
 ---
 
-### T2.1 创建 codex-compat.md，抽离双环境样板 ⬜
+### T2.1 创建 codex-compat.md，抽离双环境样板 ✅
 
-- **状态**: ⬜ 待办　**预估**: 1h　**依赖**: T1.4（工具名已更新）
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 1h　**依赖**: T1.4（工具名已更新）
 - **目标文件**: 新建 `skills/requirement-analysis/references/codex-compat.md`
 - **问题**: SKILL.md 510 行中约 40% 是 Claude Code/Codex 双环境映射样板，且同一映射在 9 个阶段重复内联约 10 次。每次触发 skill 都为另一环境的无关指令支付上下文成本，违反 progressive disclosure。
 - **改动步骤**:
@@ -36,9 +36,9 @@
   2. 删除原文「纯工具并行可用 `multi_tool_use.parallel`」——内部实现细节命名，跨版本脆弱。
   3. 文件开头注明阅读时机：「仅当运行环境为 Codex 时阅读本文件；Claude Code 环境无需加载」。
 - **验收标准**:
-  - [ ] codex-compat.md 自包含（Codex 用户只读它+SKILL.md 即可执行全流程）
-  - [ ] `grep -c 'multi_tool_use' skills/requirement-analysis/` 为 0
-  - [ ] 本任务只新增文件，SKILL.md 的删减在 T2.2 进行（保持任务可独立回滚）
+  - [x] codex-compat.md 自包含（Codex 用户只读它+SKILL.md 即可执行全流程：环境判定、工具映射总表、任务管理、提问规范、并行子任务、规范文件优先级、外部资源研究全覆盖）
+  - [x] `grep -c 'multi_tool_use' skills/requirement-analysis/` 为 0（SKILL.md 中该半句一并删除——单行删除，保持验收标准成立且可独立回滚）
+  - [x] 本任务只新增文件，SKILL.md 的删减在 T2.2 进行（保持任务可独立回滚）（例外：仅删 multi_tool_use 半句以满足上一条验收）
 
 ---
 
