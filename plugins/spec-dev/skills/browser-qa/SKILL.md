@@ -104,8 +104,10 @@ Read `install.md` and follow the steps to install browser-harness and connect it
 #### Step 3: 运行测试
 
 ```bash
-npx playwright test --reporter=list
+npx playwright test <本次生成的测试文件路径> --reporter=list
 ```
+
+只运行本次生成的文件——项目既有失败不属于本次验收范围，混入会污染 Layer 1 结论并误触发 Layer 3 诊断。若用户明确要求全量回归，再运行完整套件，并在报告中区分"本次新增"与"既有失败"两类结果。
 
 - 若有失败用例 → 记录失败信息，标记为 Layer 3 候选
 - 全部通过 → 输出通过报告
