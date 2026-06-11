@@ -11,7 +11,7 @@
 | T3.1 | 编排基建：validate-output.mjs 契约校验器 | ✅ | 2026-06-12 |
 | T3.2 | 定义 4 类输出契约 schema | ✅ | 2026-06-12 |
 | T3.3 | 阶段 8 重写为伪代码编排（对抗复核+枯竭循环） | ✅ | 2026-06-12 |
-| T3.4 | spec-flow accept 重写为伪代码编排 | ⬜ | — |
+| T3.4 | spec-flow accept 重写为伪代码编排 | ✅ | 2026-06-12 |
 | T3.5 | browser-qa Layer 2 重写（证据契约+串行复核） | ⬜ | — |
 | T3.6 | deep 档：judge panel + multi-modal sweep | ⬜ | — |
 | T3.7 | runtime: checkpoint 增加 --evidence | ✅ | 2026-06-12 |
@@ -150,9 +150,9 @@
 
 ---
 
-### T3.4 spec-flow accept 重写为伪代码编排 ⬜
+### T3.4 spec-flow accept 重写为伪代码编排 ✅
 
-- **状态**: ⬜ 待办　**预估**: 2.5h　**依赖**: T3.1、T3.2、T2.6（reviewer 已升档）
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 2.5h　**依赖**: T3.1、T3.2、T2.6（reviewer 已升档）
 - **目标文件**: `skills/spec-flow/references/action-accept.md`、`agents/spec-acceptance-reviewer.md`（输出契约对齐）、`skills/spec-flow/assets/acceptance-report-template.md`（加 accepted_risks 节）
 - **设计意图**: 验收是 pass/changes_required 的关口决策，当前为单 agent 单轮判定。引入**双向对抗**：skeptic 杀误报（findings 复核）+ coverage critic 抓漏报（声称覆盖但无证据），同时定义清楚悬空的「未接受的 MAJOR」语义。
 - **改动步骤**:
@@ -185,10 +185,11 @@
   3. acceptance-report-template.md 在 Findings 与 Coverage Check 之间插入 `## Accepted Risks` 节。
   4. 降级路径写明：环境不支持子代理委派时（SKILL.md 第 53 行既有规则），单线程模拟时复核步骤改为"主进程换一个反驳视角自查每条 CRITICAL/MAJOR"，并在报告注明"复核为同线程模拟"。
 - **验收标准**:
-  - [ ] action-accept.md 为伪代码形态，含 skeptic（杀误报）与 coverage critic（抓漏报）双向
-  - [ ] 「已接受的 MAJOR」有完整定义闭环（用户确认 → accepted_risks 记录 → 结论规则引用）
-  - [ ] 模板含 Accepted Risks 节；reviewer agent 输出契约对齐
-  - [ ] 在一个测试 spec 上完整试跑 accept，三种结果（pass/changes_required/blocked）的状态流转与 runtime 写入正确
+  - [x] action-accept.md 为伪代码形态，含 skeptic（杀误报）与 coverage critic（抓漏报）双向
+  - [x] 「已接受的 MAJOR」有完整定义闭环（用户确认 → accepted_risks 记录 [finding_ref/accepted_by=user/reason] → 结论规则引用"无未接受的 MAJOR"）
+  - [x] 模板含 Accepted Risks 节；reviewer agent 输出契约对齐（markdown + acceptance-findings JSON 双输出，JSON 为机器消费源）
+  - [x] 在一个测试 spec 上完整试跑 accept，三种结果（pass/changes_required/blocked）的状态流转与 runtime 写入正确（3 个临时 spec 实测：changes_required→implement/in_progress round=1、blocked→accept/blocked、pass→accept/completed，registry 同步一致，pass 后 archive 走通；编排第 1–3 步的子代理环节依赖会话内 agent 派发，本会话受网关限流，伪代码与降级路径["复核为同线程模拟"注记]已写明）
+  - 备注：输入消费 T3.7 的 progress.evidence[]，闭环 implement→accept 证据链。
 
 ---
 

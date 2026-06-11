@@ -45,6 +45,29 @@ color: magenta
 
 ## Output Format
 
+最终输出同时给出两份产物——**JSON 为机器消费源，markdown 由 JSON 渲染**（编排层用 `validate-output.mjs acceptance-findings` 校验 JSON，校验失败会被退回补全）：
+
+1. **acceptance-findings 契约 JSON**（落盘到调用方指定路径）：
+
+```json
+{
+  "result": "pass | changes_required | blocked",
+  "coverage": [
+    { "spec_item": "...", "status": "pass | fail | partial", "evidence": "..." }
+  ],
+  "findings": [
+    { "severity": "CRITICAL | MAJOR | MINOR | SUGGESTION",
+      "description": "...", "evidence": "...", "suggested_action": "..." }
+  ],
+  "accepted_risks": [
+    { "finding_ref": "...", "accepted_by": "user", "reason": "..." }
+  ],
+  "coverage_note": "未覆盖的范围及原因，或'无'"
+}
+```
+
+2. **markdown 报告**（与 acceptance-report-template.md 结构一致）：
+
 ```markdown
 # Acceptance Report
 
@@ -60,6 +83,9 @@ color: magenta
 ### MAJOR
 ### MINOR
 ### SUGGESTION
+
+## Accepted Risks
+- （finding 引用 / 接受人 / 理由；无则写"无"）
 
 ## Coverage Check
 - Spec 条目: pass / fail / partial
