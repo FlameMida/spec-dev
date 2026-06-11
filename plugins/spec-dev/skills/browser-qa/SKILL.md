@@ -149,39 +149,50 @@ npx playwright test <本次生成的测试文件路径> --reporter=list
 每条检查项写明: 操作序列（具体步骤） + 预期表现（可观察的结果）
 ```
 
-#### Step 2: 通过 MCP 执行验收
+#### Step 2: Layer 2 编排（全程串行——Playwright MCP 是单浏览器会话，并行驱动会互相破坏状态）
 
-使用 Playwright MCP 工具依次执行：
+```
+checklist = 定制检查项(3-6 条，来自目标描述) + 适用的通用项     # Step 1 两段式生成
+results = []
+for item in checklist:                       # 串行逐项
+    执行 item.ops（browser_navigate / click / type / fill_form ...）
+    取证: browser_snapshot 关键片段 或 browser_take_screenshot 文件名
+    results += {check, ops, result, evidence_ref, notes}
+    # 无证据 → result 只能是 unverified（不允许无证据的 pass）
 
-1. **打开页面**: `browser_navigate` → 目标 URL
-2. **获取快照**: `browser_snapshot` → 了解当前页面状态
-3. **逐项检查**: 对每个检查项：
-   - 使用 `browser_click`、`browser_type`、`browser_fill_form` 执行操作序列
-   - 使用 `browser_snapshot` 观察结果
-   - **取证**: 记录交互后的 `browser_snapshot` 关键片段，或用 `browser_take_screenshot` 留存截图
-4. **探索边界**: 尝试 E2E 未覆盖的边缘场景
-5. **关闭浏览器**: `browser_close`
+落盘 browser-check-items 契约 JSON
+→ node ${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs browser-check-items <file>
+→ 校验失败：按 errors 清单补全一次；再失败将缺失项标记 unverified 并在报告说明
 
-**证据规则**：每个检查项的结论必须附带证据引用（snapshot 关键片段或截图文件名）。没有证据支撑的项标记为「未验证」而不是「通过」——AI 验收的价值建立在"真的操作过"之上，无证据的 ✅ 比没有报告更有害。
+# 对抗复核（仍串行，同一浏览器）：仅 result ∈ {fail, warn} 的项
+for item in results where item.result in {fail, warn}:
+    以"不信任原结论"的视角重新执行 item.ops 一次:
+      - 原判 fail → 优先尝试证明功能其实正常（操作时序问题？选择器选错？等待不足？）
+      - 复现成功 → 维持原判并补第二份证据
+      - 复现失败 → 降级为 warn 并注明"结果不稳定"
+# pass 项默认不复核（成本控制）；用户要求"严格验收"时抽查 2 项 pass
+```
+
+**取证细则**：每个检查项的结论必须附带证据引用（snapshot 关键片段或截图文件名）。没有证据支撑的项标记为「未验证」而不是「通过」——AI 验收的价值建立在"真的操作过"之上，无证据的 ✅ 比没有报告更有害。
 
 #### Step 3: 输出验收报告
 
 ```
 ## Layer 2 报告: AI 自主验收
 
-| 检查项 | 结果 | 证据 | 备注 |
-|--------|------|------|------|
-| 购物车数量修改后小计实时更新 | ✅ | snapshot: 小计由 ¥58 变为 ¥116 | 数量 1→2 |
-| 错误密码提交显示错误提示 | ⚠️ | screenshot: login-error.png | 提示文字对比度不足 |
-| 加载反馈 | ❌ | snapshot: 按钮 [active] 无 disabled/loading 属性 | 可能重复提交 |
-| 响应式布局（桌面端） | ✅ | snapshot: 1280px 布局正常 | — |
-| 导航正确性 | 未验证 | —（会话超时未操作到该项） | 需补测 |
+| 检查项 | 结果 | 证据 | 复核 | 备注 |
+|--------|------|------|------|------|
+| 购物车数量修改后小计实时更新 | ✅ | snapshot: 小计 ¥58→¥116 | —（pass 不复核） | 数量 1→2 |
+| 错误密码提交显示错误提示 | ⚠️ | screenshot: login-error.png | 维持（第二份证据: snapshot 同现象） | 提示对比度不足 |
+| 加载反馈 | ❌ | snapshot: 按钮无 disabled/loading | 维持（复现成功，二次 snapshot 一致） | 可能重复提交 |
+| 响应式布局（桌面端） | ✅ | snapshot: 1280px 布局正常 | — | — |
+| 导航正确性 | 未验证 | —（会话超时未操作到该项） | — | 需补测 |
 
 发现问题: 2（1 警告 / 1 阻塞）；未验证: 1
 建议: 为提交按钮添加 loading/disabled 状态
 ```
 
-结果只有四种：`✅ 通过`（有证据）、`⚠️ 警告`（有证据）、`❌ 阻塞`（有证据）、`未验证`（无证据或未执行——不允许无证据的 ✅）。
+结果只有四种：`✅ 通过`（有证据）、`⚠️ 警告`（有证据）、`❌ 阻塞`（有证据）、`未验证`（无证据或未执行——不允许无证据的 ✅）。复核列记录：维持 / 降级 / 翻案 + 第二份证据引用；pass 项默认不复核标"—"。
 
 ---
 
@@ -292,6 +303,7 @@ npx playwright test <本次生成的测试文件路径> --reporter=list
 - **不要在 Layer 1 中使用 LLM**: 测试断言必须精确匹配，不容忍概率性判断
 - **不要跳过前置检查**: 未配置的 MCP Server 会导致 Layer 2/3 失败
 - **不要在 CI 中跑 Layer 2**: AI 验收消耗 Token，仅适合手动触发
+- **不要并行驱动浏览器**: 多个子代理同时操作同一 Playwright MCP 会话会互相破坏页面状态（单实例硬约束）；Layer 2 的检查与复核全部串行执行
 
 ### 灵活调整
 
