@@ -15,7 +15,7 @@
 
 1. 读取 `spec.md`、`plan.md`、产物和可运行证据。
 2. 优先让 `spec-acceptance-reviewer` 执行独立验收。
-3. 生成 `acceptance-report.md`，至少包含：
+3. 生成 `acceptance-report.md`（基于 `assets/acceptance-report-template.md`），至少包含：
    - 结果
    - 范围
    - Findings

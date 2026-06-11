@@ -14,7 +14,7 @@
 ## Do
 
 1. 读取 spec、plan、progress 和验收报告。
-2. 生成 `archive-summary.md`，写出完成项、未完成项、关键决策、变更记录和遗留风险。
+2. 生成 `archive-summary.md`（基于 `assets/archive-summary-template.md`）并先向用户展示，写出完成项、未完成项、关键决策、变更记录和遗留风险。
 3. 若未满足标准归档条件且未 `--force`，停止并说明原因。
 4. 调用 runtime `archive` 完成目录迁移和 registry 更新。
 

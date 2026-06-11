@@ -26,7 +26,10 @@
 ## Persistence Rule
 
 - 默认不创建 spec。
-- 当任务明显会跨会话继续，或用户要求保存探索结果时，创建 draft spec。
+- 当任务明显会跨会话继续，或用户要求保存探索结果，或命令参数中带 `--draft` 时，创建 draft spec：
+  1. 先确保 runtime 已就绪（缺失时按 command 的 Runtime Bootstrap 流程初始化）；
+  2. 调用 runtime `new --mode draft` 创建最小 spec；
+  3. 通过 checkpoint 将状态置为下述值。
 - draft spec 应满足：
   - `currentAction = explore`
   - `runState = completed`

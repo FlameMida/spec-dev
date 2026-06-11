@@ -4,6 +4,13 @@
 
 在会话中断后，用最少假设恢复正确的 action 和 step。
 
+## Status Query
+
+`status` 是只读查询命令（不属于五个生命周期 action）：
+
+- 无 `spec-id`：列出所有活跃 spec。
+- 有 `spec-id`：显示该 spec 的 `currentAction`、`runState`、完成度、验收结果和建议下一步。
+
 ## Selection Order
 
 ### 指定了 `spec-id`

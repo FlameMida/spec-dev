@@ -13,7 +13,7 @@
 5. 用户确认后：
    - 新任务：调用 runtime `new` 创建 spec；
    - 已有 spec 的重大修订：重写文档并调用 runtime `amend`。
-6. 写入或覆盖 `spec.md` 与 `plan.md`。
+6. 写入或覆盖 `spec.md` 与 `plan.md`（分别基于 `assets/spec-template.md` 与 `assets/plan-template.md` 生成）。
 7. 调用 runtime `checkpoint`，把 action 更新为 `plan/completed`。
 
 ## Minimum Document Requirements

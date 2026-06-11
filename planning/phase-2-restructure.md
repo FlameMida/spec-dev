@@ -13,7 +13,7 @@
 | T2.4 | 阶段 5 接入 code-architect agent | ✅ | 2026-06-12 |
 | T2.5 | 审查维度对齐（5 维 ↔ 3 维统一） | ✅ | 2026-06-12 |
 | T2.6 | reviewer 类 agent 模型升档 | ✅ | 2026-06-12 |
-| T2.7 | spec-flow command 薄壳化，消除双入口漂移 | ⬜ | — |
+| T2.7 | spec-flow command 薄壳化，消除双入口漂移 | ✅ | 2026-06-12 |
 | T2.8 | browser-qa description 收窄 | ⬜ | — |
 | T2.9 | browser-qa Layer 2 证据强制 + 动态验收清单 | ⬜ | — |
 | T2.10 | browser-qa 参数解析改为意图推断优先 | ⬜ | — |
@@ -144,9 +144,9 @@
 
 ---
 
-### T2.7 spec-flow command 薄壳化，消除双入口漂移 ⬜
+### T2.7 spec-flow command 薄壳化，消除双入口漂移 ✅
 
-- **状态**: ⬜ 待办　**预估**: 2h　**依赖**: T1.1
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 2h　**依赖**: T1.1
 - **目标文件**: `commands/spec-flow.md`、`skills/spec-flow/SKILL.md`
 - **问题**: command（122 行）与 SKILL.md（93 行）各自维护一份 Action Router，已出现漂移：command 有 `status`/`resume` 路由，SKILL.md 的 Action Router 没有。两份手工同步必然继续漂移。
 - **改动步骤**:
@@ -166,11 +166,11 @@
   3. SKILL.md 的 Action Router 末尾新增「Query Commands」小节（≤5 行）：说明 `status`/`resume` 是 runtime 查询命令而非生命周期 action，规则见 recovery-rules.md——保持五 action 模型纯净。
   4. 将 command 中有而 references 中无的增量信息（如 explore 的 `--draft` 参数行为、plan 的「文档写完调 checkpoint plan/completed」）**合并进对应 action-*.md**，确保信息不丢。
 - **验收标准**:
-  - [ ] `wc -l commands/spec-flow.md` < 60
-  - [ ] command 中不再有与 action-*.md 重复的行为段落（抽查 explore/plan/accept 三节）
-  - [ ] command 原有的每条增量规则都能在某个 reference 中找到（逐条核对清单附在提交信息中）
-  - [ ] SKILL.md 含 Query Commands 小节
-  - [ ] 试跑 `/spec-flow status` 与 `/spec-flow resume` 行为正常
+  - [x] `wc -l commands/spec-flow.md` < 60（实测 42 行）
+  - [x] command 中不再有与 action-*.md 重复的行为段落（重写为路由表形式，explore/plan/accept 各占一行）
+  - [x] command 原有的每条增量规则都能在某个 reference 中找到（逐条核对清单附在提交信息中：8 条增量已迁移/确认）
+  - [x] SKILL.md 含 Query Commands 小节
+  - [x] 试跑 `/spec-flow status` 与 `/spec-flow resume` 行为正常（临时目录实测：空仓库 status 空列表 / resume 明确报无活跃 spec；有 spec 时 status 列出详情 / resume 返回 resumePoint + suggestedCommand）
 
 ---
 
