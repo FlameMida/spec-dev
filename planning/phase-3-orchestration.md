@@ -15,7 +15,7 @@
 | T3.5 | browser-qa Layer 2 重写（证据契约+串行复核） | ✅ | 2026-06-12 |
 | T3.6 | deep 档：judge panel + multi-modal sweep | ✅ | 2026-06-12 |
 | T3.7 | runtime: checkpoint 增加 --evidence | ✅ | 2026-06-12 |
-| T3.8 | runtime: 新增 doctor 子命令 | ⬜ | — |
+| T3.8 | runtime: 新增 doctor 子命令 | ✅ | 2026-06-12 |
 | T3.9 | runtime: 小修集（百分比校验/summary-path/时区/并发声明） | ⬜ | — |
 | T3.10 | journal 化：编排状态入 progress.json | ⬜ | — |
 | T3.11 | 互操作：spec-flow accept ↔ browser-qa 取证 | ⬜ | — |
@@ -281,9 +281,9 @@
 
 ---
 
-### T3.8 runtime: 新增 doctor 子命令 ⬜
+### T3.8 runtime: 新增 doctor 子命令 ✅
 
-- **状态**: ⬜ 待办　**预估**: 3h　**依赖**: 无
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 3h　**依赖**: 无
 - **目标文件**: `skills/spec-flow/assets/runtime/spec-flow-runtime.mjs`、`skills/spec-flow/references/command-contract.md`、`skills/spec-flow/references/recovery-rules.md`
 - **问题**: recovery-rules.md 列出 4 类不一致（registry 有 spec 但目录缺失 / progress 与 registry 的 action 不一致 / 验收报告路径存在但文件缺失 / 归档目录与 registry 路径不一致），但 runtime 没有检测修复命令，修复全靠模型手改文件——违背"永远不要手改 registry/progress"的自立规矩。
 - **改动步骤**:
@@ -291,9 +291,9 @@
   2. 实现 `doctor --fix`（仅安全修复）：孤儿目录 → 按 progress.json 重建 registry 条目；registry/progress 字段不一致 → 以 progress.json 为准回写 registry（progress 更接近执行现场）；**目录缺失、文件损坏类不自动修**，输出人工处理建议。
   3. command-contract.md 增加 doctor 节；recovery-rules.md 的 Repair Rule 改为「先运行 `doctor` 获取问题清单与建议，安全项用 `doctor --fix`，其余按建议人工处理」。
 - **验收标准**:
-  - [ ] 手工构造 4 类不一致场景，doctor 全部检出且 suggestedFix 合理
-  - [ ] `doctor --fix` 只修安全项（验证：目录缺失场景不被自动"修复"）
-  - [ ] 两个 reference 文档已更新
+  - [x] 手工构造 4 类不一致场景，doctor 全部检出且 suggestedFix 合理（实测：missing_spec_dir / registry_progress_drift / missing_acceptance_report / orphan_dir 四类全检出，每条带具体建议；另实现 status_path_mismatch、corrupt_progress、missing_progress 共 7 种检测类型）
+  - [x] `doctor --fix` 只修安全项（实测：fixedCount=2 [drift 回写 + orphan 重建]，目录缺失场景未被自动"修复"——spec 仍在 registry 且 issue 持续上报人工建议；fix 后复跑剩余正是 2 个不可自动修复项）
+  - [x] 两个 reference 文档已更新（command-contract.md doctor 节带检查项清单与安全边界说明；recovery-rules.md Repair Rule 改为 doctor 优先流程）
 
 ---
 

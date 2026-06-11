@@ -52,4 +52,4 @@
 - 验收报告路径存在，但文件缺失；
 - 归档目录和 registry 路径不一致。
 
-先解释不一致，再决定是重新 `status`、修复文件，还是回退到 `plan`。
+处理顺序：先运行 `node .specs/bin/spec-flow.mjs doctor` 获取问题清单与建议；安全项（字段漂移、孤儿目录）用 `doctor --fix` 修复；其余按 suggestedFix 人工处理——不要手改 registry/progress 文件。

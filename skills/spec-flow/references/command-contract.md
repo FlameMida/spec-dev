@@ -124,6 +124,19 @@ node .specs/bin/spec-flow.mjs resume
 node .specs/bin/spec-flow.mjs resume --spec-id spec-20260409-001
 ```
 
+### `doctor`
+
+检查 registry 与 `.specs/active|archive` 实际目录的一致性。默认只读；`--fix` 只执行安全修复。
+
+```bash
+node .specs/bin/spec-flow.mjs doctor          # 只读检查，输出 issues 清单与建议
+node .specs/bin/spec-flow.mjs doctor --fix    # 安全修复（drift 回写 + 孤儿目录重建）
+```
+
+检查项（6 类）：registry 记录的目录缺失、status 与目录位置不一致、progress.json 缺失、progress.json 损坏、registry 与 progress 字段漂移（currentAction/runState/status/version）、验收报告路径失效、孤儿目录（目录存在但 registry 无记录）。
+
+`--fix` 仅修复两类**安全项**：字段漂移以 progress.json 为准回写 registry（progress 更接近执行现场）；带合法 progress.json 的孤儿目录按其内容重建 registry 条目。目录缺失、文件损坏、报告缺失一律不自动修，输出人工处理建议——自动"修复"这些场景等于掩盖数据丢失。
+
 ## Output Contract
 
 - 成功时输出 JSON，至少包含 `ok: true`、`command` 和核心结果字段。

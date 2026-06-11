@@ -51,6 +51,9 @@ async function main() {
       case "resume":
         ok(command, await handleResume(args));
         break;
+      case "doctor":
+        ok(command, await handleDoctor(args));
+        break;
       default:
         fail(command, `Unknown command: ${command}`);
     }
@@ -793,6 +796,173 @@ async function handleResume(args) {
     resumePoint: progress.resumePoint,
     lastUpdatedAt: progress.timestamps.lastUpdatedAt,
     suggestedCommand,
+  };
+}
+
+async function handleDoctor(args) {
+  const fix = Boolean(args.fix);
+  const registry = await loadRegistry();
+  const issues = [];
+  const fixed = [];
+
+  // 1. registry 记录侧检查
+  for (const record of registry.specs) {
+    const specDir = path.join(cwd, record.path);
+    const progressPath = path.join(specDir, "progress.json");
+
+    if (!(await exists(specDir))) {
+      issues.push({
+        specId: record.id,
+        type: "missing_spec_dir",
+        detail: `registry 记录的目录不存在: ${record.path}`,
+        suggestedFix: "目录缺失不可自动修复：从备份/git 历史恢复目录，或人工确认后从 registry 移除该条目",
+      });
+      continue;
+    }
+
+    // 归档目录与 registry 路径一致性
+    const expectedParent = record.status === "archived" ? archiveDir : activeDir;
+    if (path.dirname(specDir) !== expectedParent) {
+      issues.push({
+        specId: record.id,
+        type: "status_path_mismatch",
+        detail: `status=${record.status} 但目录在 ${relativePath(path.dirname(specDir))}/ 下`,
+        suggestedFix: "人工确认实际状态：目录在 archive/ 则 registry status 应为 archived（可用 --fix 以 progress.json 为准回写）",
+      });
+    }
+
+    if (!(await exists(progressPath))) {
+      issues.push({
+        specId: record.id,
+        type: "missing_progress",
+        detail: `progress.json 缺失: ${relativePath(progressPath)}`,
+        suggestedFix: "progress.json 缺失不可自动修复：从 git 历史恢复，或按 spec.md/plan.md 现状人工重建",
+      });
+      continue;
+    }
+
+    let progress;
+    try {
+      progress = await readJson(progressPath);
+    } catch {
+      issues.push({
+        specId: record.id,
+        type: "corrupt_progress",
+        detail: `progress.json 不是合法 JSON: ${relativePath(progressPath)}`,
+        suggestedFix: "文件损坏不可自动修复：从 git 历史恢复该文件",
+      });
+      continue;
+    }
+
+    // registry 与 progress 字段一致性（progress 更接近执行现场，以其为准）
+    const driftFields = [];
+    if (record.currentAction !== progress.currentAction) {
+      driftFields.push(`currentAction(registry=${record.currentAction}, progress=${progress.currentAction})`);
+    }
+    if (record.runState !== progress.runState) {
+      driftFields.push(`runState(registry=${record.runState}, progress=${progress.runState})`);
+    }
+    if (record.status !== progress.status) {
+      driftFields.push(`status(registry=${record.status}, progress=${progress.status})`);
+    }
+    if (record.version !== progress.version) {
+      driftFields.push(`version(registry=${record.version}, progress=${progress.version})`);
+    }
+    if (driftFields.length > 0) {
+      if (fix) {
+        updateRegistryRecord(registry, record.id, (item) => {
+          item.currentAction = progress.currentAction;
+          item.runState = progress.runState;
+          item.status = progress.status;
+          item.version = progress.version;
+          item.updatedAt = nowIso();
+        });
+        fixed.push({ specId: record.id, type: "registry_progress_drift", action: "以 progress.json 为准回写 registry" });
+      } else {
+        issues.push({
+          specId: record.id,
+          type: "registry_progress_drift",
+          detail: `registry 与 progress 不一致: ${driftFields.join("; ")}`,
+          suggestedFix: "安全修复：doctor --fix 以 progress.json 为准回写 registry（progress 更接近执行现场）",
+        });
+      }
+    }
+
+    // 验收报告路径存在但文件缺失
+    if (record.acceptanceReportPath && !(await exists(path.join(cwd, record.acceptanceReportPath)))) {
+      issues.push({
+        specId: record.id,
+        type: "missing_acceptance_report",
+        detail: `registry 记录的验收报告不存在: ${record.acceptanceReportPath}`,
+        suggestedFix: "报告文件缺失不可自动修复：重新执行 accept 生成报告，或从 git 历史恢复",
+      });
+    }
+  }
+
+  // 2. 目录侧检查：孤儿目录（目录存在但 registry 无记录）
+  const knownIds = new Set(registry.specs.map((item) => item.id));
+  for (const [dirRoot, statusLabel] of [[activeDir, "active"], [archiveDir, "archived"]]) {
+    if (!(await exists(dirRoot))) {
+      continue;
+    }
+    for (const name of await fs.readdir(dirRoot)) {
+      const candidate = path.join(dirRoot, name);
+      if (!(await fs.stat(candidate)).isDirectory() || knownIds.has(name)) {
+        continue;
+      }
+      const orphanProgressPath = path.join(candidate, "progress.json");
+      if (fix && (await exists(orphanProgressPath))) {
+        let progress;
+        try {
+          progress = await readJson(orphanProgressPath);
+        } catch {
+          issues.push({
+            specId: name,
+            type: "orphan_dir",
+            detail: `孤儿目录且 progress.json 损坏: ${relativePath(candidate)}`,
+            suggestedFix: "不可自动修复：人工检查目录内容",
+          });
+          continue;
+        }
+        registry.specs.push({
+          id: progress.specId ?? name,
+          title: progress.title ?? name,
+          domain: progress.domain ?? "general",
+          status: progress.status ?? statusLabel,
+          currentAction: progress.currentAction ?? "plan",
+          runState: progress.runState ?? "idle",
+          version: progress.version ?? 1,
+          acceptanceResult: progress.acceptance?.result ?? null,
+          acceptanceReportPath: progress.acceptance?.reportPath ?? null,
+          completionPercent: progress.completionPercent ?? 0,
+          createdAt: progress.timestamps?.startedAt ?? nowIso(),
+          updatedAt: nowIso(),
+          archivedAt: statusLabel === "archived" ? nowIso() : null,
+          path: relativePath(candidate),
+        });
+        fixed.push({ specId: name, type: "orphan_dir", action: "按 progress.json 重建 registry 条目" });
+      } else {
+        issues.push({
+          specId: name,
+          type: "orphan_dir",
+          detail: `目录存在但 registry 无记录: ${relativePath(candidate)}`,
+          suggestedFix: (await exists(orphanProgressPath))
+            ? "安全修复：doctor --fix 按 progress.json 重建 registry 条目"
+            : "无 progress.json，不可自动修复：人工检查目录内容",
+        });
+      }
+    }
+  }
+
+  if (fix && fixed.length > 0) {
+    await saveRegistry(registry);
+  }
+
+  return {
+    healthy: issues.length === 0,
+    issueCount: issues.length,
+    issues,
+    ...(fix ? { fixedCount: fixed.length, fixed } : {}),
   };
 }
 
