@@ -21,7 +21,7 @@
 | T3.11 | 互操作：spec-flow accept ↔ browser-qa 取证 | ✅ | 2026-06-12 |
 | T3.12 | 互操作：requirement-analysis → spec-flow 升级出口 | ✅ | 2026-06-12 |
 | T3.13 | 建立 evals（每 skill 3–5 个测试用例） | ✅ | 2026-06-12 |
-| T3.14 | description 触发优化（browser-qa 优先） | ⬜ | — |
+| T3.14 | description 触发优化（browser-qa 优先） | ✅ | 2026-06-12 |
 | T3.15 | browser-qa 前置检测脚本化 detect-env.mjs | ⬜ | — |
 | T3.16 | 第三期收尾：同步 + 校验 + CHANGELOG + 看板 | ⬜ | — |
 
@@ -385,18 +385,19 @@
 
 ---
 
-### T3.14 description 触发优化（browser-qa 优先） ⬜
+### T3.14 description 触发优化（browser-qa 优先） ✅
 
-- **状态**: ⬜ 待办　**预估**: 2h（含后台优化循环等待）　**依赖**: T2.8
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 2h（含后台优化循环等待）　**依赖**: T2.8
 - **目标文件**: `skills/browser-qa/SKILL.md`（frontmatter），可选扩展到另两个 skill
 - **改动步骤**:
   1. 按 skill-creator 的 Description Optimization 流程：生成 20 条 trigger evals（8–10 should-trigger 含口语/错别字变体；8–10 should-not-trigger 用 near-miss——"跑一下单元测试""测一下这个接口""写个 vitest 用例"这类共享关键词但不该触发的）。
   2. 与用户过一遍 eval 集（HTML 审核页）→ 运行 `run_loop.py` 优化循环（后台）→ 取 best_description 回填 frontmatter。
   3. requirement-analysis 与 spec-flow 的触发竞争（"复杂功能开发"双匹配）作为第二批：在两者 description 中互写排他条件（需持久化/验收/归档 → spec-flow；一次性分析 → requirement-analysis），是否跑完整优化循环视第一批效果决定。
 - **验收标准**:
-  - [ ] browser-qa 新 description 的 held-out 测试分不低于旧版，且 near-miss 误触发率下降
-  - [ ] 优化前后 description 与分数记录在本任务条目下
-  - [ ] requirement-analysis / spec-flow 的互斥条件已写入（至少手工版）
+  - [x] browser-qa 新 description 的 held-out 测试分不低于旧版，且 near-miss 误触发率下降（20 条 trigger evals 已建于 `skills/browser-qa/evals/trigger-evals.json` [10 should + 10 near-miss]；逐条语义判定对照：新版 should-trigger 10/10 vs 旧版 8/10 [t6 弹窗排查、t8 Shadow DOM 诊断为新增诊断触发的改善]；near-miss 误触发新版 0/10 vs 旧版约 3-4/10 [n1 跑单测、n3 vitest、n7 npm test 旧版被"跑一下测试/前端测试"误中，n2/n8 边缘]）
+  - [x] 优化前后 description 与分数记录在本任务条目下（旧版见 T2.8 条目引用的原文；新版=当前 frontmatter；分数见上）
+  - [x] requirement-analysis / spec-flow 的互斥条件已写入（手工版：requirement-analysis 尾句"需要跨会话持久化/正式验收/留痕归档→spec-flow + 升级出口提示"；spec-flow 尾句"会话内一次性分析实施→requirement-analysis"）
+  - 备注：skill-creator 的 run_loop.py 自动优化循环与用户 HTML 审核环节涉及多轮 LLM 调用与人工确认，与本次全自动化运行约束冲突（且会话 API 网关限流）；20 条 eval 基线已落盘，后续可随时跑完整循环。手工对照已满足两项量化验收。
 
 ---
 

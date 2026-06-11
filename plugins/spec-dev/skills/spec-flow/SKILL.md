@@ -1,6 +1,6 @@
 ---
 name: spec-flow
-description: 管理跨会话、可恢复、可验收、可归档的 spec 生命周期工作流，围绕 explore、plan、implement、accept、archive 五个 action 维护持久化 `.specs/` 状态。用于复杂功能开发、研究任务、运维或流程改造、文档与规范编写等需要长期跟踪、独立验收、变更留痕或后续归档的场景；不适用于一次性小改动、即时问答或无需持久化 spec 的轻量任务。
+description: 管理跨会话、可恢复、可验收、可归档的 spec 生命周期工作流，围绕 explore、plan、implement、accept、archive 五个 action 维护持久化 `.specs/` 状态。用于复杂功能开发、研究任务、运维或流程改造、文档与规范编写等需要长期跟踪、独立验收、变更留痕或后续归档的场景；不适用于一次性小改动、即时问答或无需持久化 spec 的轻量任务——会话内一次性完成的需求分析与实施应使用 requirement-analysis。
 ---
 
 # Spec Flow
