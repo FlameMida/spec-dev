@@ -7,6 +7,14 @@
 
 ---
 
+## [未发布]
+
+### 🔧 修复 (Fixed)
+
+- **Claude Code 工具名升级**（T1.4）— `Task` 工具已更名为 `Agent`，`TaskOutput` 已废弃（后台任务完成通知自动送达，无需轮询）：`requirement-analysis` SKILL.md 全部并行子任务指引已更新；5 个 agent 的 `tools:` 列表移除已被 TaskCreate/TaskUpdate/TaskList/TaskGet 取代的 `TodoWrite`。旧版 Claude Code 用户如遇 `Agent` 工具不存在，请升级 Claude Code。
+
+---
+
 ## [5.2.2] - 2026-06-08
 
 ### ✨ 新增 (Added)

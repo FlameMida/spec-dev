@@ -1,7 +1,7 @@
 ---
 name: code-architect
 description: 设计功能架构蓝图，分析现有模式，制定实施方案
-tools: LSP, Glob, Grep, LS, Read, NotebookRead, WebFetch, TodoWrite, WebSearch, TaskCreate, TaskUpdate, TaskList, TaskGet
+tools: LSP, Glob, Grep, LS, Read, NotebookRead, WebFetch, WebSearch, TaskCreate, TaskUpdate, TaskList, TaskGet
 model: sonnet
 color: green
 ---

@@ -1,7 +1,7 @@
 ---
 name: external-resource-explorer
 description: 外部资源探索 agent，负责查找外部最佳实践、标准、官方文档与案例，用于支撑 explore 与 plan 两个 action，并输出结论、证据和来源
-tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, WebFetch, WebSearch, TodoWrite, TaskCreate, TaskUpdate, TaskList, TaskGet
+tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, WebFetch, WebSearch, TaskCreate, TaskUpdate, TaskList, TaskGet
 model: haiku
 color: cyan
 ---

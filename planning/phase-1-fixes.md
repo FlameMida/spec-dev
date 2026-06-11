@@ -10,7 +10,7 @@
 | T1.1 | 修复 spec-flow command 的插件资源路径 | ✅ | 2026-06-12 |
 | T1.2 | 修正 browser-qa 的 MCP 配置位置错误 | ✅ | 2026-06-12 |
 | T1.3 | 修正 browser-qa 的过时 MCP 工具名 | ✅ | 2026-06-12 |
-| T1.4 | 全局替换过时的 Claude Code 工具名 | ⬜ | — |
+| T1.4 | 全局替换过时的 Claude Code 工具名 | ✅ | 2026-06-12 |
 | T1.5 | 修复 output-template 阶段编号错误 | ⬜ | — |
 | T1.6 | 消除阶段 4 "必须澄清"的自相矛盾 | ⬜ | — |
 | T1.7 | 修复交互式命令卡死问题 | ⬜ | — |
@@ -77,9 +77,9 @@
 
 ---
 
-### T1.4 全局替换过时的 Claude Code 工具名 ⬜
+### T1.4 全局替换过时的 Claude Code 工具名 ✅
 
-- **状态**: ⬜ 待办　**预估**: 45min　**依赖**: 无
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 45min　**依赖**: 无
 - **目标文件**: `skills/requirement-analysis/SKILL.md`、`agents/code-explorer.md`、`agents/code-architect.md`、`agents/code-reviewer.md`、`agents/spec-acceptance-reviewer.md`、`agents/external-resource-explorer.md`
 - **问题**: 三处工具名漂移会让模型困惑或低效重试：
   1. `Task` 工具已更名为 `Agent`（requirement-analysis SKILL.md 的"执行环境兼容性"节、阶段 2、阶段 8 共 4 处「`Task` + `run_in_background: true` + `TaskOutput`」）。
@@ -91,10 +91,10 @@
   3. 5 个 agent frontmatter 删除 `TodoWrite`（保留 TaskCreate/TaskUpdate/TaskList/TaskGet）。
   4. 在 `CHANGELOG.md` 新增条目注明工具名升级，提示旧版 Claude Code 用户。
 - **验收标准**:
-  - [ ] `grep -rn 'TaskOutput' skills/ agents/ commands/` 无命中
-  - [ ] `grep -rn '\bTask\b.*run_in_background' skills/` 无命中（已全部改为 Agent）
-  - [ ] `grep -rn 'TodoWrite' agents/` 无命中
-  - [ ] `node scripts/validate-skills.mjs` 通过
+  - [x] `grep -rn 'TaskOutput' skills/ agents/ commands/` 无命中
+  - [x] `grep -rn '\bTask\b.*run_in_background' skills/` 无命中（已全部改为 Agent）
+  - [x] `grep -rn 'TodoWrite' agents/` 无命中
+  - [x] `node scripts/validate-skills.mjs` 通过
 
 ---
 
