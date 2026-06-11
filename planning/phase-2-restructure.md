@@ -11,7 +11,7 @@
 | T2.2 | requirement-analysis SKILL.md 瘦身重写 | ✅ | 2026-06-12 |
 | T2.3 | 引入三档复杂度路由（light/standard/deep） | ✅ | 2026-06-12 |
 | T2.4 | 阶段 5 接入 code-architect agent | ✅ | 2026-06-12 |
-| T2.5 | 审查维度对齐（5 维 ↔ 3 维统一） | ⬜ | — |
+| T2.5 | 审查维度对齐（5 维 ↔ 3 维统一） | ✅ | 2026-06-12 |
 | T2.6 | reviewer 类 agent 模型升档 | ⬜ | — |
 | T2.7 | spec-flow command 薄壳化，消除双入口漂移 | ⬜ | — |
 | T2.8 | browser-qa description 收窄 | ⬜ | — |
@@ -111,9 +111,9 @@
 
 ---
 
-### T2.5 审查维度对齐（5 维 ↔ 3 维统一） ⬜
+### T2.5 审查维度对齐（5 维 ↔ 3 维统一） ✅
 
-- **状态**: ⬜ 待办　**预估**: 40min　**依赖**: T2.2
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 40min　**依赖**: T2.2
 - **目标文件**: `skills/requirement-analysis/references/parallel-patterns.md`、`agents/code-reviewer.md`
 - **问题**: parallel-patterns.md 定义 5 个审查维度（功能正确性/风格质量/DRY/规范遵循/项目约定），code-reviewer agent 只定义 3 个维度（A: Bug 逻辑、B: 风格质量、C: 规范遵循），互不对齐——派发审查任务时维度名对不上 agent 的自我认知。
 - **改动步骤**:
@@ -121,9 +121,10 @@
   2. parallel-patterns.md 阶段 8 一节改为：「standard 档派 2–3 个 reviewer，分别聚焦维度 A/B/C（diff < 100 行时只派 A）；deep 档可将 B 拆出'简洁性/DRY'、C 拆出'项目约定'成 5 路」——保留 5 维作为 deep 扩展而非默认。
   3. code-reviewer.md 的维度 B/C 描述中补充吸收的子项（B 补 DRY/抽象恰当性，C 补'优先使用项目已有工具与模式'）。
 - **验收标准**:
-  - [ ] 两个文件的维度命名与编号完全一致
-  - [ ] 默认路径（standard）≤ 3 路审查，deep 才扩 5 路
-  - [ ] 与 T2.3 档位定义无冲突
+  - [x] 两个文件的维度命名与编号完全一致（A 功能正确性 / B 代码风格和质量 / C 项目规范遵循）
+  - [x] 默认路径（standard）≤ 3 路审查，deep 才扩 5 路（light/diff<100 行只派 1 路）
+  - [x] 与 T2.3 档位定义无冲突（派发规则按 light/standard/deep 表述）
+  - 备注：`assets/output-template.md` 的审查报告模板原为 5 维结构，已同步对齐为 A/B/C 3 节（带 deep 扩展说明）——超出任务原定文件清单但属维度对齐语义内。
 
 ---
 
