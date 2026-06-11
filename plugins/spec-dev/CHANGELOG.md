@@ -9,9 +9,19 @@
 
 ## [未发布]
 
-### 🔧 改进 (Changed) — 第二期结构重构（进行中）
+### 🔧 改进 (Changed) — 第二期结构重构（2026-06-12）
 
+- **T2.1 双环境样板抽离** — 新建 `skills/requirement-analysis/references/codex-compat.md` 集中收纳 Codex 环境判定、工具映射、提问规范与任务管理细则；删除跨版本脆弱的 `multi_tool_use.parallel` 内部命名
+- **T2.2 requirement-analysis SKILL.md 瘦身** — 510 行 → 300 行内：9 阶段内重复的双环境任务管理样板下沉到统一节与 codex-compat.md；3 处无解释的 MUST 改写为"约束 + why"（深度思考带降级路径、单响应并行发起带理由、审查后先确认再修带理由）
+- **T2.3 三档复杂度路由** — 新增 light/standard/deep 执行档位（阶段 1 判定、向用户声明、允许覆盖）；light 档全流程 ≤2 次交互；examples.md 三个示例按档位重写
+- **T2.4 阶段 5 接入 code-architect** — standard 档先派 code-architect 出架构蓝图（4 项输入契约），主线程做整合决策——此前该 agent 在 skill 中无引用，是死代码
+- **T2.5 审查维度对齐** — parallel-patterns.md（5 维）与 code-reviewer agent（3 维）统一为 3 维基线（A 正确性/B 风格质量含 DRY/C 规范遵循含工具复用），deep 档才扩 5 路；output-template.md 审查报告同步对齐
 - **T2.6 reviewer 类 agent 模型升档** — `code-reviewer` 与 `spec-acceptance-reviewer` 由 `haiku` 升至 `sonnet`：审查与验收是错误代价最高的质量把关环节，最弱档位与其定位矛盾。成本影响：审查/验收环节 token 成本上升，换取把关质量；探索类 agent（code-explorer、external-resource-explorer）保持 haiku 不变
+- **T2.7 spec-flow command 薄壳化** — 124 行 → 42 行路由表，消除与 SKILL.md/references 的双入口漂移；8 条增量规则迁移至对应 action-*.md 与 recovery-rules.md（新增 Status Query 节）；SKILL.md 增加 Query Commands 小节
+- **T2.8 browser-qa description 收窄** — 删除过宽触发词（"跑一下测试""前端测试""测试这个页面"），新增 should-not-trigger 边界（单元测试/API 集成测试不触发）与诊断意图触发
+- **T2.9 Layer 2 证据强制** — 验收清单改为"定制（3-6 条）+ 通用筛选"两段式；每项结论必须附证据引用（snapshot 片段或截图），无证据只能标"未验证"不能标"通过"；报告模板增加证据列
+- **T2.10 参数解析意图推断** — browser-qa 改为"显式前缀 > 意图推断 > 询问"三级解析，自然语言触发不再一律跑全部层级
+- **T2.11 Codex 元数据补齐** — requirement-analysis 与 browser-qa 新增 `agents/openai.yaml`（与 spec-flow 结构一致）
 
 ### 🔧 修复 (Fixed) — 第一期 P0 修错（2026-06-12）
 
