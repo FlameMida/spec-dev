@@ -43,14 +43,18 @@ Microsoft 官方 MCP Server，AI Agent 通过它自主控制浏览器。
 
 ### 可用工具
 
+> 工具名以实际连接的 MCP server 输出为准，版本升级可能更名；发现不一致时以 `/mcp` 面板或会话内工具列表为准。
+
 | 工具 | 用途 |
 |------|------|
 | `browser_navigate` | 导航到 URL |
 | `browser_snapshot` | 获取可访问性树快照 |
 | `browser_click` | 点击元素 |
 | `browser_type` | 输入文本 |
+| `browser_fill_form` | 批量填写表单（多字段一次完成，优于逐个 fill） |
 | `browser_select_option` | 选择下拉选项 |
-| `browser_screenshot` | 截图 |
+| `browser_wait_for` | 等待文本出现/消失或定时等待 |
+| `browser_take_screenshot` | 截图 |
 | `browser_close` | 关闭浏览器 |
 
 ### 验证
@@ -82,13 +86,15 @@ Google 官方 MCP Server，用于调试和性能分析。
 
 ### 可用工具
 
+> 工具名以实际连接的 MCP server 输出为准，版本升级可能更名；发现不一致时以 `/mcp` 面板或会话内工具列表为准。
+
 | 工具 | 用途 |
 |------|------|
 | `performance_start_trace` | 开始录制性能 trace |
 | `performance_stop_trace` | 停止录制并分析 |
-| `navigate` | 导航到 URL |
-| `screenshot` | 截图 |
-| `console_logs` | 获取控制台日志 |
+| `navigate_page` | 导航到 URL |
+| `take_screenshot` | 截图 |
+| `list_console_messages` | 获取控制台日志 |
 
 ### 注意
 

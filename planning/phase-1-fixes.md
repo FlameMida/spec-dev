@@ -9,7 +9,7 @@
 |----|------|------|----------|
 | T1.1 | 修复 spec-flow command 的插件资源路径 | ✅ | 2026-06-12 |
 | T1.2 | 修正 browser-qa 的 MCP 配置位置错误 | ✅ | 2026-06-12 |
-| T1.3 | 修正 browser-qa 的过时 MCP 工具名 | ⬜ | — |
+| T1.3 | 修正 browser-qa 的过时 MCP 工具名 | ✅ | 2026-06-12 |
 | T1.4 | 全局替换过时的 Claude Code 工具名 | ⬜ | — |
 | T1.5 | 修复 output-template 阶段编号错误 | ⬜ | — |
 | T1.6 | 消除阶段 4 "必须澄清"的自相矛盾 | ⬜ | — |
@@ -56,9 +56,9 @@
 
 ---
 
-### T1.3 修正 browser-qa 的过时 MCP 工具名 ⬜
+### T1.3 修正 browser-qa 的过时 MCP 工具名 ✅
 
-- **状态**: ⬜ 待办　**预估**: 25min　**依赖**: 无
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 25min　**依赖**: 无
 - **目标文件**: `skills/browser-qa/references/mcp-setup.md`、`skills/browser-qa/SKILL.md`
 - **问题**: mcp-setup.md 两处工具表列出的工具名与当前 MCP server 实际暴露的不符（已对照真实连接的 server 验证）：
   - Playwright MCP 表（第 46–54 行）：`browser_screenshot` 实际为 `browser_take_screenshot`
@@ -69,10 +69,11 @@
   2. 在每张工具表上方加一行说明：「工具名以实际连接的 MCP server 输出为准，版本升级可能更名；发现不一致时以 `/mcp` 面板或会话内工具列表为准」——避免未来再次漂移时误导。
   3. 全文 grep 复查 SKILL.md 中出现的 MCP 工具名。
 - **验收标准**:
-  - [ ] `grep -rn 'browser_screenshot\b' skills/browser-qa/` 无命中
-  - [ ] `grep -rn 'console_logs' skills/browser-qa/` 无命中
-  - [ ] 两张工具表带"以实际 server 为准"的免漂移说明
-  - [ ] `node scripts/sync-codex-package.mjs --check` 通过
+  - [x] `grep -rn 'browser_screenshot\b' skills/browser-qa/` 无命中
+  - [x] `grep -rn 'console_logs' skills/browser-qa/` 无命中
+  - [x] 两张工具表带"以实际 server 为准"的免漂移说明
+  - [x] `node scripts/sync-codex-package.mjs --check` 通过
+  - 备注：工具名已对照本次会话真实连接的 Playwright MCP 与 Chrome DevTools MCP 校正；SKILL.md 全文复查无过时名；e2e-patterns.md 的 `screenshot: 'only-on-failure'` 是 Playwright config 选项，非 MCP 工具名，保留。
 
 ---
 
