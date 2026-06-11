@@ -12,7 +12,7 @@
 | T2.3 | 引入三档复杂度路由（light/standard/deep） | ✅ | 2026-06-12 |
 | T2.4 | 阶段 5 接入 code-architect agent | ✅ | 2026-06-12 |
 | T2.5 | 审查维度对齐（5 维 ↔ 3 维统一） | ✅ | 2026-06-12 |
-| T2.6 | reviewer 类 agent 模型升档 | ⬜ | — |
+| T2.6 | reviewer 类 agent 模型升档 | ✅ | 2026-06-12 |
 | T2.7 | spec-flow command 薄壳化，消除双入口漂移 | ⬜ | — |
 | T2.8 | browser-qa description 收窄 | ⬜ | — |
 | T2.9 | browser-qa Layer 2 证据强制 + 动态验收清单 | ⬜ | — |
@@ -128,9 +128,9 @@
 
 ---
 
-### T2.6 reviewer 类 agent 模型升档 ⬜
+### T2.6 reviewer 类 agent 模型升档 ✅
 
-- **状态**: ⬜ 待办　**预估**: 15min　**依赖**: 无
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 15min　**依赖**: 无
 - **目标文件**: `agents/code-reviewer.md`、`agents/spec-acceptance-reviewer.md`
 - **问题**: 两个**质量把关**角色的 frontmatter 都是 `model: haiku`——审查与验收是错误代价最高的环节，用最弱档位与"独立质量把关"定位直接矛盾（haiku 适合量大、任务机械的探索类）。
 - **改动步骤**:
@@ -139,8 +139,8 @@
   3. **保持不变**：`code-explorer`（haiku，量大成本敏感、任务偏机械检索）、`external-resource-explorer`（haiku，搜索归纳）。`code-architect` 已是 sonnet。
   4. CHANGELOG 注明成本影响：审查/验收环节 token 成本上升，换取把关质量。
 - **验收标准**:
-  - [ ] `grep -l 'model: haiku' agents/` 仅剩 code-explorer.md、external-resource-explorer.md
-  - [ ] CHANGELOG 已注明
+  - [x] `grep -l 'model: haiku' agents/` 仅剩 code-explorer.md、external-resource-explorer.md
+  - [x] CHANGELOG 已注明（成本影响：审查/验收 token 上升换把关质量）
 
 ---
 

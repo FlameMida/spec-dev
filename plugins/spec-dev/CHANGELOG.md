@@ -9,6 +9,10 @@
 
 ## [未发布]
 
+### 🔧 改进 (Changed) — 第二期结构重构（进行中）
+
+- **T2.6 reviewer 类 agent 模型升档** — `code-reviewer` 与 `spec-acceptance-reviewer` 由 `haiku` 升至 `sonnet`：审查与验收是错误代价最高的质量把关环节，最弱档位与其定位矛盾。成本影响：审查/验收环节 token 成本上升，换取把关质量；探索类 agent（code-explorer、external-resource-explorer）保持 haiku 不变
+
 ### 🔧 修复 (Fixed) — 第一期 P0 修错（2026-06-12）
 
 - **T1.1 spec-flow command 插件资源路径** — `commands/spec-flow.md` 中全部 `skills/spec-flow/...` 路径加 `${CLAUDE_PLUGIN_ROOT}/` 前缀并补兜底说明，`/spec-flow init` 不再需要模型自行摸索插件安装目录；验证确认 Codex 端不加载 commands 目录，无需同步转换

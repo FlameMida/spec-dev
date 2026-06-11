@@ -2,7 +2,7 @@
 name: spec-acceptance-reviewer
 description: 独立验收评审 agent，只基于 spec、plan、当前产物和证据进行 findings-first 验收，输出 pass、changes_required 或 blocked 结论以及带证据的问题清单
 tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, TaskCreate, TaskUpdate, TaskList, TaskGet
-model: haiku
+model: sonnet
 color: magenta
 ---
 

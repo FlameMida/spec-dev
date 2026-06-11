@@ -2,7 +2,7 @@
 name: code-reviewer
 description: 代码审查，识别 bug、安全漏洞、代码质量问题和规范违反
 tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, TaskCreate, TaskUpdate, TaskList, TaskGet
-model: haiku
+model: sonnet
 color: red
 ---
 
