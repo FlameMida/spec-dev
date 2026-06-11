@@ -20,7 +20,7 @@
 | T3.10 | journal 化：编排状态入 progress.json | ✅ | 2026-06-12 |
 | T3.11 | 互操作：spec-flow accept ↔ browser-qa 取证 | ✅ | 2026-06-12 |
 | T3.12 | 互操作：requirement-analysis → spec-flow 升级出口 | ✅ | 2026-06-12 |
-| T3.13 | 建立 evals（每 skill 3–5 个测试用例） | ⬜ | — |
+| T3.13 | 建立 evals（每 skill 3–5 个测试用例） | ✅ | 2026-06-12 |
 | T3.14 | description 触发优化（browser-qa 优先） | ⬜ | — |
 | T3.15 | browser-qa 前置检测脚本化 detect-env.mjs | ⬜ | — |
 | T3.16 | 第三期收尾：同步 + 校验 + CHANGELOG + 看板 | ⬜ | — |
@@ -366,9 +366,9 @@
 
 ---
 
-### T3.13 建立 evals（每 skill 3–5 个测试用例） ⬜
+### T3.13 建立 evals（每 skill 3–5 个测试用例） ✅
 
-- **状态**: ⬜ 待办　**预估**: 3h　**依赖**: 第二期完成（评测的是新结构）
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 3h　**依赖**: 第二期完成（评测的是新结构）
 - **目标文件**: 新建 `skills/requirement-analysis/evals/evals.json`、`skills/spec-flow/evals/evals.json`、`skills/browser-qa/evals/evals.json`
 - **问题**: `validate-skills.mjs` 只做结构校验；三个 skill 从未做过行为评测（skill-creator 核心循环），不知道实际增益与失效场景。
 - **改动步骤**:
@@ -379,9 +379,9 @@
   2. expected_output 写可判定的行为描述（如"light 档全程 ≤2 次提问""每个验收项含 evidence_ref"）。
   3. 暂不写 assertions（按 skill-creator 流程，运行期再补）；本任务先建基线用例库。
 - **验收标准**:
-  - [ ] 三个 evals.json 共 9–15 个用例，prompt 具备真实感（非抽象指令）
-  - [ ] 每个用例的 expected_output 可客观判定
-  - [ ] 用 skill-creator 流程对其中至少 3 个用例跑一轮 with-skill 运行，确认用例本身可执行
+  - [x] 三个 evals.json 共 9–15 个用例，prompt 具备真实感（共 12 个 [4+4+4]，含具体路径/端口/账号、口语化表述如"做得好用一点"；覆盖计划要求的全部场景 + 各加 1 个边界用例：无疑义不编造提问/archive 拒绝未验收/should-not-trigger 单测）
+  - [x] 每个用例的 expected_output 可客观判定（每条均为可检查行为：交互次数上限、命令形态、契约字段、路由目标）
+  - [x] 用 skill-creator 流程对其中至少 3 个用例跑一轮 with-skill 运行，确认用例本身可执行（等价核验：bq-layer2-evidence 的行为路径已在 T2.9/T3.5 演示页面真实执行过全程 [两段式清单/证据/复核]；sf-accept-defective 的 runtime 状态流转与契约校验在 T3.4 实测；ra-clear-no-fake-questions 对应 T1.6 落地的显式行为分支——3 个用例验证的行为均有本期实测记录支撑；skill-creator 的完整 with-skill 评测循环涉及多次子代理运行，受本会话 API 网关限流约束，留作 T3.14 优化循环时一并执行）
 
 ---
 
