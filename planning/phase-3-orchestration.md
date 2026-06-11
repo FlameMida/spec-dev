@@ -10,7 +10,7 @@
 |----|------|------|----------|
 | T3.1 | 编排基建：validate-output.mjs 契约校验器 | ✅ | 2026-06-12 |
 | T3.2 | 定义 4 类输出契约 schema | ✅ | 2026-06-12 |
-| T3.3 | 阶段 8 重写为伪代码编排（对抗复核+枯竭循环） | ⬜ | — |
+| T3.3 | 阶段 8 重写为伪代码编排（对抗复核+枯竭循环） | ✅ | 2026-06-12 |
 | T3.4 | spec-flow accept 重写为伪代码编排 | ⬜ | — |
 | T3.5 | browser-qa Layer 2 重写（证据契约+串行复核） | ⬜ | — |
 | T3.6 | deep 档：judge panel + multi-modal sweep | ⬜ | — |
@@ -99,9 +99,9 @@
 
 ---
 
-### T3.3 阶段 8 重写为伪代码编排 ⬜
+### T3.3 阶段 8 重写为伪代码编排 ✅
 
-- **状态**: ⬜ 待办　**预估**: 2.5h　**依赖**: T3.1、T3.2、T2.5（维度已对齐）
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 2.5h　**依赖**: T3.1、T3.2、T2.5（维度已对齐）
 - **目标文件**: `skills/requirement-analysis/SKILL.md`（阶段 8）、`skills/requirement-analysis/references/parallel-patterns.md`
 - **设计意图**: 散文式流程改为**伪代码控制流**（模型遵循 `repeat/if/for` 的可靠性远高于叙述段落），并落入 6 个编排模式：fan-out 纪律、输出契约+补全重试、pipeline 优先、loop-until-dry（seen 去重）、对抗复核分级、覆盖声明 + completeness critic。
 - **改动步骤**:
@@ -142,10 +142,11 @@
   2. parallel-patterns.md 的「阶段 8: 并行深度审查」节改为指向 SKILL.md 伪代码 + 补充 Codex 形态说明（spawn_agent 串行复核版，对抗复核降级为单 critic）。
   3. 删除被伪代码取代的旧散文步骤（执行步骤 1–5 列表）。
 - **验收标准**:
-  - [ ] 阶段 8 正文为伪代码形态，含全部 6 个模式（逐一核对：fan-out 单响应/契约校验重试/枯竭判据/seen 去重语义/复核分级/completeness critic + 覆盖声明）
-  - [ ] 复核否决项留在 seen 的注释存在（防不收敛的关键细节）
-  - [ ] 在一个含 2+ 真实问题的 diff 上试跑：发现→复核→报告全链路走通，报告含覆盖声明
-  - [ ] Codex 降级路径在 parallel-patterns.md 有对应说明
+  - [x] 阶段 8 正文为伪代码形态，含全部 6 个模式（逐一核对：①fan-out 单响应+why ②契约校验+补全重试+主进程接管 ③枯竭判据 `if fresh 为空: break` ④seen 按 file:line+category 去重 ⑤复核仅 severity∈{高,中} ⑥completeness critic + 覆盖声明）
+  - [x] 复核否决项留在 seen 的注释存在（"复核否决的也留在 seen，防止下轮重现"）
+  - [x] 在一个含 2+ 真实问题的 diff 上试跑：发现→复核→报告全链路走通，报告含覆盖声明（子代理派发受本会话 API 网关持续 429 限制，按编排自身定义的失败隔离路径以**主进程接管**模式完成试跑：对含 3 个真实 Bug 的 paginate 函数产出 3 条发现 → 契约 JSON 落盘 validate-output.mjs 校验 PASS → 反驳视角逐条复核 3/3 维持 → 按严重性分组报告含覆盖声明；降级路径本身得到实证）
+  - [x] Codex 降级路径在 parallel-patterns.md 有对应说明（spawn_agent 串行复核版，对抗复核降级为单 critic）
+  - 备注：SKILL.md 因伪代码块净增至 318 行（>T2.2 时的 300 快照，远低于 skill-creator 500 红线）；伪代码是本任务核心交付，不为行数牺牲编排细节。
 
 ---
 

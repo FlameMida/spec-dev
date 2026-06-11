@@ -46,11 +46,9 @@
 
 ## 阶段 8: 并行深度审查
 
-### 何时使用
+### 编排主体
 
-- ✅ standard/deep 档，修改文件多（4+ 个文件）
-- ✅ 涉及多个架构层次或模块
-- ✅ 需要深度审查，确保高质量
+阶段 8 的完整编排（fan-out、契约校验、枯竭循环、对抗复核、completeness critic）以 SKILL.md 阶段 8 的伪代码为准，本节只补充维度定义与 Codex 形态。
 
 ### 审查维度（与 code-reviewer agent 的维度定义一致）
 
@@ -66,9 +64,12 @@
 - **standard 档**：派 2-3 路，分别聚焦 A/B/C
 - **deep 档**：可扩展为 5 路——将 B 拆出「简洁性/DRY」、C 拆出「项目约定与抽象」各自独立成路（对小型变更是浪费，仅 deep 使用）
 
+### Codex 降级形态
+
+Codex 用 `spawn_agent(fork_context=true)` 派发维度审查（同样单响应一次性发起），`wait_agent` 收集；对抗复核降级为**单 critic 串行版**——每条高/中发现由一个复核 agent 顺序反驳（Codex 的子代理并发能力弱于 Claude Code，串行复核换取确定性）。契约校验命令相同（校验器随插件分发在 `scripts/validate-output.mjs`）。
+
 ### 结果汇总
 
-1. 等待所有并行审查完成
-2. 整合所有审查结果
-3. 按严重性分类问题（高、中、低）
-4. 组织成结构化的审查报告
+1. 整合 confirmed 发现，按严重性分类（高、中、低）
+2. 并入 completeness critic 的覆盖声明
+3. 按 output-template 组织成结构化审查报告
