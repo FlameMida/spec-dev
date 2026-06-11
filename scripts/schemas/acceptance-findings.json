@@ -1,0 +1,45 @@
+{
+  "type": "object",
+  "required": ["result", "coverage", "findings", "coverage_note"],
+  "properties": {
+    "result": { "type": "string", "enum": ["pass", "changes_required", "blocked"] },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["spec_item", "status", "evidence"],
+        "properties": {
+          "spec_item": { "type": "string" },
+          "status": { "type": "string", "enum": ["pass", "fail", "partial"] },
+          "evidence": { "type": "string" }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "description", "evidence", "suggested_action"],
+        "properties": {
+          "severity": { "type": "string", "enum": ["CRITICAL", "MAJOR", "MINOR", "SUGGESTION"] },
+          "description": { "type": "string" },
+          "evidence": { "type": "string" },
+          "suggested_action": { "type": "string" }
+        }
+      }
+    },
+    "accepted_risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["finding_ref", "accepted_by", "reason"],
+        "properties": {
+          "finding_ref": { "type": "string" },
+          "accepted_by": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "coverage_note": { "type": "string" }
+  }
+}

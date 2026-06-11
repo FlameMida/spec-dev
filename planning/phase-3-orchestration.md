@@ -9,7 +9,7 @@
 | ID | 任务 | 状态 | 完成日期 |
 |----|------|------|----------|
 | T3.1 | 编排基建：validate-output.mjs 契约校验器 | ✅ | 2026-06-12 |
-| T3.2 | 定义 4 类输出契约 schema | ⬜ | — |
+| T3.2 | 定义 4 类输出契约 schema | ✅ | 2026-06-12 |
 | T3.3 | 阶段 8 重写为伪代码编排（对抗复核+枯竭循环） | ⬜ | — |
 | T3.4 | spec-flow accept 重写为伪代码编排 | ⬜ | — |
 | T3.5 | browser-qa Layer 2 重写（证据契约+串行复核） | ⬜ | — |
@@ -49,9 +49,9 @@
 
 ---
 
-### T3.2 定义 4 类输出契约 schema ⬜
+### T3.2 定义 4 类输出契约 schema ✅
 
-- **状态**: ⬜ 待办　**预估**: 2h　**依赖**: T3.1
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 2h　**依赖**: T3.1
 - **目标文件**: 新建 `scripts/schemas/exploration-report.json`、`review-findings.json`、`acceptance-findings.json`、`browser-check-items.json`
 - **改动步骤**: 按下表定义 4 个 schema（字段名最终以实现为准，语义不变）：
   1. **exploration-report**（探索报告，code-explorer 输出）：
@@ -93,9 +93,9 @@
      ```
   5. 每个 schema 中 `coverage_note` 一律必填——这是「no silent caps」模式的落点：截断必须显式声明。
 - **验收标准**:
-  - [ ] 4 个 schema 均能被 validate-output.mjs 加载并正确校验对应正反样例
-  - [ ] 每个 schema 含 coverage_note 必填项（browser-check-items 在 items 之外补顶层 coverage_note）
-  - [ ] schemas/README.md 列出 4 个契约的用途与消费方
+  - [x] 4 个 schema 均能被 validate-output.mjs 加载并正确校验对应正反样例（8 样例实测：4 正例过、4 反例拦截，反例覆盖 minItems 违反/缺 coverage_note/confidence 超界/枚举外/嵌套必填缺失）
+  - [x] 每个 schema 含 coverage_note 必填项（browser-check-items 在 items 之外补顶层 coverage_note）
+  - [x] schemas/README.md 列出 4 个契约的用途与消费方
 
 ---
 
