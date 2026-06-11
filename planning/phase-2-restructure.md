@@ -9,7 +9,7 @@
 |----|------|------|----------|
 | T2.1 | 创建 codex-compat.md，抽离双环境样板 | ✅ | 2026-06-12 |
 | T2.2 | requirement-analysis SKILL.md 瘦身重写 | ✅ | 2026-06-12 |
-| T2.3 | 引入三档复杂度路由（light/standard/deep） | ⬜ | — |
+| T2.3 | 引入三档复杂度路由（light/standard/deep） | ✅ | 2026-06-12 |
 | T2.4 | 阶段 5 接入 code-architect agent | ⬜ | — |
 | T2.5 | 审查维度对齐（5 维 ↔ 3 维统一） | ⬜ | — |
 | T2.6 | reviewer 类 agent 模型升档 | ⬜ | — |
@@ -65,9 +65,9 @@
 
 ---
 
-### T2.3 引入三档复杂度路由（light/standard/deep） ⬜
+### T2.3 引入三档复杂度路由（light/standard/deep） ✅
 
-- **状态**: ⬜ 待办　**预估**: 1.5h　**依赖**: T2.2
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 1.5h　**依赖**: T2.2
 - **目标文件**: `skills/requirement-analysis/SKILL.md`、`skills/requirement-analysis/references/examples.md`
 - **问题**: 9 阶段对所有需求一刀切。examples.md 中「给用户表加手机号字段」也要走 9 阶段 + 3 个强制用户确认点，流程开销远超任务本身。
 - **改动步骤**:
@@ -86,9 +86,10 @@
   2. 档位声明格式：「本需求判定为 {档位}（理由），如需更彻底/更轻量请告知」。
   3. examples.md 三个示例分别标注档位（手机号字段→light；活动跟踪→deep；Socket.io→standard），并按档位修正各阶段执行策略描述。
 - **验收标准**:
-  - [ ] 档位判定标准客观可执行（文件数/模块数/新依赖/用户措辞）
-  - [ ] light 档全流程 ≤ 2 次用户交互（计划确认 + 审查处理）
-  - [ ] examples.md 与新档位一致
+  - [x] 档位判定标准客观可执行（文件数/模块数/新依赖/用户措辞，阶段 1 初判、阶段 2 修正）
+  - [x] light 档全流程 ≤ 2 次用户交互（计划确认 + 审查处理；已写入 SKILL.md 档位节与 examples.md）
+  - [x] examples.md 与新档位一致（活动跟踪→deep、手机号字段→light、Socket.io→standard，执行策略已按档位重写）
+  - 备注：加档位节后 SKILL.md 一度 309 行，压缩深度思考指南/阶段 9/重要原则后回到 294 行，仍 < 300。
 
 ---
 
