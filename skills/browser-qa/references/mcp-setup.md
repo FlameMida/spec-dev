@@ -10,7 +10,7 @@ Microsoft 官方 MCP Server，AI Agent 通过它自主控制浏览器。
 
 ### Claude Code 配置
 
-在项目级 `.claude/settings.json` 或全局 `~/.claude/settings.json` 中添加：
+在项目级 `.mcp.json` 或用户级 `~/.claude.json` 中添加（注意：不是 `settings.json`，`mcpServers` 写进 settings 文件不会生效）；也可以直接运行 `claude mcp add playwright -- npx @playwright/mcp@latest`：
 
 ```json
 {
@@ -66,6 +66,8 @@ npx @playwright/mcp@latest --help
 Google 官方 MCP Server，用于调试和性能分析。
 
 ### 配置
+
+配置位置同 Playwright MCP（项目级 `.mcp.json` 或用户级 `~/.claude.json`）：
 
 ```json
 {
@@ -151,7 +153,7 @@ Browser Harness 安装路径: ~/browser-harness/bh
 
 - [ ] `npx @playwright/mcp@latest --help` 正常输出（Layer 2）
 - [ ] `npx chrome-devtools-mcp@latest --help` 正常输出（Layer 3）
-- [ ] settings.json 中 `mcpServers` 配置正确
+- [ ] `.mcp.json` / `~/.claude.json` 中 `mcpServers` 配置正确
 - [ ] 重启 Claude Code / Claude Desktop 后 MCP Server 自动连接
 - [ ] 在 Claude 中测试: "打开浏览器导航到 example.com"
 

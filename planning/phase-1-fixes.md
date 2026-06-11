@@ -8,7 +8,7 @@
 | ID | 任务 | 状态 | 完成日期 |
 |----|------|------|----------|
 | T1.1 | 修复 spec-flow command 的插件资源路径 | ✅ | 2026-06-12 |
-| T1.2 | 修正 browser-qa 的 MCP 配置位置错误 | ⬜ | — |
+| T1.2 | 修正 browser-qa 的 MCP 配置位置错误 | ✅ | 2026-06-12 |
 | T1.3 | 修正 browser-qa 的过时 MCP 工具名 | ⬜ | — |
 | T1.4 | 全局替换过时的 Claude Code 工具名 | ⬜ | — |
 | T1.5 | 修复 output-template 阶段编号错误 | ⬜ | — |
@@ -39,9 +39,9 @@
 
 ---
 
-### T1.2 修正 browser-qa 的 MCP 配置位置错误 ⬜
+### T1.2 修正 browser-qa 的 MCP 配置位置错误 ✅
 
-- **状态**: ⬜ 待办　**预估**: 20min　**依赖**: 无
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 20min　**依赖**: 无
 - **目标文件**: `skills/browser-qa/references/mcp-setup.md`
 - **问题**: 第 13 行教用户把 `mcpServers` 写进「项目级 `.claude/settings.json` 或全局 `~/.claude/settings.json`」——这不是 Claude Code MCP 配置的标准位置，照做不生效。标准位置是项目级 `.mcp.json` 或用户级 `~/.claude.json`（仓库 `README.md:226` 自己写的就是 `~/.claude.json`，两处自相矛盾）。第 150–155 行"配置验证清单"中「settings.json 中 mcpServers 配置正确」同样错误。
 - **改动步骤**:
@@ -50,9 +50,9 @@
   3. 配置验证清单第 154 行改为「`.mcp.json` / `~/.claude.json` 中 `mcpServers` 配置正确」。
   4. 检查并保持与插件自带 `.mcp.json` 预配置的说法一致（`skills/browser-qa/SKILL.md:53` 已正确说明插件预配置，无需改动）。
 - **验收标准**:
-  - [ ] `grep -n 'settings.json' skills/browser-qa/references/mcp-setup.md` 无残留（或仅出现在"错误示例"说明中）
-  - [ ] 文档与 `README.md` 的 MCP 配置说明一致
-  - [ ] `node scripts/sync-codex-package.mjs --check` 通过
+  - [x] `grep -n 'settings.json' skills/browser-qa/references/mcp-setup.md` 无残留（或仅出现在"错误示例"说明中）（实测仅剩 1 处，位于"不是 settings.json…不会生效"警示语境）
+  - [x] 文档与 `README.md` 的 MCP 配置说明一致（README:225 用 `~/.claude.json`，已对齐）
+  - [x] `node scripts/sync-codex-package.mjs --check` 通过
 
 ---
 
