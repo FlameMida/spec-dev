@@ -64,7 +64,8 @@ async function main() {
 
 // 允许同一 flag 重复出现并收集为数组的参数（如 --evidence "a::b" --evidence "c::d"）。
 // 其余 flag 保持单值行为：重复时后值覆盖前值。
-const MULTI_VALUE_KEYS = new Set(["evidence"]);
+const MULTI_VALUE_KEYS = new Set(["evidence", "dispatch"]);
+const DISPATCH_STATUSES = new Set(["running", "done", "failed"]);
 
 function parseArgs(argv) {
   const parsed = { _: [] };
@@ -556,6 +557,33 @@ async function handleCheckpoint(args) {
     }
   }
 
+  if (Array.isArray(args.dispatch)) {
+    progress.orchestration ??= { dispatched: [] }; // 不使用编排的旧流程不受影响：不传 --dispatch 时 progress 结构不变
+    progress.orchestration.dispatched ??= [];
+    for (const entry of args.dispatch) {
+      const raw = String(entry);
+      const parts = raw.split("::");
+      if (parts.length !== 4) {
+        throw new Error(`Invalid --dispatch (expected "<id>::<task-desc>::<status>::<result-path>"): ${raw}`);
+      }
+      const [id, taskDesc, status, resultPath] = parts.map((part) => part.trim());
+      if (!id || !taskDesc || !status) {
+        throw new Error(`Invalid --dispatch (empty id/desc/status): ${raw}`);
+      }
+      if (!DISPATCH_STATUSES.has(status)) {
+        throw new Error(`Invalid dispatch status (expected running|done|failed): ${status}`);
+      }
+      // 同 id 重复登记视为状态更新（覆盖旧记录），支持 running → done/failed 的生命周期推进
+      const existingIndex = progress.orchestration.dispatched.findIndex((item) => item.id === id);
+      const record = { id, taskDesc, status, resultPath: resultPath || null, at: timestamp };
+      if (existingIndex === -1) {
+        progress.orchestration.dispatched.push(record);
+      } else {
+        progress.orchestration.dispatched[existingIndex] = record;
+      }
+    }
+  }
+
   progress.resumePoint = {
     action: args.resumeAction || progress.currentAction,
     step: args.resumeStep !== undefined ? args.resumeStep || null : progress.currentStep,
@@ -798,6 +826,7 @@ async function handleResume(args) {
 
   const progress = await readJson(path.join(cwd, record.path, "progress.json"));
   const suggestedCommand = `/spec-flow ${progress.resumePoint?.action || record.currentAction}${record.id ? ` ${record.id}` : ""}`.trim();
+  const pendingDispatch = (progress.orchestration?.dispatched ?? []).filter((item) => item.status !== "done");
 
   return {
     specId: record.id,
@@ -808,6 +837,7 @@ async function handleResume(args) {
     resumePoint: progress.resumePoint,
     lastUpdatedAt: progress.timestamps.lastUpdatedAt,
     suggestedCommand,
+    ...(pendingDispatch.length > 0 ? { pendingDispatch } : {}),
   };
 }
 

@@ -71,6 +71,8 @@ node .specs/bin/spec-flow.mjs checkpoint \
   --evidence "B.3 构建通过::npm run build 退出码 0"
 ```
 
+- `--dispatch "<id>::<task-desc>::<status>::<result-path>"`（可重复，status ∈ running|done|failed）——把编排派发的子任务登记进 `progress.orchestration.dispatched[]`；同 `id` 重复登记视为状态更新（支持 running → done/failed 推进）。恢复时 `resume` 返回 `pendingDispatch`（status ≠ done 项），已 done 的子任务直接复用 result-path，不重派。
+
 ### `amend`
 
 记录一次 spec 变更并自动升版。

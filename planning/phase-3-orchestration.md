@@ -17,7 +17,7 @@
 | T3.7 | runtime: checkpoint 增加 --evidence | ✅ | 2026-06-12 |
 | T3.8 | runtime: 新增 doctor 子命令 | ✅ | 2026-06-12 |
 | T3.9 | runtime: 小修集（百分比校验/summary-path/时区/并发声明） | ✅ | 2026-06-12 |
-| T3.10 | journal 化：编排状态入 progress.json | ⬜ | — |
+| T3.10 | journal 化：编排状态入 progress.json | ✅ | 2026-06-12 |
 | T3.11 | 互操作：spec-flow accept ↔ browser-qa 取证 | ⬜ | — |
 | T3.12 | 互操作：requirement-analysis → spec-flow 升级出口 | ⬜ | — |
 | T3.13 | 建立 evals（每 skill 3–5 个测试用例） | ⬜ | — |
@@ -313,9 +313,9 @@
 
 ---
 
-### T3.10 journal 化：编排状态入 progress.json ⬜
+### T3.10 journal 化：编排状态入 progress.json ✅
 
-- **状态**: ⬜ 待办　**预估**: 2h　**依赖**: T3.7
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 2h　**依赖**: T3.7
 - **目标文件**: `skills/spec-flow/assets/runtime/spec-flow-runtime.mjs`、`skills/spec-flow/references/recovery-rules.md`、`skills/requirement-analysis/references/task-list-management.md`
 - **设计意图**: Workflow 的 journal/resume 思想——派发过的子任务及结果位置持久化，断点恢复后**不重派已完成的 fan-out**。
 - **改动步骤**:
@@ -324,9 +324,10 @@
   3. recovery-rules.md 的 Resume Output 增补：「存在 orchestration.dispatched 时，已 done 的子任务直接读取 result-path 复用结果，仅重派 running/failed 项」。
   4. requirement-analysis 侧（无 runtime）：task-list-management.md 的断点恢复节增补轻量版——「fan-out 前把子任务清单与预期落盘路径写入任务列表 metadata（或临时目录 manifest.json），恢复时先查结果文件是否已存在，存在即复用」。
 - **验收标准**:
-  - [ ] checkpoint 写入 dispatched、resume 返回 pendingDispatch（构造 2 done + 1 failed 场景验证）
-  - [ ] 两份文档的恢复规则均含"不重派已完成子任务"
-  - [ ] 不使用编排的旧流程完全不受影响（不传 --dispatch 时 progress 结构不变）
+  - [x] checkpoint 写入 dispatched、resume 返回 pendingDispatch（构造 2 done + 1 failed 场景验证：dispatched 3 条 [含 d1 running→done 同 id 状态推进]，pendingDispatch 只含 failed 的 d3；非法 status 报错）
+  - [x] 两份文档的恢复规则均含"不重派已完成子任务"（recovery-rules.md Resume Output + task-list-management.md 断点恢复轻量 journal 版，均带 why）
+  - [x] 不使用编排的旧流程完全不受影响（实测：不传 --dispatch 的新 spec progress.json 无 orchestration 字段）
+  - 备注：command-contract.md checkpoint 节同步补 --dispatch 说明（CLI 约定唯一权威，防文档漂移）。
 
 ---
 

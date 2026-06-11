@@ -43,6 +43,8 @@
 - `lastUpdatedAt`
 - 推荐下一条 `/spec-flow ...` 命令
 
+存在 `orchestration.dispatched` 时，返回值附带 `pendingDispatch`（status ≠ done 的子任务清单）。恢复编排时：**已 done 的子任务直接读取其 result-path 复用结果，仅重派 running/failed 项**——重派已完成的 fan-out 既浪费 token 也可能产生与已消费结果不一致的新输出。
+
 ## Repair Rule
 
 发现以下情况时，不要盲目继续：
