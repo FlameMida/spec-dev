@@ -24,6 +24,8 @@ const generatedEntries = [
   { source: "agents", target: "agents", type: "dir" },
   { source: "commands", target: "commands", type: "dir" },
   { source: "skills", target: "skills", type: "dir" },
+  { source: "scripts/validate-output.mjs", target: "scripts/validate-output.mjs", type: "file" },
+  { source: "scripts/schemas", target: "scripts/schemas", type: "dir" },
   { source: "README.md", target: "README.md", type: "file" },
   { source: "CHANGELOG.md", target: "CHANGELOG.md", type: "file" },
 ];

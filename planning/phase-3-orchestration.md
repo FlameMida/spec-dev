@@ -8,7 +8,7 @@
 
 | ID | 任务 | 状态 | 完成日期 |
 |----|------|------|----------|
-| T3.1 | 编排基建：validate-output.mjs 契约校验器 | ⬜ | — |
+| T3.1 | 编排基建：validate-output.mjs 契约校验器 | ✅ | 2026-06-12 |
 | T3.2 | 定义 4 类输出契约 schema | ⬜ | — |
 | T3.3 | 阶段 8 重写为伪代码编排（对抗复核+枯竭循环） | ⬜ | — |
 | T3.4 | spec-flow accept 重写为伪代码编排 | ⬜ | — |
@@ -27,9 +27,9 @@
 
 ---
 
-### T3.1 编排基建：validate-output.mjs 契约校验器 ⬜
+### T3.1 编排基建：validate-output.mjs 契约校验器 ✅
 
-- **状态**: ⬜ 待办　**预估**: 3h　**依赖**: 无
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 3h　**依赖**: 无
 - **目标文件**: 新建 `scripts/validate-output.mjs`、新建 `scripts/schemas/` 目录
 - **设计意图**: 这是对 Workflow「schema 校验发生在工具层而非模型自觉」的最忠实复刻——子代理的 JSON 输出落盘后由脚本做**确定性校验**，失败退回补全，而不是靠主进程模型目测。
 - **改动步骤**:
@@ -42,9 +42,10 @@
   4. 自测：构造 1 个合法 + 3 个非法（缺字段/类型错/枚举外）样例 JSON 跑通。
 - **注意事项**: 校验器放插件根 `scripts/`（三 skill 共用，避免三份拷贝）；skill 内引用统一走 `${CLAUDE_PLUGIN_ROOT}`。若 T1.1 验证发现 Codex 不支持该占位符，本任务沿用 T1.1 记录的转换方案。
 - **验收标准**:
-  - [ ] 4 个自测样例行为正确（1 过 3 拦，错误信息含字段路径）
-  - [ ] 无第三方依赖，`node scripts/validate-output.mjs` 缺参时输出用法说明
-  - [ ] schemas/README.md 完整说明引用方式
+  - [x] 4 个自测样例行为正确（1 过 3 拦，错误信息含字段路径：`$.name` 缺字段 / `$.score` 类型错 / `$.severity` 枚举外）
+  - [x] 无第三方依赖，`node scripts/validate-output.mjs` 缺参时输出用法说明（exit 2）
+  - [x] schemas/README.md 完整说明引用方式（含 `${CLAUDE_PLUGIN_ROOT}` 用法与 Codex 推导说明）
+  - 备注：发现并修复双环境缺口——sync-codex-package.mjs 的 generatedEntries 原不含 scripts/，Codex 分发包会缺校验器；已加 `scripts/validate-output.mjs` 与 `scripts/schemas` 两个同步条目，`--codex-validate` 官方安装检查通过。校验器额外支持嵌套 object/array 的递归校验（T3.2 的 4 个契约都是嵌套结构，properties/items 递归是必需能力）。
 
 ---
 
