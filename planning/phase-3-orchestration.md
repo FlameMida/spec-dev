@@ -19,7 +19,7 @@
 | T3.9 | runtime: 小修集（百分比校验/summary-path/时区/并发声明） | ✅ | 2026-06-12 |
 | T3.10 | journal 化：编排状态入 progress.json | ✅ | 2026-06-12 |
 | T3.11 | 互操作：spec-flow accept ↔ browser-qa 取证 | ✅ | 2026-06-12 |
-| T3.12 | 互操作：requirement-analysis → spec-flow 升级出口 | ⬜ | — |
+| T3.12 | 互操作：requirement-analysis → spec-flow 升级出口 | ✅ | 2026-06-12 |
 | T3.13 | 建立 evals（每 skill 3–5 个测试用例） | ⬜ | — |
 | T3.14 | description 触发优化（browser-qa 优先） | ⬜ | — |
 | T3.15 | browser-qa 前置检测脚本化 detect-env.mjs | ⬜ | — |
@@ -344,9 +344,9 @@
 
 ---
 
-### T3.12 互操作：requirement-analysis → spec-flow 升级出口 ⬜
+### T3.12 互操作：requirement-analysis → spec-flow 升级出口 ✅
 
-- **状态**: ⬜ 待办　**预估**: 45min　**依赖**: T2.3
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 45min　**依赖**: T2.3
 - **目标文件**: `skills/requirement-analysis/SKILL.md`（阶段 6 末尾）
 - **改动步骤**:
   1. 阶段 6 用户确认后增加升级判断：
@@ -361,8 +361,8 @@
      ```
   2. 与 README「如何选择」一节口径核对（不一致处以本任务为准更新 README）。
 - **验收标准**:
-  - [ ] 升级判定条件客观；上下文迁移映射明确（阶段产出 → spec 章节）
-  - [ ] README 选择指南与之一致
+  - [x] 升级判定条件客观（跨会话/正式验收留痕归档二选一）；上下文迁移映射明确（5 行映射表：阶段产出 → spec/plan 章节）
+  - [x] README 选择指南与之一致（"如何选择"节补两者衔接说明，口径与升级条件对应）
 
 ---
 
