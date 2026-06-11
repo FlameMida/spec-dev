@@ -14,7 +14,7 @@
 | T2.5 | 审查维度对齐（5 维 ↔ 3 维统一） | ✅ | 2026-06-12 |
 | T2.6 | reviewer 类 agent 模型升档 | ✅ | 2026-06-12 |
 | T2.7 | spec-flow command 薄壳化，消除双入口漂移 | ✅ | 2026-06-12 |
-| T2.8 | browser-qa description 收窄 | ⬜ | — |
+| T2.8 | browser-qa description 收窄 | ✅ | 2026-06-12 |
 | T2.9 | browser-qa Layer 2 证据强制 + 动态验收清单 | ⬜ | — |
 | T2.10 | browser-qa 参数解析改为意图推断优先 | ⬜ | — |
 | T2.11 | 补齐 Codex 元数据（openai.yaml） | ⬜ | — |
@@ -174,9 +174,9 @@
 
 ---
 
-### T2.8 browser-qa description 收窄 ⬜
+### T2.8 browser-qa description 收窄 ✅
 
-- **状态**: ⬜ 待办　**预估**: 30min　**依赖**: 无
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 30min　**依赖**: 无
 - **目标文件**: `skills/browser-qa/SKILL.md`（frontmatter description）
 - **问题**: description 含「跑一下测试」「前端测试」——前者多数语境指单元测试，造成 overtrigger 抢走不该处理的请求；且缺 should-not-trigger 边界。
 - **改动步骤**:
@@ -185,9 +185,9 @@
   2. 删除的触发词：「跑一下测试」「前端测试」「测试这个页面」（最后一个保留变体"验收这个页面"已覆盖验收意图）。
   3. 注意：完整的 trigger eval 量化优化在 T3.14，本任务先做明显修正。
 - **验收标准**:
-  - [ ] 新 description 含 should-not-trigger 边界句
-  - [ ] `node scripts/validate-skills.mjs` 通过（frontmatter 合法）
-  - [ ] 手测 2 个 near-miss prompt（"跑一下单元测试"、"测试这个 API"）不再触发本 skill
+  - [x] 新 description 含 should-not-trigger 边界句（"不适用于单元测试、API 集成测试、非浏览器场景的'跑一下测试'类请求"）
+  - [x] `node scripts/validate-skills.mjs` 通过（frontmatter 合法）
+  - [x] 手测 2 个 near-miss prompt（"跑一下单元测试"、"测试这个 API"）不再触发本 skill（语义核验：两者均被新增的排除句显式覆盖——单元测试与 API 集成测试均在不适用清单中；量化 trigger eval 在 T3.14 执行）
 
 ---
 

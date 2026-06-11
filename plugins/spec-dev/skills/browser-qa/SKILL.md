@@ -2,9 +2,10 @@
 name: browser-qa
 description: >
   浏览器三层测试工作流（E2E + AI验收 + 调试诊断）。当用户要求"E2E测试"、"界面验收"、
-  "UI自动化验收"、"browser test"、"acceptance test"、"playwright测试"、"前端测试"、
-  "验收这个功能"、"测试这个页面"、"跑一下测试"、"浏览器测试"时触发。
-  支持三个层级：Layer 1 确定性E2E、Layer 2 AI自主验收、Layer 3 调试诊断。
+  "UI自动化验收"、"browser test"、"acceptance test"、"playwright测试"、
+  "验收这个功能/页面"、"浏览器测试"，或需要诊断页面交互、渲染、Shadow DOM/iframe
+  问题时触发。支持三个层级：Layer 1 确定性E2E、Layer 2 AI自主验收、Layer 3 调试诊断。
+  不适用于单元测试、API 集成测试、非浏览器场景的"跑一下测试"类请求。
 ---
 
 # 浏览器三层测试工作流
