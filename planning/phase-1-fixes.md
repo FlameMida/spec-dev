@@ -13,7 +13,7 @@
 | T1.4 | 全局替换过时的 Claude Code 工具名 | ✅ | 2026-06-12 |
 | T1.5 | 修复 output-template 阶段编号错误 | ✅ | 2026-06-12 |
 | T1.6 | 消除阶段 4 "必须澄清"的自相矛盾 | ✅ | 2026-06-12 |
-| T1.7 | 修复交互式命令卡死问题 | ⬜ | — |
+| T1.7 | 修复交互式命令卡死问题 | ✅ | 2026-06-12 |
 | T1.8 | Layer 1 测试运行范围收窄 | ⬜ | — |
 | T1.9 | 统一 Browser Harness 安装方式并加用户确认 | ⬜ | — |
 | T1.10 | 第一期收尾：同步分发包 + 全量校验 | ⬜ | — |
@@ -127,9 +127,9 @@
 
 ---
 
-### T1.7 修复交互式命令卡死问题 ⬜
+### T1.7 修复交互式命令卡死问题 ✅
 
-- **状态**: ⬜ 待办　**预估**: 20min　**依赖**: 无
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 20min　**依赖**: 无
 - **目标文件**: `skills/browser-qa/SKILL.md`（前置检查第 2 节，第 45–49 行）
 - **问题**: 「若 `playwright.config.*` 不存在 → 引导用户初始化：`npm init playwright@latest`」——该命令是交互式向导，在非交互的 agent 会话中执行会挂起。
 - **改动步骤**:
@@ -144,8 +144,8 @@
      ```
   2. 同节「若未安装依赖 → `npm install`」保留（非交互，无问题）。
 - **验收标准**:
-  - [ ] `grep -n 'npm init playwright' skills/browser-qa/SKILL.md` 仅出现在"不要直接运行"的警示语境中
-  - [ ] 给出的非交互序列在干净 Node 项目中实测可用
+  - [x] `grep -n 'npm init playwright' skills/browser-qa/SKILL.md` 仅出现在"不要直接运行"的警示语境中
+  - [x] 给出的非交互序列在干净 Node 项目中实测可用（mktemp 临时项目实测：`npm install -D @playwright/test` 3s 完成、`npx playwright install chromium` 均无交互）
 
 ---
 

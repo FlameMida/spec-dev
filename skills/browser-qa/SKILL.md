@@ -42,10 +42,12 @@ description: >
 
 ### 2. Playwright 安装检测
 
-- 若 `playwright.config.*` 不存在 → 引导用户初始化：
+- 若 `playwright.config.*` 不存在 → **不要直接运行 `npm init playwright@latest`**（交互式向导会挂起非交互的 agent 会话）。改用非交互序列：
+  ```bash
+  npm install -D @playwright/test
+  npx playwright install chromium
   ```
-  npm init playwright@latest
-  ```
+  然后基于 [references/e2e-patterns.md](references/e2e-patterns.md) 末尾的并行执行配置创建最小 `playwright.config.ts`。用户偏好完整脚手架时，建议其在自己的终端运行交互式向导。
 - 若未安装依赖 → `npm install`
 
 ### 3. MCP Server 就绪检测
