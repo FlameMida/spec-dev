@@ -15,6 +15,8 @@
 
 输入 = `spec.md` + `plan.md` + 产物 + `progress.json` 中的 `evidence[]`（implement 阶段用 `--evidence` 登记的证据，直接消费，避免重复收集）
 
+**前置判断（浏览器类验收）**：spec.md 的验收标准含 UI/页面/交互/浏览器类条目时，先建议运行 browser-qa（Layer 2，必要时 +Layer 1）收集证据，报告与截图存入 `.specs/active/<id>/evidence/browser/`，再进入下方编排——浏览器证据由专门工作流收集比验收 agent 临时操作浏览器更可靠。browser-qa 未安装或不适用时跳过此步，验收照常进行（建议而非硬依赖）。
+
 ```
 1. findings = Agent(spec-acceptance-reviewer, 输入,
                     输出=acceptance-findings 契约 JSON 落盘 + markdown 报告)

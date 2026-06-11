@@ -18,7 +18,7 @@
 | T3.8 | runtime: 新增 doctor 子命令 | ✅ | 2026-06-12 |
 | T3.9 | runtime: 小修集（百分比校验/summary-path/时区/并发声明） | ✅ | 2026-06-12 |
 | T3.10 | journal 化：编排状态入 progress.json | ✅ | 2026-06-12 |
-| T3.11 | 互操作：spec-flow accept ↔ browser-qa 取证 | ⬜ | — |
+| T3.11 | 互操作：spec-flow accept ↔ browser-qa 取证 | ✅ | 2026-06-12 |
 | T3.12 | 互操作：requirement-analysis → spec-flow 升级出口 | ⬜ | — |
 | T3.13 | 建立 evals（每 skill 3–5 个测试用例） | ⬜ | — |
 | T3.14 | description 触发优化（browser-qa 优先） | ⬜ | — |
@@ -331,16 +331,16 @@
 
 ---
 
-### T3.11 互操作：spec-flow accept ↔ browser-qa 取证 ⬜
+### T3.11 互操作：spec-flow accept ↔ browser-qa 取证 ✅
 
-- **状态**: ⬜ 待办　**预估**: 1h　**依赖**: T3.4、T3.5
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 1h　**依赖**: T3.4、T3.5
 - **目标文件**: `skills/spec-flow/references/action-accept.md`、`skills/browser-qa/SKILL.md`（最终汇总报告节）
 - **改动步骤**:
   1. action-accept.md 在「Acceptance 编排」第 1 步前插入前置判断：「spec.md 的验收标准含 UI/页面/交互/浏览器类条目时，先建议运行 browser-qa（Layer 2，必要时 +Layer 1）收集证据，报告与截图存入 `.specs/active/<id>/evidence/browser/`，再进入验收编排——浏览器证据由专门工作流收集比验收 agent 临时操作更可靠」。
   2. browser-qa 最终汇总报告节增加输出约定：「若由 spec-flow accept 触发，报告文件落盘到调用方指定的 evidence 目录并回传路径（而非仅打印对话中）」。
 - **验收标准**:
-  - [ ] 双向引用成立：accept 知道何时调 browser-qa，browser-qa 知道如何回交证据
-  - [ ] 措辞为"建议运行"而非硬依赖（browser-qa 未安装/不适用时 accept 仍可走通）
+  - [x] 双向引用成立：accept 知道何时调 browser-qa（编排前置判断：UI/页面/交互类验收条目 → evidence/browser/ 取证），browser-qa 知道如何回交证据（最终汇总报告节输出约定：落盘调用方 evidence 目录并回传路径）
+  - [x] 措辞为"建议运行"而非硬依赖（明确写"browser-qa 未安装或不适用时跳过此步，验收照常进行"）
 
 ---
 
