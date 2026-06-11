@@ -25,6 +25,8 @@
    - `completedSteps`
    - `completionPercent`
    - `resumePoint`
+
+   step 涉及可验证产物（测试/命令/构建）时，将输出存入 `.specs/active/<id>/evidence/` 并在 checkpoint 时用 `--evidence "<desc>::<path-or-command>"` 登记——accept 阶段直接消费这些证据，避免验收时重复收集。
 4. 如遇阻塞，写入 `blockedReason` 并将 `runState` 设为 `blocked` 或 `paused`。
 5. 全部实现完成后，将 `runState` 设为 `completed` 并建议进入 `accept`。
 

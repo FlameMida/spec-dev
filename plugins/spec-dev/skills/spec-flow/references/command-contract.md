@@ -62,6 +62,14 @@ node .specs/bin/spec-flow.mjs checkpoint \
 
 - `--blocked-reason "..."`  
 - `--last-command "/spec-flow implement spec-20260409-001"`
+- `--evidence "<desc>::<path-or-command>"`（可重复）——把可验证证据登记进 `progress.evidence[]`，每条记录 `{step, desc, ref, at}`，`step` 取当前 `currentStep`。示例：
+
+```bash
+node .specs/bin/spec-flow.mjs checkpoint \
+  --spec-id spec-20260409-001 \
+  --evidence "B.3 单测通过::npm test 输出见 .specs/active/spec-20260409-001/evidence/b3-test.txt" \
+  --evidence "B.3 构建通过::npm run build 退出码 0"
+```
 
 ### `amend`
 

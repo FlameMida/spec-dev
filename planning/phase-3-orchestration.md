@@ -14,7 +14,7 @@
 | T3.4 | spec-flow accept 重写为伪代码编排 | ⬜ | — |
 | T3.5 | browser-qa Layer 2 重写（证据契约+串行复核） | ⬜ | — |
 | T3.6 | deep 档：judge panel + multi-modal sweep | ⬜ | — |
-| T3.7 | runtime: checkpoint 增加 --evidence | ⬜ | — |
+| T3.7 | runtime: checkpoint 增加 --evidence | ✅ | 2026-06-12 |
 | T3.8 | runtime: 新增 doctor 子命令 | ⬜ | — |
 | T3.9 | runtime: 小修集（百分比校验/summary-path/时区/并发声明） | ⬜ | — |
 | T3.10 | journal 化：编排状态入 progress.json | ⬜ | — |
@@ -261,9 +261,9 @@
 
 ---
 
-### T3.7 runtime: checkpoint 增加 --evidence ⬜
+### T3.7 runtime: checkpoint 增加 --evidence ✅
 
-- **状态**: ⬜ 待办　**预估**: 1.5h　**依赖**: 无（建议在 T3.4 前完成以便其消费）
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 1.5h　**依赖**: 无（建议在 T3.4 前完成以便其消费）
 - **目标文件**: `skills/spec-flow/assets/runtime/spec-flow-runtime.mjs`、`skills/spec-flow/references/command-contract.md`、`skills/spec-flow/references/action-implement.md`
 - **设计意图**: journal 思想——实施时积累证据，验收时直接消费，消除 implement 与 accept 之间的证据断层。
 - **改动步骤**:
@@ -272,9 +272,10 @@
   3. command-contract.md 的 checkpoint 节补充 `--evidence` 说明与示例。
   4. action-implement.md 的 Do 节第 3 步补充：「step 涉及可验证产物（测试/命令/构建）时，将输出存入 `.specs/active/<id>/evidence/` 并在 checkpoint 时用 `--evidence` 登记——accept 阶段直接消费，避免重复收集」。
 - **验收标准**:
-  - [ ] `node .specs/bin/spec-flow.mjs checkpoint --spec-id X --evidence "a::b" --evidence "c::d"` 后 progress.json 含 2 条 evidence 记录
-  - [ ] 不传 --evidence 时行为与现状完全一致（回归：现有 checkpoint 用例不破坏）
-  - [ ] 两个 reference 文档已更新
+  - [x] `node .specs/bin/spec-flow.mjs checkpoint --spec-id X --evidence "a::b" --evidence "c::d"` 后 progress.json 含 2 条 evidence 记录（实测：{step:"B.3", desc, ref, at} 结构正确，返回值含 evidenceCount:2）
+  - [x] 不传 --evidence 时行为与现状完全一致（回归实测：后续 checkpoint --completion-percent 50 输出结构不变；MULTI_VALUE_KEYS 仅含 evidence，其余 flag 单值行为保持）
+  - [x] 两个 reference 文档已更新（command-contract.md checkpoint 节带示例；action-implement.md Do 3 带证据登记指引）
+  - 备注：旧版 progress.json 无 evidence 字段，append 前 `progress.evidence ??= []` 兜底；非法格式（无 `::` 或空段）报错退出。
 
 ---
 

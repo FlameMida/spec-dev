@@ -59,6 +59,10 @@ async function main() {
   }
 }
 
+// 允许同一 flag 重复出现并收集为数组的参数（如 --evidence "a::b" --evidence "c::d"）。
+// 其余 flag 保持单值行为：重复时后值覆盖前值。
+const MULTI_VALUE_KEYS = new Set(["evidence"]);
+
 function parseArgs(argv) {
   const parsed = { _: [] };
 
@@ -71,13 +75,20 @@ function parseArgs(argv) {
 
     const key = camelCase(token.slice(2));
     const next = argv[index + 1];
-    if (next && !next.startsWith("--")) {
-      parsed[key] = next;
+    const value = next && !next.startsWith("--") ? next : true;
+    if (value !== true) {
       index += 1;
+    }
+
+    if (MULTI_VALUE_KEYS.has(key)) {
+      if (!Array.isArray(parsed[key])) {
+        parsed[key] = [];
+      }
+      parsed[key].push(value);
       continue;
     }
 
-    parsed[key] = true;
+    parsed[key] = value;
   }
 
   return parsed;
@@ -207,6 +218,7 @@ function baseProgress({ specId, title, domain, action, runState, createdAt }) {
       action,
       step: null,
     },
+    evidence: [],
     amendments: [],
     acceptance: {
       result: null,
@@ -515,6 +527,28 @@ async function handleCheckpoint(args) {
     progress.blockedReason = args.blockedReason || null;
   }
 
+  if (Array.isArray(args.evidence)) {
+    progress.evidence ??= []; // 旧版 progress.json 无该字段，append 前兜底
+    for (const entry of args.evidence) {
+      const raw = String(entry);
+      const separatorIndex = raw.indexOf("::");
+      if (separatorIndex === -1) {
+        throw new Error(`Invalid --evidence (expected "<desc>::<path-or-command>"): ${raw}`);
+      }
+      const desc = raw.slice(0, separatorIndex).trim();
+      const ref = raw.slice(separatorIndex + 2).trim();
+      if (!desc || !ref) {
+        throw new Error(`Invalid --evidence (empty desc or ref): ${raw}`);
+      }
+      progress.evidence.push({
+        step: progress.currentStep,
+        desc,
+        ref,
+        at: timestamp,
+      });
+    }
+  }
+
   progress.resumePoint = {
     action: args.resumeAction || progress.currentAction,
     step: args.resumeStep !== undefined ? args.resumeStep || null : progress.currentStep,
@@ -537,6 +571,7 @@ async function handleCheckpoint(args) {
     completedSteps: progress.completedSteps,
     completionPercent: progress.completionPercent,
     resumePoint: progress.resumePoint,
+    evidenceCount: (progress.evidence ?? []).length,
   };
 }
 
