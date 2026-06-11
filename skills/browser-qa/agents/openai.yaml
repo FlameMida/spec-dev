@@ -1,0 +1,7 @@
+interface:
+  display_name: "Browser QA"
+  short_description: "浏览器三层测试工作流（E2E + AI 验收 + 调试诊断）"
+  default_prompt: "Use $browser-qa to test the target page or feature. Provide a clear target description (URL or feature) so the workflow can pick the right layer."
+
+policy:
+  allow_implicit_invocation: true

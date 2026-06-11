@@ -17,7 +17,7 @@
 | T2.8 | browser-qa description 收窄 | ✅ | 2026-06-12 |
 | T2.9 | browser-qa Layer 2 证据强制 + 动态验收清单 | ✅ | 2026-06-12 |
 | T2.10 | browser-qa 参数解析改为意图推断优先 | ✅ | 2026-06-12 |
-| T2.11 | 补齐 Codex 元数据（openai.yaml） | ⬜ | — |
+| T2.11 | 补齐 Codex 元数据（openai.yaml） | ✅ | 2026-06-12 |
 | T2.12 | 第二期收尾：同步 + 校验 + 试跑 | ⬜ | — |
 
 ---
@@ -236,16 +236,16 @@
 
 ---
 
-### T2.11 补齐 Codex 元数据（openai.yaml） ⬜
+### T2.11 补齐 Codex 元数据（openai.yaml） ✅
 
-- **状态**: ⬜ 待办　**预估**: 20min　**依赖**: 无
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 20min　**依赖**: 无
 - **目标文件**: 新建 `skills/requirement-analysis/agents/openai.yaml`、`skills/browser-qa/agents/openai.yaml`
 - **问题**: 三个 skill 中只有 spec-flow 有 `agents/openai.yaml`（Codex 端展示名/默认提示词/隐式触发策略），元数据不一致。
 - **改动步骤**:
   1. 参照 `skills/spec-flow/agents/openai.yaml` 的 7 行结构，为另两个 skill 各写一份：display_name、short_description、default_prompt、allow_implicit_invocation（requirement-analysis 设 true；browser-qa 设 true 但 default_prompt 强调需要目标描述）。
 - **验收标准**:
-  - [ ] 三个 skill 均有 agents/openai.yaml 且结构一致
-  - [ ] `node scripts/sync-codex-package.mjs --check --codex-validate` 通过
+  - [x] 三个 skill 均有 agents/openai.yaml 且结构一致（display_name / short_description / default_prompt / allow_implicit_invocation，browser-qa 的 default_prompt 强调需要目标描述）
+  - [x] `node scripts/sync-codex-package.mjs --check --codex-validate` 通过
 
 ---
 

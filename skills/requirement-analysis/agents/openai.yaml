@@ -1,0 +1,7 @@
+interface:
+  display_name: "Requirement Analysis"
+  short_description: "系统化 9 阶段需求分析与实施工作流"
+  default_prompt: "Use $requirement-analysis to analyze and implement this feature through the 9-phase workflow."
+
+policy:
+  allow_implicit_invocation: true
