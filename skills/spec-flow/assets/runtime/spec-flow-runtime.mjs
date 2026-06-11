@@ -523,6 +523,10 @@ async function handleCheckpoint(args) {
   }
   if (args.completionPercent !== undefined) {
     const completionPercent = parseNumber(args.completionPercent, "completion-percent");
+    if (completionPercent < 0 || completionPercent > 100) {
+      // 不静默 clamp——静默修正会掩盖调用方 bug
+      throw new Error(`Invalid completion-percent (expected 0-100): ${completionPercent}`);
+    }
     progress.completionPercent = completionPercent;
     record.completionPercent = completionPercent;
   }
@@ -698,6 +702,9 @@ async function handleArchive(args) {
   if (progress.acceptance.result !== "pass" && !force) {
     throw new Error("Spec has not passed acceptance. Use --force only after explicit user confirmation.");
   }
+  if (summaryPathInput && !(await exists(path.join(cwd, summaryPathInput)))) {
+    throw new Error(`Summary file not found: ${summaryPathInput}. 先生成 archive-summary.md 再归档。`);
+  }
 
   const targetDir = getSpecDir(specId, "archived");
   if (await exists(targetDir)) {
@@ -723,7 +730,12 @@ async function handleArchive(args) {
   const archivedReportPath = progress.acceptance.reportPath
     ? path.join(targetDir, path.basename(progress.acceptance.reportPath))
     : null;
-  const archivedSummaryPath = summaryPathInput ? path.join(targetDir, path.basename(summaryPathInput)) : null;
+  // summary 在 spec 目录内时随 rename 自然迁移；在目录外时保持原路径
+  let finalSummaryPath = null;
+  if (summaryPathInput) {
+    const migrated = path.join(targetDir, path.basename(summaryPathInput));
+    finalSummaryPath = (await exists(migrated)) ? migrated : path.join(cwd, summaryPathInput);
+  }
   if (archivedReportPath) {
     progress.acceptance.reportPath = relativePath(archivedReportPath);
   }
@@ -746,7 +758,7 @@ async function handleArchive(args) {
     forced: force,
     path: relativePath(targetDir),
     archivedAt: timestamp,
-    summaryPath: archivedSummaryPath ? relativePath(archivedSummaryPath) : null,
+    summaryPath: finalSummaryPath ? relativePath(finalSummaryPath) : null,
   };
 }
 

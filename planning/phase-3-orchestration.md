@@ -16,7 +16,7 @@
 | T3.6 | deep 档：judge panel + multi-modal sweep | ✅ | 2026-06-12 |
 | T3.7 | runtime: checkpoint 增加 --evidence | ✅ | 2026-06-12 |
 | T3.8 | runtime: 新增 doctor 子命令 | ✅ | 2026-06-12 |
-| T3.9 | runtime: 小修集（百分比校验/summary-path/时区/并发声明） | ⬜ | — |
+| T3.9 | runtime: 小修集（百分比校验/summary-path/时区/并发声明） | ✅ | 2026-06-12 |
 | T3.10 | journal 化：编排状态入 progress.json | ⬜ | — |
 | T3.11 | 互操作：spec-flow accept ↔ browser-qa 取证 | ⬜ | — |
 | T3.12 | 互操作：requirement-analysis → spec-flow 升级出口 | ⬜ | — |
@@ -297,9 +297,9 @@
 
 ---
 
-### T3.9 runtime: 小修集 ⬜
+### T3.9 runtime: 小修集 ✅
 
-- **状态**: ⬜ 待办　**预估**: 1.5h　**依赖**: 无
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 1.5h　**依赖**: 无
 - **目标文件**: `skills/spec-flow/assets/runtime/spec-flow-runtime.mjs`、`skills/spec-flow/references/command-contract.md`
 - **改动步骤**（4 个独立小修，一次提交）:
   1. **completionPercent 校验**：`handleCheckpoint` 中超出 0–100 直接报错（与 ensureEnum 同风格），不静默 clamp——静默修正会掩盖调用方 bug。
@@ -307,9 +307,9 @@
   3. **时区一致**：spec-id 的 `localDateStamp` 保持本地日期（用户直觉），在 command-contract.md 注明「spec-id 日期为本地时区，createdAt 等时间戳为 UTC ISO」，消除歧义而非强行统一。
   4. **并发声明**：command-contract.md 末尾加「Concurrency」节：「runtime 无文件锁，设计为单会话顺序调用；多会话并行写同一 `.specs/` 可能丢失更新，跨会话场景先 `status` 确认无其他活跃会话」。
 - **验收标准**:
-  - [ ] `checkpoint --completion-percent 150` 报错退出
-  - [ ] `archive --summary-path 不存在的路径` 报错；存在时返回迁移后路径
-  - [ ] command-contract.md 含时区说明与 Concurrency 节
+  - [x] `checkpoint --completion-percent 150` 报错退出（实测 exit 1，不静默 clamp；45 正常）
+  - [x] `archive --summary-path 不存在的路径` 报错；存在时返回迁移后路径（实测：不存在报"先生成 archive-summary.md 再归档"；存在时返回 `.specs/archive/<id>/archive-summary.md` 且迁移后文件真实存在；spec 目录外的 summary 保持原路径不误报迁移）
+  - [x] command-contract.md 含时区说明与 Concurrency 节
 
 ---
 
