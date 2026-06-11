@@ -22,7 +22,7 @@
 | T3.12 | 互操作：requirement-analysis → spec-flow 升级出口 | ✅ | 2026-06-12 |
 | T3.13 | 建立 evals（每 skill 3–5 个测试用例） | ✅ | 2026-06-12 |
 | T3.14 | description 触发优化（browser-qa 优先） | ✅ | 2026-06-12 |
-| T3.15 | browser-qa 前置检测脚本化 detect-env.mjs | ⬜ | — |
+| T3.15 | browser-qa 前置检测脚本化 detect-env.mjs | ✅ | 2026-06-12 |
 | T3.16 | 第三期收尾：同步 + 校验 + CHANGELOG + 看板 | ⬜ | — |
 
 ---
@@ -401,9 +401,9 @@
 
 ---
 
-### T3.15 browser-qa 前置检测脚本化 detect-env.mjs ⬜
+### T3.15 browser-qa 前置检测脚本化 detect-env.mjs ✅
 
-- **状态**: ⬜ 待办　**预估**: 1.5h　**依赖**: 无
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 1.5h　**依赖**: 无
 - **目标文件**: 新建 `skills/browser-qa/scripts/detect-env.mjs`、`skills/browser-qa/SKILL.md`（前置检查节）
 - **设计意图**: D2 分层——环境检测是纯机械操作，脚本一次跑完输出 JSON，替代模型多回合探查（每次触发省 3–5 个工具调用）。
 - **改动步骤**:
@@ -418,9 +418,10 @@
      （MCP 连接状态无法从脚本探测，仍由模型在会话内确认——脚本只管文件系统可判定项。）
   2. SKILL.md 前置检查节改为：「运行 detect-env.mjs（skill base directory 下相对路径），按 JSON 结果走分支；脚本不可用时退回手工检测清单（保留现有清单为降级路径）」。
 - **验收标准**:
-  - [ ] 在有/无 playwright 配置的两个项目实测输出正确
-  - [ ] SKILL.md 引用使用 skill 相对路径（scripts/ 在 skill 目录内，随 skill 分发）
-  - [ ] 手工检测清单保留为降级路径
+  - [x] 在有/无 playwright 配置的两个项目实测输出正确（实测 3 类：完整项目全字段检出无建议、空目录给非 Node 适配建议、Node 无 Playwright 项目给非交互安装序列建议——与 T1.7 措辞一致）
+  - [x] SKILL.md 引用使用 skill 相对路径（`<skill-base-directory>/scripts/detect-env.mjs`，scripts/ 在 skill 目录内随 skill 分发）
+  - [x] 手工检测清单保留为降级路径（"脚本不可用时退回手工检测清单"）
+  - 备注：顺带移除前置检查第 1 节残留的 `.claude/settings.*` 扫描项（T1.2 已修正的错误配置位置在此处的残影，MCP 确认本就在第 3 节）。
 
 ---
 

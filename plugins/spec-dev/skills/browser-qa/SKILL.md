@@ -30,7 +30,17 @@ description: >
 
 ## 前置检查
 
-在执行任何层级前，先完成环境检测：
+在执行任何层级前，先完成环境检测。
+
+**脚本优先**：运行 skill 自带的检测脚本（一次输出全部文件系统可判定项，替代多回合探查）：
+
+```bash
+node <skill-base-directory>/scripts/detect-env.mjs [--cwd <project>]
+```
+
+输出 JSON 含 `node_project` / `package_manager` / `playwright_config` / `playwright_installed` / `test_dir` / `suggestions`，按 `suggestions` 逐条处理后再进入层级执行。MCP 连接状态脚本无法探测，仍按下方第 3 节在会话内确认。
+
+**脚本不可用时**，退回以下手工检测清单：
 
 ### 1. 项目结构扫描
 
@@ -38,8 +48,7 @@ description: >
 检测以下内容是否存在：
 ├── package.json                # 项目是否为 Node.js 项目
 ├── playwright.config.*         # Playwright 是否已配置
-├── tests/ 或 e2e/ 或 __tests__/ # 测试目录位置
-└── .claude/settings.*          # MCP Server 配置
+└── tests/ 或 e2e/ 或 __tests__/ # 测试目录位置
 ```
 
 ### 2. Playwright 安装检测
