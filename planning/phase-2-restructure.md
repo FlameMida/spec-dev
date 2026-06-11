@@ -10,7 +10,7 @@
 | T2.1 | 创建 codex-compat.md，抽离双环境样板 | ✅ | 2026-06-12 |
 | T2.2 | requirement-analysis SKILL.md 瘦身重写 | ✅ | 2026-06-12 |
 | T2.3 | 引入三档复杂度路由（light/standard/deep） | ✅ | 2026-06-12 |
-| T2.4 | 阶段 5 接入 code-architect agent | ⬜ | — |
+| T2.4 | 阶段 5 接入 code-architect agent | ✅ | 2026-06-12 |
 | T2.5 | 审查维度对齐（5 维 ↔ 3 维统一） | ⬜ | — |
 | T2.6 | reviewer 类 agent 模型升档 | ⬜ | — |
 | T2.7 | spec-flow command 薄壳化，消除双入口漂移 | ⬜ | — |
@@ -93,9 +93,9 @@
 
 ---
 
-### T2.4 阶段 5 接入 code-architect agent ⬜
+### T2.4 阶段 5 接入 code-architect agent ✅
 
-- **状态**: ⬜ 待办　**预估**: 45min　**依赖**: T2.2、T2.3
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 45min　**依赖**: T2.2、T2.3
 - **目标文件**: `skills/requirement-analysis/SKILL.md`（阶段 5）
 - **问题**: `agents/code-architect.md` 在 README 中标注「使用场景: requirement-analysis」，但 SKILL.md 通篇没有引用它——专门定义的架构 agent 成了死代码；阶段 5 的架构设计只靠主线程思考，缺少带完整代码库上下文的独立设计视角。
 - **改动步骤**:
@@ -105,9 +105,9 @@
      - deep：预留 judge panel 接口（T3.6 落地，此处只写「deep 档见阶段 5 deep 编排」占位引用）。
   2. 明确传给 code-architect 的输入契约（任务描述、关键文件列表、项目规范要点、已确认的澄清结论）——agent 定义中已有输出格式，无需改 agent 文件。
 - **验收标准**:
-  - [ ] standard 档阶段 5 的执行步骤明确引用 `code-architect`
-  - [ ] 输入契约清单完整（4 项输入）
-  - [ ] README 的 agent 用途表与实际引用关系一致
+  - [x] standard 档阶段 5 的执行步骤明确引用 `code-architect`（agent 出蓝图、主线程做决策，职责分离）
+  - [x] 输入契约清单完整（4 项输入：任务描述、关键文件列表、项目规范要点、已确认的澄清结论）
+  - [x] README 的 agent 用途表与实际引用关系一致（README:267 code-architect→requirement-analysis，现已真实引用）
 
 ---
 
