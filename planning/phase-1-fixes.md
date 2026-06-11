@@ -11,7 +11,7 @@
 | T1.2 | 修正 browser-qa 的 MCP 配置位置错误 | ✅ | 2026-06-12 |
 | T1.3 | 修正 browser-qa 的过时 MCP 工具名 | ✅ | 2026-06-12 |
 | T1.4 | 全局替换过时的 Claude Code 工具名 | ✅ | 2026-06-12 |
-| T1.5 | 修复 output-template 阶段编号错误 | ⬜ | — |
+| T1.5 | 修复 output-template 阶段编号错误 | ✅ | 2026-06-12 |
 | T1.6 | 消除阶段 4 "必须澄清"的自相矛盾 | ⬜ | — |
 | T1.7 | 修复交互式命令卡死问题 | ⬜ | — |
 | T1.8 | Layer 1 测试运行范围收窄 | ⬜ | — |
@@ -98,17 +98,17 @@
 
 ---
 
-### T1.5 修复 output-template 阶段编号错误 ⬜
+### T1.5 修复 output-template 阶段编号错误 ✅
 
-- **状态**: ⬜ 待办　**预估**: 5min　**依赖**: 无
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 5min　**依赖**: 无
 - **目标文件**: `skills/requirement-analysis/assets/output-template.md`
 - **问题**: 第 63 行标题为「## 阶段 7: 代码审查阶段」，而 SKILL.md 中代码审查是**阶段 8**（阶段 7 是实施开发）。模型按模板输出时会产生编号错乱。
 - **改动步骤**:
   1. 第 63 行改为「## 阶段 8: 代码审查」。
   2. 顺手复查模板内其余阶段编号引用（第 3 行「阶段 1-5」的范围与 SKILL.md 阶段定义核对——阶段 6 是展示计划，模板覆盖 1–5 加确认问句，实际是阶段 6 的展示内容，标题改为「阶段 1-6: 分析和计划阶段」更准确）。
 - **验收标准**:
-  - [ ] 模板中所有阶段编号与 `skills/requirement-analysis/SKILL.md` 的 9 阶段定义一一对应
-  - [ ] `node scripts/sync-codex-package.mjs --check` 通过
+  - [x] 模板中所有阶段编号与 `skills/requirement-analysis/SKILL.md` 的 9 阶段定义一一对应（「阶段 1-6: 分析和计划」含阶段 6 确认问句；「阶段 8: 代码审查」对应 SKILL.md 阶段 8）
+  - [x] `node scripts/sync-codex-package.mjs --check` 通过
 
 ---
 
