@@ -116,6 +116,8 @@ npx chrome-devtools-mcp@latest --help
 
 ### 安装
 
+**安装前必须向用户说明并获得同意**——以下步骤会把第三方仓库（browser-use/browser-harness）的代码引入本机，这是外部代码进入本机的信任边界。同时先检查该仓库是否仍然存在与维护（已归档或长期无更新时向用户提示风险）。
+
 ```bash
 # 克隆到本地
 git clone https://github.com/browser-use/browser-harness.git ~/browser-harness

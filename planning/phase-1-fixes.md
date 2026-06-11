@@ -15,7 +15,7 @@
 | T1.6 | 消除阶段 4 "必须澄清"的自相矛盾 | ✅ | 2026-06-12 |
 | T1.7 | 修复交互式命令卡死问题 | ✅ | 2026-06-12 |
 | T1.8 | Layer 1 测试运行范围收窄 | ✅ | 2026-06-12 |
-| T1.9 | 统一 Browser Harness 安装方式并加用户确认 | ⬜ | — |
+| T1.9 | 统一 Browser Harness 安装方式并加用户确认 | ✅ | 2026-06-12 |
 | T1.10 | 第一期收尾：同步分发包 + 全量校验 | ⬜ | — |
 
 ---
@@ -162,18 +162,18 @@
 
 ---
 
-### T1.9 统一 Browser Harness 安装方式并加用户确认 ⬜
+### T1.9 统一 Browser Harness 安装方式并加用户确认 ✅
 
-- **状态**: ⬜ 待办　**预估**: 25min　**依赖**: 无
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 25min　**依赖**: 无
 - **目标文件**: `skills/browser-qa/SKILL.md`（第 59–73 行）、`skills/browser-qa/references/mcp-setup.md`（第 105–145 行）
 - **问题**: 两处安装方式互相矛盾——SKILL.md 让 Claude 执行第三方仓库的 install.md 提示词（"自动注册到会话"），mcp-setup.md 是 `git clone` + export PATH。且前者存在供应链信任问题：未经用户确认执行远程仓库的指令。
 - **改动步骤**:
   1. **以 mcp-setup.md 的显式步骤为准**（可审计、可重复）。SKILL.md 第 59–73 行压缩为：「Browser Harness 用于穿透 Shadow DOM/iframe，属 Layer 3 可选工具。安装步骤见 [mcp-setup.md](references/mcp-setup.md#3-browser-harness-layer-3-可选)。**安装涉及执行第三方仓库（browser-use/browser-harness）的指令，必须先向用户说明并获得同意**——这是外部代码进入本机的信任边界。」
   2. mcp-setup.md 的 Browser Harness 节开头同样加用户确认要求，并补充「安装前检查该仓库是否仍然存在与维护」。
 - **验收标准**:
-  - [ ] SKILL.md 与 mcp-setup.md 只剩一种安装路径（后者），前者仅保留指引链接
-  - [ ] 两处均含"执行第三方指令前征得用户同意"的明确要求
-  - [ ] `node scripts/sync-codex-package.mjs --check` 通过
+  - [x] SKILL.md 与 mcp-setup.md 只剩一种安装路径（后者），前者仅保留指引链接（Layer 3 诊断流程中的旧"提示词安装"引用也已同步改为链接）
+  - [x] 两处均含"执行第三方指令前征得用户同意"的明确要求
+  - [x] `node scripts/sync-codex-package.mjs --check` 通过
 
 ---
 

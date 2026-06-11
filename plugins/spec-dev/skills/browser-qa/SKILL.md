@@ -60,19 +60,9 @@ description: >
 
 ### 4. Browser Harness 就绪检测（Layer 3 可选）
 
-Browser Harness 用于穿透 Shadow DOM/iframe，不通过 MCP 运行，而是作为 CLI 工具使用。
+Browser Harness 用于穿透 Shadow DOM/iframe，属 Layer 3 可选工具，不通过 MCP 运行，而是作为 CLI 工具使用。
 
-**首次使用时**，在 Claude Code 中执行以下提示词完成安装：
-
-```
-Set up https://github.com/browser-use/browser-harness for me.
-
-Read `install.md` and follow the steps to install browser-harness and connect it to my browser.
-```
-
-安装完成后，Browser Harness 会自动注册到当前 Claude Code 会话中，无需额外配置。
-
-**后续使用**无需重复安装，直接在 Layer 3 诊断中调用即可。
+安装步骤见 [mcp-setup.md](references/mcp-setup.md#3-browser-harness-layer-3-可选)。**安装涉及执行第三方仓库（browser-use/browser-harness）的指令，必须先向用户说明并获得同意**——这是外部代码进入本机的信任边界。
 
 ---
 
@@ -230,7 +220,7 @@ npx playwright test <本次生成的测试文件路径> --reporter=list
 
 **Browser Harness 诊断流程**（仅在 Shadow DOM/iframe 场景）:
 
-> 若 Browser Harness 未安装，先执行前置检查中的提示词完成安装。
+> 若 Browser Harness 未安装，按 [mcp-setup.md](references/mcp-setup.md#3-browser-harness-layer-3-可选) 的步骤安装（需先征得用户同意）。
 
 1. 通过 CLI 连接真实 Chrome 浏览器（CDP WebSocket）
 2. 使用坐标点击（`Input.dispatchMouseEvent`）定位问题元素
