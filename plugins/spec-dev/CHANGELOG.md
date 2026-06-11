@@ -9,9 +9,17 @@
 
 ## [未发布]
 
-### 🔧 修复 (Fixed)
+### 🔧 修复 (Fixed) — 第一期 P0 修错（2026-06-12）
 
-- **Claude Code 工具名升级**（T1.4）— `Task` 工具已更名为 `Agent`，`TaskOutput` 已废弃（后台任务完成通知自动送达，无需轮询）：`requirement-analysis` SKILL.md 全部并行子任务指引已更新；5 个 agent 的 `tools:` 列表移除已被 TaskCreate/TaskUpdate/TaskList/TaskGet 取代的 `TodoWrite`。旧版 Claude Code 用户如遇 `Agent` 工具不存在，请升级 Claude Code。
+- **T1.1 spec-flow command 插件资源路径** — `commands/spec-flow.md` 中全部 `skills/spec-flow/...` 路径加 `${CLAUDE_PLUGIN_ROOT}/` 前缀并补兜底说明，`/spec-flow init` 不再需要模型自行摸索插件安装目录；验证确认 Codex 端不加载 commands 目录，无需同步转换
+- **T1.2 browser-qa MCP 配置位置** — `mcp-setup.md` 的 MCP 配置位置由错误的 `settings.json` 修正为项目级 `.mcp.json` / 用户级 `~/.claude.json`（与 README 一致），并补充 `claude mcp add` 快捷方式
+- **T1.3 browser-qa 过时 MCP 工具名** — `browser_screenshot`→`browser_take_screenshot`、`navigate`→`navigate_page`、`screenshot`→`take_screenshot`、`console_logs`→`list_console_messages`；Playwright 表补充 `browser_fill_form`、`browser_wait_for`；两张工具表加"以实际 server 为准"免漂移说明
+- **T1.4 Claude Code 工具名升级** — `Task` 工具已更名为 `Agent`，`TaskOutput` 已废弃（后台任务完成通知自动送达，无需轮询）：`requirement-analysis` SKILL.md 全部并行子任务指引已更新；5 个 agent 的 `tools:` 列表移除已被 TaskCreate/TaskUpdate/TaskList/TaskGet 取代的 `TodoWrite`。旧版 Claude Code 用户如遇 `Agent` 工具不存在，请升级 Claude Code
+- **T1.5 output-template 阶段编号** — 「阶段 7: 代码审查阶段」→「阶段 8: 代码审查」、「阶段 1-5」→「阶段 1-6」，与 SKILL.md 九阶段定义对齐
+- **T1.6 阶段 4 澄清指令自相矛盾** — 「必须向用户发起澄清」改为"存在待澄清项时必须提问 + 无疑义时记录后直进阶段 5"，消除与模板「无疑问」占位的两难
+- **T1.7 交互式命令卡死** — browser-qa 前置检查不再引导运行交互式 `npm init playwright@latest`（会挂起 agent 会话），改为非交互安装序列（已实测）
+- **T1.8 Layer 1 测试范围收窄** — `npx playwright test` 改为只运行本次生成的测试文件，项目既有失败不再污染本次验收结论
+- **T1.9 Browser Harness 安装统一** — 移除 SKILL.md 中执行第三方仓库提示词的安装方式，统一为 mcp-setup.md 的显式 git clone 步骤；两处均要求"执行第三方指令前征得用户同意"
 
 ---
 
