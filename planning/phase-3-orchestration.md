@@ -23,7 +23,7 @@
 | T3.13 | 建立 evals（每 skill 3–5 个测试用例） | ✅ | 2026-06-12 |
 | T3.14 | description 触发优化（browser-qa 优先） | ✅ | 2026-06-12 |
 | T3.15 | browser-qa 前置检测脚本化 detect-env.mjs | ✅ | 2026-06-12 |
-| T3.16 | 第三期收尾：同步 + 校验 + CHANGELOG + 看板 | ⬜ | — |
+| T3.16 | 第三期收尾：同步 + 校验 + CHANGELOG + 看板 | ✅ | 2026-06-12 |
 
 ---
 
@@ -425,14 +425,15 @@
 
 ---
 
-### T3.16 第三期收尾：同步 + 校验 + CHANGELOG + 看板 ⬜
+### T3.16 第三期收尾：同步 + 校验 + CHANGELOG + 看板 ✅
 
-- **状态**: ⬜ 待办　**预估**: 1h　**依赖**: T3.1–T3.15
+- **状态**: ✅ 完成（2026-06-12）　**预估**: 1h　**依赖**: T3.1–T3.15
 - **改动步骤**:
   1. 三个校验命令全跑（同 T1.10）；`validate-skills.mjs` 确认新增的 scripts/schemas/evals 不破坏结构校验。
   2. 端到端验证：spec-flow 完整生命周期（init→explore→plan→implement(含 evidence)→accept(含对抗复核)→archive）跑一个小型真实任务。
   3. CHANGELOG 记录第三期（编排方法论内化的设计决策 D1–D5 摘要 + 任务清单）。
   4. 更新总览看板，勾选 M3、M4；回顾"不建议做清单"确认未越界。
 - **验收标准**:
-  - [ ] 校验全过；端到端生命周期走通且 acceptance-report 含复核与覆盖声明
-  - [ ] CHANGELOG 完整；看板 M3/M4 勾选
+  - [x] 校验全过；端到端生命周期走通且 acceptance-report 含复核与覆盖声明（三个校验命令含 --codex-validate 全过，新增 scripts/schemas/evals 未破坏结构校验；端到端实测："--json 输出模式"小任务走完 init→explore(draft)→plan/completed→implement[evidence ×2 + dispatch journal]→accept[acceptance-findings 契约校验 PASS、coverage_note 注明"复核为同线程模拟"、pass→accept/completed]→archive[summary 迁移至归档目录]，终态 doctor healthy=true）
+  - [x] CHANGELOG 完整（D1–D5 设计决策摘要 + T3.1–T3.15 任务清单）；看板 M3/M4 勾选
+  - 备注：回顾"不建议做清单"确认未越界——①未全盘重编排（deep 档才启用完整编排，light/standard 保持轻路径）②explore 摘要与 plan 文档未加 N-skeptic 投票（对抗复核只落在阶段 8 / accept / Layer 2 三个关口）③Layer 2 保持串行且双处显式禁令 ④未写 Workflow 模拟器（编排=伪代码+确定性脚本，工具无关）。

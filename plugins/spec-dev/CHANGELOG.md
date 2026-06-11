@@ -9,6 +9,25 @@
 
 ## [未发布]
 
+### ✨ 新增 (Added) — 第三期编排方法论增强（2026-06-12）
+
+把 Workflow 的编排方法论（契约化输出、对抗复核、枯竭循环、失败隔离、覆盖声明、声明式控制流）内化为 skill 自己的纪律。实现形态 = **prompt 层伪代码 + 确定性校验脚本**，不调用 Workflow 工具，Claude Code 与 Codex 跑同一套编排逻辑（设计决策 D1/D2）；对抗验证只落在三个质量关口并按 severity 分级触发（D3）；deep 档才启用完整编排（D4）；browser-qa Layer 2 永远串行（D5）。
+
+- **T3.1 契约校验器** — 新增 `scripts/validate-output.mjs`（无第三方依赖的 JSON Schema 子集校验 CLI）与 `scripts/schemas/`；子代理输出落盘后脚本确定性校验，失败退回补全；同步脚本补 scripts 条目使其随 Codex 分发包分发
+- **T3.2 四类输出契约** — exploration-report / review-findings / acceptance-findings / browser-check-items，全部含必填 `coverage_note`（no silent caps：截断必须显式声明）
+- **T3.3 阶段 8 伪代码编排** — fan-out 单响应、契约校验+补全重试、loop-until-dry 枯竭循环（复核否决项留 seen 防不收敛）、对抗复核（仅高/中）、completeness critic + 覆盖声明、失败隔离
+- **T3.4 accept 伪代码编排** — skeptic（杀误报）+ coverage critic（抓漏报）双向对抗；「已接受的 MAJOR」完整闭环（用户确认 → accepted_risks → 结论规则）；reviewer 输出 markdown+JSON 双产物；报告模板加 Accepted Risks 节
+- **T3.5 Layer 2 串行编排** — 证据契约 JSON 落盘校验；fail/warn 必做"不信任原结论"复核并产出第二份证据，pass 默认不复核；并行驱动浏览器列入"不要做的事"（单实例硬约束）
+- **T3.6 deep 档编排** — 阶段 2 multi-modal sweep（4 模态盲扫，不绑定后端分层假设）+ 阶段 5 judge panel（3 视角盲评 + 4 维评分合成）；light/standard 显式禁用
+- **T3.7 checkpoint --evidence** — 实施时累积证据进 `progress.evidence[]`，验收直接消费（journal 思想，消除 implement→accept 证据断层）
+- **T3.8 doctor 子命令** — 7 类一致性检测；`--fix` 仅修安全项（字段漂移回写、孤儿目录重建），目录/文件缺失类只给人工建议
+- **T3.9 runtime 小修集** — completionPercent 越界报错（不静默 clamp）、archive summary-path 存在性校验与迁移路径返回、时区说明、Concurrency 节
+- **T3.10 编排状态 journal 化** — `checkpoint --dispatch` 登记子任务，`resume` 返回 `pendingDispatch`；恢复时已 done 子任务直接复用结果不重派
+- **T3.11/T3.12 互操作** — accept 对 UI 类验收先建议 browser-qa 取证（建议非硬依赖）；requirement-analysis 阶段 6 升级出口（5 行映射表把分析成果迁移为 spec/plan 初稿）
+- **T3.13 evals 基线** — 三 skill 共 12 个真实感用例（含档位路由/证据强制/意图推断/should-not-trigger 边界）
+- **T3.14 触发优化** — browser-qa 20 条 trigger evals 基线；新 description should-trigger 10/10、near-miss 误触发 0/10（旧版 8/10、约 3-4/10）；requirement-analysis ↔ spec-flow 互斥条件写入双方 description
+- **T3.15 detect-env.mjs** — browser-qa 前置环境检测脚本化（一次输出全部文件系统可判定项），手工清单保留为降级路径
+
 ### 🔧 改进 (Changed) — 第二期结构重构（2026-06-12）
 
 - **T2.1 双环境样板抽离** — 新建 `skills/requirement-analysis/references/codex-compat.md` 集中收纳 Codex 环境判定、工具映射、提问规范与任务管理细则；删除跨版本脆弱的 `multi_tool_use.parallel` 内部命名
