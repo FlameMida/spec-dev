@@ -7,6 +7,22 @@
 
 ---
 
+## [5.4.0] - 2026-06-12
+
+### 🔧 改进 (Changed) — 单一源结构改造
+
+- **`plugins/spec-dev/` 成为插件唯一源码目录** — 删除根目录 `skills/`、`agents/`、`commands/`、`.codex-plugin/`、`scripts/validate-output.mjs`、`scripts/schemas/` 重复副本；`.claude-plugin/marketplace.json` 的 plugin source 由 `./` 改为 `./plugins/spec-dev`（Claude Code 官方支持同仓库子目录 source），与 Codex marketplace 指向同一物理目录。skill/agent/command 变更从此只改一处，git diff 单份
+- **同步机制退役为校验机制** — 删除 `scripts/sync-codex-package.mjs` 全量拷贝逻辑，新增 `scripts/check-mirrors.mjs`：仅校验 `README.md`、`CHANGELOG.md`、`.mcp.json` 三个受控双份文件逐字节一致（`--fix` 以仓库根为编辑面单向对齐），保留 `--codex-validate` 官方 Codex CLI 真实安装校验与插件包 symlink 防御
+- **pre-commit hook 链路简化** — 由"同步 → 双重校验 → 暂存检查"改为"check-mirrors（含 Codex 安装校验）→ validate-skills → diff check"；不再产生需要二次暂存的生成文件，提交一步完成；`SKIP_CODEX_PACKAGE_HOOK=1` 跳过语义不变
+- **validate-skills.mjs 收敛** — skill 校验根从 [仓库根, 插件包] 双份收敛为插件包单份
+
+### 📝 说明
+
+- 已安装用户无需操作：Claude Code 侧更新 marketplace 后重装即得新结构（旧 commit 缓存自然废弃）；Codex 侧插件入口路径未变，`codex plugin marketplace upgrade spec-agent-skills` 照常
+- 附带收益：Claude Code 安装拷贝范围由整个仓库缩小为 `plugins/spec-dev/`，用户插件缓存不再包含仓库级开发文件
+
+---
+
 ## [5.3.0] - 2026-06-12
 
 ### ✨ 新增 (Added) — 第三期编排方法论增强

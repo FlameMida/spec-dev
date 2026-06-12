@@ -1,35 +1,17 @@
 #!/bin/sh
 set -eu
 
+# 变量名沿用旧习惯（原 Codex 包同步 hook），语义为跳过插件包校验
 if [ "${SKIP_CODEX_PACKAGE_HOOK:-}" = "1" ]; then
-  echo "Skipping Codex package pre-commit hook because SKIP_CODEX_PACKAGE_HOOK=1."
+  echo "Skipping plugin package pre-commit hook because SKIP_CODEX_PACKAGE_HOOK=1."
   exit 0
 fi
 
 repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
 
-package_paths=".codex-plugin .mcp.json agents commands skills README.md CHANGELOG.md plugins/spec-dev"
-
-echo "Syncing Codex marketplace package..."
-node scripts/sync-codex-package.mjs
-
-if ! git diff --quiet -- $package_paths; then
-  echo "Codex package source or generated files have unstaged changes after sync." >&2
-  echo "Stage these changes and run commit again:" >&2
-  git status --short -- $package_paths >&2
-  exit 1
-fi
-
-untracked_package_files="$(git ls-files --others --exclude-standard -- plugins/spec-dev)"
-if [ -n "$untracked_package_files" ]; then
-  echo "Codex package sync produced untracked files. Stage them and run commit again:" >&2
-  echo "$untracked_package_files" >&2
-  exit 1
-fi
-
-echo "Validating Codex marketplace package with official Codex CLI..."
-node scripts/sync-codex-package.mjs --check --codex-validate
+echo "Checking mirrored files and validating plugin package with official Codex CLI..."
+node scripts/check-mirrors.mjs --codex-validate
 
 echo "Validating bundled skills with skill-creator..."
 node scripts/validate-skills.mjs

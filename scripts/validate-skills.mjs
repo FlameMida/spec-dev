@@ -9,7 +9,6 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
 const packageRoot = path.join(repoRoot, "plugins", "spec-dev");
 const skillRoots = [
-  path.join(repoRoot, "skills"),
   path.join(packageRoot, "skills"),
 ];
 const args = new Set(process.argv.slice(2));
@@ -55,7 +54,7 @@ try {
 function printUsage() {
   console.log(`Usage: node scripts/validate-skills.mjs
 
-Validates all root and generated Codex package skills with skill-creator/scripts/quick_validate.py.
+Validates all plugin package skills (plugins/spec-dev/skills) with skill-creator/scripts/quick_validate.py.
 
 Environment:
   SKILL_CREATOR_QUICK_VALIDATE   Absolute path to quick_validate.py.
