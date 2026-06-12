@@ -20,6 +20,11 @@
       "id": "ra-clear-no-fake-questions",
       "prompt": "在 README.md 的安装一节末尾加一行：要求 Node.js >= 20。就这一个改动",
       "expected_output": "需求完全清晰时记录\"需求已清晰，无需澄清\"直接进入后续阶段，不为走流程编造澄清问题；判 light 档"
+    },
+    {
+      "id": "ra-phase6-path-menu",
+      "prompt": "给我们的 CLI 工具加一个导出报告子命令，分析做完后我想先让 codex 帮我把把关，再把计划拆成可以中断恢复的任务清单慢慢做",
+      "expected_output": "阶段 6 展示计划后以单次交互呈现路径菜单（直接实施/与 codex 计划讨论/计划拆分落盘）并保留计划修改意见入口；选路径 2 时先检测 codex CLI 可用性，read-only 沙箱多轮讨论 ≤3 轮且逐轮汇总共识/分歧，共识计划经用户确认后写入 docs/【YYYYMMDD-计划名】/plan.md，随后重出精简菜单可继续选拆分；选路径 3 时同目录生成 plan.md+tasks.md+progress.md 三件套并将任务注册进运行时任务管理（Claude Code 用 TaskCreate/TaskUpdate，Codex 用 update_plan），状态同步以文档为持久层；Codex 环境下菜单隐藏路径 2"
     }
   ]
 }

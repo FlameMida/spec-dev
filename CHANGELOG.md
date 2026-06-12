@@ -7,6 +7,18 @@
 
 ---
 
+## [5.5.0] - 2026-06-12
+
+### ✨ 新增 (Added) — 阶段 6 路径选择菜单
+
+- **requirement-analysis 阶段 6 计划出口升级为三路径菜单** — 展示计划后一次交互完成计划反馈与路径选择：① 直接开始实施（原行为）；② 与 codex 计划讨论——`codex exec`（read-only 沙箱）多轮评审 ≤3 轮，逐轮汇总共识/分歧，共识计划经用户确认后写入 `docs/【YYYYMMDD-计划名】/plan.md`，CLI 不可用自动降级回退；③ 计划拆分落盘——同目录生成 `plan.md` + `tasks.md` + `progress.md` 三件套（任务状态机 pending|in_progress|completed|blocked、当前任务指针、append-only 变更日志、自包含会话恢复指引），并将任务注册进运行时任务管理（Claude Code 用 `TaskCreate`/`TaskUpdate`，Codex 用 `update_plan`），文档为持久层、先改文档再同步运行时
+- **新增 `references/plan-handoff.md`** — 路径 2/3 执行细则单一定义点：与 spec-flow 的边界声明（满足跨会话/验收留痕条件仍优先建议升级）、共用目录约定（同日重名追加序号、讨论后拆分不另开目录）、codex 讨论命令序列（stdin 管道防 argv 超长、`-o` 落盘取回、`exec resume` 会话延续与并发警告、单轮超时作废）、三件套生成与双轨同步规则、跨会话审查纪律
+- **新增 `assets/plan-split-templates.md`** — 三件套 markdown 模板（字段定义、状态机、恢复指引固定文案）
+- **菜单保留修改意见入口** — 用户对计划本身给出反馈时回到计划修订，修改后重新展示并重出菜单，不强迫三选一；Codex 环境菜单仅 ①③（自我评审无独立性收益，定义点在 codex-compat.md）；满足 spec-flow 升级条件时菜单附注升级建议（原升级出口条件与映射表不变，时序由"确认后判断"并入菜单附注，少一轮交互）
+- **evals 增补** — 新增 `ra-phase6-path-menu` 用例，覆盖菜单呈现、codex 讨论轮次约束、三件套生成与双轨同步断言
+
+---
+
 ## [5.4.0] - 2026-06-12
 
 ### 🔧 改进 (Changed) — 单一源结构改造
