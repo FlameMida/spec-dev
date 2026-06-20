@@ -7,6 +7,25 @@
 
 ---
 
+## [5.6.0] - 2026-06-20
+
+### ✨ 新增 (Added) — requirement-analysis 路径 3 实施纪律
+
+- **worktree 隔离实施（强制）** — 路径 3「立即开始实施」进入阶段 7 时基于当前分支创建独立 git worktree（分支名 `plan/YYYYMMDD-计划名`），实施失败或计划废弃可整体丢弃而不污染主工作区；恢复时已存在则复用、不存在则补建；全部任务完成并通过整体代码审查后合并回来源分支。原生 `git worktree add`，零外部 skill 依赖
+- **每任务提交（强制）** — 每完成一个任务在 worktree 分支 commit（message 对齐任务编号 `feat(T3): xxx`），动作链固定「commit 代码 → spec 自检 → 更新文档（tasks.md/progress.md）→ 同步运行时任务状态」，每任务在 git 与文档中都有独立可回溯锚点；非 git 仓库等场景降级为仅更新文档并注明
+- **每任务 spec 自检（强制）** — commit 后主线程（不派子代理）对照 `T{n}` 验收标准查 over/under-building 与契约锚定（本任务确立的函数签名/数据结构/API 是否被后续任务隐式重新解释）；显式禁止重复阶段 8 的 A/B/C 维度——主线程不猎 bug，那是阶段 8 的活；light 档可省略
+- **per-task spec 门的 opt-in 触发** — 默认不派 per-task spec 子代理门（主线程 spec 自检已零成本捕获主要收益）；仅当观察到跨任务契约错被合规化放大、completeness critic 契约面截断、或 deep 档含跨多文件契约定义任务时建议 opt-in（每任务 commit 后派 code-reviewer 限 SHA 区间查 spec 合规），并给出配套要求
+
+### 🔧 改进 (Changed)
+
+- **移除阶段 6 spec-flow 升级出口** — 路径确认菜单不再附注"建议切换 spec-flow"及阶段产出到 spec.md/plan.md 的映射表；requirement-analysis 与 spec-flow 定位为两个独立 skill，按需选用而非自动建议升级。目录约定 `docs/YYYYMMDD-计划名/` 去除中文方括号，与 plan-handoff.md 统一；README「如何选择」一并对齐
+
+### 📝 说明
+
+- 本次演进源自"是否引入 superpowers subagent-driven-development (sdd)"的评估（三轮对抗验证）：不整体引入 sdd、不新增 implementer 子代理（保住"主线程干活、子代理只读分析"范式），只把路径 3 实施所需的隔离与提交纪律固化，spec 合规缺口用主线程 spec 自检廉价捕获，per-task 子代理门留作 opt-in
+
+---
+
 ## [5.5.0] - 2026-06-12
 
 ### ✨ 新增 (Added) — 阶段 6 路径选择菜单
