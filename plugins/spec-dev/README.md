@@ -135,7 +135,7 @@ git diff --cached --check
 - 评估实施复杂度后决定是否推进
 - 一次性深度分析，无需持久化
 
-> 两者可衔接：requirement-analysis 在计划确认后（阶段 6），若发现实施将跨多个会话、或需要正式验收/留痕/归档，会建议升级到 spec-flow——阶段 1-6 的分析成果直接映射为 spec.md/plan.md 初稿，不重做分析。
+> 两者独立：requirement-analysis 适合会话内一次性分析与实施；spec-flow 适合跨会话持久化、正式验收、变更留痕或归档。按需选用。
 
 **选择 browser-qa 当你需要**：
 - 为前端功能补充确定性 E2E 测试
