@@ -13,7 +13,15 @@
           "ops": { "type": "string" },
           "result": { "type": "string", "enum": ["pass", "warn", "fail", "unverified"] },
           "evidence_ref": { "type": "string" },
-          "notes": { "type": "string" }
+          "notes": { "type": "string" },
+          "recheck": {
+            "type": "object",
+            "required": ["status"],
+            "properties": {
+              "status": { "type": "string", "enum": ["维持", "降级", "翻案"] },
+              "evidence_ref": { "type": "string" }
+            }
+          }
         }
       }
     },

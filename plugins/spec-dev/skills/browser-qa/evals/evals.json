@@ -9,7 +9,7 @@
     {
       "id": "bq-layer2-evidence",
       "prompt": "验收一下购物车页面 http://localhost:5173/cart，重点看数量增减和小计联动",
-      "expected_output": "意图推断路由到 Layer 2；生成两段式清单（3-6 条定制项含\"数量修改后小计实时更新\"+ 适用通用项）；串行逐项执行；每项结论附 evidence_ref（snapshot 片段或截图名），无证据的项标\"未验证\"而非通过；fail/warn 项做不信任视角复核并产出第二份证据；落盘 browser-check-items JSON 并校验"
+      "expected_output": "意图推断路由到 Layer 2；生成两段式清单（3-6 条定制项含\"数量修改后小计实时更新\"+ 适用通用项）；串行逐项执行；每项结论附 evidence_ref（snapshot 片段或截图名），无证据的项标\"未验证\"而非通过；fail/warn 项做不信任视角复核并产出第二份证据；pass 项交独立子代理证据审计（只读证据不操作浏览器），证据不支撑的降级为未验证；复核/审计结论回写 recheck 字段；落盘 browser-check-items JSON 并校验"
     },
     {
       "id": "bq-intent-routing-diagnose",
