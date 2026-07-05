@@ -7,6 +7,38 @@
 
 ---
 
+## [6.0.0] - 2026-07-05
+
+### 💥 破坏性变更 (Breaking) — 设计→计划→执行 skill 管线全面重构
+
+- **requirement-analysis 按 brainstorming 范式重写为纯设计工作流** — 9 阶段（分析+实施一体）改为 8 阶段（需求理解与分诊 → 并行探索 → 澄清问题 → 对抗验证 + 2-3 方案 → 展示完整设计 → 写 spec 并提交 → self-review + 对抗验证 → 交接 writing-plans）；引入 `<HARD-GATE>`（设计获批前禁止任何实施动作）、反模式声明（"太简单不用设计"）、Red Flags 与 dot 流程图；终态唯一——调用 writing-plans。原阶段 7-9（实施/审查/总结）迁移至新的 executing-plans skill
+- **移除 spec-flow 遗留物** — 删除 `spec-acceptance-reviewer` agent 与 `acceptance-findings.json` schema（spec-flow skill/command 已于本版本前移除）
+- **删除 code-architect agent** — 方案设计不再派子代理：阶段 4 由主线程用 sequential-thinking 先做信息对抗校验（来源可靠性/与代码库事实冲突/版本时效/未验证假设）再出 2-3 方案
+- **移除阶段 6 路径菜单** — 「与 codex 计划讨论」（v5.5.0）与「计划拆分落盘」三件套整体移除；计划能力由 writing-plans 承接，实施纪律由 executing-plans 承接；删除 `plan-handoff.md`、`parallel-patterns.md`、`task-list-management.md`、`examples.md`、`output-template.md`、`plan-split-templates.md`
+
+### ✨ 新增 (Added) — 5 个新 skill
+
+- **visual-preview** — 浏览器可视化预览：JIT 提议铁律（不开场提议、提议独立成消息、拒绝后不再提）、逐题浏览器 vs 终端判断、HTML fragment 循环与 events 回流；会话目录 `.spec-dev/visual/`，双平台前后台自适应
+- **writing-plans** — 把 spec 拆成零上下文可执行计划：文件结构先行、任务粒度（每步 2-5 分钟）、TDD 五步内嵌、接口消费/产出契约、禁止占位符硬规则、self-review 三查（spec 覆盖/占位符/类型一致）；每份计划固定生成任务 0（建立隔离工作区，含已隔离检测与 git 降级命令），计划文档脱离插件也可按序执行；落盘特性目录 `docs/YYYY-MM-DD-<feature>/plan/<feature>-plan.md`
+- **executing-plans** — 执行计划任务 0 建立隔离工作区后，主线程逐任务连续执行（每任务 commit `feat(TN): xxx` + spec 自检只查 over/under-building 与契约锚定）；收尾多维对抗审查继承原阶段 8 编排（fan-out code-reviewer + review-findings 契约校验 + loop-until-dry + 对抗复核 + completeness critic）；UI 变更触发 browser-qa Layer 2 验收；审查处置征询用户后合并 worktree 并总结
+- **using-git-worktrees** — 隔离工作区纪律：Step 0 已隔离检测（含 submodule 防误判）→ 原生工具优先（如 EnterWorktree）→ git 降级（`.worktrees/` + check-ignore 强制）→ 依赖安装 → 基线测试验证
+- **test-driven-development** — TDD 铁律（没有失败测试就没有生产代码）、红-绿-重构循环、借口对照表、完成前检查清单；附 testing-anti-patterns 参考（不测 mock 行为、不加测试专用方法、不盲目 mock、mock 镜像完整结构）
+
+### 🔧 改进 (Changed)
+
+- **requirement-analysis 探索升级** — 内部（code-explorer）与外部（external-resource-explorer）探索合并为同一波次单响应 fan-out，子代理数量不设上限（由需求结构决定）；澄清改为 brainstorming 式一次一个问题、不限轮数；新增 `exploration-patterns.md`（取代 parallel-patterns.md 的阶段 2 部分）、`spec-reviewer-prompt.md`（spec 对抗审查模板）、`spec-template.md`（spec 骨架）
+- **产物目录标准化** — 一个需求的全部产物统一收纳在特性目录 `docs/YYYY-MM-DD-<feature>/` 下：spec 落 `spec/<feature>-design.md`（写入即 git commit），计划落 `plan/<feature>-plan.md`；同日同名冲突追加序号；spec self-review 后如有修改必须让用户重新 review
+- **spec 行为规范结构化（Requirement + Scenario）** — spec 模板引入 `### Requirement:`（RFC 2119 关键词，一条一个 SHALL、必须可观察）与 `#### Scenario:`（GIVEN/WHEN/THEN）；writing-plans 把 Scenario 直译为各任务的失败测试（GIVEN→arrange、WHEN→act、THEN→assert，测试名沿用 Scenario 名），executing-plans 的 completeness critic 与 browser-qa 验收以 Requirement/Scenario 为覆盖锚点；修改既有功能时行为部分用 ADDED/MODIFIED/REMOVED 差量三节表达；spec 审查子代理新增可测性与差量正确性维度，requirement-analysis inline 自检新增 Requirement 质量检查
+- **agents 瘦身** — code-explorer / code-reviewer 删除 Task List 支持章节与 Task* 工具声明；external-resource-explorer 描述改为服务 requirement-analysis 并行探索与回补探索
+- **清单与文档对齐** — marketplace 清单 7 个 skill；README 重写为管线视角；`schemas/README.md` 契约清单去除 acceptance-findings
+
+### 📝 说明
+
+- 新管线保持「主线程干活、子代理只读分析」范式（v5.6.0 确立）：实现代码始终由主线程编写，子代理只承担探索与审查
+- 第三方版权信息见插件包内 `LICENSE` 文件
+
+---
+
 ## [5.6.0] - 2026-06-20
 
 ### ✨ 新增 (Added) — requirement-analysis 路径 3 实施纪律
@@ -22,7 +54,7 @@
 
 ### 📝 说明
 
-- 本次演进源自"是否引入 superpowers subagent-driven-development (sdd)"的评估（三轮对抗验证）：不整体引入 sdd、不新增 implementer 子代理（保住"主线程干活、子代理只读分析"范式），只把路径 3 实施所需的隔离与提交纪律固化，spec 合规缺口用主线程 spec 自检廉价捕获，per-task 子代理门留作 opt-in
+- 本次演进源自"是否引入上游 subagent-driven-development (sdd)"的评估（三轮对抗验证）：不整体引入 sdd、不新增 implementer 子代理（保住"主线程干活、子代理只读分析"范式），只把路径 3 实施所需的隔离与提交纪律固化，spec 合规缺口用主线程 spec 自检廉价捕获，per-task 子代理门留作 opt-in
 
 ---
 

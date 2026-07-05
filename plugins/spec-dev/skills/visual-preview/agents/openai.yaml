@@ -1,0 +1,7 @@
+interface:
+  display_name: "Visual Preview"
+  short_description: "浏览器可视化预览：设计对话中展示 mockup、线框图、布局对比并收集点击选择"
+  default_prompt: "Use $visual-preview to show mockups and visual options in the browser during design discussions."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Using Git Worktrees"
+  short_description: "隔离工作区：原生 worktree 工具优先，git worktree 降级，含依赖安装与测试基线验证"
+  default_prompt: "Use $using-git-worktrees to set up an isolated workspace before implementation."
+
+policy:
+  allow_implicit_invocation: true

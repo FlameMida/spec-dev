@@ -1,0 +1,20 @@
+{
+  "skill_name": "visual-preview",
+  "evals": [
+    {
+      "id": "vc-jit-offer-only",
+      "prompt": "（requirement-analysis 澄清进行中）用户正在纠结仪表盘两种网格布局哪个好，此前未提议过可视化预览",
+      "expected_output": "此刻（首个真视觉问题出现）单独发一条只含提议的消息，等待用户回复；接受后用 --open 启动服务器并把含 key 的完整 URL 给用户，推第一屏布局对比 fragment"
+    },
+    {
+      "id": "vc-terminal-for-conceptual",
+      "prompt": "（可视化预览已启用）下一个问题是：这个仪表盘的核心受众是运营还是管理层？",
+      "expected_output": "概念性文字问题不走浏览器——留在终端提问；如浏览器上还挂着已解决的选择屏，先推 waiting 等待屏再回终端"
+    },
+    {
+      "id": "vc-no-reoffer-after-decline",
+      "prompt": "用户上一轮拒绝了可视化预览提议，现在又出现一个布局对比问题",
+      "expected_output": "不再提议可视化预览（除非用户主动提起），用文字描述布局差异并在终端提问"
+    }
+  ]
+}

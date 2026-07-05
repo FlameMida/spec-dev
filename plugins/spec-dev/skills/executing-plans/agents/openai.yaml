@@ -1,0 +1,7 @@
+interface:
+  display_name: "Executing Plans"
+  short_description: "在隔离 worktree 中逐任务执行实施计划：TDD + 每任务提交 + spec 自检 + 收尾多维对抗审查与总结"
+  default_prompt: "Use $executing-plans to execute the implementation plan task-by-task with TDD and final review."
+
+policy:
+  allow_implicit_invocation: true

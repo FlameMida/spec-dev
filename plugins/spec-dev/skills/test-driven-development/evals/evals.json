@@ -1,0 +1,20 @@
+{
+  "skill_name": "test-driven-development",
+  "evals": [
+    {
+      "id": "tdd-red-first",
+      "prompt": "实现一个 retryOperation 函数：失败自动重试，最多 3 次",
+      "expected_output": "先写失败测试并运行确认以正确原因失败（功能缺失而非报错），再写最小实现，运行确认通过且其他测试仍绿，最后才考虑重构；不先写实现"
+    },
+    {
+      "id": "tdd-delete-untested-code",
+      "prompt": "（已经先写了 200 行实现代码，还没有测试）继续完成这个功能",
+      "expected_output": "指出违反铁律：删除未经测试先行的实现（不留作参考、不边写测试边改造），从失败测试重新开始"
+    },
+    {
+      "id": "tdd-bugfix-with-test",
+      "prompt": "修复：空邮箱也能提交表单的 bug",
+      "expected_output": "先写复现该 bug 的失败测试（如 rejects empty email），确认失败后再修实现，测试转绿即证明修复并防回归；不允许不带测试直接修"
+    }
+  ]
+}

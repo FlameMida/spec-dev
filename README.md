@@ -1,21 +1,37 @@
 # spec-dev
 
-跨会话、可恢复、可验收、可归档的 spec 生命周期工作流插件。
+中文设计→计划→执行 skill 管线插件：把想法打磨成 spec，拆解成可执行计划，在隔离工作区中以 TDD 纪律交付。
 
-**中文** | Action-First 生命周期 | 跨会话持久化 | 独立验收 | 浏览器验收 | MCP 增强
+**中文** | 设计→计划→执行管线 | 对抗验证 | 可视化预览 | 浏览器验收 | MCP 增强
 
 ## 特性
 
-- **Spec Flow** — 5 action 生命周期（explore → plan → implement → accept → archive），workspace-local runtime 原子写入
-- **独立验收** — 专用 `spec-acceptance-reviewer` agent，findings-first 报告，实现者不自评；skeptic + coverage critic 双向对抗复核
-- **跨会话恢复** — 会话中断后通过 `progress.json` 和 `resumePoint` 精确恢复；编排子任务 journal 化，已完成的 fan-out 不重派
-- **证据链** — implement 阶段 `--evidence` 累积证据，accept 阶段直接消费；`doctor` 命令检测并修复状态不一致
-- **需求分析** — 9 阶段系统化分析工作流，light / standard / deep 三档复杂度路由，按需派发探索与审查
+- **需求设计** — `requirement-analysis` 8 阶段设计工作流：需求分诊（light / standard / deep 三档）、内外部并行探索（不设子代理上限）、逐题澄清、sequential-thinking 对抗验证 + 2-3 方案对比、spec 落盘与双重 review（行为规范结构化：Requirement + Scenario）；HARD-GATE 保证设计获批前零实施动作
+- **可视化预览** — `visual-preview` 浏览器伴侣：设计对话中 JIT 提议，展示 mockup、线框、布局对比并回收点击选择
+- **实施计划** — `writing-plans` 把 spec 拆成零上下文可执行的 bite-sized 任务：精确文件路径、完整代码、TDD 五步内嵌、接口消费/产出契约、禁止占位符
+- **计划执行** — `executing-plans` 主线程逐任务执行（每任务 commit + spec 自检）、收尾多维对抗审查（fan-out code-reviewer + 契约校验 + loop-until-dry + completeness critic）、合并与总结
+- **工程纪律** — `using-git-worktrees`（原生工具优先的隔离工作区）与 `test-driven-development`（没有失败测试就没有生产代码）独立成 skill，可被任何工作流复用
 - **浏览器三层测试** — `browser-qa` 覆盖 Playwright E2E、AI 自主验收（证据强制 + 串行复核）和调试诊断
 - **契约化编排** — 子代理输出走 JSON Schema 契约，`validate-output.mjs` 确定性校验，失败退回补全
-- **5 领域覆盖** — 软件、研究、运维/流程、文档、跨团队协作
 - **MCP 工具增强** — 集成 context7、exa、sequential-thinking、playwright、chrome-devtools（可选，智能降级）
-- **5 个专门化 Agents** — spec-acceptance-reviewer、external-resource-explorer、code-explorer、code-architect、code-reviewer
+- **3 个专门化 Agents** — code-explorer、external-resource-explorer、code-reviewer（只读分析；实现代码始终由主线程编写）
+
+## Skill 管线
+
+```
+requirement-analysis（设计 → docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md）
+        ↕ JIT
+  visual-preview
+        ↓
+writing-plans（计划 → 同特性目录 plan/<feature>-plan.md）
+        ↓
+executing-plans（隔离执行 + 审查 + 总结）
+   ├── using-git-worktrees（隔离工作区）
+   ├── test-driven-development（TDD 纪律）
+   └── browser-qa（UI 验收）
+```
+
+每个 skill 也可独立使用：已有 spec 可直接从 writing-plans 进入；已有计划可直接 executing-plans；browser-qa / using-git-worktrees / test-driven-development 可被任意工作流触发。
 
 ## 安装
 
@@ -33,7 +49,7 @@
 
 仓库已包含 Codex 插件清单：`plugins/spec-dev/.codex-plugin/plugin.json`。该清单会暴露：
 
-- `skills/`：`spec-flow`、`requirement-analysis` 与 `browser-qa`
+- `skills/`：`requirement-analysis`、`visual-preview`、`writing-plans`、`executing-plans`、`using-git-worktrees`、`test-driven-development`、`browser-qa`
 - `.mcp.json`：context7、exa、sequential-thinking、playwright、chrome-devtools 的可选 MCP 配置
 - 插件 UI 元数据：展示名称、分类、能力、默认提示词
 
@@ -112,99 +128,41 @@ git diff --cached --check
 
 受控双份文件不一致时 hook 会中止提交，运行 `node scripts/check-mirrors.mjs --fix` 对齐后重新提交。临时跳过 hook 可设置 `SKIP_CODEX_PACKAGE_HOOK=1`。
 
-## Skill 对比
-
-| 特性 | **spec-flow** | **requirement-analysis** | **browser-qa** |
-|------|---------------|--------------------------|----------------|
-| **核心模型** | 5 action 生命周期 | 9 阶段分析流程 | 3 层浏览器测试 |
-| **跨会话持久化** | `.specs/` + runtime CLI | 无（会话内） | 无（测试报告输出） |
-| **独立验收** | 专用 agent + 报告 | 内嵌审查 | Playwright / MCP 验收 |
-| **归档** | 完整归档 + 总结 | 无 | 无 |
-| **适用场景** | 长期任务、需验收归档 | 快速分析、方案评估 | 前端功能验收、E2E、调试诊断 |
-
-### 如何选择
-
-**选择 spec-flow 当你需要**：
-- 跨多个会话完成一个复杂任务
-- 正式验收和归档交付物
-- 需要变更留痕和版本追踪
-- 运维流程改造、文档编写、研究任务
-
-**选择 requirement-analysis 当你需要**：
-- 快速分析技术方案可行性
-- 评估实施复杂度后决定是否推进
-- 一次性深度分析，无需持久化
-
-> 两者独立：requirement-analysis 适合会话内一次性分析与实施；spec-flow 适合跨会话持久化、正式验收、变更留痕或归档。按需选用。
-
-**选择 browser-qa 当你需要**：
-- 为前端功能补充确定性 E2E 测试
-- 使用浏览器 MCP 做 AI 自主验收
-- 诊断页面交互、渲染、Shadow DOM 或 iframe 问题
-
-## spec-flow 使用方法
-
-### 快速开始
-
-```bash
-# 初始化工作区
-/spec-flow init
-
-# 开始探索
-/spec-flow explore 实现用户认证系统，支持 JWT 和 OAuth2
-
-# 规划方案
-/spec-flow plan
-
-# 实施
-/spec-flow implement
-
-# 独立验收
-/spec-flow accept
-
-# 归档
-/spec-flow archive
-```
-
-### 生命周期
-
-```
-explore → plan → implement → accept → archive
-   ↑          ↓        ↑         ↓
-   └── amend ←┘        └─ amend ←┘
-```
-
-- 每个步骤通过 `/spec-flow <action>` 驱动
-- 状态通过 `node .specs/bin/spec-flow.mjs` 原子写入
-- 中断后 `/spec-flow resume` 精确恢复
-
-### Runtime 命令
-
-| 命令 | 说明 |
-|------|------|
-| `init` | 初始化 `.specs/` 工作区 |
-| `new` | 创建新 spec |
-| `status` | 查看所有活跃 spec 状态 |
-| `checkpoint` | 写入执行检查点；`--evidence` 登记可验证证据，`--dispatch` 登记编排子任务 |
-| `amend` | 升版重大变更 |
-| `accept` | 记录验收结果 |
-| `archive` | 归档已验收 spec（`--summary-path` 校验存在性并返回迁移后路径） |
-| `resume` | 恢复中断的工作；存在编排记录时返回 `pendingDispatch` |
-| `doctor` | 检测 registry 与目录的 7 类不一致；`--fix` 仅执行安全修复 |
-
 ## requirement-analysis 使用方法
 
 ```bash
-/requirement-analysis 分析用户权限系统的实现方案
+/requirement-analysis 设计用户权限系统
 ```
 
-9 阶段工作流：需求理解 → 代码探索 → 外部资源研究 → 澄清问题 → 深度分析 → 展示计划 → 可选实施 → 可选审查 → 总结
+8 阶段设计工作流：需求理解与分诊 → 并行探索（内部+外部同波次）→ 澄清问题（一次一个，JIT 可视化预览）→ 对抗验证 + 2-3 方案 → 展示完整设计 → 写 spec 并提交 → self-review + 对抗验证 → 交接 writing-plans。
 
-阶段 1 结束时自动判定执行档位并向用户声明（允许覆盖）：
+阶段 1 判定执行档位并向用户声明（允许覆盖）：
 
-- **light** — 单文件/单模块小改动：跳过外部研究与并行编排，全流程 ≤ 2 次交互
-- **standard** — 默认档：并行探索 + code-architect 架构蓝图 + 3 路维度审查
-- **deep** — 跨层架构变更/新技术栈：multi-modal sweep 盲扫探索 + judge panel 多视角方案评分 + 5 路审查与对抗复核
+- **light** — 单文件/单模块小改动：主线程直查，方案可收敛为 1 个，spec 几句话级——但设计仍须展示并获批准（HARD-GATE 不豁免）
+- **standard** — 默认档：3-5 个 code-explorer 按层/模块并行 + external-resource-explorer 外部研究 + 完整方案对比
+- **deep** — 跨层架构变更/新技术栈：multi-modal sweep 盲扫（模态数不设上限）+ 契约 JSON 校验合并
+
+spec 落盘至特性目录 `docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md` 并提交（后续计划落同目录 `plan/<feature>-plan.md`），经审查子代理对抗验证与用户 review 后交接 writing-plans。行为需求以 **Requirement + Scenario**（GIVEN/WHEN/THEN）结构表达——Scenario 被 writing-plans 直译为 TDD 失败测试、被收尾审查与 browser-qa 用作验收锚点；修改既有功能时用 ADDED/MODIFIED/REMOVED 差量三节。
+
+## writing-plans / executing-plans 使用方法
+
+```bash
+/writing-plans 基于 docs/2026-07-04-auth/spec/auth-design.md 编写实施计划
+/executing-plans 执行 docs/2026-07-04-auth/plan/auth-plan.md
+```
+
+- **writing-plans**：假设执行者零上下文——每份计划固定以任务 0（建立隔离工作区，含已隔离检测与 git 降级命令）开头，脱离插件也能按序执行；每任务给精确文件路径、完整代码、TDD 五步（失败测试→确认失败→最小实现→确认通过→提交）、接口消费/产出块；写完跑三查（spec 覆盖/占位符/类型一致）再交接
+- **executing-plans**：从任务 0（隔离工作区，纪律遵循 using-git-worktrees）开始，主线程逐任务连续执行（每任务 commit `feat(TN): xxx` + spec 自检），全部完成后 fan-out code-reviewer 多维对抗审查（review-findings 契约校验 + 高/中发现对抗复核 + completeness critic），UI 变更触发 browser-qa 验收，审查处置征询用户后合并总结
+
+## visual-preview 使用方法
+
+设计对话中出现"看比说清楚"的问题（布局对比、mockup、架构图）时由 requirement-analysis JIT 提议启用；也可手动触发：
+
+```bash
+/visual-preview 用浏览器给我看两种仪表盘布局的对比
+```
+
+本地服务器在浏览器中渲染 HTML fragment，用户点击选择回流到会话；会话文件持久化在 `<project>/.spec-dev/visual/`。
 
 ## browser-qa 使用方法
 
@@ -229,7 +187,7 @@ explore → plan → implement → accept → archive
 |---------|---------|---------|
 | **context7** | 最新库文档和 API 参考 | WebSearch + 项目依赖分析 |
 | **exa** | 高质量网页搜索 | WebSearch |
-| **sequential-thinking** | 结构化深度思考 | EnterPlanMode + 思维链分析 |
+| **sequential-thinking** | 结构化深度思考 | 回复中显式分点推演 |
 | **playwright** | 浏览器自动化验收 | 原生 Playwright 测试 |
 | **chrome-devtools** | 页面调试诊断 | Playwright trace / 控制台日志 |
 
@@ -272,13 +230,13 @@ explore → plan → implement → accept → archive
 
 ## 专门化 Agents
 
+主线程干活、子代理只读分析——实现代码始终由主线程编写，agent 只承担探索与审查：
+
 | Agent | 用途 | 使用场景 |
 |-------|------|---------|
-| **spec-acceptance-reviewer** | 独立验收，findings-first 报告 | spec-flow accept |
-| **external-resource-explorer** | 外部资源探索，可引用证据 | spec-flow explore/plan |
-| **code-explorer** | 深度分析代码库 | requirement-analysis |
-| **code-architect** | 设计架构蓝图 | requirement-analysis |
-| **code-reviewer** | 代码审查 | requirement-analysis |
+| **code-explorer** | 深度分析代码库 | requirement-analysis 阶段 2 并行探索 |
+| **external-resource-explorer** | 外部资源探索，可引用证据 | requirement-analysis 阶段 2 外部波次与回补探索 |
+| **code-reviewer** | 代码审查（置信度 + 严重性） | executing-plans 收尾多维审查 |
 
 ## 目录结构
 
@@ -297,15 +255,19 @@ spec-dev/
 │       ├── .codex-plugin/
 │       │   └── plugin.json      # Codex 插件清单
 │       ├── .mcp.json            # 插件分发 MCP 配置
-│       ├── agents/              # 5 个专门化 agents
-│       ├── commands/            # /spec-flow、/check-mcp 命令
+│       ├── agents/              # 3 个专门化 agents（只读分析）
+│       ├── commands/            # /check-mcp 命令
 │       ├── scripts/
 │       │   ├── validate-output.mjs   # 子代理输出契约校验器
-│       │   └── schemas/         # 4 类输出契约 schema + 使用说明
+│       │   └── schemas/         # 3 类输出契约 schema + 使用说明
 │       └── skills/
-│           ├── spec-flow/       # Spec 生命周期工作流
-│           ├── requirement-analysis/  # 需求分析工作流（三档复杂度路由）
-│           └── browser-qa/      # 浏览器三层测试工作流
+│           ├── requirement-analysis/   # 8 阶段需求设计工作流
+│           ├── visual-preview/       # 浏览器可视化预览
+│           ├── writing-plans/          # 实施计划编写
+│           ├── executing-plans/        # 计划执行 + 收尾审查
+│           ├── using-git-worktrees/    # 隔离工作区纪律
+│           ├── test-driven-development/ # TDD 纪律
+│           └── browser-qa/             # 浏览器三层测试工作流
 ├── scripts/
 │   ├── check-mirrors.mjs        # 校验受控双份文件 + Codex CLI 安装校验
 │   ├── validate-skills.mjs      # 复用 skill-creator 校验插件包 skill

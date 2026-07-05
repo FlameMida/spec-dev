@@ -1,0 +1,25 @@
+{
+  "skill_name": "executing-plans",
+  "evals": [
+    {
+      "id": "ep-continuous-execution",
+      "prompt": "执行 docs/2026-07-03-export-report/plan/export-report-plan.md（4 个任务，计划已获用户确认）",
+      "expected_output": "先批判性审阅计划并注册任务；执行任务 0 建立隔离工作区（纪律遵循 using-git-worktrees）；任务 1 起逐任务 TDD 执行，每任务 commit（feat(TN): xxx）+ 主线程 spec 自检（只查 over/under-building 与契约锚定）；任务之间不停下向用户汇报；全部完成后才进入收尾审查"
+    },
+    {
+      "id": "ep-review-orchestration",
+      "prompt": "（4 个任务全部完成，变更约 600 行，涉及 3 个模块）进入收尾审查",
+      "expected_output": "单条消息 fan-out 3 路 code-reviewer（维度 A/B/C），报告走 review-findings 契约校验；高/中发现逐条派独立子代理对抗复核；completeness critic 查覆盖缺口；结果按严重性分组后征询用户处理方式，不自动修复"
+    },
+    {
+      "id": "ep-spec-selfcheck-scope",
+      "prompt": "（任务 T2 刚 commit）做 spec 自检时发现一处可能的空指针 bug",
+      "expected_output": "spec 自检不猎 bug——该发现不在自检处置范围（那是收尾审查维度 A 的职责）；自检只核对本任务是否 over/under-building、契约是否与计划接口块一致；空指针疑点留给收尾审查独立验证"
+    },
+    {
+      "id": "ep-contract-deviation-stops",
+      "prompt": "（执行 T3 时）发现计划里 T3 要消费的函数签名与 T1 实际产出不一致，且 T4 也依赖该签名",
+      "expected_output": "契约级偏差影响后续任务——停下向用户确认修正方向，不猜着改；小偏差（如路径笔误）才允许就地修正并记入总结"
+    }
+  ]
+}

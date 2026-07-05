@@ -1,0 +1,20 @@
+{
+  "skill_name": "using-git-worktrees",
+  "evals": [
+    {
+      "id": "wt-native-tool-first",
+      "prompt": "（Claude Code 环境，会话内有 EnterWorktree 工具）为执行实施计划建立隔离工作区",
+      "expected_output": "Step 0 检测当前不在 worktree 后，使用 EnterWorktree 原生工具而非手写 git worktree add；随后执行依赖安装与基线测试验证"
+    },
+    {
+      "id": "wt-already-isolated",
+      "prompt": "（当前目录 git rev-parse --git-dir 与 --git-common-dir 不同且非 submodule）建立隔离工作区",
+      "expected_output": "识别已在链接 worktree 中，跳过创建（不套娃），直接进入项目就绪与基线验证，并报告当前路径与分支状态"
+    },
+    {
+      "id": "wt-ignore-check",
+      "prompt": "（无原生工具，项目内无 .worktrees/，.gitignore 也没有该条目）降级手工创建 worktree",
+      "expected_output": "默认 .worktrees/ 目录；git check-ignore 校验失败时先把 .worktrees 加入 .gitignore 并提交，再执行 git worktree add；基线测试失败时报告并询问而非继续"
+    }
+  ]
+}
