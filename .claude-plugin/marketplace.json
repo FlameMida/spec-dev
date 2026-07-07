@@ -16,6 +16,7 @@
       "category": "development",
       "homepage": "https://github.com/FlameMida/spec-dev",
       "skills": [
+        "./skills/exploring",
         "./skills/requirement-analysis",
         "./skills/visual-preview",
         "./skills/writing-plans",

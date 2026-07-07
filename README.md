@@ -6,6 +6,7 @@
 
 ## 特性
 
+- **探索模式** — `exploring` 思考伙伴：想法未定型时的无承诺探索——只读不写码（HARD-GATE）、开支线而非审讯、ASCII 可视化、探索笔记提议制落盘 `docs/explorations/`；结晶后交接 requirement-analysis，executing-plans 卡壳时也可回探
 - **需求设计** — `requirement-analysis` 8 阶段设计工作流：需求分诊（light / standard / deep 三档）、内外部并行探索（不设子代理上限）、逐题澄清、sequential-thinking 对抗验证 + 2-3 方案对比、spec 落盘与双重 review（行为规范结构化：Requirement + Scenario）；HARD-GATE 保证设计获批前零实施动作
 - **可视化预览** — `visual-preview` 浏览器伴侣：设计对话中 JIT 提议，展示 mockup、线框、布局对比并回收点击选择
 - **实施计划** — `writing-plans` 把 spec 拆成零上下文可执行的 bite-sized 任务：精确文件路径、完整代码、TDD 五步内嵌、接口消费/产出契约、禁止占位符
@@ -19,6 +20,8 @@
 ## Skill 管线
 
 ```
+exploring（未定型想法 → 可选 docs/explorations/<topic>.md）
+        ↓ 结晶
 requirement-analysis（设计 → docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md）
         ↕ JIT
   visual-preview
@@ -31,7 +34,7 @@ executing-plans（隔离执行 + 审查 + 总结）
    └── browser-qa（UI 验收）
 ```
 
-每个 skill 也可独立使用：已有 spec 可直接从 writing-plans 进入；已有计划可直接 executing-plans；browser-qa / using-git-worktrees / test-driven-development 可被任意工作流触发。
+每个 skill 也可独立使用：想法未定型可从 exploring 开始；已有 spec 可直接从 writing-plans 进入；已有计划可直接 executing-plans；browser-qa / using-git-worktrees / test-driven-development 可被任意工作流触发。
 
 ## 安装
 
@@ -128,6 +131,14 @@ git diff --cached --check
 
 受控双份文件不一致时 hook 会中止提交，运行 `node scripts/check-mirrors.mjs --fix` 对齐后重新提交。临时跳过 hook 可设置 `SKIP_CODEX_PACKAGE_HOOK=1`。
 
+## exploring 使用方法
+
+```bash
+/exploring 我在考虑要不要做实时协作，帮我想想
+```
+
+思考伙伴姿态：只读代码、开支线对比方向、ASCII 图梳理，不写码、不建档、不强制结论（探索出"不值得做"也是有效出口）；结论有价值时提议落盘 `docs/explorations/<topic>.md`，想法结晶后交接 requirement-analysis（探索结论作为其阶段 1 输入）。
+
 ## requirement-analysis 使用方法
 
 ```bash
@@ -152,7 +163,7 @@ spec 落盘至特性目录 `docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md` 
 ```
 
 - **writing-plans**：假设执行者零上下文——每份计划固定以任务 0（建立隔离工作区，含已隔离检测与 git 降级命令）开头，脱离插件也能按序执行；每任务给精确文件路径、完整代码、TDD 五步（失败测试→确认失败→最小实现→确认通过→提交）、接口消费/产出块；写完跑三查（spec 覆盖/占位符/类型一致）再交接
-- **executing-plans**：从任务 0（隔离工作区，纪律遵循 using-git-worktrees）开始，主线程逐任务连续执行（每任务 commit `feat(TN): xxx` + spec 自检），全部完成后 fan-out code-reviewer 多维对抗审查（review-findings 契约校验 + 高/中发现对抗复核 + completeness critic），UI 变更触发 browser-qa 验收，审查处置征询用户后合并总结
+- **executing-plans**：执行确认后从任务 0（隔离工作区，纪律遵循 using-git-worktrees）开始，主线程逐任务连续执行（每任务 commit `feat(TN): xxx` + spec 自检），全部完成后 fan-out code-reviewer 多维对抗审查（review-findings 契约校验 + 高/中发现对抗复核 + completeness critic），UI 变更触发 browser-qa 验收，审查处置征询用户后合并总结
 
 ## visual-preview 使用方法
 
@@ -261,6 +272,7 @@ spec-dev/
 │       │   ├── validate-output.mjs   # 子代理输出契约校验器
 │       │   └── schemas/         # 3 类输出契约 schema + 使用说明
 │       └── skills/
+│           ├── exploring/              # 探索模式（思考伙伴）
 │           ├── requirement-analysis/   # 8 阶段需求设计工作流
 │           ├── visual-preview/       # 浏览器可视化预览
 │           ├── writing-plans/          # 实施计划编写

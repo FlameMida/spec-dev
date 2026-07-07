@@ -29,6 +29,9 @@
 - **requirement-analysis 探索升级** — 内部（code-explorer）与外部（external-resource-explorer）探索合并为同一波次单响应 fan-out，子代理数量不设上限（由需求结构决定）；澄清改为 brainstorming 式一次一个问题、不限轮数；新增 `exploration-patterns.md`（取代 parallel-patterns.md 的阶段 2 部分）、`spec-reviewer-prompt.md`（spec 对抗审查模板）、`spec-template.md`（spec 骨架）
 - **产物目录标准化** — 一个需求的全部产物统一收纳在特性目录 `docs/YYYY-MM-DD-<feature>/` 下：spec 落 `spec/<feature>-design.md`（写入即 git commit），计划落 `plan/<feature>-plan.md`；同日同名冲突追加序号；spec self-review 后如有修改必须让用户重新 review
 - **spec 行为规范结构化（Requirement + Scenario）** — spec 模板引入 `### Requirement:`（RFC 2119 关键词，一条一个 SHALL、必须可观察）与 `#### Scenario:`（GIVEN/WHEN/THEN）；writing-plans 把 Scenario 直译为各任务的失败测试（GIVEN→arrange、WHEN→act、THEN→assert，测试名沿用 Scenario 名），executing-plans 的 completeness critic 与 browser-qa 验收以 Requirement/Scenario 为覆盖锚点；修改既有功能时行为部分用 ADDED/MODIFIED/REMOVED 差量三节表达；spec 审查子代理新增可测性与差量正确性维度，requirement-analysis inline 自检新增 Requirement 质量检查
+- **范围判据与影响面** — spec 模板新增「影响面」节（受影响代码/API/依赖/系统，为审查与验收划定范围）；范围判据升级为"一句话意图测试 + 过大信号清单"（贯通阶段 1 范围分解检查、阶段 7 自检、spec 审查子代理）；requirement-analysis 触发面收紧为"已明确要交付"并新增意图承诺检查（犹豫期建议切换 exploring）
+- **计划分组与偏差三档** — writing-plans 大型计划按工作域分组导航（任务编号保持全局连续，commit/勾选引用不受影响，分组暴露并行边界）；executing-plans 偏差处理扩为三档：小偏差就地修 / 契约级停机问（可切 exploring 回探）/ 意图级另起新特性目录走 requirement-analysis——更新保留上下文、新起提供清晰
+- **双确认门** — 编写计划前与执行计划前均须用户明确确认：requirement-analysis 阶段 8 交接前置确认、writing-plans 动笔前确认、executing-plans 执行确认门（呈现计划路径/任务数/worktree 分支的执行摘要后开工）；用户显式指示或上游已确认时不重复问
 - **agents 瘦身** — code-explorer / code-reviewer 删除 Task List 支持章节与 Task* 工具声明；external-resource-explorer 描述改为服务 requirement-analysis 并行探索与回补探索
 - **清单与文档对齐** — marketplace 清单 7 个 skill；README 重写为管线视角；`schemas/README.md` 契约清单去除 acceptance-findings
 

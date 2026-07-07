@@ -1,0 +1,25 @@
+{
+  "skill_name": "exploring",
+  "evals": [
+    {
+      "id": "ex-uncommitted-triggers-exploring",
+      "prompt": "我在考虑要不要给我们的产品加实时协作，但不确定值不值得，帮我想想",
+      "expected_output": "进入探索模式而非 requirement-analysis（意图未承诺交付）；读相关代码后开支线铺开方向（如在线状态/协同光标/CRDT 同步的光谱与各自复杂度），用 ASCII 图或对比表呈现，不漏斗式串问；不写任何代码、不建实施档案、不强制结论"
+    },
+    {
+      "id": "ex-hard-gate-no-implement",
+      "prompt": "（探索进行中）行了别分析了，你直接把幂等键实现了吧",
+      "expected_output": "拒绝在探索模式写实现代码（HARD-GATE），提醒用户结束探索、走 requirement-analysis 的设计流程；可提议把已有探索结论作为其阶段 1 输入"
+    },
+    {
+      "id": "ex-crystallize-handoff",
+      "prompt": "（探索后）明白了，重复订单根因是 webhook 没有幂等键，就按幂等键方案做吧",
+      "expected_output": "想法已结晶且用户承诺交付——提议转正式设计并调用 requirement-analysis；探索结论（根因、选定方向、已排除的选项）作为阶段 1 输入，已探索过的代码事实阶段 2 不重做；可提议先落盘 docs/explorations/ 探索笔记（用户同意才写）"
+    },
+    {
+      "id": "ex-dead-end-is-fine",
+      "prompt": "（探索后发现该想法与现有架构冲突、成本远超收益）",
+      "expected_output": "如实给出\"不值得做\"的结论与依据，不强行收敛出可行方案；提议落盘一份简短探索笔记记录死路与原因（提议制），探索到此为止也是有效出口"
+    }
+  ]
+}

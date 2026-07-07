@@ -12,6 +12,11 @@
       "expected_output": "Self-Review 第 1 查（spec 覆盖）发现缺口，补 JSON 格式任务后才向用户交接；不带着缺口交接"
     },
     {
+      "id": "wp-confirm-before-writing",
+      "prompt": "（隐式触发：用户消息只包含 docs/2026-07-02-notify/spec/notify-design.md 这个路径，没有其他说明）",
+      "expected_output": "不默认开写——先确认「基于该 spec 开始编写实施计划？」，用户同意后才动笔；若本轮是显式指示（斜杠命令或明确说编写计划）或由 requirement-analysis 阶段 8 前置确认交接而来，则视为已同意、不重复问"
+    },
+    {
       "id": "wp-handoff-not-execute",
       "prompt": "计划已保存，用户还没回复",
       "expected_output": "向用户交接（说明将先 using-git-worktrees 再 executing-plans），等待用户确认；不在本 skill 内直接开始写实现代码"

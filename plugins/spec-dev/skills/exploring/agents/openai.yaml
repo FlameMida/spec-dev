@@ -1,0 +1,7 @@
+interface:
+  display_name: "Exploring"
+  short_description: "探索模式（思考伙伴）：想法未定型时的无承诺探索——只读不写码、开放支线、可选落盘，结晶后交接 requirement-analysis"
+  default_prompt: "Use $exploring to think through this idea or problem with me before committing to build anything."
+
+policy:
+  allow_implicit_invocation: true

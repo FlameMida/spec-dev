@@ -1,7 +1,7 @@
 {
   "name": "spec-dev",
   "version": "6.0.0",
-  "description": "开发工作流插件集：requirement-analysis 设计工作流、writing-plans/executing-plans 计划与执行、visual-preview 可视化预览、using-git-worktrees/test-driven-development 工程纪律、browser-qa 浏览器验收。",
+  "description": "开发工作流插件集：exploring 探索模式、requirement-analysis 设计工作流、writing-plans/executing-plans 计划与执行、visual-preview 可视化预览、using-git-worktrees/test-driven-development 工程纪律、browser-qa 浏览器验收。",
   "author": {
     "name": "FlameMida",
     "url": "https://github.com/FlameMida"
@@ -13,6 +13,7 @@
     "codex",
     "plugins",
     "skills",
+    "exploring",
     "requirement-analysis",
     "writing-plans",
     "executing-plans",
@@ -30,7 +31,7 @@
   "interface": {
     "displayName": "Spec Dev",
     "shortDescription": "中文设计→计划→执行 skill 管线与浏览器验收工作流。",
-    "longDescription": "Spec Dev 提供中文开发工作流管线：requirement-analysis 把想法打磨成 spec（并行探索、逐题澄清、对抗验证、多方案对比、可视化预览），writing-plans 拆解为零上下文可执行计划，executing-plans 在隔离 worktree 中以 TDD 逐任务执行并做多维对抗审查；配套 using-git-worktrees、test-driven-development 工程纪律与 browser-qa 三层浏览器测试，并可通过插件内 MCP 配置增强文档检索、网页研究、深度思考和浏览器验收。",
+    "longDescription": "Spec Dev 提供中文开发工作流管线：exploring 在想法未定型时提供无承诺的思考伙伴探索，requirement-analysis 把想法打磨成 spec（并行探索、逐题澄清、对抗验证、多方案对比、可视化预览），writing-plans 拆解为零上下文可执行计划，executing-plans 在隔离 worktree 中以 TDD 逐任务执行并做多维对抗审查；配套 using-git-worktrees、test-driven-development 工程纪律与 browser-qa 三层浏览器测试，并可通过插件内 MCP 配置增强文档检索、网页研究、深度思考和浏览器验收。",
     "developerName": "FlameMida",
     "category": "Developer Tools",
     "capabilities": [
@@ -40,6 +41,7 @@
     ],
     "websiteURL": "https://github.com/FlameMida/spec-dev",
     "defaultPrompt": [
+      "使用 exploring 陪我探讨这个想法的可行性",
       "使用 requirement-analysis 设计这个功能并产出 spec",
       "使用 writing-plans 把已批准的 spec 拆成实施计划",
       "使用 executing-plans 执行这份实施计划",

@@ -7,6 +7,11 @@
       "expected_output": "先批判性审阅计划并注册任务；执行任务 0 建立隔离工作区（纪律遵循 using-git-worktrees）；任务 1 起逐任务 TDD 执行，每任务 commit（feat(TN): xxx）+ 主线程 spec 自检（只查 over/under-building 与契约锚定）；任务之间不停下向用户汇报；全部完成后才进入收尾审查"
     },
     {
+      "id": "ep-execution-confirm-gate",
+      "prompt": "（上一轮刚展示完计划全文，用户回复）嗯，看起来不错",
+      "expected_output": "\"看起来不错\"是对计划的认可、不是执行指令——呈现执行摘要（计划路径、任务数与分组、将创建的 worktree 分支名）并明确询问是否开始执行，获确认后才建 worktree 开工；仅当用户显式指示执行或经 writing-plans 交接确认时才视为已确认"
+    },
+    {
       "id": "ep-review-orchestration",
       "prompt": "（4 个任务全部完成，变更约 600 行，涉及 3 个模块）进入收尾审查",
       "expected_output": "单条消息 fan-out 3 路 code-reviewer（维度 A/B/C），报告走 review-findings 契约校验；高/中发现逐条派独立子代理对抗复核；completeness critic 查覆盖缺口；结果按严重性分组后征询用户处理方式，不自动修复"
