@@ -4,12 +4,17 @@
     {
       "id": "wp-bite-sized-tdd",
       "prompt": "基于已批准的 spec（docs/2026-07-03-export-report/spec/export-report-design.md，CLI 导出报告子命令）编写实施计划",
-      "expected_output": "计划保存至 docs/2026-07-03-export-report/plan/export-report-plan.md（与 spec 同一特性目录）；含头部（执行方式指向 executing-plans、目标、spec 路径、全局约束）；固定生成任务 0（建立隔离工作区：已隔离检测→worktree 建立→基线验证，含 git 降级命令）；先给文件结构映射；每任务含精确文件路径、接口消费/产出块、TDD 五步（失败测试代码→确认失败命令与预期输出→最小实现代码→确认通过→提交命令）；失败测试由 spec 的 Scenario 直译（GIVEN→arrange、WHEN→act、THEN→assert，测试名沿用 Scenario 名）；无任何 TBD/占位符"
+      "expected_output": "计划保存至 docs/2026-07-03-export-report/plan/export-report-plan.md（与 spec 同一特性目录）；含头部（执行方式指向 executing-plans、目标、spec 路径、全局约束）；固定生成任务 0（建立隔离工作区：已隔离检测→worktree 建立→基线验证，含 git 降级命令）；先给文件结构映射；每任务含精确文件路径、接口消费/产出块、TDD 五步（失败测试代码→确认失败命令与预期输出→最小实现代码→确认通过→提交命令）；失败测试由 spec 的 Scenario 直译（GIVEN→arrange、WHEN→act、THEN→assert，测试名沿用 Scenario 名）；以最终任务（合并与清理）收尾；无任何 TBD/占位符"
     },
     {
       "id": "wp-self-review-catches-gap",
       "prompt": "（计划写完后）spec 里要求导出支持 CSV 和 JSON 两种格式，计划里只有 CSV 任务",
       "expected_output": "Self-Review 第 1 查（spec 覆盖）发现缺口，补 JSON 格式任务后才向用户交接；不带着缺口交接"
+    },
+    {
+      "id": "wp-final-task-closure",
+      "prompt": "（Self-Review 中）计划以任务 6「接入 CLI 入口」结束，没有收尾任务",
+      "expected_output": "按固定模板补任务 7（合并与清理：全量验证→合并回来源分支→清理 worktree 与分支），与任务 0 首尾对称——脱离插件执行时 worktree 生命周期也能在计划内闭合"
     },
     {
       "id": "wp-confirm-before-writing",

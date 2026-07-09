@@ -52,7 +52,7 @@ executing-plans（隔离执行 + 审查 + 总结）
 
 仓库已包含 Codex 插件清单：`plugins/spec-dev/.codex-plugin/plugin.json`。该清单会暴露：
 
-- `skills/`：`requirement-analysis`、`visual-preview`、`writing-plans`、`executing-plans`、`using-git-worktrees`、`test-driven-development`、`browser-qa`
+- `skills/`：`exploring`、`requirement-analysis`、`visual-preview`、`writing-plans`、`executing-plans`、`using-git-worktrees`、`test-driven-development`、`browser-qa`
 - `.mcp.json`：context7、exa、sequential-thinking、playwright、chrome-devtools 的可选 MCP 配置
 - 插件 UI 元数据：展示名称、分类、能力、默认提示词
 
@@ -162,8 +162,8 @@ spec 落盘至特性目录 `docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md` 
 /executing-plans 执行 docs/2026-07-04-auth/plan/auth-plan.md
 ```
 
-- **writing-plans**：假设执行者零上下文——每份计划固定以任务 0（建立隔离工作区，含已隔离检测与 git 降级命令）开头，脱离插件也能按序执行；每任务给精确文件路径、完整代码、TDD 五步（失败测试→确认失败→最小实现→确认通过→提交）、接口消费/产出块；写完跑三查（spec 覆盖/占位符/类型一致）再交接
-- **executing-plans**：执行确认后从任务 0（隔离工作区，纪律遵循 using-git-worktrees）开始，主线程逐任务连续执行（每任务 commit `feat(TN): xxx` + spec 自检），全部完成后 fan-out code-reviewer 多维对抗审查（review-findings 契约校验 + 高/中发现对抗复核 + completeness critic），UI 变更触发 browser-qa 验收，审查处置征询用户后合并总结
+- **writing-plans**：假设执行者零上下文——每份计划固定以任务 0（建立隔离工作区，含已隔离检测与 git 降级命令）开头、以最终任务（合并与清理）收尾，worktree 生命周期在计划内闭合、脱离插件也能按序执行；头部随行偏差处理指引；每任务给精确文件路径、完整代码、TDD 五步（失败测试→确认失败→最小实现→确认通过→提交）、接口消费/产出块；写完跑三查（spec 覆盖/占位符/类型一致）再交接
+- **executing-plans**：执行确认后从任务 0（隔离工作区，纪律遵循 using-git-worktrees）开始，主线程逐任务连续执行（每任务 commit `feat(TN): xxx` + spec 自检），全部完成后 fan-out code-reviewer 多维对抗审查（review-findings 契约校验 + 高/中发现对抗复核 + completeness critic），UI 变更触发 browser-qa 验收，审查处置征询用户后执行最终任务（合并与清理）并总结
 
 ## visual-preview 使用方法
 

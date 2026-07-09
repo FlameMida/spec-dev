@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "中文设计→计划→执行 skill 管线与浏览器验收工作流插件集",
-    "version": "6.0.0"
+    "version": "6.1.0"
   },
   "plugins": [
     {
