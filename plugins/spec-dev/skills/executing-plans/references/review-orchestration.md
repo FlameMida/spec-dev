@@ -56,14 +56,14 @@ repeat (最多 2 轮):
 
 某维度子代理失败 → 缩小该维度范围重试 1 次 → 仍失败则主线程接管该维度，其余维度流水线不受影响。
 
-## browser-qa 联动
+## acceptance-qa 联动
 
-变更涉及 UI（页面、组件、样式、前端交互）时，在维度审查之外触发 browser-qa skill 的 Layer 2 AI 自主验收——验收项直接引用 spec 中标注交由 browser-qa 的 Scenario（GIVEN/WHEN/THEN 即验收步骤），辅以计划中标注的验收点；发现失败项时 browser-qa 自动追加 Layer 3 诊断。browser-qa 结论并入审查报告。
+计划含验收任务、或 spec 验收矩阵含「验收任务」行时，在维度审查之外触发 acceptance-qa skill 按矩阵执行——输入为 spec 路径、计划验收任务、本次变更文件清单与证据目录（特性目录 `acceptance/`）；acceptance-qa 按变更面裁剪矩阵行（裁剪写入其 coverage_note），Tier A 检查项直接引用 spec 中的 Scenario（GIVEN/WHEN/THEN 即验收步骤），发现失败项时自动追加诊断。旧版计划无矩阵时，变更涉及 UI（页面、组件、样式、前端交互）即按其验收点触发。acceptance-qa 报告（含 Requirement 覆盖对照）并入审查报告。
 
 ## 报告与处置
 
 1. confirmed 发现按严重性分组（高/中/低），每条含 file:line、描述、影响、建议修复
-2. 并入 completeness critic 的覆盖声明与 browser-qa 结论（如有）
+2. 并入 completeness critic 的覆盖声明与 acceptance-qa 报告（如有）
 3. 向用户征求处理方式——不自动修复；用户确认后修复走 TDD（先写复现测试），修复后受影响维度复审一次
 
 ## Codex 降级形态

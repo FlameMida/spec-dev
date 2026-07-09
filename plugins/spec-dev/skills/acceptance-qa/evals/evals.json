@@ -1,0 +1,40 @@
+{
+  "skill_name": "acceptance-qa",
+  "evals": [
+    {
+      "id": "aq-e2e-deterministic-generate",
+      "prompt": "给登录页写一套 E2E 测试，地址 http://localhost:3000/login，正确账号 demo/demo123，错误密码要出红色提示",
+      "expected_output": "意图推断路由到 e2e(D)；生成的测试用 data-testid 优先选择器、Arrange-Act-Assert、test.describe 分组、至少一个会因功能破坏而失败的业务断言；运行命令只跑本次生成的文件（npx playwright test <文件路径>）而非全量；不使用 MCP/LLM 跑确定性用例"
+    },
+    {
+      "id": "aq-ai-acceptance-evidence",
+      "prompt": "验收一下购物车页面 http://localhost:5173/cart，重点看数量增减和小计联动",
+      "expected_output": "意图推断路由到 e2e(A)+visual(A)；无 spec 时现场生成迷你矩阵（定制项含\"数量修改后小计实时更新\"+ 适用通用项）；串行逐项执行；断言优先用 browser_verify_* 工具而非自由判读快照；每项结论附 evidence_ref，无证据的项标 unverified 而非通过；fail/warn 项做不信任视角重执行复核并产出第二份证据；pass 项交独立子代理证据审计；复核/审计结论回写 recheck；落盘 acceptance-check-items 契约 JSON 并用 validate-output.mjs 校验"
+    },
+    {
+      "id": "aq-perf-api-threshold",
+      "prompt": "API 压测一下 /search 端点能扛多少 QPS，别把预发环境打挂了",
+      "expected_output": "路由到 perf-api；先确认预算/阈值与目标环境授权（非本地环境压测须用户明确同意）；生成 k6 脚本（thresholds 含 http_req_failed 与 http_req_duration 分位）；breakpoint 类问题用递增负载；以 k6 退出码与 THRESHOLDS 输出段为证据；k6 未安装时给安装命令或声明降级"
+    },
+    {
+      "id": "aq-perf-web-cwv",
+      "prompt": "看看首页加载性能达不达标，我们要求 LCP 2.5 秒内",
+      "expected_output": "路由到 perf-web；用 chrome-devtools MCP performance_start_trace（先导航后开 trace）采集 LCP/INP/CLS lab 值；至少采样 3 次取中位数并附原始值；对 2500ms 预算判定；标注\"本机 lab 数据非生产 RUM\"；超线时用 performance_analyze_insight 展开根因"
+    },
+    {
+      "id": "aq-matrix-integration",
+      "prompt": "（executing-plans 收尾触发）按特性目录 docs/2026-07-09-export-report/ 的 spec 验收本次变更，变更面：导出模块 + 报表页，证据目录 docs/2026-07-09-export-report/acceptance/",
+      "expected_output": "读 spec「测试与验收策略」矩阵并按变更面裁剪（未触及的矩阵行不执行，裁剪写入 coverage_note）；任务内 TDD 行核对测试存在并复跑；验收任务行按维度执行；报告与证据落盘指定 acceptance/ 目录并回传路径；报告含 Requirement 覆盖对照表逐行回填状态"
+    },
+    {
+      "id": "aq-intent-routing-diagnose",
+      "prompt": "为什么这个下拉菜单在 Safari 里点了没反应？页面是 staging.example.com/settings",
+      "expected_output": "意图推断路由到 diagnose，不先跑其他维度；按失败分类选工具（渲染/逻辑类 → playwright MCP + 源码分析）；根因按\"若成立做 X 应观察到 Y\"假设验证后才写报告；产出定位到 file:line 的根因与修复建议"
+    },
+    {
+      "id": "aq-should-not-trigger-daily-test",
+      "prompt": "跑一下单元测试看看有没有挂的",
+      "expected_output": "不触发 acceptance-qa skill（description 显式排除无验收语义的日常跑测试）；直接执行项目的单测命令"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+# spec-dev 漂移守卫 —— git pre-commit hook。
+# 安装：本文件由 install.mjs 复制到 .git/hooks/pre-commit（或经 core.hooksPath 管理）。
+# 绕过：git commit --no-verify，或 SPEC_DEV_GUARD=off git commit …（会打印告警）。
+if command -v node >/dev/null 2>&1; then
+  node "$(git rev-parse --show-toplevel)/scripts/spec-dev/check-spec-drift.mjs" --staged || exit 1
+fi

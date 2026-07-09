@@ -1,8 +1,23 @@
 # Spec 模板（`docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md`）
 
 > 按需增删节：light 档几句话 + 关键决策 + 1-2 条 Requirement 即可；节的篇幅与其复杂度匹配，不为凑结构而注水。
+>
+> **顶部 frontmatter 是漂移守卫锚点，必须保留**：它把本 spec 与其覆盖的代码路径绑定，供 pre-commit / CI / Claude·Codex 的 preToolUse hook 校验"改了代码却没同步 spec"。填 `feature` 与 `covers`，spec 定稿转 `status: active`；无守卫需求（如纯文档特性）可将 `covers` 留空数组，守卫即跳过。
 
 ```markdown
+---
+# —— spec-dev 漂移守卫锚点（机器可校验，勿删）——
+# covers: 本 spec 声称覆盖的代码路径 glob；这些路径被改动而本 spec 未同步时，
+#         守卫（pre-commit / CI / Claude·Codex 的 preToolUse hook）会拦截并提示。
+spec_dev:
+  version: 1
+  feature: <feature-name>
+  status: draft            # draft | active | superseded —— 仅 active 参与漂移拦截
+  covers:                  # 该特性拥有的代码 glob；无代码产物时留空数组 []
+    - "src/<feature>/**"
+  sync_commit: null        # 最近一次"代码与本 spec 已同步"的提交 SHA；由守卫在同步后写入
+---
+
 # [主题] 设计
 
 ## 背景与目标
@@ -68,9 +83,18 @@
 
 [异常路径、降级策略]
 
-## 测试策略
+## 测试与验收策略
 
-[单元/集成/E2E 的覆盖思路。**每个 Scenario 对应至少一个测试**——writing-plans 会把 Scenario 直接翻译为任务的失败测试（GIVEN→arrange、WHEN→act、THEN→assert）；UI 功能注明哪些 Scenario 交由 browser-qa 验收]
+[以**验收矩阵**表达（结构定义见 acceptance-qa skill 的 references/acceptance-matrix.md）：每个 Scenario 至少一行；
+「任务内 TDD」行由 writing-plans 直接翻译为任务的失败测试（GIVEN→arrange、WHEN→act、THEN→assert）；
+「验收任务」行进入计划尾部的验收任务，由 executing-plans 收尾触发 acceptance-qa 执行。
+visual/a11y/perf 行仅在需求形态需要时出现；性能行必须带阈值数字——写不出数字回到澄清]
+
+| Scenario / 检查项 | 维度 | 执行方式 | 验收证据 |
+|-------------------|------|---------|---------|
+| [Scenario 名] | unit/integration | 任务内 TDD | 测试通过 |
+| [关键用户流程] | e2e | 验收任务 (D) | E2E 通过 |
+| [页面 LCP ≤ 2.5s（lab, 中位数）] | perf-web | 验收任务 (D) | trace 报告 |
 
 ## 风险与边缘情况
 

@@ -62,7 +62,7 @@ digraph requirement_analysis {
 }
 ```
 
-**终态是调用 writing-plans。** 不得调用 executing-plans、browser-qa 或任何其他实施类 skill——本 skill 之后唯一可调用的 skill 是 writing-plans。
+**终态是调用 writing-plans。** 不得调用 executing-plans、acceptance-qa 或任何其他实施类 skill——本 skill 之后唯一可调用的 skill 是 writing-plans。
 
 ## 执行档位
 

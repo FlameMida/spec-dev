@@ -35,7 +35,7 @@ node ${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs <schema-name> <json-file>
 |--------|------|--------|--------|
 | `exploration-report` | 探索报告 | code-explorer | requirement-analysis 阶段 2（deep 档 multi-modal sweep） |
 | `review-findings` | 审查发现 | code-reviewer | executing-plans 收尾审查编排 |
-| `browser-check-items` | 浏览器验收项 | browser-qa Layer 2 | Layer 2 编排与复核 |
+| `acceptance-check-items` | 验收检查项 | acceptance-qa（Tier A 为主，D/X 结论并入） | 验收编排与复核、executing-plans 收尾审查 |
 
 每个契约的 `coverage_note` 一律必填——这是「no silent caps」纪律的落点：截断/未覆盖范围必须显式声明，不允许静默缩水。
 

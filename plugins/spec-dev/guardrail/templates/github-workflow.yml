@@ -1,0 +1,29 @@
+# spec-dev 漂移守卫 —— CI 最后防线（GitHub Actions）。
+# 本地 pre-commit / hook 可被 --no-verify 或未安装绕过；CI 是工具无关、不可绕过的兜底。
+name: spec-dev-drift-guard
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+jobs:
+  drift-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 需要完整历史以计算提交区间
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: 计算变更区间
+        id: range
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "range=${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "range=${{ github.event.before }}..${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+      - name: 检查 spec 漂移
+        run: node scripts/spec-dev/check-spec-drift.mjs --range "${{ steps.range.outputs.range }}"

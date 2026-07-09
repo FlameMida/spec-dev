@@ -7,6 +7,49 @@
 
 ---
 
+## [7.0.0] - 2026-07-09
+
+### 💥 破坏性变更 (Breaking) — browser-qa 重写为 acceptance-qa 全能验收工作流
+
+- **skill 改名 `browser-qa` → `acceptance-qa`**（目录、frontmatter、marketplace/codex 清单、README、上游引用一次改齐）——原"浏览器三层"心智模型泛化为「**验收维度 × 执行性质**」矩阵：维度 = unit / integration / e2e / visual / a11y / perf-web / perf-api（桌面/移动客户端作为运行环境修饰），执行性质 = **Tier D 确定性**（真实命令+精确断言，零 LLM 判断）/ **Tier A AI 自主**（MCP 驱动+证据强制）/ **Tier X 诊断**（假设验证根因）；老前缀 layer1/2/3 兼容映射到 e2e(D)/e2e(A)/diagnose
+- **契约 schema `browser-check-items` → `acceptance-check-items`**——items 新增必填 `dimension`/`tier` 与可选 `requirement_ref` 字段，四态 result 与 recheck 回写不变；schemas/README 契约清单同步
+
+### ✨ 新增 (Added)
+
+- **验收矩阵（Acceptance Matrix）贯通管线**——spec「测试策略」节升级为「测试与验收策略」矩阵（Scenario × 维度 × 执行方式 × 证据；性能行必须带阈值数字）；writing-plans 在最终任务前固定生成**验收任务**（矩阵含「验收任务」行时），Self-Review 增查矩阵行覆盖；executing-plans 触发条件从"UI 变更"扩为"按验收矩阵"（阶段 3 跳过验收任务、阶段 4 触发 acceptance-qa 并按变更面裁剪矩阵行），review-orchestration 联动节同步；报告与证据统一落盘特性目录 `acceptance/` 子目录
+- **性能验收（perf-web / perf-api / 客户端）**——新 references/performance.md：预算先行（无数字不验收）、多次采样取中位数；前端 CWV 现行阈值（LCP≤2500ms / INP≤200ms / CLS≤0.1）经 chrome-devtools MCP `performance_start_trace` 采集、`performance_analyze_insight` 展开根因、`emulate` 节流复现，Lighthouse CI（eslint 风格断言 + median 聚合）作 CI 持久化路径；后端 k6 thresholds（`p(95)<N` 失败即非零退出码）+ 6 种测试类型表（验收默认 smoke 档，压测非本地环境须授权）+ k6-smoke.js 模板；Electron 启动/内存测量
+- **单元/集成/API 验收**——新 references/unit-integration.md：多栈命令表（vitest/jest/pytest/go/cargo/java）、"本次变更相关→全量"范围规则与新增/既有失败区分、覆盖率只按项目配置或矩阵要求断言（反对验收时单方面发明门槛）、API 三层断言（状态码/业务字段/契约形态）、深档选配定位（Stryker 变异测试/Schemathesis/Pact）
+- **视觉回归与可访问性验收**——新 references/visual-a11y.md：`toHaveScreenshot` 纪律（基线同环境、mask/stylePath 处理动态区域、建线≠回归、刷基线=销毁证据）、AI 视觉判读的可靠边界（能判布局破坏/不能判像素级差异，结论必须指认位置）；AxeBuilder WCAG A/AA 扫描（排除须注明理由）、`lighthouse_audit` 交叉印证、键盘走查与人工项分流
+- **Tier A 断言升级**——references/ai-acceptance.md：playwright MCP `browser_verify_*` 工具族（element_visible/text_visible/list_visible/value）作为确定性断言原语优先于快照判读；`--secrets` 凭据注入不进上下文、`--output-dir` 证据集中、`browser_start_tracing`/`browser_start_video` 流程级取证；原 Layer 2 三道防线（证据强制、fail/warn 重执行复核、pass 独立证据审计）完整保留
+- **诊断扩容**——references/diagnose.md：新增内存泄漏（堆快照对比 take/compare_heapsnapshots + retainers 持有链）、网络瀑布（list_network_requests）、后端性能分层归因；Shadow DOM/iframe 优先用官方能力（snapshot 穿透 + `--caps vision` 坐标族），第三方 CDP 工具降为极端场景可选（信任边界警告保留）
+- **Playwright Test Agents 按需推荐档**——e2e-patterns.md 新增：官方 planner/generator/healer 工作流（`npx playwright init-agents --loop=claude`、seed test 机制）作为"项目已启用则优先走"的用例生成路径；**healer 结论（改 locator/skip）须逐条人工确认才计入验收**，被 skip 的用例按 fail 处理——防"把真缺陷治成 skip"
+- **环境检测多栈化**——detect-env.mjs 重写：栈识别（node/python/go/rust/java）、测试框架与 E2E 框架识别、覆盖率门槛/a11y 依赖/视觉基线/k6 与 LHCI 配置探测，suggestions 按维度给处置建议
+- **报告模板**——templates/acceptance-report.md：总览矩阵、Requirement 覆盖对照、关键发现、证据索引、coverage_note（no silent caps）
+
+### 🛡️ 新增 (Added) — spec 漂移守卫（guardrail）
+
+- **问题**——spec/plan 是仓库里的普通 Markdown，接手者若不走 spec-dev 流程（甚至未安装插件）直接改代码，spec 会停留在旧状态，后续 explore/accept 拿着过期契约失效。新增 `plugins/spec-dev/guardrail/` 一套分层守卫堵住此漂移
+- **锚点**——spec-template.md 顶部新增 `spec_dev` frontmatter（`covers` 代码 glob / `status` active 才拦截 / `feature` / `sync_commit`），把 spec 与其覆盖的代码机器可读地绑定
+- **单一事实源 check-spec-drift.mjs**——零依赖 node 校验器：解析 active spec 的 `covers`、比对 git 变更集，"改了覆盖代码却没同步 spec"即判漂移；支持 `--staged`（pre-commit）/ `--range`（CI）/ `--hook`（读 stdin JSON，两侧 preToolUse）三种入参；`SPEC_DEV_GUARD=off` 临时放行
+- **双侧工具面拦截**——`.claude/settings.json` PreToolUse 与 `.codex/hooks.json` preToolUse 均以退出码 2 在编辑前阻断并把原因回灌模型（Codex hooks 能力经 openai/codex 源码核实：HookEventName 含 preToolUse、should_block/block_reason 语义、`.codex/hooks.json` 随仓库分发）；SessionStart 双侧注入流程上下文
+- **工具无关硬防线**——git `pre-commit`（可 `--no-verify` 绕过）+ GitHub Actions workflow（PR/推送不可绕过，最后防线）共用同一校验器
+- **软提示对等**——`CLAUDE.md` / `AGENTS.md` 各写守卫段（标记块幂等），未装插件的接手者也知道同步义务
+- **一键安装器 install.mjs**——把上述全套装进目标仓库，幂等可重复运行（hooks 按 command 去重、软提示按标记块替换、pre-commit 单行、macOS 符号链接路径已处理）
+
+### 🔧 改进 (Changed)
+
+- **四条铁律**（原三条泛化+新增）：能确定性验收的绝不交给 AI 判断；无证据不给结论（四态制）；根因必须假设验证；**不采信实施者自报告**——验收结论只来自本次执行的退出码与证据
+- **触发面重划**——性能测试/压测（原显式排除）纳入触发；日常"跑一下测试/修测试"、TDD 开发循环、代码审查、需求文档评审保持排除；trigger-evals 扩至 16 正例（含压测/视觉/a11y/全面验收）+ 10 近失负例
+- **mcp-setup.md 重写**——playwright MCP 验收相关参数表与工具族速览、chrome-devtools MCP 工具族（性能/模拟/网络/内存/审计）与隐私 flag（`--no-performance-crux`、`--no-usage-statistics`）、mobile-mcp 按需接入（移动端 Tier A 同构）、不推荐清单（k6 MCP 停滞——k6 CLI 本身即确定性验收门；独立 Lighthouse MCP 与 cdt-mcp 重复）
+- **evals 重写**——7 用例覆盖 e2e(D) 生成、Tier A 证据编排（verify 优先 + 新 schema）、perf-api 阈值与授权、perf-web 采样纪律、矩阵集成（变更面裁剪 + acceptance/ 落盘）、诊断路由、日常测试不触发
+
+### 📝 说明
+
+- 全部外部事实（Playwright 1.61 与 Test Agents、playwright-mcp/chrome-devtools-mcp 工具清单、CWV 阈值、k6 v2.1 thresholds、LHCI 断言、AxeBuilder、Vitest coverage thresholds）经官方仓库文档源逐项核实（2026-07-09 克隆），非训练记忆
+- `.mcp.json` 预配置保持 5 个 MCP 不变；mobile-mcp 仅文档化按需推荐，不预配置
+
+---
+
 ## [6.1.0] - 2026-07-09
 
 ### ✨ 新增 (Added) — exploring 探索模式

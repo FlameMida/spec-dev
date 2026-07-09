@@ -1,0 +1,23 @@
+<!-- spec-dev:guardrail:start —— 本段由 spec-dev 安装器维护，勿手改；重装会覆盖 -->
+
+## 本仓库采用 spec 驱动开发（spec-dev）
+
+本仓库使用 [spec-dev](https://github.com/FlameMida/spec-dev) 工作流：需求先落成 spec，再拆成 plan，最后按计划实现。**接手开发前请阅读本节。**（Codex 环境优先读本文件；等价的 Claude 指引见 `CLAUDE.md`。）
+
+### 产物位置
+
+- **spec / plan**：`docs/YYYY-MM-DD-<特性>/`，其中 `spec/<特性>-design.md` 是行为契约与验收矩阵，`plan/<特性>-plan.md` 是可执行计划。
+- 每份 spec 顶部 frontmatter 的 `spec_dev.covers` 声明它覆盖的代码路径。
+
+### 改代码的义务（无论是否安装插件）
+
+1. 动某块代码前，先看它属于哪个特性、对应 spec 怎么规定的行为。
+2. **行为发生变化时，必须同步更新该 spec**（行为规范 + 验收矩阵），并与代码放在同一次提交。
+3. 漂移守卫会拦截"改了 `covers` 覆盖的代码却没同步 spec"的提交（pre-commit / CI），以及编辑操作（Codex `.codex/hooks.json` 的 preToolUse hook，Claude Code 侧同理）。
+4. 确实与行为契约无关的改动，可用 `SPEC_DEV_GUARD=off` 临时放行并在提交信息说明；spec 作废则把其 frontmatter `status` 改为 `superseded`。
+
+### 装了 spec-dev 插件时
+
+用 `requirement-analysis`（需求→spec）、`writing-plans`（spec→plan）、`executing-plans`（TDD 逐任务执行 + 收尾验收）三个 skill 推进，不要绕过流程直接改代码。
+
+<!-- spec-dev:guardrail:end -->

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Acceptance QA"
+  short_description: "全能验收工作流（单元/集成/E2E/视觉/a11y/性能 + AI 验收 + 诊断）"
+  default_prompt: "Use $acceptance-qa to run acceptance on the target feature, page or endpoint. Provide a clear target description (URL, endpoint or feature) so the workflow can assemble the right acceptance matrix."
+
+policy:
+  allow_implicit_invocation: true
