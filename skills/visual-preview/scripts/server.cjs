@@ -165,7 +165,7 @@ h1 { color: #333; } p { color: #666; }
 </style>
 </head>
 <body><!-- BRANDING --><h1>Visual Preview</h1>
-<p>Waiting for the agent to push a screen...</p></body></html>`);
+<p>等待 agent 推送屏幕…</p></body></html>`);
 }
 
 const FORBIDDEN_PAGE = `<!DOCTYPE html>
@@ -240,20 +240,49 @@ function isFullDocument(html) {
 }
 
 function wrapInFrame(content) {
-  return renderBranding(frameTemplate).replace('<!-- CONTENT -->', content);
+  return renderBranding(frameTemplate)
+    .replace('<!-- THEME -->', themeCssInjection())
+    .replace('<!-- CONTENT -->', content);
 }
 
-function getNewestScreen() {
-  const files = fs.readdirSync(CONTENT_DIR)
+// Project design tokens: BRAINSTORM_THEME_CSS points at a CSS file whose
+// variables override the frame's default palette, so mockups render in the
+// project's own look. Read once at startup; `</style` is stripped so the
+// injected block can't break out of its tag.
+const THEME_CSS_FILE = process.env.BRAINSTORM_THEME_CSS || null;
+let themeCss = null;
+if (THEME_CSS_FILE) {
+  try {
+    themeCss = fs.readFileSync(THEME_CSS_FILE, 'utf-8').replace(/<\/style/gi, '');
+  } catch (e) {
+    console.error('Failed to read BRAINSTORM_THEME_CSS:', e.message);
+  }
+}
+function themeCssInjection() {
+  return themeCss ? '<style>\n' + themeCss + '\n</style>' : '';
+}
+
+function listScreens() {
+  return fs.readdirSync(CONTENT_DIR)
     .filter(f => !f.startsWith('.') && f.endsWith('.html'))
     .map(f => {
       const fp = path.join(CONTENT_DIR, f);
       if (!isRegularFileInsideContentDir(fp)) return null;
-      return { path: fp, mtime: fs.statSync(fp).mtime.getTime() };
+      return { name: f, path: fp, mtime: fs.statSync(fp).mtime.getTime() };
     })
     .filter(Boolean)
-    .sort((a, b) => b.mtime - a.mtime);
-  return files.length > 0 ? files[0].path : null;
+    .sort((a, b) => a.mtime - b.mtime); // oldest → newest
+}
+
+function getNewestScreen() {
+  const files = listScreens();
+  return files.length > 0 ? files[files.length - 1].path : null;
+}
+
+// Full-document screens pass through untouched; fragments get the frame.
+function renderScreen(screenFile) {
+  const raw = fs.readFileSync(screenFile, 'utf-8');
+  return isFullDocument(raw) ? raw : wrapInFrame(raw);
 }
 
 function urlHostForHttp(host) {
@@ -264,6 +293,21 @@ function urlHostForHttp(host) {
 
 function previewUrl() {
   return 'http://' + urlHostForHttp(URL_HOST) + ':' + PORT + '/?key=' + TOKEN;
+}
+
+// When bound to all interfaces, list LAN-reachable URLs so the user can open
+// the preview on a phone/tablet on the same network. Empty on loopback binds.
+function lanUrls() {
+  if (HOST !== '0.0.0.0' && HOST !== '::') return [];
+  const urls = [];
+  const ifaces = require('os').networkInterfaces();
+  for (const name of Object.keys(ifaces)) {
+    for (const addr of ifaces[name] || []) {
+      if (addr.internal || addr.family !== 'IPv4') continue;
+      urls.push('http://' + addr.address + ':' + PORT + '/?key=' + TOKEN);
+    }
+  }
+  return urls;
 }
 
 function browserLauncherForPlatform(url, {
@@ -384,9 +428,7 @@ function handleRequest(req, res) {
     res.end(bootstrapPage(keyFromQuery));
   } else if (req.method === 'GET' && pathname === '/') {
     const screenFile = getNewestScreen();
-    let html = screenFile
-      ? (raw => isFullDocument(raw) ? raw : wrapInFrame(raw))(fs.readFileSync(screenFile, 'utf-8'))
-      : waitingPage();
+    let html = screenFile ? renderScreen(screenFile) : waitingPage();
 
     if (html.includes('</body>')) {
       html = html.replace('</body>', helperInjection + '\n</body>');
@@ -396,6 +438,43 @@ function handleRequest(req, res) {
 
     res.writeHead(200, securityHeaders({ 'Content-Type': 'text/html; charset=utf-8' }));
     res.end(html);
+  } else if (req.method === 'GET' && pathname === '/screens') {
+    // Screen history, oldest → newest, for the frame's prev/next navigation.
+    res.writeHead(200, securityHeaders({ 'Content-Type': 'application/json' }));
+    res.end(JSON.stringify({ screens: listScreens().map(s => s.name) }));
+  } else if (req.method === 'GET' && pathname.startsWith('/screen/')) {
+    // Serve a specific (historical) screen, framed like the latest one.
+    const fileName = path.basename(decodeURIComponent(pathname.slice(8)));
+    const filePath = path.join(CONTENT_DIR, fileName);
+    if (!fileName || fileName.startsWith('.') || !fileName.endsWith('.html') ||
+        !isRegularFileInsideContentDir(filePath)) {
+      res.writeHead(404, securityHeaders());
+      res.end('Not found');
+      return;
+    }
+    let html = renderScreen(filePath);
+    if (html.includes('</body>')) {
+      html = html.replace('</body>', helperInjection + '\n</body>');
+    } else {
+      html += helperInjection;
+    }
+    res.writeHead(200, securityHeaders({ 'Content-Type': 'text/html; charset=utf-8' }));
+    res.end(html);
+  } else if (req.method === 'GET' && pathname.startsWith('/vendor/')) {
+    // Bundled third-party assets (Mermaid), served locally for offline use.
+    const fileName = path.basename(pathname.slice(8));
+    const filePath = path.join(__dirname, 'vendor', fileName);
+    if (!fileName || fileName.startsWith('.') || !fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+      res.writeHead(404, securityHeaders());
+      res.end('Not found');
+      return;
+    }
+    const ext = path.extname(filePath).toLowerCase();
+    res.writeHead(200, securityHeaders({
+      'Content-Type': MIME_TYPES[ext] || 'application/octet-stream',
+      'Cache-Control': 'private, max-age=86400' // large static asset; safe to cache
+    }));
+    res.end(fs.readFileSync(filePath));
   } else if (req.method === 'GET' && pathname.startsWith('/files/')) {
     const fileName = path.basename(pathname.slice(7));
     const filePath = path.join(CONTENT_DIR, fileName);
@@ -479,6 +558,10 @@ function handleUpgrade(req, socket) {
   socket.on('error', () => clients.delete(socket));
 }
 
+// Event types worth persisting for the agent to read back. Clicks carry a
+// `choice`; the rest are frame-UI events (confirm bar, note box, annotate mode).
+const PERSISTED_EVENT_TYPES = new Set(['click', 'choice', 'confirm', 'note', 'annotate']);
+
 function handleMessage(text) {
   let event;
   try {
@@ -489,7 +572,7 @@ function handleMessage(text) {
   }
   touchActivity();
   console.log(JSON.stringify({ source: 'user-event', ...event }));
-  if (event && event.choice) {
+  if (event && (event.choice || PERSISTED_EVENT_TYPES.has(event.type))) {
     const eventsFile = path.join(STATE_DIR, 'events');
     fs.appendFileSync(eventsFile, JSON.stringify(event) + '\n');
   }
@@ -579,8 +662,18 @@ function startServer() {
 
       if (!knownFiles.has(filename)) {
         knownFiles.add(filename);
+        // A new screen supersedes the old one's events — archive rather than
+        // delete, so nothing is silently lost if the agent pushed before reading.
         const eventsFile = path.join(STATE_DIR, 'events');
-        if (fs.existsSync(eventsFile)) fs.unlinkSync(eventsFile);
+        if (fs.existsSync(eventsFile)) {
+          const archiveDir = path.join(STATE_DIR, 'events-archive');
+          if (!fs.existsSync(archiveDir)) fs.mkdirSync(archiveDir, { recursive: true });
+          try {
+            fs.renameSync(eventsFile, path.join(archiveDir, Date.now() + '.jsonl'));
+          } catch (e) {
+            fs.unlinkSync(eventsFile); // archiving is best-effort
+          }
+        }
         console.log(JSON.stringify({ type: 'screen-added', file: filePath }));
         maybeOpenBrowser();
       } else {
@@ -660,6 +753,7 @@ function startServer() {
     const info = JSON.stringify({
       type: 'server-started', port: Number(PORT), host: HOST,
       url_host: URL_HOST, url: previewUrl(),
+      lan_urls: lanUrls(),
       screen_dir: CONTENT_DIR, state_dir: STATE_DIR, idle_timeout_ms: IDLE_TIMEOUT_MS
     });
     console.log(info);

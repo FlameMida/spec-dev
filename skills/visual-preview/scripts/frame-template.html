@@ -8,10 +8,11 @@
      * BRAINSTORM COMPANION FRAME TEMPLATE
      *
      * This template provides a consistent frame with:
-     * - OS-aware light/dark theming
-     * - Header branding and connection status
-     * - Scrollable main content area
-     * - CSS helpers for common UI patterns
+     * - OS-aware light/dark theming, plus a manual override toggle
+     * - Header branding, screen-history nav, viewport toggle, connection status
+     * - Scrollable main content area with device-viewport simulation
+     * - Bottom action bar: annotate mode, free-text note, confirm selection
+     * - CSS helpers for common UI patterns, and lazy local Mermaid rendering
      *
      * Content is injected via placeholder comment in #frame-content.
      */
@@ -37,8 +38,10 @@
       --selected-border: #0071e3;
     }
 
+    /* Dark palette applies when the OS prefers dark (and no manual light
+       override), or when the user forces dark via the header toggle. */
     @media (prefers-color-scheme: dark) {
-      :root {
+      :root:not([data-theme="light"]) {
         --bg-primary: #1d1d1f;
         --bg-secondary: #2d2d2f;
         --bg-tertiary: #3d3d3f;
@@ -51,6 +54,19 @@
         --selected-bg: rgba(10, 132, 255, 0.15);
         --selected-border: #0a84ff;
       }
+    }
+    :root[data-theme="dark"] {
+      --bg-primary: #1d1d1f;
+      --bg-secondary: #2d2d2f;
+      --bg-tertiary: #3d3d3f;
+      --border: #424245;
+      --text-primary: #f5f5f7;
+      --text-secondary: #86868b;
+      --text-tertiary: #636366;
+      --accent: #0a84ff;
+      --accent-hover: #409cff;
+      --selected-bg: rgba(10, 132, 255, 0.15);
+      --selected-border: #0a84ff;
     }
 
     body {
@@ -68,13 +84,28 @@
     .brand-copy { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1; transform: translateY(-1px); }
     .brand-logo { display: block; height: 1em; width: auto; max-width: 180px; flex-shrink: 0; filter: invert(1); }
     @media (prefers-color-scheme: dark) {
-      .brand-logo { filter: none; }
+      html:not([data-theme="light"]) .brand-logo { filter: none; }
     }
+    html[data-theme="dark"] .brand-logo { filter: none; }
     .status { font-size: 0.7rem; color: var(--status-color, var(--success)); display: flex; align-items: center; gap: 0.4rem; justify-self: end; white-space: nowrap; line-height: 1; }
     .status::before { content: ''; width: 6px; height: 6px; background: var(--status-color, var(--success)); border-radius: 50%; }
 
     .main { flex: 1; overflow-y: auto; }
     #frame-content { padding: 2rem; min-height: 100%; }
+
+    /* Device viewport simulation (set on .main via the header toggle) */
+    .main[data-viewport="tablet"] #frame-content,
+    .main[data-viewport="mobile"] #frame-content {
+      margin: 1rem auto;
+      min-height: 0;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--bg-primary);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+      padding: 1.25rem;
+    }
+    .main[data-viewport="tablet"] #frame-content { width: 768px; max-width: calc(100% - 2rem); }
+    .main[data-viewport="mobile"] #frame-content { width: 390px; max-width: calc(100% - 2rem); }
 
     .header {
       background: var(--bg-secondary);
@@ -82,13 +113,13 @@
       padding: 0.5rem 1.5rem;
       flex-shrink: 0;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr) auto auto;
       align-items: center;
       gap: 1rem;
       min-height: 42px;
     }
     .header .brand { justify-self: start; width: 100%; font-size: 0.75rem; line-height: 1; }
-    .header .status { grid-column: 2; line-height: 1; }
+    .header .status { grid-column: 3; line-height: 1; }
     .header span {
       font-size: 0.75rem;
       color: var(--text-secondary);
@@ -97,6 +128,84 @@
       color: var(--accent);
       font-weight: 500;
     }
+
+    .controls { display: flex; gap: 0.4rem; align-items: center; }
+    .ctl {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border: none;
+      border-radius: 6px;
+      padding: 0.25rem 0.55rem;
+      font-size: 0.7rem;
+      font-family: inherit;
+      cursor: pointer;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+    .ctl:hover { color: var(--text-primary); }
+    .ctl:disabled { opacity: 0.4; cursor: default; }
+    .ctl.active { background: var(--accent); color: white; }
+
+    /* ===== ACTION BAR (annotate / note / confirm) ===== */
+    .action-bar {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      padding: 0.6rem 1.5rem;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .action-bar input {
+      flex: 1;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.85rem;
+      font-family: inherit;
+      color: var(--text-primary);
+      min-width: 0;
+    }
+    .action-bar input:focus { outline: none; border-color: var(--accent); }
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.8rem;
+      font-family: inherit;
+      cursor: pointer;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+    .btn.primary { background: var(--accent); color: white; font-weight: 500; }
+    .btn.primary:hover { background: var(--accent-hover); }
+    .btn.active { background: var(--warning); color: white; }
+    .btn:disabled { opacity: 0.5; cursor: default; }
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 4.5rem;
+      transform: translateX(-50%) translateY(8px);
+      background: var(--text-primary);
+      color: var(--bg-primary);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 9999;
+      max-width: 80%;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Annotate mode: crosshair + hover highlight inside the content area */
+    body.annotating #frame-content { cursor: crosshair; }
+    body.annotating #frame-content :hover { outline: 1px dashed var(--warning); }
+    .annotate-flash { outline: 2px solid var(--warning) !important; outline-offset: 2px; }
 
     /* ===== TYPOGRAPHY ===== */
     h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
@@ -118,7 +227,7 @@
       align-items: flex-start;
       gap: 1rem;
     }
-    .option:hover { border-color: var(--accent); }
+    .option:hover, .option:focus-visible { border-color: var(--accent); }
     .option.selected { background: var(--selected-bg); border-color: var(--selected-border); }
     .option .letter {
       background: var(--bg-tertiary);
@@ -143,7 +252,7 @@
       cursor: pointer;
       transition: all 0.15s ease;
     }
-    .card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .card:hover, .card:focus-visible { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     .card.selected { border-color: var(--selected-border); border-width: 2px; }
     .card-image { background: var(--bg-tertiary); aspect-ratio: 16/10; display: flex; align-items: center; justify-content: center; }
     .card-body { padding: 1rem; }
@@ -164,12 +273,18 @@
       font-size: 0.75rem;
       color: var(--text-secondary);
       border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
+    /* Browser-chrome dots: <div class="mockup-header"><span class="dots"></span>标题</div> */
+    .mockup-header .dots { width: 9px; height: 9px; border-radius: 50%; background: var(--border); box-shadow: 14px 0 0 var(--border), 28px 0 0 var(--border); margin-right: 28px; flex-shrink: 0; }
     .mockup-body { padding: 1.5rem; }
 
     /* ===== SPLIT VIEW (side-by-side comparison) ===== */
     .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     @media (max-width: 700px) { .split { grid-template-columns: 1fr; } }
+    .main[data-viewport="mobile"] .split { grid-template-columns: 1fr; }
 
     /* ===== PROS/CONS ===== */
     .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
@@ -190,24 +305,281 @@
     }
 
     /* ===== INLINE MOCKUP ELEMENTS ===== */
-    .mock-nav { background: var(--accent); color: white; padding: 0.75rem 1rem; display: flex; gap: 1.5rem; font-size: 0.9rem; }
-    .mock-sidebar { background: var(--bg-tertiary); padding: 1rem; min-width: 180px; }
-    .mock-content { padding: 1.5rem; flex: 1; }
-    .mock-button { background: var(--accent); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; }
-    .mock-input { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem; width: 100%; }
+    .mock-shell { display: flex; align-items: stretch; min-height: 200px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+    .mock-nav { background: var(--accent); color: white; padding: 0.75rem 1rem; display: flex; align-items: center; gap: 1.5rem; font-size: 0.9rem; }
+    .mock-nav .spacer { flex: 1; }
+    .mock-sidebar { background: var(--bg-tertiary); padding: 1rem; min-width: 180px; display: flex; flex-direction: column; gap: 0.5rem; }
+    .mock-sidebar .item { padding: 0.4rem 0.6rem; border-radius: 6px; font-size: 0.85rem; color: var(--text-secondary); }
+    .mock-sidebar .item.active { background: var(--bg-secondary); color: var(--text-primary); font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+    .mock-content { padding: 1.5rem; flex: 1; background: var(--bg-secondary); }
+    .mock-button { display: inline-block; background: var(--accent); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    .mock-button.secondary { background: var(--bg-tertiary); color: var(--text-primary); box-shadow: none; }
+    .mock-input { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.75rem; width: 100%; font-size: 0.85rem; color: var(--text-tertiary); }
+
+    /* Skeleton text lines — stand-ins for real copy in wireframes */
+    .mock-line { height: 0.6rem; border-radius: 4px; background: var(--bg-tertiary); margin: 0.5rem 0; }
+    .mock-line.heading { height: 1rem; background: var(--border); }
+    .mock-line.w-25 { width: 25%; } .mock-line.w-50 { width: 50%; }
+    .mock-line.w-75 { width: 75%; } .mock-line.w-100 { width: 100%; }
+
+    /* Image placeholder with diagonal cross */
+    .mock-img { background: var(--bg-tertiary); border-radius: 6px; min-height: 90px; position: relative; overflow: hidden; }
+    .mock-img::before {
+      content: ''; position: absolute; inset: 0;
+      background:
+        linear-gradient(to top right, transparent calc(50% - 1px), var(--border) 50%, transparent calc(50% + 1px)),
+        linear-gradient(to top left, transparent calc(50% - 1px), var(--border) 50%, transparent calc(50% + 1px));
+    }
+
+    /* Avatar / badge */
+    .mock-avatar { width: 2rem; height: 2rem; border-radius: 50%; background: var(--border); flex-shrink: 0; display: inline-block; vertical-align: middle; }
+    .mock-badge { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; background: var(--selected-bg); color: var(--accent); }
+    .mock-badge.success { background: rgba(52,199,89,0.15); color: var(--success); }
+    .mock-badge.warning { background: rgba(255,159,10,0.15); color: var(--warning); }
+    .mock-badge.error { background: rgba(255,59,48,0.15); color: var(--error); }
+
+    /* Table */
+    .mock-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .mock-table th { text-align: left; padding: 0.5rem 0.75rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+    .mock-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text-primary); }
+    .mock-table tr:last-child td { border-bottom: none; }
+    .mock-table tbody tr:nth-child(even) { background: var(--bg-primary); }
+
+    /* Tabs */
+    .mock-tabs { display: flex; gap: 0.25rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+    .mock-tab { padding: 0.5rem 1rem; font-size: 0.85rem; color: var(--text-secondary); border-bottom: 2px solid transparent; }
+    .mock-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+
+    /* List rows (settings/feeds) */
+    .mock-list { display: flex; flex-direction: column; }
+    .mock-list .row { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+    .mock-list .row:last-child { border-bottom: none; }
+
+    /* Form rows */
+    .mock-form-row { margin-bottom: 1rem; }
+    .mock-form-row label { display: block; font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.3rem; }
+
+    /* Simple bar chart — set each bar's height with an inline style */
+    .mock-chart { display: flex; align-items: flex-end; gap: 0.5rem; height: 120px; padding: 0.5rem 0; }
+    .mock-chart .bar { flex: 1; background: var(--accent); opacity: 0.75; border-radius: 4px 4px 0 0; min-height: 8px; }
+    .mock-chart .bar.muted { background: var(--border); opacity: 1; }
+
+    /* Modal demo (rendered in place, inside a mockup-body) */
+    .mock-modal-backdrop { background: rgba(0,0,0,0.35); border-radius: 8px; padding: 2.5rem; display: flex; align-items: center; justify-content: center; }
+    .mock-modal { background: var(--bg-secondary); border-radius: 12px; padding: 1.5rem; max-width: 360px; width: 100%; box-shadow: 0 12px 32px rgba(0,0,0,0.25); }
+
+    /* ===== DIAGRAMS (Mermaid) ===== */
+    .diagram { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; overflow-x: auto; }
+    .diagram .mermaid { display: flex; justify-content: center; width: 100%; }
+    .diagram .mermaid svg { max-width: 100%; height: auto; }
+    .mermaid:not([data-processed]) { color: transparent; min-height: 2rem; } /* hide raw source until rendered */
   </style>
+  <!-- THEME -->
 </head>
 <body>
   <div class="header">
     <!-- BRANDING -->
-    <div class="status">Connecting…</div>
+    <div class="controls">
+      <button class="ctl" id="nav-prev" title="上一屏" disabled>‹ 上一屏</button>
+      <button class="ctl" id="nav-next" title="下一屏" disabled>下一屏 ›</button>
+      <button class="ctl" id="viewport-toggle" title="切换视口宽度">视口：桌面</button>
+      <button class="ctl" id="theme-toggle" title="切换浅色/深色主题">主题：系统</button>
+    </div>
+    <div class="status">连接中…</div>
   </div>
 
-  <div class="main">
+  <div class="main" id="frame-main">
     <div id="frame-content">
       <!-- CONTENT -->
     </div>
   </div>
 
+  <div class="action-bar" id="action-bar">
+    <button class="btn" id="annotate-toggle" title="开启后点击画面中的任意元素，把位置回传给 agent">标注</button>
+    <input id="note-input" placeholder="补充说明（可选），回车或点确认发送…" autocomplete="off">
+    <button class="btn primary" id="confirm-btn">确认选择</button>
+  </div>
+  <div id="toast" role="status"></div>
+
+  <script>
+  // Frame UI: theme, viewport, Mermaid, history nav, action bar.
+  // Runs before the injected helper; anything that needs the WebSocket goes
+  // through window.brainstorm at event time (available by the time users click).
+  (function() {
+    var THEME_KEY = 'bs-theme', VIEWPORT_KEY = 'bs-viewport';
+    function store(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+    function load(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+    function send(ev) { if (window.brainstorm) window.brainstorm.send(ev); }
+
+    // ---- theme (apply before Mermaid renders) ----
+    var theme = load(THEME_KEY);
+    if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+    function isDark() {
+      var t = document.documentElement.dataset.theme;
+      if (t === 'dark') return true;
+      if (t === 'light') return false;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+
+    // ---- Mermaid: lazy local load, only when the screen has diagrams ----
+    var mermaidNodes = document.querySelectorAll('.mermaid');
+    if (mermaidNodes.length) {
+      var fallback = function() {
+        mermaidNodes.forEach(function(el) {
+          el.style.cssText = 'color:var(--text-secondary);white-space:pre;font-family:ui-monospace,monospace;font-size:0.8rem;text-align:left';
+          el.setAttribute('data-processed', 'true');
+        });
+      };
+      var s = document.createElement('script');
+      s.src = '/vendor/mermaid.min.js';
+      s.onload = function() {
+        try {
+          mermaid.initialize({
+            startOnLoad: false,
+            theme: isDark() ? 'dark' : 'neutral',
+            fontFamily: 'system-ui, sans-serif'
+          });
+          mermaid.run({ nodes: mermaidNodes }).catch(fallback);
+        } catch (e) { fallback(); }
+      };
+      s.onerror = fallback;
+      document.head.appendChild(s);
+    }
+
+    // ---- toast ----
+    var toastTimer = null;
+    window.bsToast = function(msg) {
+      var el = document.getElementById('toast');
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2600);
+    };
+
+    // ---- theme toggle: 系统 → 浅色 → 深色 → 系统 (reload so Mermaid re-themes) ----
+    var themeBtn = document.getElementById('theme-toggle');
+    var themeLabels = { auto: '主题：系统', light: '主题：浅色', dark: '主题：深色' };
+    var themeState = theme === 'light' || theme === 'dark' ? theme : 'auto';
+    themeBtn.textContent = themeLabels[themeState];
+    themeBtn.addEventListener('click', function() {
+      themeState = themeState === 'auto' ? 'light' : themeState === 'light' ? 'dark' : 'auto';
+      if (themeState === 'auto') { try { sessionStorage.removeItem(THEME_KEY); } catch (e) {} }
+      else store(THEME_KEY, themeState);
+      if (document.querySelector('.mermaid')) { window.location.reload(); return; }
+      if (themeState === 'auto') delete document.documentElement.dataset.theme;
+      else document.documentElement.dataset.theme = themeState;
+      themeBtn.textContent = themeLabels[themeState];
+    });
+
+    // ---- viewport toggle: 桌面 → 平板 → 手机 → 桌面 ----
+    var vpBtn = document.getElementById('viewport-toggle');
+    var vpMain = document.getElementById('frame-main');
+    var vpLabels = { desktop: '视口：桌面', tablet: '视口：平板', mobile: '视口：手机' };
+    var vpState = load(VIEWPORT_KEY) || 'desktop';
+    if (!vpLabels[vpState]) vpState = 'desktop';
+    function applyViewport() {
+      if (vpState === 'desktop') delete vpMain.dataset.viewport;
+      else vpMain.dataset.viewport = vpState;
+      vpBtn.textContent = vpLabels[vpState];
+    }
+    applyViewport();
+    vpBtn.addEventListener('click', function() {
+      vpState = vpState === 'desktop' ? 'tablet' : vpState === 'tablet' ? 'mobile' : 'desktop';
+      store(VIEWPORT_KEY, vpState);
+      applyViewport();
+    });
+
+    // ---- history navigation ----
+    var prevBtn = document.getElementById('nav-prev');
+    var nextBtn = document.getElementById('nav-next');
+    var screens = [];   // oldest → newest
+    var current = decodeURIComponent(window.location.pathname.replace(/^\/screen\//, ''));
+    var onLatest = window.location.pathname === '/';
+
+    function refreshNav() {
+      fetch('/screens').then(function(r) { return r.json(); }).then(function(data) {
+        screens = data.screens || [];
+        var idx = onLatest ? screens.length - 1 : screens.indexOf(current);
+        prevBtn.disabled = idx <= 0;
+        nextBtn.disabled = onLatest;
+      }).catch(function() {});
+    }
+    function goto(idx) {
+      if (idx < 0 || idx >= screens.length) return;
+      window.location.href = idx === screens.length - 1 ? '/' : '/screen/' + encodeURIComponent(screens[idx]);
+    }
+    prevBtn.addEventListener('click', function() {
+      var idx = onLatest ? screens.length - 1 : screens.indexOf(current);
+      goto(idx - 1);
+    });
+    nextBtn.addEventListener('click', function() {
+      goto((onLatest ? screens.length - 1 : screens.indexOf(current)) + 1);
+    });
+    refreshNav();
+
+    // The helper suppresses auto-reload on history pages and fires this instead.
+    window.addEventListener('bs-new-screen', function() {
+      window.bsToast('已推送新屏幕——点「下一屏」查看最新内容');
+      refreshNav();
+    });
+
+    // ---- action bar: annotate / note / confirm ----
+    var annotateBtn = document.getElementById('annotate-toggle');
+    var noteInput = document.getElementById('note-input');
+    var confirmBtn = document.getElementById('confirm-btn');
+    var annotating = false;
+
+    // Screens without clickable choices get a "发送备注" bar instead of "确认选择".
+    if (!document.querySelector('[data-choice]')) confirmBtn.textContent = '发送备注';
+
+    annotateBtn.addEventListener('click', function() {
+      annotating = !annotating;
+      annotateBtn.classList.toggle('active', annotating);
+      document.body.classList.toggle('annotating', annotating);
+      if (annotating) window.bsToast('标注模式：点击画面中的元素，位置会回传给 agent');
+    });
+
+    // Capture phase so annotate clicks never double as choice clicks.
+    document.addEventListener('click', function(e) {
+      if (!annotating) return;
+      var content = document.getElementById('frame-content');
+      if (!content || !content.contains(e.target)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      var el = e.target;
+      var text = (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 120);
+      send({
+        type: 'annotate',
+        tag: el.tagName.toLowerCase(),
+        classes: el.className && typeof el.className === 'string' ? el.className : '',
+        text: text,
+        screen: window.location.pathname
+      });
+      el.classList.add('annotate-flash');
+      setTimeout(function() { el.classList.remove('annotate-flash'); }, 1500);
+      window.bsToast('已标注「' + (text || el.tagName.toLowerCase()) + '」，可在终端补充说明');
+    }, true);
+
+    function submit() {
+      var choices = Array.prototype.map.call(
+        document.querySelectorAll('[data-choice].selected'),
+        function(el) { return el.dataset.choice; }
+      );
+      var note = noteInput.value.trim();
+      if (!choices.length && !note) {
+        window.bsToast('先点选一个选项，或填写备注');
+        return;
+      }
+      send({ type: 'confirm', choices: choices, note: note, screen: window.location.pathname });
+      noteInput.value = '';
+      window.bsToast('已发送，请回到终端继续对话');
+    }
+    confirmBtn.addEventListener('click', submit);
+    noteInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') submit();
+    });
+  })();
+  </script>
 </body>
 </html>

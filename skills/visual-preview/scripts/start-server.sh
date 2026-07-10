@@ -12,6 +12,8 @@
 #                         Use 0.0.0.0 in remote/containerized environments.
 #   --url-host <host>     Hostname shown in returned URL JSON.
 #   --idle-timeout-minutes <n>  Shut down after n minutes idle (default 240 = 4h).
+#   --theme-css <file>    Inject a project CSS file (design tokens / variable
+#                         overrides) into framed screens.
 #   --open                Auto-open the browser on the first screen (use only
 #                         after the user approves the visual preview).
 #   --foreground          Run server in the current terminal (no backgrounding).
@@ -42,6 +44,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --idle-timeout-minutes)
       IDLE_TIMEOUT_MINUTES="$2"
+      shift 2
+      ;;
+    --theme-css)
+      if [[ ! -r "$2" ]]; then
+        echo "{\"error\": \"--theme-css file not readable: $2\"}"
+        exit 1
+      fi
+      export BRAINSTORM_THEME_CSS="$2"
       shift 2
       ;;
     --open)

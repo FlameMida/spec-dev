@@ -28,6 +28,7 @@ description: 浏览器可视化预览——在需求设计/头脑风暴过程中
 
 ```bash
 # 用户同意后再启动。--open 自动打开浏览器；--project-dir 使 mockup 持久化并支持同端口重启。
+# 可选 --theme-css <file>：注入项目的 design tokens/CSS 变量，让 mockup 用项目自己的配色。
 bash <skill-base-directory>/scripts/start-server.sh --project-dir /path/to/project --open
 ```
 
@@ -43,13 +44,13 @@ bash <skill-base-directory>/scripts/start-server.sh --project-dir /path/to/proje
 | Codex | 脚本检测 `CODEX_CI` 自动转前台，正常运行即可、无需额外参数 |
 | 其他 | 若环境回收后台进程，用 `--foreground` + 平台自身的后台执行机制 |
 
-远程/容器环境浏览器连不上时：`--host 0.0.0.0 --url-host localhost`。
+远程/容器环境浏览器连不上时：`--host 0.0.0.0 --url-host localhost`（此时启动 JSON 的 `lan_urls` 列出局域网地址，可给用户在手机上打开，看移动端 mockup 更真实）。
 
 ## 循环
 
 1. **确认服务器存活**（`$STATE_DIR/server-info` 存在且 `server-stopped` 不存在；已停则用**相同 `--project-dir`** 重启，端口复用、已打开的标签页自动重连），然后**写 HTML fragment** 到 `screen_dir` 的新文件——语义化命名（`layout.html`）、**永不复用文件名**、用文件创建工具而非 cat/heredoc，服务器自动展示最新文件
 2. **告知用户并结束回合**：重发 URL（每一步都发）、一句话概括屏上内容、请用户看完在终端回复（想选就点击选项）
-3. **下一回合**：读 `$STATE_DIR/events`（JSON lines，浏览器点击记录）——终端文字是主反馈，events 提供结构化补充；文件不存在说明用户没和浏览器交互
+3. **下一回合**：读 `$STATE_DIR/events`（JSON lines，浏览器交互记录）——终端文字是主反馈，events 提供结构化补充；`type:"confirm"` 是用户的明确最终选择（含随附备注），`click` 带 `selected` 区分选中/取消，`annotate` 是用户点选的"要改的位置"；文件不存在说明用户没和浏览器交互
 4. **迭代或推进**：反馈改当前屏就写新文件（`layout-v2.html`）；当前问题验证完才进下一题
 5. **回到终端时卸载**：下一步不需要浏览器时推一张等待屏（`waiting.html`：「继续在终端讨论…」），避免用户盯着已解决的选择题
 6. 重复直至完成

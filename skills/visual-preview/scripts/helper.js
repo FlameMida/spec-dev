@@ -48,10 +48,10 @@
     const el = document.querySelector('.status');
     if (!el) return;
     const map = {
-      connecting:   ['Connecting…',   'var(--text-tertiary)'],
-      connected:    ['Connected',     'var(--success)'],
-      reconnecting: ['Reconnecting…', 'var(--warning)'],
-      disconnected: ['Disconnected',  'var(--error)']
+      connecting:   ['连接中…',   'var(--text-tertiary)'],
+      connected:    ['已连接',    'var(--success)'],
+      reconnecting: ['重连中…',   'var(--warning)'],
+      disconnected: ['已断开',    'var(--error)']
     };
     const [text, color] = map[state] || map.disconnected;
     el.textContent = text;
@@ -68,9 +68,9 @@
       'align-items:center;justify-content:center;padding:2rem;text-align:center;' +
       'background:rgba(20,20,22,0.92);color:#f5f5f7;font-family:system-ui,sans-serif';
     el.innerHTML = '<div style="max-width:480px">' +
-      '<h2 style="margin:0 0 .5rem;font-weight:600">Preview paused</h2>' +
-      '<p style="margin:0;opacity:.85">This visual preview has stopped. ' +
-      'Ask your coding agent to bring it back — this page reconnects automatically.</p></div>';
+      '<h2 style="margin:0 0 .5rem;font-weight:600">预览已暂停</h2>' +
+      '<p style="margin:0;opacity:.85">可视化预览服务已停止。' +
+      '让你的 coding agent 重新启动它——本页面会自动重连。</p></div>';
     if (document.body) document.body.appendChild(el);
   }
 
@@ -97,7 +97,15 @@
     ws.onmessage = (msg) => {
       let data;
       try { data = JSON.parse(msg.data); } catch (e) { return; }
-      if (data.type === 'reload') window.location.reload();
+      if (data.type === 'reload') {
+        // On a history page the user is deliberately looking at an old screen —
+        // notify the frame UI instead of yanking them to the latest one.
+        if (window.location.pathname.indexOf('/screen/') === 0) {
+          window.dispatchEvent(new CustomEvent('bs-new-screen'));
+        } else {
+          window.location.reload();
+        }
+      }
     };
 
     ws.onclose = () => {
@@ -119,6 +127,7 @@
 
   function sendEvent(event) {
     event.timestamp = Date.now();
+    if (!event.screen) event.screen = window.location.pathname;
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify(event));
     } else {
@@ -126,7 +135,9 @@
     }
   }
 
-  // Capture clicks on choice elements
+  // Capture clicks on choice elements. This listener runs in the bubble phase,
+  // after inline toggleSelect handlers, so `selected` reflects the post-toggle
+  // state — distinguishing "selected A" from "deselected A" in multiselect.
   document.addEventListener('click', (e) => {
     const target = e.target.closest('[data-choice]');
     if (!target) return;
@@ -135,10 +146,32 @@
       type: 'click',
       text: target.textContent.trim(),
       choice: target.dataset.choice,
+      selected: target.classList.contains('selected'),
       id: target.id || null
     });
 
   });
+
+  // Keyboard accessibility: choice elements are plain divs — make them
+  // focusable and let Enter/Space activate them like buttons.
+  function initChoiceA11y() {
+    document.querySelectorAll('[data-choice]').forEach((el) => {
+      if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
+      if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+    });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const target = e.target.closest && e.target.closest('[data-choice]');
+    if (!target) return;
+    e.preventDefault();
+    target.click();
+  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initChoiceA11y);
+  } else {
+    initChoiceA11y();
+  }
 
   // Frame UI: selection tracking
   window.selectedChoice = null;
