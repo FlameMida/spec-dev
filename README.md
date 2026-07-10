@@ -45,7 +45,7 @@ executing-plans（隔离执行 + 审查 + 总结）
 /plugin marketplace add https://github.com/FlameMida/spec-dev
 
 # 安装插件
-/plugin install spec-dev@SPEC-plugins
+/plugin install spec-dev@spec-agent-skills
 ```
 
 ### Codex
@@ -262,7 +262,9 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 │   └── plugins/
 │       └── marketplace.json         # Codex marketplace 配置（指向 ./）
 ├── .githooks/
-│   └── pre-commit                   # 提交前校验插件包与 skills
+│   ├── pre-commit                   # 提交前校验插件包与 skills
+│   ├── post-commit                  # 提交后自动发版（升版本 + CHANGELOG + tag）
+│   └── pre-push                     # 发布兜底（校验 CHANGELOG 条目、补打版本 tag）
 ├── .mcp.json                        # MCP 配置（开发与插件分发共用一份）
 ├── agents/                          # 3 个专门化 agents（只读分析）
 ├── commands/                        # /check-mcp 命令
@@ -281,6 +283,7 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 │   ├── validate-output.mjs          # 子代理输出契约校验器
 │   ├── schemas/                     # 3 类输出契约 schema + 使用说明
 │   ├── validate-skills.mjs          # 复用 skill-creator 校验 skills
+│   ├── release.mjs                  # 发布脚本（手动发布 / post-commit 自动发版）
 │   └── install-git-hooks.mjs        # 启用版本化 Git hooks
 ├── CHANGELOG.md
 └── README.md
