@@ -1,42 +1,43 @@
-# 验收报告: {{目标功能}}
+# Acceptance Report: {{target-feature}}
 
-> 时间: {{时间}} ｜ 触发方: {{executing-plans 收尾 / 用户直接触发}} ｜ 档位: {{light/standard/deep}}
-> Spec: {{spec 路径或"无（迷你矩阵）"}} ｜ 证据目录: {{acceptance/ 路径}}
+> **Language / 语言**: Fill report content in the conversation language; keep table headers and structural labels in English. / 报告内容以对话语言填写；表头与结构标签保持英文。
+> Time: {{time}} | Triggered by: {{executing-plans wrap-up / direct user request}} | Tier: {{light/standard/deep}}
+> Spec: {{spec path or "none (mini matrix)"}} | Evidence dir: {{acceptance/ path}}
 
-## 总览
+## Overview
 
-| 维度 | 执行方式 | 通过 | 失败 | 警告 | 未验证 | 说明 |
-|------|---------|------|------|------|--------|------|
-| unit | D | 42 | 0 | 0 | 0 | 全量 3.2s |
-| integration | D | 11 | 1 | 0 | 0 | 1 失败 → 诊断#1 |
-| e2e | D + A | 6 | 0 | 1 | 0 | 警告 → 发现#2 |
-| visual | D | 4 | 0 | 0 | 1 | 1 项无基线（建线） |
-| a11y | D | 1 | 0 | 0 | 0 | WCAG A/AA 无违例 |
-| perf-web | D | 2 | 0 | 0 | 0 | LCP 中位 1.8s ≤ 2.5s |
-| perf-api | D | — | — | — | 1 | k6 未安装（见 coverage_note） |
+| Dimension | Execution | Pass | Fail | Warn | Unverified | Notes |
+|-----------|-----------|------|------|------|------------|-------|
+| unit | D | 42 | 0 | 0 | 0 | full run 3.2s |
+| integration | D | 11 | 1 | 0 | 0 | 1 failure → Diagnosis #1 |
+| e2e | D + A | 6 | 0 | 1 | 0 | warning → Finding #2 |
+| visual | D | 4 | 0 | 0 | 1 | 1 item without baseline (created) |
+| a11y | D | 1 | 0 | 0 | 0 | no WCAG A/AA violations |
+| perf-web | D | 2 | 0 | 0 | 0 | LCP median 1.8s ≤ 2.5s |
+| perf-api | D | — | — | — | 1 | k6 not installed (see coverage_note) |
 
-## Requirement 覆盖对照（有 spec 时）
+## Requirement Coverage (when a spec exists)
 
-| 矩阵行（Scenario/检查项） | 维度 | 最终状态 | 证据 |
-|--------------------------|------|---------|------|
-| {{拒绝过期 token}} | integration | pass | {{tests/auth.spec.ts 通过}} |
-| {{登录后跳转仪表盘}} | e2e | pass | {{e2e 通过 + trace.zip}} |
+| Matrix row (Scenario / check item) | Dimension | Status | Evidence |
+|------------------------------------|-----------|--------|----------|
+| {{reject-expired-token}} | integration | pass | {{tests/auth.spec.ts passed}} |
+| {{login-redirects-to-dashboard}} | e2e | pass | {{e2e passed + trace.zip}} |
 
-## 关键发现（按严重性）
+## Key Findings (by severity)
 
-1. **[P1] {{标题}}**（{{维度}}，诊断#1）——{{一句话影响}}；根因: {{file:line + 已验证的根因}}；建议: {{修复方向}}
-2. **[P3] {{标题}}**（{{维度}}）——{{影响与建议}}
+1. **[P1] {{title}}** ({{dimension}}, Diagnosis #1) — {{one-line impact}}; root cause: {{file:line + verified root cause}}; suggestion: {{fix direction}}
+2. **[P3] {{title}}** ({{dimension}}) — {{impact and suggestion}}
 
-## 诊断详情
+## Diagnosis Details
 
-{{每个失败项一节，格式见 references/diagnose.md Step 4；无失败则写"全部通过，诊断跳过"}}
+{{One section per failure, format per references/diagnose.md Step 4; write "all passed, diagnosis skipped" when nothing failed}}
 
-## 证据索引
+## Evidence Index
 
-- 契约 JSON: `{{acceptance/check-items.json}}`（已过 validate-output.mjs 校验）
-- 测试文件: {{本次生成/运行的测试文件清单}}
-- 截图/trace/性能报告: {{文件清单}}
+- Contract JSON: `{{acceptance/check-items.json}}` (validated by validate-output.mjs)
+- Test files: {{list of tests generated/run this round}}
+- Screenshots / traces / perf reports: {{file list}}
 
 ## coverage_note
 
-{{被裁剪的维度及理由；未验证项及原因；降档/抽样声明。没有任何缩水时写"矩阵全量执行，无截断"}}
+{{Trimmed dimensions and reasons; unverified items and why; tier-down/sampling statements. Write "full matrix executed, no truncation" when nothing was cut}}

@@ -1,5 +1,7 @@
 # 可视化预览详细指南
 
+> **Language / 语言**: The Chinese copy in the HTML examples below is structural placeholder only — write actual mockup copy (headings, option labels, annotations) in the conversation language. / 下文 HTML 示例中的中文文案仅为结构示意，实际 mockup 文案（标题、选项、标注）以对话语言书写。
+
 > **阅读时机**：用户接受可视化预览提议、准备推第一屏之前。
 
 ## 工作原理
