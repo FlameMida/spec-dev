@@ -13,6 +13,7 @@ import { fileURLToPath } from "node:url";
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const pluginJsonPath = path.join(repoRoot, ".claude-plugin", "plugin.json");
 const marketplaceJsonPath = path.join(repoRoot, ".claude-plugin", "marketplace.json");
+const codexPluginJsonPath = path.join(repoRoot, ".codex-plugin", "plugin.json");
 const changelogPath = path.join(repoRoot, "CHANGELOG.md");
 
 const args = process.argv.slice(2);
@@ -27,8 +28,7 @@ if (!bumpArg && !autoMode) {
 
 const plugin = JSON.parse(readFileSync(pluginJsonPath, "utf8"));
 const current = plugin.version;
-const headSubject = git(["log", "-1", "--pretty=%s"]).trim();
-const bump = autoMode ? inferBump(headSubject) : bumpArg;
+const bump = autoMode ? inferBumpSinceLastTag() : bumpArg;
 const next = resolveNextVersion(current, bump);
 const tag = `v${next}`;
 
@@ -64,6 +64,11 @@ writeFileSync(
   marketplaceJsonPath,
   marketplace.replace(`"version": "${current}"`, `"version": "${next}"`)
 );
+const codexPlugin = readFileSync(codexPluginJsonPath, "utf8");
+writeFileSync(
+  codexPluginJsonPath,
+  codexPlugin.replace(`"version": "${current}"`, `"version": "${next}"`)
+);
 
 // 在首个 "## [" 之前插入新章节
 const changelog = readFileSync(changelogPath, "utf8");
@@ -77,7 +82,7 @@ writeFileSync(
   changelog.slice(0, insertAt) + section + "\n" + changelog.slice(insertAt)
 );
 
-git(["add", pluginJsonPath, marketplaceJsonPath, changelogPath]);
+git(["add", pluginJsonPath, marketplaceJsonPath, codexPluginJsonPath, changelogPath]);
 if (autoMode) {
   gitWithEnv(["commit", "--amend", "--no-edit"], { RELEASE_HOOK_RUNNING: "1" });
   git(["tag", "-a", tag, "-m", `release ${tag}`]);
@@ -88,10 +93,18 @@ if (autoMode) {
   console.log(`已创建提交与 tag ${tag}。执行 git push（pre-push 钩子会自动带上 tag）即可发布。`);
 }
 
-function inferBump(subject) {
-  if (/^\w+(\([^)]*\))?!:/.test(subject) || /BREAKING CHANGE/.test(subject)) return "major";
-  if (/^feat(\([^)]*\))?:/.test(subject)) return "minor";
-  return "patch";
+function inferBumpSinceLastTag() {
+  const last = git(["describe", "--tags", "--abbrev=0"], true).trim();
+  const subjects = git(["log", last ? `${last}..HEAD` : "HEAD", "--pretty=%s", "--no-merges"], true)
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  let level = "patch";
+  for (const s of subjects) {
+    if (/^\w+(\([^)]*\))?!:/.test(s) || /BREAKING CHANGE/.test(s)) return "major";
+    if (/^feat(\([^)]*\))?:/.test(s)) level = "minor";
+  }
+  return level;
 }
 
 function resolveNextVersion(cur, bump) {

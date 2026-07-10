@@ -7,6 +7,22 @@
 
 ---
 
+## [7.1.0] - 2026-07-10
+
+### ✨ 新增 (Added)
+
+- 提交后自动发布，post-commit 钩子自动升版本、更新 CHANGELOG 并打 tag
+- 增加发布机制，release 脚本自动更新 CHANGELOG 并打版本 tag，pre-push 钩子兜底校验
+
+### 🔧 修复 (Fixed)
+
+- release 脚本同步 .codex-plugin 版本号，自动版本级别按上个 tag 以来全部提交推断
+
+### ♻️ 重构 (Changed)
+
+- 仓库结构扁平化，插件内容提升至仓库根目录
+
+
 ## [7.0.1] - 2026-07-10
 
 ### 🔧 修复 (Fixed) — Codex 兼容性描述对齐 openai/codex 源码
