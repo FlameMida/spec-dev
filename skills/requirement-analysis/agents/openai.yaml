@@ -1,6 +1,6 @@
 interface:
   display_name: "Requirement Analysis"
-  short_description: "8 阶段需求设计工作流：分诊、并行探索、澄清、对抗验证、多方案、spec 落盘，终态交接 writing-plans"
+  short_description: "8 阶段需求设计工作流：分诊、并行探索、澄清、对抗验证、多方案、spec 落盘，终态交接 writing-plans。想法尚未定型、还没决定要不要做时先用 exploring；不适用于纯问答、跑测试、修复单行明显笔误等无设计空间的任务"
   default_prompt: "Use $requirement-analysis to design this feature through the 8-phase workflow and produce a spec."
 
 policy:

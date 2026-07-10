@@ -169,7 +169,16 @@ function installGitHooks(repo) {
     if (existsSync(target)) {
       const cur = readFileSync(target, "utf8");
       if (!cur.includes("check-spec-drift.mjs")) {
-        writeFileSync(target, cur.trimEnd() + "\n\n# spec-dev 漂移守卫\n" + guardLine(name) + "\n");
+        // 守卫行注入到 shebang 之后而非文件末尾：legacy hook 若以 exit 0 结尾，尾部追加的守卫永远执行不到
+        const guard = "\n# spec-dev 漂移守卫（前置注入，避免被 legacy hook 的 exit 旁路）\n" + guardLine(name) + "\n";
+        let next;
+        if (cur.startsWith("#!")) {
+          const nl = cur.indexOf("\n");
+          next = nl === -1 ? cur + guard : cur.slice(0, nl + 1) + guard + cur.slice(nl + 1);
+        } else {
+          next = "#!/bin/sh\n" + guard + "\n" + cur;
+        }
+        writeFileSync(target, next);
       }
     } else {
       copyFileSync(path.join(TPL, name), target);

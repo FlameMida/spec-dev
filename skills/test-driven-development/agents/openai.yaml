@@ -1,6 +1,6 @@
 interface:
   display_name: "Test-Driven Development"
-  short_description: "TDD 纪律：没有失败测试就没有生产代码；红-绿-重构循环与测试反模式防护"
+  short_description: "TDD 纪律：没有失败测试就没有生产代码；红-绿-重构循环与测试反模式防护。适用于实现功能或修 bug 之前；例外（一次性原型、生成代码、配置文件）需征得用户同意"
   default_prompt: "Use $test-driven-development discipline: write the failing test first, then minimal code to pass."
 
 policy:

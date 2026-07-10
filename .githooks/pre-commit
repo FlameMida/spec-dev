@@ -21,5 +21,8 @@ node scripts/check-plugin.mjs --codex-validate
 echo "Validating bundled skills with skill-creator..."
 node scripts/validate-skills.mjs
 
+echo "Checking openai.yaml sync..."
+node scripts/check-openai-sync.mjs
+
 echo "Checking staged diff..."
 git diff --cached --check

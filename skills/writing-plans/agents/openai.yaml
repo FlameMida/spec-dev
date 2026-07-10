@@ -1,6 +1,6 @@
 interface:
   display_name: "Writing Plans"
-  short_description: "把 spec 拆解为零上下文可执行的 bite-sized 实施计划（TDD 步骤内嵌），落盘特性目录 plan/ 子目录并交接 executing-plans"
+  short_description: "把 spec 拆解为零上下文可执行的 bite-sized 实施计划（TDD 步骤内嵌），落盘特性目录 plan/ 子目录并交接 executing-plans。前提是已有 spec 或明确需求且尚未动代码；需求未定型时先走 requirement-analysis"
   default_prompt: "Use $writing-plans to turn the approved spec into a detailed implementation plan."
 
 policy:

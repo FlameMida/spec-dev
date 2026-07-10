@@ -1,6 +1,6 @@
 interface:
   display_name: "Acceptance QA"
-  short_description: "全能验收工作流（单元/集成/E2E/视觉/a11y/性能 + AI 验收 + 诊断）"
+  short_description: "全能验收工作流（单元/集成/E2E/视觉/a11y/性能 + AI 验收 + 诊断）。用于有验收语义的请求（验收功能/页面/接口、E2E、压测、视觉回归、交互诊断）；不适用于开发中的 TDD 红绿循环、无验收语义的日常跑测试/修测试、代码静态审查、需求文档评审"
   default_prompt: "Use $acceptance-qa to run acceptance on the target feature, page or endpoint. Provide a clear target description (URL, endpoint or feature) so the workflow can assemble the right acceptance matrix."
 
 policy:

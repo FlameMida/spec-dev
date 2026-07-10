@@ -128,10 +128,11 @@ node scripts/install-git-hooks.mjs
 ```bash
 node scripts/check-plugin.mjs --codex-validate
 node scripts/validate-skills.mjs
+node scripts/check-openai-sync.mjs
 git diff --cached --check
 ```
 
-校验失败时 hook 会中止提交，按报错修复后重新提交。临时跳过 hook 可设置 `SKIP_CODEX_PACKAGE_HOOK=1`。
+校验失败时 hook 会中止提交，按报错修复后重新提交。临时跳过 hook 可设置 `SKIP_CODEX_PACKAGE_HOOK=1`；确认 SKILL 改动无需同步 openai.yaml 时可设置 `SKIP_OPENAI_SYNC_CHECK=1`。
 
 ## exploring 使用方法
 
@@ -283,6 +284,7 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 │   ├── validate-output.mjs          # 子代理输出契约校验器
 │   ├── schemas/                     # 3 类输出契约 schema + 使用说明
 │   ├── validate-skills.mjs          # 复用 skill-creator 校验 skills
+│   ├── check-openai-sync.mjs        # openai.yaml 结构与 SKILL 同步 tripwire
 │   ├── release.mjs                  # 发布脚本（手动发布 / post-commit 自动发版）
 │   └── install-git-hooks.mjs        # 启用版本化 Git hooks
 ├── CHANGELOG.md
