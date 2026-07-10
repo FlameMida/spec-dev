@@ -17,7 +17,8 @@
     { "id": "t13", "prompt": "这次改了不少样式，跑个视觉回归确认没炸" },
     { "id": "t14", "prompt": "验收下这个表单的可访问性，键盘能不能用、读屏友不友好" },
     { "id": "t15", "prompt": "功能都开发完了，按 spec 做一次全面验收再合并" },
-    { "id": "t16", "prompt": "压测新写的订单接口，p95 要在 300ms 以内" }
+    { "id": "t16", "prompt": "压测新写的订单接口，p95 要在 300ms 以内" },
+    { "id": "t17", "prompt": "run a full acceptance pass on the checkout flow against the spec before we merge" }
   ],
   "should_not_trigger": [
     { "id": "n1", "prompt": "跑一下单元测试看看有没有挂的" },
@@ -29,7 +30,8 @@
     { "id": "n7", "prompt": "验收一下这份需求文档写得全不全" },
     { "id": "n8", "prompt": "测试环境的数据库连不上了，看看为什么" },
     { "id": "n9", "prompt": "review 一下这个 PR 的前端代码" },
-    { "id": "n10", "prompt": "先写失败测试再实现这个函数" }
+    { "id": "n10", "prompt": "先写失败测试再实现这个函数" },
+    { "id": "n11", "prompt": "run the unit tests and fix whatever is failing" }
   ],
-  "notes": "t11/t12/t13/t14/t15/t16 是本版扩展面（性能/视觉/a11y/全面验收）；n1/n2/n3/n5/n6 与 should-trigger 共享'测试'关键词但属日常开发/调试场景（写测试、修测试、临时看返回值都不是验收）；n7 共享'验收'但对象是文档；n8 是基础设施问题；n9 是代码审查；n10 是 TDD 开发循环（test-driven-development 的领地）。这些 near-miss 用于检验 description 的排除边界。"
+  "notes": "t11/t12/t13/t14/t15/t16 是本版扩展面（性能/视觉/a11y/全面验收）；n1/n2/n3/n5/n6 与 should-trigger 共享'测试'关键词但属日常开发/调试场景（写测试、修测试、临时看返回值都不是验收）；n7 共享'验收'但对象是文档；n8 是基础设施问题；n9 是代码审查；n10 是 TDD 开发循环（test-driven-development 的领地）。这些 near-miss 用于检验 description 的排除边界。t4/t17 与 n11 为英文触发样例：n11 是日常跑测试/修测试（无验收语义），检验英文侧排除边界。"
 }
