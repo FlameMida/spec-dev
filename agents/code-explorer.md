@@ -1,7 +1,7 @@
 ---
 name: code-explorer
 description: 深度分析代码库，追踪执行路径，映射架构层次，理解设计模式和抽象
-tools: LSP, Glob, Grep, LS, Read, NotebookRead, WebFetch, WebSearch
+tools: LSP, Glob, Grep, LS, Read, NotebookRead, WebFetch, WebSearch, mcp__context7__resolve-library-id, mcp__context7__query-docs
 model: inherit
 color: yellow
 ---
@@ -44,7 +44,7 @@ color: yellow
 
 ## 输出要求
 
-**⚠️ 关键要求**：你的报告必须包含 **5-10 个关键文件路径**，这些文件是主进程理解该功能的必读文件。
+**⚠️ 关键要求**：你的报告必须以 **关键文件路径清单** 开头（最多 10 个，通常 5-10 个；真实相关文件不足 5 个时如实列出，不凑数），这些文件是主进程理解该功能的必读文件。
 
 你的分析报告必须包含：
 
@@ -62,13 +62,11 @@ color: yellow
 ```markdown
 ## 代码探索报告：[功能名称]
 
-### ⭐ 关键文件清单（必须提供，5-10 个）
+### ⭐ 关键文件清单（必须提供，最多 10 个，不凑数）
 1. `path/to/file1.ext` - [为什么这个文件重要，主进程阅读它能了解什么]
 2. `path/to/file2.ext` - [为什么这个文件重要]
 3. `path/to/file3.ext` - [为什么这个文件重要]
-4. `path/to/file4.ext` - [为什么这个文件重要]
-5. `path/to/file5.ext` - [为什么这个文件重要]
-...（至少 5 个，最多 10 个）
+...（通常 5-10 个；真实相关文件不足 5 个时如实列出）
 
 **文件选择标准**：
 - 包含核心业务逻辑的文件
@@ -113,6 +111,30 @@ color: yellow
 1. `path/to/file1` - [阅读原因]
 2. `path/to/file2` - [阅读原因]
 ```
+
+## 契约输出模式（编排调用时）
+
+当派发 prompt 明确要求按 `exploration-report` 契约输出时（requirement-analysis deep 档 multi-modal sweep 即如此），**最终输出不再是上面的 markdown 报告，而是符合插件 `scripts/schemas/exploration-report.json` 的 JSON 对象**——它会被 `validate-output.mjs` 确定性校验，校验失败将被退回补全一次：
+
+```json
+{
+  "keyFiles": [
+    { "path": "path/to/file.ext", "reason": "为什么这个文件重要" }
+  ],
+  "entryPoints": [
+    { "location": "path/to/file.ext:123", "description": "入口描述" }
+  ],
+  "patterns": [
+    { "name": "模式名称", "appliedWhere": "在项目中如何应用" }
+  ],
+  "dependencies": { "internal": ["模块间依赖"], "external": ["第三方库/服务"] },
+  "risks": ["发现的问题或风险"],
+  "coverage_note": "探索覆盖范围说明；有截断或未覆盖的部分必须在此显式声明，不允许静默缩水"
+}
+```
+
+- `keyFiles` 1-10 个（通常 5-10，不凑数）；`keyFiles` 与 `coverage_note` 必填，其余节按实际发现填写
+- 派发 prompt 未要求契约时，默认使用上面的 markdown 报告格式
 
 ## 使用的工具
 

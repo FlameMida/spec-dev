@@ -8,16 +8,16 @@
         "type": "object",
         "required": ["file", "line", "severity", "confidence", "category", "description", "fix_suggestion"],
         "properties": {
-          "file": { "type": "string" },
+          "file": { "type": "string", "minLength": 1 },
           "line": { "type": "number", "minimum": 0 },
           "severity": { "type": "string", "enum": ["高", "中", "低"] },
           "confidence": { "type": "number", "minimum": 0, "maximum": 100 },
           "category": { "type": "string", "enum": ["Bug", "安全", "性能", "规范", "质量", "建议"] },
-          "description": { "type": "string" },
-          "fix_suggestion": { "type": "string" }
+          "description": { "type": "string", "minLength": 1 },
+          "fix_suggestion": { "type": "string", "minLength": 1 }
         }
       }
     },
-    "coverage_note": { "type": "string" }
+    "coverage_note": { "type": "string", "minLength": 1 }
   }
 }

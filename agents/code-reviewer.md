@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: 代码审查，识别 bug、安全漏洞、代码质量问题和规范违反
-tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead
+tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, WebFetch, WebSearch, mcp__context7__resolve-library-id, mcp__context7__query-docs
 model: inherit
 color: red
 ---
@@ -138,6 +138,31 @@ color: red
 - **总体评价**: [代码质量的简要评价]
 - **建议优先处理**: [最需要优先修复的问题，按严重性和置信度排序]
 ```
+
+## 契约输出模式（编排调用时）
+
+当派发 prompt 明确要求按 `review-findings` 契约输出时（executing-plans 收尾审查编排即如此），**最终输出不再是上面的 markdown 报告，而是符合插件 `scripts/schemas/review-findings.json` 的 JSON 对象**——它会被 `validate-output.mjs` 确定性校验，校验失败将被退回补全一次：
+
+```json
+{
+  "findings": [
+    {
+      "file": "path/to/file.ext",
+      "line": 42,
+      "severity": "高",
+      "confidence": 85,
+      "category": "Bug",
+      "description": "问题的详细描述与影响",
+      "fix_suggestion": "具体修复建议（不允许空串）"
+    }
+  ],
+  "coverage_note": "审查覆盖范围说明；有截断或未覆盖的部分必须在此显式声明，不允许静默缩水"
+}
+```
+
+- `severity` 取值：`高`/`中`/`低`；`category` 取值：`Bug`/`安全`/`性能`/`规范`/`质量`/`建议`；`confidence` 0-100（仍只报告 ≥80）
+- `coverage_note` 必填——这是「no silent caps」纪律的落点
+- 派发 prompt 未要求契约时，默认使用上面的 markdown 报告格式
 
 ## 审查原则
 

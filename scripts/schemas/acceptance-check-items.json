@@ -7,7 +7,7 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["check", "dimension", "tier", "ops", "result", "evidence_ref", "notes"],
+        "required": ["check", "dimension", "tier", "ops", "result", "evidence_ref"],
         "properties": {
           "check": { "type": "string" },
           "dimension": {
@@ -28,9 +28,19 @@
               "evidence_ref": { "type": "string" }
             }
           }
+        },
+        "if": {
+          "type": "object",
+          "required": ["result"],
+          "properties": { "result": { "enum": ["pass", "fail"] } }
+        },
+        "then": {
+          "type": "object",
+          "required": ["evidence_ref"],
+          "properties": { "evidence_ref": { "type": "string", "minLength": 1 } }
         }
       }
     },
-    "coverage_note": { "type": "string" }
+    "coverage_note": { "type": "string", "minLength": 1 }
   }
 }

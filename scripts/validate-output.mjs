@@ -49,7 +49,7 @@ function printUsage() {
 
 Validates a JSON file against scripts/schemas/<schema-name>.json.
 Supported schema subset: type, required, properties, items, enum,
-minimum, maximum, minItems, maxItems.
+minimum, maximum, minItems, maxItems, minLength, if/then/else.
 
 Output: {ok:true, schema, file} on success;
         {ok:false, schema, file, errors:[{path, expected, actual}]} and exit 1 on failure.`);
@@ -94,6 +94,12 @@ function validate(value, schema, pathLabel, errors) {
     }
   }
 
+  if (schema.type === "string") {
+    if (typeof schema.minLength === "number" && value.length < schema.minLength) {
+      errors.push({ path: pathLabel, expected: `length >= ${schema.minLength}`, actual: `length ${value.length}` });
+    }
+  }
+
   if (schema.type === "array") {
     if (typeof schema.minItems === "number" && value.length < schema.minItems) {
       errors.push({ path: pathLabel, expected: `>= ${schema.minItems} items`, actual: `${value.length} items` });
@@ -118,6 +124,16 @@ function validate(value, schema, pathLabel, errors) {
           validate(value[key], childSchema, `${pathLabel}.${key}`, errors);
         }
       }
+    }
+  }
+
+  // if/then/else：if 子 schema 通过则应用 then，否则应用 else（子 schema 需自带 type）
+  if (schema.if) {
+    const condErrors = [];
+    validate(value, schema.if, pathLabel, condErrors);
+    const branch = condErrors.length === 0 ? schema.then : schema.else;
+    if (branch) {
+      validate(value, branch, pathLabel, errors);
     }
   }
 }

@@ -178,6 +178,7 @@ Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
 - spec 与后续 writing-plans 的计划（同目录 `plan/<feature>-plan.md`）共用这一个特性目录——一个需求的全部产物收纳在一处
 - **决策分流（ADR）**：检查"已确认的关键决策"中是否有同时满足三判据的决策——**难以逆转**（事后改主意成本高）、**缺上下文会费解**（未来读者会问"当初为什么这么做"）、**真实取舍**（存在真正的备选且因具体理由选定其一）——满足者每条沉淀为仓库级 `docs/adr/NNNN-<slug>.md`（全项目共用一个目录、统一编号：扫描现有最高编号递增，目录不存在时随首个 ADR 创建；正文 1-3 句写清背景、决定与理由即可，值得记住的被否方案附一行），spec 决策节保留一行摘要并链接过去；三判据缺一即不建 ADR，留在 spec 决策节就够——ADR 泛滥和没有 ADR 一样没用
 - 结构参考 [spec-template.md](assets/spec-template.md)，按需增删节；**行为需求必须用 Requirement + Scenario 结构表达**（`### Requirement:` 一条一个 SHALL 且可观察，`#### Scenario:` 用 GIVEN/WHEN/THEN——它们是后续 TDD 测试与验收的直接锚点）；修改既有功能时行为部分改用差量三节（ADDED/MODIFIED/REMOVED Requirements，见模板）
+- **漂移守卫锚点（必填）**：落盘时保留模板顶部的 `spec_dev` frontmatter，填写 `feature` 与 `covers`（本特性拥有的代码路径 glob；纯文档特性留空数组 `[]`）——此阶段 `status` 保持 `draft`。该 frontmatter 是 pre-commit / CI 漂移守卫的锚点，缺失或永停 draft 意味着该特性代码不受"改了代码却没同步 spec"的拦截保护
 - git commit 该 spec 文件与本次新增的 ADR 文件（仅这些文件；非 git 仓库则跳过并向用户说明）
 
 ## 阶段 7: Spec self-review + 对抗验证
@@ -201,6 +202,7 @@ Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
 ## 阶段 8: 交接 writing-plans
 
 - **前置确认**：须持有用户对「开始编写实施计划」的明确同意——阶段 7 的确认话术已包含此询问；用户仅认可 spec、未表态是否继续时，先问「现在开始编写实施计划吗？」，同意后才交接
+- **激活漂移守卫**：交接前把 spec frontmatter 的 `status: draft` 翻为 `active` 并 commit（仅 `active` 参与漂移拦截——不翻转则守卫对本特性静默失效）
 - 调用 writing-plans skill，基于已批准的 spec 生成实施计划
 - **不得调用任何其他 skill**——writing-plans 是本流程唯一的下一步；实施纪律（worktree 隔离、TDD、审查编排）由 writing-plans → executing-plans 链路承接
 

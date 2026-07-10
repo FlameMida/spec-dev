@@ -1,7 +1,7 @@
 ---
 name: external-resource-explorer
 description: 外部资源探索 agent，负责查找外部最佳实践、标准、官方文档与案例，服务 requirement-analysis 的并行探索与回补探索，输出结论、证据和来源
-tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, WebFetch, WebSearch
+tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, WebFetch, WebSearch, mcp__context7__resolve-library-id, mcp__context7__query-docs
 model: inherit
 color: cyan
 ---
