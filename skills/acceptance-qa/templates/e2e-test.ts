@@ -135,7 +135,7 @@ test.describe('{{登录功能}}', () => {
 
 // 取消注释以下代码以使用已登录状态的 fixture:
 //
-// import { test as base, expect } from '@playwright/test';
+// import { test as base, expect, type Page } from '@playwright/test';
 //
 // const test = base.extend<{ authenticatedPage: Page }>({
 //   authenticatedPage: async ({ page }, use) => {

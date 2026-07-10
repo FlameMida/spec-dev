@@ -15,7 +15,7 @@
 - **全能验收** — `acceptance-qa` 按「验收维度 × 执行性质」矩阵验收：单元/集成/API、Playwright E2E、视觉回归、可访问性、性能（前端 CWV / 后端 k6 / 客户端）、AI 自主验收（证据强制 + 串行复核 + verify 断言优先）与失败诊断
 - **契约化编排** — 子代理输出走 JSON Schema 契约，`validate-output.mjs` 确定性校验，失败退回补全
 - **MCP 工具增强** — 集成 context7、sequential-thinking、playwright、chrome-devtools（可选，智能降级）
-- **3 个专门化 Agents** — code-explorer、external-resource-explorer、code-reviewer（只读分析；实现代码始终由主线程编写）
+- **3 个专门化 Agents** — code-explorer、external-resource-explorer、code-reviewer（分析与复跑验证，不写实现代码；实现始终由主线程编写）
 
 ## Skill 管线
 
@@ -249,7 +249,7 @@ spec 落盘至特性目录 `docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md` 
 
 ## 专门化 Agents
 
-主线程干活、子代理只读分析——实现代码始终由主线程编写，agent 只承担探索与审查：
+主线程干活、子代理不写码——实现代码始终由主线程编写，agent 只承担探索、审查与复跑验证等分析性任务：
 
 | Agent | 用途 | 使用场景 |
 |-------|------|---------|
@@ -274,7 +274,7 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 │   ├── post-commit                  # 提交后自动发版（升版本 + CHANGELOG + tag）
 │   └── pre-push                     # 发布兜底（校验 CHANGELOG 条目、补打版本 tag）
 ├── .mcp.json                        # MCP 配置（开发与插件分发共用一份）
-├── agents/                          # 3 个专门化 agents（只读分析）
+├── agents/                          # 3 个专门化 agents（分析与复跑验证，不写实现代码）
 ├── commands/                        # /check-mcp 命令
 ├── guardrail/                       # spec 漂移守护（可装入目标仓库）
 ├── skills/

@@ -68,6 +68,6 @@ repeat (最多 2 轮):
 
 ## Codex 降级形态
 
-- 派发：`spawn_agent` 并继承主会话上下文（新版参数 `fork_turns: "all"`，旧版 `fork_context: true`；被拒绝时换用另一套；同样单响应一次性发起），`wait_agent` 收集
+- 派发：`spawn_agent` 并继承主会话上下文（`fork_turns: "all"`；参数的新旧版本兼容见 requirement-analysis 的 [codex-compat.md](../../requirement-analysis/references/codex-compat.md)；同样单响应一次性发起），`wait_agent` 收集
 - 对抗复核降级为**单 critic 串行版**——每条高/中发现由一个复核 agent 顺序反驳（Codex 子代理并发能力弱于 Claude Code，串行换取确定性）
 - 契约校验命令相同（校验器随插件分发在 `scripts/validate-output.mjs`）

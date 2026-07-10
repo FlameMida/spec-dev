@@ -4,7 +4,7 @@
 
 **派发时机**：spec 已写入特性目录的 `spec/<feature>-design.md` 且 inline 自检完成之后。
 
-**派发方式**：Claude Code 用 `Agent`（subagent_type: general-purpose）；Codex 用 `spawn_agent` 且**不继承主会话上下文**（新版参数 `fork_turns: "none"`，旧版 `fork_context: false`；被拒绝时换用另一套）——审查者不应继承主会话的立场与上下文。
+**派发方式**：Claude Code 用 `Agent`（subagent_type: general-purpose）；Codex 用 `spawn_agent` 且**不继承主会话上下文**（`fork_turns: "none"`；参数的新旧版本兼容见 [codex-compat.md](codex-compat.md)）——审查者不应继承主会话的立场与上下文。
 
 ```
 你是 spec 文档审查者。请独立验证这份 spec 是否完整、可直接用于编写实施计划。

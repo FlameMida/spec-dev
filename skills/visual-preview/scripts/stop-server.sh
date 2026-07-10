@@ -109,9 +109,12 @@ if [[ -f "$PID_FILE" ]]; then
   rm -f "$PID_FILE" "$SERVER_ID_FILE" "${STATE_DIR}/server.log"
   mark_stopped "stop-server.sh"
 
-  # Only delete ephemeral /tmp directories
-  if [[ "$SESSION_DIR" == /tmp/* ]]; then
-    rm -rf "$SESSION_DIR"
+  # Only delete ephemeral /tmp directories.
+  # Normalize first so "/tmp/../etc" style paths can't slip past the prefix
+  # check; on macOS /tmp resolves to /private/tmp, so match both prefixes.
+  session_dir_real="$(cd "$SESSION_DIR" 2>/dev/null && pwd -P || true)"
+  if [[ -n "$session_dir_real" && ( "$session_dir_real" == /tmp/* || "$session_dir_real" == /private/tmp/* ) ]]; then
+    rm -rf "$session_dir_real"
   fi
 
   echo '{"status": "stopped"}'

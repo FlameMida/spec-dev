@@ -31,7 +31,8 @@
 
   function websocketUrl() {
     const key = sessionKey();
-    return 'ws://' + window.location.host + (key ? '/?key=' + encodeURIComponent(key) : '');
+    const proto = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    return proto + window.location.host + (key ? '/?key=' + encodeURIComponent(key) : '');
   }
 
   function reloadAfterRecovery() {

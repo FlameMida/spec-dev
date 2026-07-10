@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, renameSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -130,9 +130,16 @@ function resolvePython() {
   const venvPython = path.join(venvDir, process.platform === "win32" ? "Scripts/python.exe" : "bin/python");
 
   if (!existsSync(venvPython)) {
-    rmSync(venvDir, { recursive: true, force: true });
-    mkdirSync(path.dirname(venvDir), { recursive: true });
-    run(directPython, ["-m", "venv", venvDir], "create skill validation venv");
+    // 并行运行防踩踏：先在唯一临时目录建好 venv，再 rename 到共享路径；
+    // rename 失败说明另一进程已就位，用它的即可
+    const staging = mkdtempSync(path.join(os.tmpdir(), "spec-dev-skill-venv-"));
+    run(directPython, ["-m", "venv", staging], "create skill validation venv");
+    try {
+      rmSync(venvDir, { recursive: true, force: true });
+      renameSync(staging, venvDir);
+    } catch {
+      rmSync(staging, { recursive: true, force: true });
+    }
   }
 
   const venvCheck = spawnSync(venvPython, ["-c", "import yaml"], {

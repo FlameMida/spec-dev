@@ -7,6 +7,24 @@
 
 ---
 
+## [7.4.0] - 2026-07-10
+
+### ✨ 新增 (Added)
+
+- evals 定位降格为设计意图文档，trigger-evals 可判定格式推广至 requirement-analysis 与 exploring（覆盖双向互斥边界），visual-preview eval id 前缀修正
+- 守护脚本补强——guardrail 守卫前置注入防 exit 旁路，openai.yaml 同步 tripwire 挂入 pre-commit，8 个 openai.yaml 补负向触发边界，check-mcp 覆盖全部 4 个 MCP 与三级配置来源
+- 契约闭环——agent 定义内嵌 JSON 契约模式与 context7 工具声明，spec 漂移守卫锚点写入与激活指令，校验器支持 minLength/if-then，pass 必须有非空证据
+
+### 🔧 修复 (Fixed)
+
+- 小修集合——stop-server /tmp 守卫 realpath 归一（兼容 macOS /private/tmp）、start-server 死代码清理、helper.js wss 自适应、venv 竞态防护、模板 Page 导入与 k6 占位符防呆、脚本路径占位符统一、子代理措辞校准、mermaid vendor 版本 pin、fork 参数说明单源化
+- 发版链路加固——amend 免重复校验、先校验后写盘+失败回滚、JSON 定点写版本、auto 护栏（分支/rebase/暂存/tag）、codex 校验超时、pre-push 远端 tag 冲突检查
+
+### 📝 文档 (Docs)
+
+- 修正 README 安装命令 marketplace 名称，目录树补全 git hooks 与 release 脚本
+
+
 ## [7.3.0] - 2026-07-10
 
 ### ✨ 新增 (Added)
