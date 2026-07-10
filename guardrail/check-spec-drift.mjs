@@ -407,27 +407,27 @@ function report(violations) {
   const R = (s) => `\x1b[31m${s}\x1b[0m`;
   const B = (s) => `\x1b[1m${s}\x1b[0m`;
   const lines = [];
-  lines.push(R(B("✗ spec-dev 漂移守卫：改动了 active spec 覆盖的代码，但对应 spec 未同步。")));
+  lines.push(R(B("✗ spec-dev drift guard: code covered by an active spec changed without syncing the spec. / spec-dev 漂移守卫：改动了 active spec 覆盖的代码，但对应 spec 未同步。")));
   lines.push("");
   for (const v of violations) {
-    lines.push(`  ${B("特性")} ${v.feature}  —  spec: ${v.spec}`);
+    lines.push(`  ${B("Feature / 特性")} ${v.feature}  —  spec: ${v.spec}`);
     for (const f of v.code) lines.push(`    · ${f}`);
     lines.push("");
   }
-  lines.push(B("如何解除："));
-  lines.push(`  1) 同步更新对应 spec（行为规范/验收矩阵），并把它一并纳入本次变更；`);
+  lines.push(B("How to resolve / 如何解除："));
+  lines.push(`  1) Update the owning spec (requirements / acceptance matrix) and include it in this change. / 同步更新对应 spec（行为规范/验收矩阵），并把它一并纳入本次变更；`);
   lines.push(
-    `  2) 若本次改动确不影响该 spec 的行为契约，在提交信息留 ${B("Spec-Guard: off <原因>")} trailer（区间检查会放行），或临时设 ${B("SPEC_DEV_GUARD=off")}；`,
+    `  2) If this change truly does not affect the spec's behavior contract, leave a ${B("Spec-Guard: off <reason>")} trailer in the commit message (range checks pass it), or set ${B("SPEC_DEV_GUARD=off")} temporarily. / 若本次改动确不影响该 spec 的行为契约，在提交信息留该 trailer（区间检查会放行），或临时设该环境变量；`,
   );
-  lines.push(`  3) 该 spec 已作废时，把其 frontmatter 的 ${B("status")} 改为 superseded。`);
+  lines.push(`  3) If the spec is obsolete, set its frontmatter ${B("status")} to superseded. / 该 spec 已作废时，把其 frontmatter 的 status 改为 superseded。`);
   lines.push("");
-  lines.push(`  未安装 spec-dev 插件也应遵守：产物在 docs/<日期-特性>/，改代码即需同步同目录 spec。`);
+  lines.push(`  This applies without the spec-dev plugin too: artifacts live in docs/<date-feature>/; changing code means syncing the sibling spec. / 未安装 spec-dev 插件也应遵守：产物在 docs/<日期-特性>/，改代码即需同步同目录 spec。`);
   process.stderr.write(lines.join("\n") + "\n");
 }
 
 function usage() {
   process.stderr.write(
-    "用法: check-spec-drift.mjs --staged | --range <A>..<B> | --push | --files <f…> | --hook | --worktree\n",
+    "Usage / 用法: check-spec-drift.mjs --staged | --range <A>..<B> | --push | --files <f…> | --hook | --worktree\n",
   );
   process.exit(2);
 }

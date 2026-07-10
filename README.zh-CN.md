@@ -297,7 +297,8 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 │   ├── release.mjs                  # 发布脚本（手动发布 / post-commit 自动发版）
 │   └── install-git-hooks.mjs        # 启用版本化 Git hooks
 ├── CHANGELOG.md
-└── README.md
+├── README.md
+└── README.zh-CN.md
 ```
 
 ## 更新日志

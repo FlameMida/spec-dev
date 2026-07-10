@@ -297,7 +297,8 @@ spec-dev/                            # repo root is the plugin root (flat layout
 │   ├── release.mjs                  # release script (manual release / post-commit auto-release)
 │   └── install-git-hooks.mjs        # enables the versioned Git hooks
 ├── CHANGELOG.md
-└── README.md
+├── README.md
+└── README.zh-CN.md
 ```
 
 ## Changelog
