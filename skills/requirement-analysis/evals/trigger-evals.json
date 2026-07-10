@@ -1,0 +1,27 @@
+{
+  "skill_name": "requirement-analysis",
+  "description_under_test": "见 SKILL.md frontmatter",
+  "should_trigger": [
+    { "id": "t1", "prompt": "给系统加一个用户权限管理功能" },
+    { "id": "t2", "prompt": "设计一下订单导出的 API" },
+    { "id": "t3", "prompt": "我们决定做实时协作了，开始设计吧" },
+    { "id": "t4", "prompt": "把登录从 session 改成 JWT，动手前先把方案定下来" },
+    { "id": "t5", "prompt": "新增一张积分流水表，帮我设计表结构和读写路径" },
+    { "id": "t6", "prompt": "add a dark mode feature to the settings page" },
+    { "id": "t7", "prompt": "商品搜索要支持拼音首字母，做一下" },
+    { "id": "t8", "prompt": "这个导入功能行为要改：重复行改为跳过并汇总报告，先设计" },
+    { "id": "t9", "prompt": "选型定了用 Redis 做限流，落地这个限流功能" },
+    { "id": "t10", "prompt": "帮我把这个探索结论转成正式的功能设计：docs/explorations/offline-sync.md" }
+  ],
+  "should_not_trigger": [
+    { "id": "n1", "prompt": "我在想要不要做多租户，帮我想想利弊" },
+    { "id": "n2", "prompt": "A 方案用消息队列 B 方案用轮询，陪我聊聊哪个合适（还没定要做）" },
+    { "id": "n3", "prompt": "先帮我搞懂支付模块的现有实现再说" },
+    { "id": "n4", "prompt": "这个函数在哪里定义的？" },
+    { "id": "n5", "prompt": "跑一下测试看看有没有挂" },
+    { "id": "n6", "prompt": "README 里这个单词拼错了，修一下" },
+    { "id": "n7", "prompt": "基于已批准的 docs/2026-07-04-auth/spec/auth-design.md 编写实施计划" },
+    { "id": "n8", "prompt": "为什么这个页面加载这么慢？帮我分析下原因" }
+  ],
+  "notes": "t1-t9 都是'已明确要交付'的创造性开发工作（新功能/API/数据库/行为变更/选型落地），t10 是 exploring 结晶后的正式交接入口。n1/n2/n3/n8 是想法未定型或纯理解性探索（exploring 的领地——关键信号：'要不要'、'还没定'、'先搞懂'、'为什么'）；n4 是单点事实问答；n5/n6 无设计空间；n7 已有批准 spec（writing-plans 的领地）。这些 near-miss 用于检验 description 中'已承诺交付 vs 未定型'与'无设计空间任务'的排除边界。"
+}

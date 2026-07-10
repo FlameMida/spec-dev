@@ -1,0 +1,25 @@
+{
+  "skill_name": "exploring",
+  "description_under_test": "见 SKILL.md frontmatter",
+  "should_trigger": [
+    { "id": "t1", "prompt": "我在想要不要给产品加离线模式，帮我想想" },
+    { "id": "t2", "prompt": "陪我聊聊把单体拆微服务这个思路靠不靠谱" },
+    { "id": "t3", "prompt": "GraphQL 和 REST 哪个更适合我们这个场景？还没决定用哪个" },
+    { "id": "t4", "prompt": "为什么订单模块的代码这么乱？帮我梳理一下现状" },
+    { "id": "t5", "prompt": "这个第三方登录的想法可行吗？先别写代码" },
+    { "id": "t6", "prompt": "help me think through whether a plugin system is worth building" },
+    { "id": "t7", "prompt": "先搞懂现在的缓存层是怎么工作的，再决定要不要重构" },
+    { "id": "t8", "prompt": "把我们刚才讨论的支付网关思路画个图捋一捋，还在权衡阶段" }
+  ],
+  "should_not_trigger": [
+    { "id": "n1", "prompt": "给系统加一个用户权限管理功能" },
+    { "id": "n2", "prompt": "我们定了，就做实时协作，开始设计" },
+    { "id": "n3", "prompt": "这个函数在哪里定义的？" },
+    { "id": "n4", "prompt": "这个接口现在返回什么字段？" },
+    { "id": "n5", "prompt": "跑一下测试，把挂掉的修了" },
+    { "id": "n6", "prompt": "把这个 bug 修一下：列表分页翻到第二页会重复第一条" },
+    { "id": "n7", "prompt": "基于已批准的 spec 编写实施计划" },
+    { "id": "n8", "prompt": "验收一下购物车功能做得对不对" }
+  ],
+  "notes": "t1-t8 的共同信号：未承诺交付（'要不要'、'还没决定'、'可行吗'、'先搞懂'、'还在权衡'），探索出'不值得做'也是有效出口。n1/n2 已明确要交付（requirement-analysis 的领地——即使措辞里没有'设计'两个字）；n3/n4 是单点事实问答（直接回答即可，不开探索会话）；n5/n6 是执行性任务；n7/n8 属下游 skill。这些 near-miss 用于检验 description 中'未承诺 vs 已承诺'的双向互斥边界。"
+}

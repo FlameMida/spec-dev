@@ -115,6 +115,13 @@ node scripts/validate-skills.mjs
 
 该脚本会优先查找 Codex 内置 `skill-creator`，也支持通过 `SKILL_CREATOR_QUICK_VALIDATE` 或 `SKILL_CREATOR_HOME` 指定校验脚本路径。若当前 Python 缺少 `PyYAML`，脚本会使用临时 venv 安装依赖后执行校验。
 
+### evals 定位
+
+`skills/*/evals/` 下有两类文件，定位不同：
+
+- `evals.json` — **设计意图文档**：记录各 skill 关键行为的预期（HARD-GATE 拒绝、交接门、降级路径等），供人工 review 与未来评测 harness 使用。仓库内没有运行器，且多数用例带对话前置状态、断言为散文——它们**不构成自动化回归防线**，改动 skill 行为时应把它们当 checklist 人工过一遍
+- `trigger-evals.json` — **可冷启动、可判定的触发面用例**（should-trigger / should-not-trigger 单发 prompt + near-miss 负例）：目前覆盖触发边界最复杂的 acceptance-qa、requirement-analysis、exploring 三个 skill，接入任意评测 harness 即可直接运行判定
+
 ### 提交前 hook
 
 启用版本化 Git hook：
