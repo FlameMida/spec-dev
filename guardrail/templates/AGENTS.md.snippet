@@ -1,5 +1,25 @@
 <!-- spec-dev:guardrail:start —— 本段由 spec-dev 安装器维护，勿手改；重装会覆盖 -->
 
+## This repository uses spec-driven development (spec-dev)
+
+This repository follows the [spec-dev](https://github.com/FlameMida/spec-dev) workflow: requirements land as a spec first, then break down into a plan, then get implemented against the plan. **Read this section before touching code.** (In Codex environments read this file first; the equivalent Claude guidance lives in `CLAUDE.md`.)
+
+### Where artifacts live
+
+- **spec / plan**: `docs/YYYY-MM-DD-<feature>/` — `spec/<feature>-design.md` is the behavior contract and acceptance matrix; `plan/<feature>-plan.md` is the executable plan.
+- The `spec_dev.covers` frontmatter at the top of each spec declares the code paths it covers.
+
+### Obligations when changing code (plugin installed or not)
+
+1. Before touching code, find the owning feature and what its spec says about the behavior.
+2. **When behavior changes, update that spec in the same commit** (behavior requirements + acceptance matrix).
+3. The drift guard blocks changes that touch code covered by an active spec without syncing it: at edit time (PreToolUse hook in Codex `.codex/hooks.json`), commit (pre-commit), push (pre-push) and CI (Claude Code additionally runs a Stop-hook wrap-up audit). Update the spec first (working-tree changes count), then touch the covered code.
+4. For changes genuinely unrelated to the behavior contract, leave a `Spec-Guard: off <reason>` trailer in the commit message (range checks pass it through), or set `SPEC_DEV_GUARD=off` temporarily; mark an obsolete spec's frontmatter `status` as `superseded`.
+
+### With the spec-dev plugin installed
+
+Drive work with the `requirement-analysis` (requirement→spec), `writing-plans` (spec→plan) and `executing-plans` (TDD task-by-task execution + wrap-up acceptance) skills; do not bypass the workflow and edit code directly.
+
 ## 本仓库采用 spec 驱动开发（spec-dev）
 
 本仓库使用 [spec-dev](https://github.com/FlameMida/spec-dev) 工作流：需求先落成 spec，再拆成 plan，最后按计划实现。**接手开发前请阅读本节。**（Codex 环境优先读本文件；等价的 Claude 指引见 `CLAUDE.md`。）
