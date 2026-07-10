@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// spec-dev 漂移守卫：单一事实源，被 pre-commit / CI / Claude·Codex 的 preToolUse hook 共用。
+// spec-dev 漂移守卫：单一事实源，被 pre-commit / CI / Claude·Codex 的 PreToolUse hook 共用。
 //
 // 判定：仓库内每个 status=active 的 spec 用 frontmatter 的 `covers` glob 声明它拥有的代码。
 // 若一批变更改动了某 active spec 覆盖的代码，却没有同时改动该 spec 本身，则判为"漂移"——
@@ -48,7 +48,7 @@ try {
 
   if (violations.length > 0) {
     report(violations);
-    // Claude Code 与 Codex 的 preToolUse hook 约定一致：退出码 2 + stderr = 阻断本次工具调用；
+    // Claude Code 与 Codex 的 PreToolUse hook 约定一致：退出码 2 + stderr = 阻断本次工具调用；
     // git/CI 场景沿用惯例退出码 1。
     process.exit(MODE === "--hook" ? 2 : 1);
   }
@@ -80,7 +80,7 @@ async function collectChangedFiles(repoRoot) {
   usage();
 }
 
-// Claude PreToolUse 与 Codex preToolUse 的载荷结构不同，这里做宽松抽取：
+// Claude 与 Codex 的 PreToolUse 载荷结构不同，这里做宽松抽取：
 // 扫描常见的文件路径字段，取到什么用什么。
 function extractHookFiles(raw) {
   if (!raw.trim()) return [];

@@ -7,6 +7,26 @@
 
 ---
 
+## [7.0.1] - 2026-07-10
+
+### 🔧 修复 (Fixed) — Codex 兼容性描述对齐 openai/codex 源码
+
+对全项目的 Codex 支持做了一次源码核实（比对 openai/codex 最新源码），修正若干会导致 Codex 环境实际失效或误导的技术描述。**均为文档/提示词层修正，不涉及行为变更，Claude Code 侧不受影响。**
+
+- **web 搜索工具名纠错**——`codex-compat.md`、`requirement-analysis/SKILL.md` 中把 Codex 网页搜索写成 `web.search_query` / `open`（实为 ChatGPT 内部接口，Codex 无此工具），改为"内置 web 搜索（托管 `web_search` 工具）"；并补沙箱禁网时降级为 `rg` + 本地阅读的路径
+- **hooks 事件名统一为 PascalCase**——散文中的 `preToolUse` 既非 hooks.json 文件格式也非协议格式，统一改为 `PreToolUse`（check-spec-drift.mjs 注释、guardrail README、session-context.mjs、AGENTS/CLAUDE snippet、spec-template.md、codex-hooks.json description 共 8 处）。**澄清**：`.codex/hooks.json` 模板本身的大写 key 一直正确（源码 `HookEventsToml` 的 serde rename 即 `"PreToolUse"`/`"SessionStart"`），错的只是散文写法——此前 7.0.0 guardrail 条目"HookEventName 含 preToolUse"的表述是误读
+- **Codex MCP 配置澄清**——Codex 不读取项目级 `.mcp.json`；插件场景经清单 `mcpServers` 字段自动生效，手工配置须写入 `~/.codex/config.toml` 的 `[mcp_servers]` 表或用 `codex mcp add`（README、acceptance-qa/mcp-setup.md 同步）
+- **spawn_agent 上下文继承参数分版本**——写死的 `fork_context=true/false` 改为版本自适应：新版多代理工具用 `fork_turns`（`"all"`/`"none"`/正整数字符串），旧版用 `fork_context`，参数被拒时换用另一套（codex-compat.md、spec-reviewer-prompt.md、review-orchestration.md）
+- **沙箱 git 说明精确化**——workspace-write 下 `git commit` 一般可用，真正被强制只读的是 `.git/hooks/` 与 `.codex/`；guardrail README 补充：pre-commit hook 与 `.codex/hooks.json` 在 Codex 沙箱内会写入失败，需在沙箱外（用户终端）运行安装器，CI 防线不受影响
+
+### 🔧 改进 (Changed) — 补齐 Codex 降级说明
+
+- **acceptance-qa 新增"执行环境兼容性（Codex）"节**（原本零 Codex 适配）——证据审计子代理映射到 `spawn_agent`/`wait_agent`（不继承上下文）、MCP 接入路径、**workspace-write 沙箱默认禁网**对 npx 拉包/远端访问/k6/Lighthouse 的影响与 `unverified` 标记规则、`update_plan` 与对话式提问
+- **三个 skill 补环境兜底句**——using-git-worktrees 与 writing-plans 注明 Codex 无原生 worktree 工具（直接走手工 git 路径）、项目内 `.worktrees/` 天然在沙箱可写根内；test-driven-development 注明"只依赖项目测试命令，两平台通用"
+- **README marketplace 标识澄清**——补全 marketplace.json 完整片段并说明：顶层 `name` 是 marketplace 标识 `spec-agent-skills`（用于 `upgrade` 与 `插件名@marketplace`），插件条目 `name` 是 `spec-dev`（用于 `codex plugin add spec-dev@spec-agent-skills`）；两标识各司其职，原命令无误
+
+---
+
 ## [7.0.0] - 2026-07-09
 
 ### 💥 破坏性变更 (Breaking) — browser-qa 重写为 acceptance-qa 全能验收工作流

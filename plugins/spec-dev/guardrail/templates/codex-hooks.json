@@ -1,5 +1,5 @@
 {
-  "description": "spec-dev 漂移守卫 —— Codex 项目级 hooks（.codex/hooks.json）。preToolUse 退出码 2 = 阻断本次工具调用并把 stderr 作为反馈回灌给模型。守卫脚本位于 scripts/spec-dev/check-spec-drift.mjs。",
+  "description": "spec-dev 漂移守卫 —— Codex 项目级 hooks（.codex/hooks.json）。PreToolUse 退出码 2 = 阻断本次工具调用并把 stderr 作为反馈回灌给模型。守卫脚本位于 scripts/spec-dev/check-spec-drift.mjs。",
   "hooks": {
     "PreToolUse": [
       {

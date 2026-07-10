@@ -47,7 +47,7 @@ git rev-parse --show-superproject-working-tree 2>/dev/null
 
 ### 1a. 原生 worktree 工具（优先）
 
-已有创建 worktree 的原生工具吗？可能叫 `EnterWorktree`、`WorktreeCreate`、`/worktree` 命令或 `--worktree` 参数。有就用它，然后跳到 Step 2。
+已有创建 worktree 的原生工具吗？可能叫 `EnterWorktree`、`WorktreeCreate`、`/worktree` 命令或 `--worktree` 参数。有就用它，然后跳到 Step 2。（Codex 目前没有原生 worktree 工具——直接进入 Step 1b。）
 
 原生工具自动处理目录放置、分支创建与清理。**有原生工具还手写 `git worktree add` 是第一大错误**——会制造 harness 看不见、管不了的幽灵状态。
 
@@ -79,7 +79,7 @@ git worktree add "$path" -b "$BRANCH_NAME"
 cd "$path"
 ```
 
-**沙箱降级**：`git worktree add` 因权限被拒（沙箱拦截）→ 告知用户沙箱阻止了创建、将在当前目录原地工作，然后原地执行 Step 2/3。
+**沙箱降级**：`git worktree add` 因权限被拒（沙箱拦截）→ 告知用户沙箱阻止了创建、将在当前目录原地工作，然后原地执行 Step 2/3。Codex workspace-write 沙箱的可写根通常只含项目目录（与 `/tmp`）——项目内 `.worktrees/` 天然在可写根内；若显式偏好指向项目外目录被拒，先改用项目内目录重试一次，仍被拒才原地降级。
 
 ## Step 2：项目就绪
 

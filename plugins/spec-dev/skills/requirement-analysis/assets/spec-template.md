@@ -2,13 +2,13 @@
 
 > 按需增删节：light 档几句话 + 关键决策 + 1-2 条 Requirement 即可；节的篇幅与其复杂度匹配，不为凑结构而注水。
 >
-> **顶部 frontmatter 是漂移守卫锚点，必须保留**：它把本 spec 与其覆盖的代码路径绑定，供 pre-commit / CI / Claude·Codex 的 preToolUse hook 校验"改了代码却没同步 spec"。填 `feature` 与 `covers`，spec 定稿转 `status: active`；无守卫需求（如纯文档特性）可将 `covers` 留空数组，守卫即跳过。
+> **顶部 frontmatter 是漂移守卫锚点，必须保留**：它把本 spec 与其覆盖的代码路径绑定，供 pre-commit / CI / Claude·Codex 的 PreToolUse hook 校验"改了代码却没同步 spec"。填 `feature` 与 `covers`，spec 定稿转 `status: active`；无守卫需求（如纯文档特性）可将 `covers` 留空数组，守卫即跳过。
 
 ```markdown
 ---
 # —— spec-dev 漂移守卫锚点（机器可校验，勿删）——
 # covers: 本 spec 声称覆盖的代码路径 glob；这些路径被改动而本 spec 未同步时，
-#         守卫（pre-commit / CI / Claude·Codex 的 preToolUse hook）会拦截并提示。
+#         守卫（pre-commit / CI / Claude·Codex 的 PreToolUse hook）会拦截并提示。
 spec_dev:
   version: 1
   feature: <feature-name>

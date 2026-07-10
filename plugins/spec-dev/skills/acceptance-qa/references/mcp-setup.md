@@ -12,7 +12,7 @@ Microsoft 官方 MCP Server，AI Agent 通过它驱动浏览器。
 
 ### 配置
 
-项目级 `.mcp.json` 或用户级 `~/.claude.json`（注意：不是 `settings.json`）；也可 `claude mcp add playwright -- npx @playwright/mcp@latest`：
+项目级 `.mcp.json` 或用户级 `~/.claude.json`（注意：不是 `settings.json`）；也可 `claude mcp add playwright -- npx @playwright/mcp@latest`。Codex 环境则写入 `~/.codex/config.toml` 的 `[mcp_servers]` 表或用 `codex mcp add`（Codex 不读取项目级 `.mcp.json`；随本插件安装时经插件清单自动生效，无需手工配置）：
 
 ```json
 {

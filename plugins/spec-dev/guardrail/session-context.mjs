@@ -22,5 +22,5 @@ if (specs.length === 0) process.exit(0);
 console.log(`[spec-dev 流程提示] 本仓库采用 spec 驱动开发（spec-dev 工作流）：
 - 现有 spec/plan 产物位于 docs/<日期-特性>/ 目录（共 ${specs.length} 份 spec）。
 - 修改代码前，先查看其所属特性的 spec；行为变更必须同步更新 spec 的行为规范与验收矩阵，并与代码同一提交。
-- 漂移守卫（preToolUse hook / pre-commit / CI）会拦截"改代码不同步 spec"的操作。
+- 漂移守卫（PreToolUse hook / pre-commit / CI）会拦截"改代码不同步 spec"的操作。
 - 若安装了 spec-dev 插件，请用 requirement-analysis / writing-plans / executing-plans 工作流开展开发；未安装时，至少遵守上述同步义务。`);

@@ -10,12 +10,14 @@ node plugins/spec-dev/guardrail/install.mjs [--repo <path>] [--no-git-hook] [--n
 
 默认装进当前 git 仓库，幂等可重复运行。
 
+> **在 Codex 沙箱内运行安装器的注意事项**：Codex workspace-write 沙箱强制 `.git/hooks/` 与 `.codex/` 只读（防提权），pre-commit hook 与 `.codex/hooks.json` 在沙箱内会写入失败。请在沙箱外（用户终端）运行安装器；沙箱内只装成功的防线照常生效，CI 防线不受影响。
+
 ## 防线分层
 
 | 层 | 机制 | 作用域 | 可绕过性 |
 |---|---|---|---|
 | 编辑时拦截 · Claude | `.claude/settings.json` PreToolUse hook（退出码 2 阻断） | Claude Code 会话 | 换工具即绕过 |
-| 编辑时拦截 · Codex | `.codex/hooks.json` preToolUse hook（退出码 2 阻断） | Codex 会话 | 换工具即绕过 |
+| 编辑时拦截 · Codex | `.codex/hooks.json` PreToolUse hook（退出码 2 阻断） | Codex 会话 | 换工具即绕过 |
 | 提交时拦截 | `.git/hooks/pre-commit` | 所有本地提交 | `--no-verify` 可绕过 |
 | **最后防线** | `.github/workflows/spec-dev-drift-guard.yml` | **所有推送/PR，工具无关** | **不可绕过** |
 | 会话上下文 | SessionStart hook → `session-context.mjs` | Claude / Codex 会话 | 仅提示 |
