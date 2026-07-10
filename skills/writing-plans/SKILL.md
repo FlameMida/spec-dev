@@ -1,7 +1,11 @@
 ---
 name: writing-plans
-description: 编写实施计划——当已有 spec 或明确需求、准备开始多步骤开发任务、但尚未动代码时使用。把设计拆解为零上下文工程师也能执行的 bite-sized 任务（精确文件路径、完整代码、TDD 步骤、预期输出），落盘特性目录的 plan/ 子目录并交接 executing-plans 执行。通常由 requirement-analysis 在 spec 获批后调用；也可对既有 spec/需求单独触发。
+description: >-
+  Write implementation plans - when a spec or clear requirement exists and multi-step work has not started: decompose the design into bite-sized tasks a zero-context engineer can execute (exact file paths, complete code, TDD steps, expected output), save under the feature directory plan/ subdir, hand off to executing-plans. Usually invoked by requirement-analysis after spec approval. / 编写实施计划——当已有 spec 或明确需求、准备开始多步骤开发任务、但尚未动代码时使用。把设计拆解为零上下文工程师也能执行的 bite-sized 任务（精确文件路径、完整代码、TDD 步骤、预期输出），落盘特性目录的 plan/ 子目录并交接 executing-plans 执行。通常由 requirement-analysis 在 spec 获批后调用；也可对既有 spec/需求单独触发。
 ---
+
+> **Language Protocol / 语言协议**: Respond in the user's conversation language — an explicit user instruction (including the platform `language` setting) takes precedence, then the language of the user's recent messages; default to English when neither indicates a language. All deliverables written to the repo (specs, plans, reports, notes) follow the conversation language at creation; incremental edits keep the artifact's existing language. Fixed-wording prompts in this skill are semantic templates — express their meaning in the conversation language, don't quote them verbatim.
+> 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
 
 # 编写实施计划
 

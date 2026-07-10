@@ -1,7 +1,11 @@
 ---
 name: using-git-worktrees
-description: 隔离工作区——开始需要与当前工作区隔离的功能开发、或执行实施计划之前使用。先检测已有隔离，优先平台原生 worktree 工具（如 Claude Code 的 EnterWorktree），无原生工具才降级手工 git worktree。确保隔离工作区就绪、依赖安装完成、测试基线干净。
+description: >-
+  Isolated workspace - before feature work that needs isolation from the current workspace or before executing a plan: detect existing isolation first, prefer native worktree tools (e.g. Claude Code EnterWorktree), fall back to manual git worktree; ensure dependencies installed and the test baseline is green. / 隔离工作区——开始需要与当前工作区隔离的功能开发、或执行实施计划之前使用。先检测已有隔离，优先平台原生 worktree 工具（如 Claude Code 的 EnterWorktree），无原生工具才降级手工 git worktree。确保隔离工作区就绪、依赖安装完成、测试基线干净。
 ---
+
+> **Language Protocol / 语言协议**: Respond in the user's conversation language — an explicit user instruction (including the platform `language` setting) takes precedence, then the language of the user's recent messages; default to English when neither indicates a language. All deliverables written to the repo (specs, plans, reports, notes) follow the conversation language at creation; incremental edits keep the artifact's existing language. Fixed-wording prompts in this skill are semantic templates — express their meaning in the conversation language, don't quote them verbatim.
+> 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
 
 # 使用 Git Worktrees
 

@@ -1,7 +1,7 @@
 interface:
   display_name: "Executing Plans"
-  short_description: "在隔离 worktree 中逐任务执行实施计划：TDD + 每任务提交 + spec 自检 + 收尾多维对抗审查与总结。前提是已有 writing-plans 产出的书面实施计划；没有书面计划的即兴改动不适用"
-  default_prompt: "Use $executing-plans to execute the implementation plan task-by-task with TDD and final review."
+  short_description: "Execute implementation plans - when a written plan from writing-plans exists (plan/*-plan.md under the feature docs directory): the main thread executes task-by-task in an isolated worktree (TDD + per-task commits + spec self-check), then orchestrates multi-dimension adversarial code review and matrix-driven acceptance. Not for improvised changes without a written plan. / 在隔离 worktree 中逐任务执行实施计划：TDD + 每任务提交 + spec 自检 + 收尾多维对抗审查与总结。前提是已有 writing-plans 产出的书面实施计划；没有书面计划的即兴改动不适用"
+  default_prompt: "Use $executing-plans to execute the implementation plan task-by-task with TDD and final review. / 用 $executing-plans 以 TDD 逐任务执行实施计划并做收尾审查。"
 
 policy:
   allow_implicit_invocation: true

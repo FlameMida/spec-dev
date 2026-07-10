@@ -1,7 +1,7 @@
 interface:
   display_name: "Using Git Worktrees"
-  short_description: "隔离工作区：原生 worktree 工具优先，git worktree 降级，含依赖安装与测试基线验证。仅在开始需要与当前工作区隔离的开发、或执行实施计划前使用；日常小改动无需隔离"
-  default_prompt: "Use $using-git-worktrees to set up an isolated workspace before implementation."
+  short_description: "Isolated workspace - before feature work that needs isolation from the current workspace or before executing a plan: detect existing isolation first, prefer native worktree tools (e.g. Claude Code EnterWorktree), fall back to manual git worktree; ensure dependencies installed and the test baseline is green. / 隔离工作区：原生 worktree 工具优先，git worktree 降级，含依赖安装与测试基线验证。仅在开始需要与当前工作区隔离的开发、或执行实施计划前使用；日常小改动无需隔离"
+  default_prompt: "Use $using-git-worktrees to set up an isolated workspace before implementation. / 用 $using-git-worktrees 在动手实现前建立隔离工作区。"
 
 policy:
   allow_implicit_invocation: true

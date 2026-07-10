@@ -1,7 +1,11 @@
 ---
 name: requirement-analysis
-description: 需求设计工作流——在任何创造性开发工作（新功能、新组件、行为变更、API/数据库设计）开始前必须使用。通过需求分诊、并行探索、逐题澄清、对抗验证与 2-3 方案对比，把想法打磨成完整设计，落盘 spec 并交接 writing-plans。当用户已明确要交付某功能或变更（功能开发、API/数据库设计、行为变更、技术选型落地）时触发；想法尚未定型、还没决定要不要做时先用 exploring skill；不适用于纯问答、跑测试、修复单行明显笔误等无设计空间的任务。
+description: >-
+  Requirement design workflow - mandatory before any creative development (new features, components, behavior changes, API/DB design): triage, parallel exploration, one-question-at-a-time clarification, adversarial validation and 2-3 option comparison produce a spec, then hand off to writing-plans. Use exploring first while the idea is unsettled; not for pure Q&A, test runs or trivial one-line fixes. / 需求设计工作流——在任何创造性开发工作（新功能、新组件、行为变更、API/数据库设计）开始前必须使用。通过需求分诊、并行探索、逐题澄清、对抗验证与 2-3 方案对比，把想法打磨成完整设计，落盘 spec 并交接 writing-plans。当用户已明确要交付某功能或变更（功能开发、API/数据库设计、行为变更、技术选型落地）时触发；想法尚未定型、还没决定要不要做时先用 exploring skill；不适用于纯问答、跑测试、修复单行明显笔误等无设计空间的任务。
 ---
+
+> **Language Protocol / 语言协议**: Respond in the user's conversation language — an explicit user instruction (including the platform `language` setting) takes precedence, then the language of the user's recent messages; default to English when neither indicates a language. All deliverables written to the repo (specs, plans, reports, notes) follow the conversation language at creation; incremental edits keep the artifact's existing language. Fixed-wording prompts in this skill are semantic templates — express their meaning in the conversation language, don't quote them verbatim.
+> 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
 
 # 需求设计工作流
 

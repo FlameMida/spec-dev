@@ -1,7 +1,7 @@
 interface:
   display_name: "Writing Plans"
-  short_description: "把 spec 拆解为零上下文可执行的 bite-sized 实施计划（TDD 步骤内嵌），落盘特性目录 plan/ 子目录并交接 executing-plans。前提是已有 spec 或明确需求且尚未动代码；需求未定型时先走 requirement-analysis"
-  default_prompt: "Use $writing-plans to turn the approved spec into a detailed implementation plan."
+  short_description: "Write implementation plans - when a spec or clear requirement exists and multi-step work has not started: decompose the design into bite-sized tasks a zero-context engineer can execute (exact file paths, complete code, TDD steps, expected output), save under the feature directory plan/ subdir, hand off to executing-plans. Usually invoked by requirement-analysis after spec approval. / 把 spec 拆解为零上下文可执行的 bite-sized 实施计划（TDD 步骤内嵌），落盘特性目录 plan/ 子目录并交接 executing-plans。前提是已有 spec 或明确需求且尚未动代码；需求未定型时先走 requirement-analysis"
+  default_prompt: "Use $writing-plans to turn the approved spec into a detailed implementation plan. / 用 $writing-plans 把已批准的 spec 拆成详细实施计划。"
 
 policy:
   allow_implicit_invocation: true

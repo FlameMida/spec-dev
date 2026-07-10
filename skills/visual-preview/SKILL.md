@@ -1,7 +1,11 @@
 ---
 name: visual-preview
-description: 浏览器可视化预览——在需求设计/头脑风暴过程中，用本地浏览器页面向用户展示 mockup、线框图、布局对比、架构图并收集点击选择。当一个问题"用看的比用说的更清楚"时使用（真实的布局/视觉/图示对比问题，而非仅话题涉及 UI）；纯文字的需求、取舍、概念选择问题不适用，应留在终端提问。
+description: >-
+  Browser visual preview - during requirement design or brainstorming, show mockups, wireframes, layout comparisons and architecture diagrams in a local browser page and collect click-through choices. Use when a question is genuinely visual (clearer to see than to say); text-only requirement, tradeoff or concept questions stay in the terminal. / 浏览器可视化预览——在需求设计/头脑风暴过程中，用本地浏览器页面向用户展示 mockup、线框图、布局对比、架构图并收集点击选择。当一个问题"用看的比用说的更清楚"时使用（真实的布局/视觉/图示对比问题，而非仅话题涉及 UI）；纯文字的需求、取舍、概念选择问题不适用，应留在终端提问。
 ---
+
+> **Language Protocol / 语言协议**: Respond in the user's conversation language — an explicit user instruction (including the platform `language` setting) takes precedence, then the language of the user's recent messages; default to English when neither indicates a language. All deliverables written to the repo (specs, plans, reports, notes) follow the conversation language at creation; incremental edits keep the artifact's existing language. Fixed-wording prompts in this skill are semantic templates — express their meaning in the conversation language, don't quote them verbatim.
+> 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
 
 # 可视化预览（Visual Preview）
 

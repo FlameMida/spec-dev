@@ -1,14 +1,11 @@
 ---
 name: acceptance-qa
-description: >
-  全能验收工作流——按「验收维度 × 执行性质」矩阵对交付物做多维验收：单元/集成/API 回归、
-  E2E 端到端、视觉回归、可访问性、性能验收（前端 CWV/Lighthouse、后端 k6 压测、客户端），
-  外加 AI 自主验收与失败诊断。当用户要求"验收这个功能/页面/接口"、"E2E 测试"、
-  "acceptance test"、"性能测试/压测/能扛多少 QPS"、"视觉回归"、"界面/浏览器测试"，
-  或 executing-plans 收尾按验收矩阵触发时使用；也用于诊断页面交互、渲染、性能、
-  Shadow DOM/iframe 问题。不适用于开发中的 TDD 红绿循环（用 test-driven-development）、
-  无验收语义的日常"跑一下测试/修测试"、代码静态审查、需求文档评审。
+description: >-
+  All-round acceptance workflow - multi-dimension acceptance over the dimension x execution-nature matrix: unit/integration/API regression, E2E, visual regression, accessibility, performance (web CWV/Lighthouse, k6 load, client), plus AI autonomous acceptance and failure diagnosis. For acceptance-flavored requests (accept a feature/page/endpoint, E2E, load test, visual regression) or executing-plans wrap-up; also diagnoses page interaction, rendering, performance, Shadow DOM/iframe issues. Not for TDD red-green cycles, routine test runs, static code review, or doc review. / 全能验收工作流——按「验收维度 × 执行性质」矩阵对交付物做多维验收：单元/集成/API 回归、 E2E 端到端、视觉回归、可访问性、性能验收（前端 CWV/Lighthouse、后端 k6 压测、客户端）， 外加 AI 自主验收与失败诊断。当用户要求"验收这个功能/页面/接口"、"E2E 测试"、 "acceptance test"、"性能测试/压测/能扛多少 QPS"、"视觉回归"、"界面/浏览器测试"， 或 executing-plans 收尾按验收矩阵触发时使用；也用于诊断页面交互、渲染、性能、 Shadow DOM/iframe 问题。不适用于开发中的 TDD 红绿循环（用 test-driven-development）、 无验收语义的日常"跑一下测试/修测试"、代码静态审查、需求文档评审。
 ---
+
+> **Language Protocol / 语言协议**: Respond in the user's conversation language — an explicit user instruction (including the platform `language` setting) takes precedence, then the language of the user's recent messages; default to English when neither indicates a language. All deliverables written to the repo (specs, plans, reports, notes) follow the conversation language at creation; incremental edits keep the artifact's existing language. Fixed-wording prompts in this skill are semantic templates — express their meaning in the conversation language, don't quote them verbatim.
+> 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
 
 # 全能验收工作流（acceptance-qa）
 

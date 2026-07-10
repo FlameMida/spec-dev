@@ -1,7 +1,7 @@
 interface:
   display_name: "Test-Driven Development"
-  short_description: "TDD 纪律：没有失败测试就没有生产代码；红-绿-重构循环与测试反模式防护。适用于实现功能或修 bug 之前；例外（一次性原型、生成代码、配置文件）需征得用户同意"
-  default_prompt: "Use $test-driven-development discipline: write the failing test first, then minimal code to pass."
+  short_description: "TDD discipline - before implementing any feature or fixing any bug. Iron law: no production code without a failing test. Write the test, watch it fail, write minimal code to pass; red-green-refactor. Exceptions (throwaway prototypes, generated code, config files) require user consent. / TDD 纪律：没有失败测试就没有生产代码；红-绿-重构循环与测试反模式防护。适用于实现功能或修 bug 之前；例外（一次性原型、生成代码、配置文件）需征得用户同意"
+  default_prompt: "Use $test-driven-development discipline: write the failing test first, then minimal code to pass. / 用 $test-driven-development 纪律：先写失败测试，再写最小实现让它通过。"
 
 policy:
   allow_implicit_invocation: true

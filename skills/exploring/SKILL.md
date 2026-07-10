@@ -1,7 +1,11 @@
 ---
 name: exploring
-description: 探索模式（思考伙伴）——想法尚未定型、还没决定要不要做时使用。当用户表达"我在想要不要…""帮我想想/聊聊这个思路""A 和 B 哪个合适""为什么这里这么慢/乱""这个想法可行吗""先搞懂这块代码再说"等未承诺交付的请求时触发。只读代码、比较方案、画图梳理，不写代码、不建实施档案、不强制结论；想法结晶后交接 requirement-analysis。已明确要交付某功能时不适用（直接用 requirement-analysis）；单点事实问答（如"这个函数在哪定义"）也不适用。
+description: >-
+  Exploration mode (thinking partner) - for ideas not yet committed to delivery: read-only code walks, option comparison, diagram-driven reasoning; no code changes, no implementation artifacts, no forced conclusions; hands off to requirement-analysis once the idea crystallizes. Not for committed deliverables or single-fact lookups. / 探索模式（思考伙伴）——想法尚未定型、还没决定要不要做时使用。当用户表达"我在想要不要…""帮我想想/聊聊这个思路""A 和 B 哪个合适""为什么这里这么慢/乱""这个想法可行吗""先搞懂这块代码再说"等未承诺交付的请求时触发。只读代码、比较方案、画图梳理，不写代码、不建实施档案、不强制结论；想法结晶后交接 requirement-analysis。已明确要交付某功能时不适用（直接用 requirement-analysis）；单点事实问答（如"这个函数在哪定义"）也不适用。
 ---
+
+> **Language Protocol / 语言协议**: Respond in the user's conversation language — an explicit user instruction (including the platform `language` setting) takes precedence, then the language of the user's recent messages; default to English when neither indicates a language. All deliverables written to the repo (specs, plans, reports, notes) follow the conversation language at creation; incremental edits keep the artifact's existing language. Fixed-wording prompts in this skill are semantic templates — express their meaning in the conversation language, don't quote them verbatim.
+> 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
 
 # 探索模式（Exploring）
 

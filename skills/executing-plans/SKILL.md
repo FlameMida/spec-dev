@@ -1,7 +1,11 @@
 ---
 name: executing-plans
-description: 执行实施计划——当已有 writing-plans 产出的实施计划（特性目录 docs/ 下 plan/ 子目录的 *-plan.md）、准备动手实现时使用。主线程在隔离 worktree 中逐任务执行（TDD + 每任务提交 + spec 自检），全部完成后编排多维对抗代码审查（code-reviewer 子代理不写码、仅分析与复跑验证），并按验收矩阵触发 acceptance-qa 验收，最终合并总结。不适用于没有书面计划的即兴改动。
+description: >-
+  Execute implementation plans - when a written plan from writing-plans exists (plan/*-plan.md under the feature docs directory): the main thread executes task-by-task in an isolated worktree (TDD + per-task commits + spec self-check), then orchestrates multi-dimension adversarial code review and matrix-driven acceptance. Not for improvised changes without a written plan. / 执行实施计划——当已有 writing-plans 产出的实施计划（特性目录 docs/ 下 plan/ 子目录的 *-plan.md）、准备动手实现时使用。主线程在隔离 worktree 中逐任务执行（TDD + 每任务提交 + spec 自检），全部完成后编排多维对抗代码审查（code-reviewer 子代理不写码、仅分析与复跑验证），并按验收矩阵触发 acceptance-qa 验收，最终合并总结。不适用于没有书面计划的即兴改动。
 ---
+
+> **Language Protocol / 语言协议**: Respond in the user's conversation language — an explicit user instruction (including the platform `language` setting) takes precedence, then the language of the user's recent messages; default to English when neither indicates a language. All deliverables written to the repo (specs, plans, reports, notes) follow the conversation language at creation; incremental edits keep the artifact's existing language. Fixed-wording prompts in this skill are semantic templates — express their meaning in the conversation language, don't quote them verbatim.
+> 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
 
 # 执行实施计划
 

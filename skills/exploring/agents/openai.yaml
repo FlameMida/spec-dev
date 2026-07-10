@@ -1,7 +1,7 @@
 interface:
   display_name: "Exploring"
-  short_description: "探索模式（思考伙伴）：想法未定型时的无承诺探索——只读不写码、开放支线、可选落盘，结晶后交接 requirement-analysis。已明确要交付某功能时不适用（直接用 requirement-analysis）；单点事实问答也不适用"
-  default_prompt: "Use $exploring to think through this idea or problem with me before committing to build anything."
+  short_description: "Exploration mode (thinking partner) - for ideas not yet committed to delivery: read-only code walks, option comparison, diagram-driven reasoning; no code changes, no implementation artifacts, no forced conclusions; hands off to requirement-analysis once the idea crystallizes. Not for committed deliverables or single-fact lookups. / 探索模式（思考伙伴）：想法未定型时的无承诺探索——只读不写码、开放支线、可选落盘，结晶后交接 requirement-analysis。已明确要交付某功能时不适用（直接用 requirement-analysis）；单点事实问答也不适用"
+  default_prompt: "Use $exploring to think through this idea or problem with me before committing to build anything. / 用 $exploring 在决定要不要做之前陪我把这个想法或问题想清楚。"
 
 policy:
   allow_implicit_invocation: true

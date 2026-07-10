@@ -1,7 +1,11 @@
 ---
 name: test-driven-development
-description: 测试驱动开发纪律——实现任何功能或修复任何 bug、在写实现代码之前使用。铁律：没有失败测试就没有生产代码。先写测试、看它失败、再写最小实现让它通过；红-绿-重构循环。例外（一次性原型、生成代码、配置文件）需征得用户同意。
+description: >-
+  TDD discipline - before implementing any feature or fixing any bug. Iron law: no production code without a failing test. Write the test, watch it fail, write minimal code to pass; red-green-refactor. Exceptions (throwaway prototypes, generated code, config files) require user consent. / 测试驱动开发纪律——实现任何功能或修复任何 bug、在写实现代码之前使用。铁律：没有失败测试就没有生产代码。先写测试、看它失败、再写最小实现让它通过；红-绿-重构循环。例外（一次性原型、生成代码、配置文件）需征得用户同意。
 ---
+
+> **Language Protocol / 语言协议**: Respond in the user's conversation language — an explicit user instruction (including the platform `language` setting) takes precedence, then the language of the user's recent messages; default to English when neither indicates a language. All deliverables written to the repo (specs, plans, reports, notes) follow the conversation language at creation; incremental edits keep the artifact's existing language. Fixed-wording prompts in this skill are semantic templates — express their meaning in the conversation language, don't quote them verbatim.
+> 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
 
 # 测试驱动开发（TDD）
 

@@ -1,7 +1,7 @@
 interface:
   display_name: "Acceptance QA"
-  short_description: "全能验收工作流（单元/集成/E2E/视觉/a11y/性能 + AI 验收 + 诊断）。用于有验收语义的请求（验收功能/页面/接口、E2E、压测、视觉回归、交互诊断）；不适用于开发中的 TDD 红绿循环、无验收语义的日常跑测试/修测试、代码静态审查、需求文档评审"
-  default_prompt: "Use $acceptance-qa to run acceptance on the target feature, page or endpoint. Provide a clear target description (URL, endpoint or feature) so the workflow can assemble the right acceptance matrix."
+  short_description: "All-round acceptance workflow - multi-dimension acceptance over the dimension x execution-nature matrix: unit/integration/API regression, E2E, visual regression, accessibility, performance (web CWV/Lighthouse, k6 load, client), plus AI autonomous acceptance and failure diagnosis. For acceptance-flavored requests (accept a feature/page/endpoint, E2E, load test, visual regression) or executing-plans wrap-up; also diagnoses page interaction, rendering, performance, Shadow DOM/iframe issues. Not for TDD red-green cycles, routine test runs, static code review, or doc review. / 全能验收工作流（单元/集成/E2E/视觉/a11y/性能 + AI 验收 + 诊断）。用于有验收语义的请求（验收功能/页面/接口、E2E、压测、视觉回归、交互诊断）；不适用于开发中的 TDD 红绿循环、无验收语义的日常跑测试/修测试、代码静态审查、需求文档评审"
+  default_prompt: "Use $acceptance-qa to run acceptance on the target feature, page or endpoint. Provide a clear target description (URL, endpoint or feature) so the workflow can assemble the right acceptance matrix. / 用 $acceptance-qa 验收目标功能、页面或接口；请提供明确目标（URL、端点或功能描述）以装配验收矩阵。"
 
 policy:
   allow_implicit_invocation: true
