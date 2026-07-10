@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
+const CODEX_TIMEOUT_MS = 120_000;
 
 // 扁平结构：仓库根即插件根，跳过与插件分发无关的目录
 const ignoredNames = new Set([".DS_Store", ".git", ".idea", "node_modules"]);
@@ -130,11 +131,18 @@ function runCodex(codexArgs, codexHome) {
   const result = spawnSync("codex", codexArgs, {
     cwd: repoRoot,
     encoding: "utf8",
+    timeout: CODEX_TIMEOUT_MS,
     env: {
       ...process.env,
       CODEX_HOME: codexHome,
     },
   });
+
+  if (result.error?.code === "ETIMEDOUT" || (result.signal && !result.error)) {
+    throw new Error(
+      `Official Codex CLI check timed out after ${CODEX_TIMEOUT_MS / 1000}s: codex ${codexArgs.join(" ")}`
+    );
+  }
 
   if (result.error) {
     throw result.error;

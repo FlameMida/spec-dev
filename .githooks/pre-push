@@ -2,9 +2,9 @@
 set -eu
 
 # pre-push：发布兜底钩子
-# 1. 若 plugin.json 的版本尚无对应 tag，自动在当前 HEAD 打 tag
-# 2. 校验 CHANGELOG.md 已包含该版本条目，缺失则阻止推送
-# 3. 自动将版本 tag 一并推送（依赖 push.followTags，由 install-git-hooks.mjs 配置）
+# 1. 校验 CHANGELOG.md 已包含 plugin.json 版本的条目，缺失则阻止推送
+# 2. 检查远端 tag 冲突（离线时跳过检查）：远端已有同名 tag 且指向不同提交时给出指引
+# 3. 若版本尚无对应 tag，自动在当前 HEAD 打 tag，随推送一并发布（依赖 push.followTags）
 
 if [ "${SKIP_RELEASE_HOOK:-}" = "1" ]; then
   echo "Skipping release pre-push hook because SKIP_RELEASE_HOOK=1."
@@ -14,11 +14,29 @@ fi
 repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
 
+remote="${1:-origin}"
+
 version="$(node -p "JSON.parse(require('fs').readFileSync('.claude-plugin/plugin.json','utf8')).version")"
 tag="v$version"
 
 if ! grep -q "## \[$version\]" CHANGELOG.md; then
   echo "CHANGELOG.md 缺少 [$version] 条目。请先运行: node scripts/release.mjs <patch|minor|major>" >&2
+  exit 1
+fi
+
+# 查询远端同名 tag（取 peeled ^{} 行即 tag 指向的提交；查询失败视为离线，跳过冲突检查）
+remote_sha="$(git ls-remote --tags "$remote" "refs/tags/$tag" "refs/tags/$tag^{}" 2>/dev/null | tail -1 | cut -f1 || true)"
+local_sha="$(git rev-parse -q --verify "$tag^{commit}" 2>/dev/null || true)"
+
+if [ -n "$remote_sha" ] && [ -z "$local_sha" ]; then
+  echo "远端已存在 tag ${tag}（${remote_sha}），但本地没有。" >&2
+  echo "请先 git fetch --tags ${remote} 同步，再确认版本号是否需要手动 bump（node scripts/release.mjs <patch|minor|major>）。" >&2
+  exit 1
+fi
+
+if [ -n "$remote_sha" ] && [ -n "$local_sha" ] && [ "$remote_sha" != "$local_sha" ]; then
+  echo "本地 tag ${tag}（${local_sha}）与远端（${remote_sha}）指向不同提交，推送会被拒绝。" >&2
+  echo "请核对哪边正确：保留远端则 git tag -d ${tag} && git fetch --tags ${remote}；覆盖远端需手动 git push ${remote} -f ${tag}（慎用）。" >&2
   exit 1
 fi
 
