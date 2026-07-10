@@ -202,6 +202,35 @@
     }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+    /* Persistent post-confirm banner: stays until the agent pushes the next
+       screen, so users aren't left wondering whether their click registered. */
+    #sent-banner {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 1rem;
+      background: var(--bg-secondary);
+      border-top: 2px solid var(--accent);
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      line-height: 1.4;
+    }
+    #sent-banner[hidden] { display: none; }
+    #sent-banner .sent-check {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    #sent-banner .sent-text strong { color: var(--accent); }
+
     /* Annotate mode: crosshair + hover highlight inside the content area */
     body.annotating #frame-content { cursor: crosshair; }
     body.annotating #frame-content :hover { outline: 1px dashed var(--warning); }
@@ -399,6 +428,10 @@
     <input id="note-input" placeholder="补充说明（可选），回车或点确认发送…" autocomplete="off">
     <button class="btn primary" id="confirm-btn">确认选择</button>
   </div>
+  <div id="sent-banner" role="status" hidden>
+    <span class="sent-check">✓</span>
+    <span class="sent-text">已发送给 agent。<strong>请回到终端（Claude Code / Codex CLI）回复任意消息</strong>——agent 只在下一回合读取你的选择，点击本身不会触发它。</span>
+  </div>
   <div id="toast" role="status"></div>
 
   <script>
@@ -522,6 +555,10 @@
     window.addEventListener('bs-new-screen', function() {
       window.bsToast('已推送新屏幕——点「下一屏」查看最新内容');
       refreshNav();
+      var banner = document.getElementById('sent-banner');
+      if (banner) banner.hidden = true;
+      var cb = document.getElementById('confirm-btn');
+      if (cb) cb.disabled = false;
     });
 
     // ---- action bar: annotate / note / confirm ----
@@ -574,6 +611,9 @@
       send({ type: 'confirm', choices: choices, note: note, screen: window.location.pathname });
       noteInput.value = '';
       window.bsToast('已发送，请回到终端继续对话');
+      var banner = document.getElementById('sent-banner');
+      if (banner) banner.hidden = false;
+      confirmBtn.disabled = true;
     }
     confirmBtn.addEventListener('click', submit);
     noteInput.addEventListener('keydown', function(e) {

@@ -7,6 +7,32 @@
 
 ---
 
+## [7.5.0] - 2026-07-10
+
+### ✨ 新增 (Added)
+
+- **visual-preview**：确认发送后新增常驻状态条，明示需回终端 agent 才读取选择
+- **T11**：脚本 console 文案 English / 中文 双语拼接
+- **T10**：播种 snippet 双语并列 + session-context 双语输出
+- **T9**：guardrail README 双版同构互跳
+- **T8**：README.md 英文化 + 双版互跳
+- **T7**：新增 README.zh-CN.md（现中文 README 迁移 + 互跳行）
+- **T6**：trigger-evals 增补英文触发正负样例
+- **T5**：产物模板双语指引 + 报告模板结构英文化
+- **T4**：插件清单 descriptions 中英双语化
+- **T1+T3**：语言协议块内联 8 个 SKILL.md + 触发描述中英拼接（openai.yaml 同步；T1/T3 合并提交：SKILL.md 两处改动不可文件级分离，rtk add 失效返工所致）
+- **T2**：agent 语言条款 + agents/command descriptions 中英拼接
+
+### 🔧 修复 (Fixed)
+
+- **review**：check-spec-drift 拦截文案双语化（补 spec 影响面第 3 个 guardrail 脚本）+ README 双版目录树补 zh-CN 条目
+
+### 📝 文档 (Docs)
+
+- 勾选计划 T0-T11 复选框（统一勾选，避免逐任务噪音提交）
+- 中英双语适配实施计划（12 任务 + 验收 + 合并收尾）
+
+
 ## [7.4.2] - 2026-07-10
 
 ### 📝 文档 (Docs)
