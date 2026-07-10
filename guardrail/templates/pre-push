@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+# spec-dev 漂移守卫 —— git pre-push hook（第二道闸：整段复查待推送区间，捕获 --no-verify 落下的提交）。
+# 安装：由 install.mjs 写入版本化 hooks 目录（默认 .githooks/，经 core.hooksPath 启用）。
+# 绕过：git push --no-verify；提交信息带 Spec-Guard: off <原因> trailer 的提交会被区间检查放行。
+refs=$(cat)
+if command -v node >/dev/null 2>&1; then
+  guard="$(git rev-parse --show-toplevel)/scripts/spec-dev/check-spec-drift.mjs"
+  if [ -f "$guard" ] && [ -n "$refs" ]; then
+    printf '%s\n' "$refs" | node "$guard" --push || exit 1
+  fi
+fi
+
+# 串联历史本地 hook（stdin 原样转发）；比较目录避免自我递归。
+legacy_dir="$(git rev-parse --git-common-dir)/hooks"
+self_dir="$(cd "$(dirname "$0")" && pwd)"
+if [ -x "$legacy_dir/pre-push" ] && [ "$(cd "$legacy_dir" 2>/dev/null && pwd)" != "$self_dir" ]; then
+  printf '%s\n' "$refs" | "$legacy_dir/pre-push" "$@" || exit 1
+fi
+exit 0

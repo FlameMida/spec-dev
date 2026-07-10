@@ -1,7 +1,19 @@
 #!/usr/bin/env sh
 # spec-dev 漂移守卫 —— git pre-commit hook。
-# 安装：本文件由 install.mjs 复制到 .git/hooks/pre-commit（或经 core.hooksPath 管理）。
-# 绕过：git commit --no-verify，或 SPEC_DEV_GUARD=off git commit …（会打印告警）。
+# 安装：由 install.mjs 写入版本化 hooks 目录（默认 .githooks/，经 core.hooksPath 启用）。
+# 绕过：git commit --no-verify，或 SPEC_DEV_GUARD=off git commit …（告警放行；请在提交信息留 Spec-Guard: off <原因>）。
 if command -v node >/dev/null 2>&1; then
-  node "$(git rev-parse --show-toplevel)/scripts/spec-dev/check-spec-drift.mjs" --staged || exit 1
+  guard="$(git rev-parse --show-toplevel)/scripts/spec-dev/check-spec-drift.mjs"
+  if [ -f "$guard" ]; then
+    node "$guard" --staged || exit 1
+  fi
 fi
+
+# 串联历史本地 hook：core.hooksPath 生效后 git 不再调用 .git/hooks，这里代为执行。
+# 比较目录避免自我递归（hooksPath 恰好指向 .git/hooks 时本文件就是 legacy 自身）。
+legacy_dir="$(git rev-parse --git-common-dir)/hooks"
+self_dir="$(cd "$(dirname "$0")" && pwd)"
+if [ -x "$legacy_dir/pre-commit" ] && [ "$(cd "$legacy_dir" 2>/dev/null && pwd)" != "$self_dir" ]; then
+  "$legacy_dir/pre-commit" "$@" || exit 1
+fi
+exit 0

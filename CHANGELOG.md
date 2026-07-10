@@ -7,6 +7,13 @@
 
 ---
 
+## [7.3.0] - 2026-07-10
+
+### ✨ 新增 (Added)
+
+- guardrail 本地强制力升级——版本化 git hooks、Stop 收尾审计、Spec-Guard trailer 放行
+
+
 ## [7.2.0] - 2026-07-10
 
 ### ✨ 新增 (Added)

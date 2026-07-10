@@ -1,5 +1,5 @@
 {
-  "$comment": "spec-dev 漂移守卫 —— Claude Code 仓库级 hooks。安装器会把本文件内容合并进目标仓库 .claude/settings.json；守卫脚本位于 scripts/spec-dev/check-spec-drift.mjs。PreToolUse 退出码 2 = 阻断编辑并把 stderr 回灌给模型。",
+  "$comment": "spec-dev 漂移守卫 —— Claude Code 仓库级 hooks。安装器会把本文件内容合并进目标仓库 .claude/settings.json；守卫脚本位于 scripts/spec-dev/check-spec-drift.mjs。PreToolUse 退出码 2 = 阻断编辑并把 stderr 回灌给模型（spec 已在工作区同步则放行）；Stop 收尾审计对工作区整体做一次漂移检查，shell 写入的文件也逃不掉。",
   "hooks": {
     "PreToolUse": [
       {
@@ -8,6 +8,17 @@
           {
             "type": "command",
             "command": "node scripts/spec-dev/check-spec-drift.mjs --hook",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/spec-dev/check-spec-drift.mjs --worktree",
             "timeout": 15
           }
         ]
