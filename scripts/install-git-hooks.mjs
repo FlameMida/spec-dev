@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
 const hooksPath = ".githooks";
-const requiredHooks = ["pre-commit", "pre-push"].map((name) =>
+const requiredHooks = ["pre-commit", "post-commit", "pre-push"].map((name) =>
   path.join(repoRoot, hooksPath, name)
 );
 

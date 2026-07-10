@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 // 发布脚本：升级版本号、生成 CHANGELOG 草稿、创建 release 提交并打 tag。
-// 用法：node scripts/release.mjs <patch|minor|major|X.Y.Z> [--dry-run]
+// 用法：
+//   node scripts/release.mjs <patch|minor|major|X.Y.Z> [--dry-run]   手动发布
+//   node scripts/release.mjs --auto                                   由 post-commit 钩子调用：
+//     根据 HEAD 提交信息推断升级级别（feat!/BREAKING→major，feat→minor，其他→patch），
+//     将版本号与 CHANGELOG 变更 amend 进当前提交并打 tag
 import { spawnSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -13,16 +17,19 @@ const changelogPath = path.join(repoRoot, "CHANGELOG.md");
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
+const autoMode = args.includes("--auto");
 const bumpArg = args.find((a) => !a.startsWith("--"));
 
-if (!bumpArg) {
-  console.error("用法: node scripts/release.mjs <patch|minor|major|X.Y.Z> [--dry-run]");
+if (!bumpArg && !autoMode) {
+  console.error("用法: node scripts/release.mjs <patch|minor|major|X.Y.Z|--auto> [--dry-run]");
   process.exit(1);
 }
 
 const plugin = JSON.parse(readFileSync(pluginJsonPath, "utf8"));
 const current = plugin.version;
-const next = resolveNextVersion(current, bumpArg);
+const headSubject = git(["log", "-1", "--pretty=%s"]).trim();
+const bump = autoMode ? inferBump(headSubject) : bumpArg;
+const next = resolveNextVersion(current, bump);
 const tag = `v${next}`;
 
 if (git(["tag", "-l", tag]).trim()) {
@@ -30,7 +37,7 @@ if (git(["tag", "-l", tag]).trim()) {
   process.exit(1);
 }
 
-if (git(["status", "--porcelain"]).trim() && !dryRun) {
+if (!autoMode && git(["status", "--porcelain"]).trim() && !dryRun) {
   console.error("工作区不干净，请先提交或暂存当前修改再发布");
   process.exit(1);
 }
@@ -71,10 +78,21 @@ writeFileSync(
 );
 
 git(["add", pluginJsonPath, marketplaceJsonPath, changelogPath]);
-git(["commit", "-m", `release: ${tag}`]);
-git(["tag", "-a", tag, "-m", `release ${tag}`]);
-console.log(`已创建提交与 tag ${tag}。执行 git push（pre-push 钩子会自动带上 tag）即可发布。`);
-console.log("提示：commit 之前可先手工润色 CHANGELOG 草稿，再 git add 后重新运行本脚本前请回退版本改动。");
+if (autoMode) {
+  gitWithEnv(["commit", "--amend", "--no-edit"], { RELEASE_HOOK_RUNNING: "1" });
+  git(["tag", "-a", tag, "-m", `release ${tag}`]);
+  console.log(`已将版本 ${next} 与 CHANGELOG 合并进当前提交，并创建 tag ${tag}。`);
+} else {
+  git(["commit", "-m", `release: ${tag}`]);
+  git(["tag", "-a", tag, "-m", `release ${tag}`]);
+  console.log(`已创建提交与 tag ${tag}。执行 git push（pre-push 钩子会自动带上 tag）即可发布。`);
+}
+
+function inferBump(subject) {
+  if (/^\w+(\([^)]*\))?!:/.test(subject) || /BREAKING CHANGE/.test(subject)) return "major";
+  if (/^feat(\([^)]*\))?:/.test(subject)) return "minor";
+  return "patch";
+}
 
 function resolveNextVersion(cur, bump) {
   if (/^\d+\.\d+\.\d+$/.test(bump)) return bump;
@@ -116,7 +134,19 @@ function buildChangelogSection(version, logRange) {
 }
 
 function git(cmdArgs, allowFail = false) {
-  const result = spawnSync("git", cmdArgs, { cwd: repoRoot, encoding: "utf8" });
+  return runGit(cmdArgs, {}, allowFail);
+}
+
+function gitWithEnv(cmdArgs, extraEnv) {
+  return runGit(cmdArgs, extraEnv, false);
+}
+
+function runGit(cmdArgs, extraEnv, allowFail) {
+  const result = spawnSync("git", cmdArgs, {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: { ...process.env, ...extraEnv },
+  });
   if (result.status !== 0 && !allowFail) {
     console.error(`git ${cmdArgs.join(" ")} 失败\n${result.stderr}`);
     process.exit(result.status ?? 1);

@@ -1,0 +1,23 @@
+#!/bin/sh
+set -eu
+
+# post-commit：每次提交后自动发布
+# 根据本次提交信息推断版本级别，升级版本号 + 更新 CHANGELOG（amend 进本提交）并打 tag。
+# 跳过方式：SKIP_RELEASE_HOOK=1 git commit ...
+
+if [ "${SKIP_RELEASE_HOOK:-}" = "1" ] || [ "${RELEASE_HOOK_RUNNING:-}" = "1" ]; then
+  exit 0
+fi
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+
+subject="$(git log -1 --pretty=%s)"
+
+# release/merge/revert 提交不再触发自动发布
+case "$subject" in
+  release:*|Merge*|Revert*) exit 0 ;;
+esac
+
+echo "post-commit: 自动发布中（可用 SKIP_RELEASE_HOOK=1 跳过）..."
+RELEASE_HOOK_RUNNING=1 node scripts/release.mjs --auto
