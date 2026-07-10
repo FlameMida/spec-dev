@@ -1,0 +1,30 @@
+#!/bin/sh
+set -eu
+
+# pre-push：发布兜底钩子
+# 1. 若 plugin.json 的版本尚无对应 tag，自动在当前 HEAD 打 tag
+# 2. 校验 CHANGELOG.md 已包含该版本条目，缺失则阻止推送
+# 3. 自动将版本 tag 一并推送（依赖 push.followTags，由 install-git-hooks.mjs 配置）
+
+if [ "${SKIP_RELEASE_HOOK:-}" = "1" ]; then
+  echo "Skipping release pre-push hook because SKIP_RELEASE_HOOK=1."
+  exit 0
+fi
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+
+version="$(node -p "JSON.parse(require('fs').readFileSync('.claude-plugin/plugin.json','utf8')).version")"
+tag="v$version"
+
+if ! grep -q "## \[$version\]" CHANGELOG.md; then
+  echo "CHANGELOG.md 缺少 [$version] 条目。请先运行: node scripts/release.mjs <patch|minor|major>" >&2
+  exit 1
+fi
+
+if [ -z "$(git tag -l "$tag")" ]; then
+  echo "为版本 $version 自动创建 tag $tag..."
+  git tag -a "$tag" -m "release $tag"
+fi
+
+exit 0

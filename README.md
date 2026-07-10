@@ -14,7 +14,7 @@
 - **工程纪律** — `using-git-worktrees`（原生工具优先的隔离工作区）与 `test-driven-development`（没有失败测试就没有生产代码）独立成 skill，可被任何工作流复用
 - **全能验收** — `acceptance-qa` 按「验收维度 × 执行性质」矩阵验收：单元/集成/API、Playwright E2E、视觉回归、可访问性、性能（前端 CWV / 后端 k6 / 客户端）、AI 自主验收（证据强制 + 串行复核 + verify 断言优先）与失败诊断
 - **契约化编排** — 子代理输出走 JSON Schema 契约，`validate-output.mjs` 确定性校验，失败退回补全
-- **MCP 工具增强** — 集成 context7、exa、sequential-thinking、playwright、chrome-devtools（可选，智能降级）
+- **MCP 工具增强** — 集成 context7、sequential-thinking、playwright、chrome-devtools（可选，智能降级）
 - **3 个专门化 Agents** — code-explorer、external-resource-explorer、code-reviewer（只读分析；实现代码始终由主线程编写）
 
 ## Skill 管线
@@ -53,7 +53,7 @@ executing-plans（隔离执行 + 审查 + 总结）
 仓库已包含 Codex 插件清单：`.codex-plugin/plugin.json`。该清单会暴露：
 
 - `skills/`：`exploring`、`requirement-analysis`、`visual-preview`、`writing-plans`、`executing-plans`、`using-git-worktrees`、`test-driven-development`、`acceptance-qa`
-- `.mcp.json`：context7、exa、sequential-thinking、playwright、chrome-devtools 的可选 MCP 配置（经插件清单 `mcpServers` 字段生效；Codex **不会**直接读取项目根的 `.mcp.json`，插件之外手工配置 MCP 需写入 `~/.codex/config.toml` 的 `[mcp_servers]` 表或用 `codex mcp add`）
+- `.mcp.json`：context7、sequential-thinking、playwright、chrome-devtools 的可选 MCP 配置（经插件清单 `mcpServers` 字段生效；Codex **不会**直接读取项目根的 `.mcp.json`，插件之外手工配置 MCP 需写入 `~/.codex/config.toml` 的 `[mcp_servers]` 表或用 `codex mcp add`）
 - 插件 UI 元数据：展示名称、分类、能力、默认提示词
 
 仓库也包含 Codex marketplace 清单：`.agents/plugins/marketplace.json`。可以直接添加本仓库作为 marketplace：
@@ -203,7 +203,6 @@ spec 落盘至特性目录 `docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md` 
 | MCP 工具 | 主要功能 | 降级方案 |
 |---------|---------|---------|
 | **context7** | 最新库文档和 API 参考 | WebSearch + 项目依赖分析 |
-| **exa** | 高质量网页搜索 | WebSearch |
 | **sequential-thinking** | 结构化深度思考 | 回复中显式分点推演 |
 | **playwright** | 浏览器自动化验收（含 verify 断言与 trace/video 取证） | 原生 Playwright 测试 |
 | **chrome-devtools** | 性能追踪（CWV/insight）、堆快照、调试诊断 | Playwright trace / 控制台日志 |
@@ -219,11 +218,6 @@ spec 落盘至特性目录 `docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md` 
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp"],
       "env": { "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}" }
-    },
-    "exa": {
-      "command": "npx",
-      "args": ["-y", "exa-mcp-server"],
-      "env": { "EXA_API_KEY": "${EXA_API_KEY}" }
     },
     "sequential-thinking": {
       "command": "npx",
@@ -241,7 +235,7 @@ spec 落盘至特性目录 `docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md` 
 }
 ```
 
-获取 API Key：[Context7](https://context7.com/) | [Exa](https://exa.ai/)
+获取 API Key：[Context7](https://context7.com/)
 
 检查 MCP 配置状态：`/check-mcp`
 

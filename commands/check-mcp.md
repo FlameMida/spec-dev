@@ -27,7 +27,6 @@ description: 检查 MCP 配置状态，显示全局 MCP 的详细信息和降级
 | MCP 服务器 | 功能 | 降级方案 |
 |-----------|------|---------|
 | `context7` | 最新库文档和 API 参考 | WebSearch + 项目依赖分析 |
-| `exa` | 高质量网页搜索 | WebSearch |
 | `sequential-thinking` | 深度结构化思考 | EnterPlanMode + 思维链分析 |
 
 ### 3. 生成配置状态报告
@@ -39,14 +38,12 @@ description: 检查 MCP 配置状态，显示全局 MCP 的详细信息和降级
 | MCP 服务器 | 全局配置 | 状态 | 使用方案 |
 |-----------|---------|------|---------|
 | context7 | ✅/❌ | 正常/降级/需API Key | 最新文档/WebSearch |
-| exa | ✅/❌ | 正常/降级/需API Key | 精准搜索/WebSearch |
 | sequential-thinking | ✅/❌ | 正常/降级 | ultrathink/EnterPlanMode |
 
 #### 环境变量检查
 
 检查必需的环境变量：
 - `CONTEXT7_API_KEY` - context7 所需
-- `EXA_API_KEY` - exa 所需
 
 对于每个环境变量：
 - ✅ 已配置
@@ -66,7 +63,6 @@ description: 检查 MCP 配置状态，显示全局 MCP 的详细信息和降级
 ```
 ℹ️  以下 MCP 未配置，将使用降级方案：
   • context7 → WebSearch + 项目依赖分析
-  • exa → WebSearch
 
 ✅ 所有功能仍可正常工作！
 
@@ -78,7 +74,6 @@ description: 检查 MCP 配置状态，显示全局 MCP 的详细信息和降级
 ```
 ⚠️  以下环境变量未配置，相关 MCP 将使用降级方案：
   • CONTEXT7_API_KEY → 将使用 WebSearch
-  • EXA_API_KEY → 将使用 WebSearch
 
 ✅ 功能完全可用，只是搜索质量可能略低。
 
@@ -86,11 +81,9 @@ description: 检查 MCP 配置状态，显示全局 MCP 的详细信息和降级
 # macOS/Linux: 在 ~/.zshrc 或 ~/.bashrc 中添加
 # Windows: 在系统环境变量中添加
 export CONTEXT7_API_KEY="your-api-key"
-export EXA_API_KEY="your-api-key"
 
 获取 API Key:
   • Context7: https://context7.com/
-  • Exa: https://exa.ai/
 ```
 
 ### 5. 总结
@@ -102,7 +95,7 @@ export EXA_API_KEY="your-api-key"
   spec-dev - MCP 配置总结
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-配置状态: [已配置 X/3 个 MCP]
+配置状态: [已配置 X/2 个 MCP]
 功能状态: ✅ 完全可用（[使用降级方案 Y 项]）
 
 💡 提示：

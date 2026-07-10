@@ -25,7 +25,7 @@
 | 进度跟踪 | `TaskCreate` / `TaskUpdate` | `update_plan` |
 | 并行子任务 | `Agent`（单响应一次性发起） | `spawn_agent`（上下文继承参数见下文"并行子任务"），需要结果时 `wait_agent` |
 | 项目规范文件 | 优先 `CLAUDE.md`，找不到再查 `AGENTS.md` | 优先 `AGENTS.md`，找不到再查 `CLAUDE.md` |
-| 网页搜索 | `exa` → `WebSearch` | 内置 web 搜索（托管 `web_search` 工具，会话开启联网时可用） |
+| 网页搜索 | `WebSearch` | 内置 web 搜索（托管 `web_search` 工具，会话开启联网时可用） |
 
 ---
 

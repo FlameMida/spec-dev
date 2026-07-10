@@ -2,7 +2,7 @@
 name: external-resource-explorer
 description: 外部资源探索 agent，负责查找外部最佳实践、标准、官方文档与案例，服务 requirement-analysis 的并行探索与回补探索，输出结论、证据和来源
 tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, WebFetch, WebSearch
-model: haiku
+model: inherit
 color: cyan
 ---
 
@@ -22,9 +22,8 @@ color: cyan
 
 ## Tool Priority
 
-- 涉及通用外部研究：优先 `exa`
 - 涉及第三方库或框架：优先 `context7`
-- 工具不可用时再降级到普通搜索
+- 通用外部研究或工具不可用时使用 `WebSearch` / `WebFetch`
 
 ## Output Requirements
 

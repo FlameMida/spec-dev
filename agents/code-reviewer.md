@@ -2,7 +2,7 @@
 name: code-reviewer
 description: 代码审查，识别 bug、安全漏洞、代码质量问题和规范违反
 tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead
-model: sonnet
+model: inherit
 color: red
 ---
 
@@ -157,15 +157,10 @@ color: red
 ### MCP 工具增强
 
 代码审查时，使用以下 MCP 工具获取安全和最佳实践信息：
-- **exa.web_search_exa**: 搜索已知安全漏洞和常见 bug 模式
 - **context7.query-docs**: 获取库的安全指南和最佳实践
 
 **示例**：
 ```
-# 搜索安全漏洞模式
-mcp__exa__web_search_exa: query="OWASP top 10 2025 prevention techniques"
-mcp__exa__web_search_exa: query="SQL injection prevention best practices"
-
 # 获取库的安全文档
 mcp__context7__resolve-library-id:
   libraryName="express"
