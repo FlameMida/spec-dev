@@ -1,26 +1,15 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
-import {
-  copyFileSync,
-  existsSync,
-  lstatSync,
-  mkdtempSync,
-  readdirSync,
-  readFileSync,
-  rmSync,
-} from "node:fs";
+import { lstatSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
-const packageRoot = path.join(repoRoot, "plugins", "spec-dev");
 
-// 受控双份：仓库根是编辑面，插件包内副本必须逐字节一致
-const mirroredFiles = ["README.md", "CHANGELOG.md", ".mcp.json"];
-
-const ignoredNames = new Set([".DS_Store"]);
+// 扁平结构：仓库根即插件根，跳过与插件分发无关的目录
+const ignoredNames = new Set([".DS_Store", ".git", ".idea", "node_modules"]);
 const args = new Set(process.argv.slice(2));
 
 if (args.has("--help")) {
@@ -29,24 +18,19 @@ if (args.has("--help")) {
 }
 
 for (const arg of args) {
-  if (!["--fix", "--codex-validate"].includes(arg)) {
+  if (!["--codex-validate"].includes(arg)) {
     console.error(`Unknown option: ${arg}`);
     printUsage();
     process.exit(2);
   }
 }
 
-const fix = args.has("--fix");
 const codexValidate = args.has("--codex-validate");
 
 try {
-  if (fix) {
-    fixMirrors();
-  }
-
-  assertMirrorsInSync();
-  assertNoSymlinks(packageRoot);
-  console.log("Mirrored files are in sync.");
+  assertManifestVersionsInSync();
+  assertNoSymlinks(repoRoot);
+  console.log("Plugin package checks passed.");
 
   if (codexValidate) {
     runOfficialCodexInstallCheck();
@@ -57,56 +41,43 @@ try {
 }
 
 function printUsage() {
-  console.log(`Usage: node scripts/check-mirrors.mjs [--fix] [--codex-validate]
+  console.log(`Usage: node scripts/check-plugin.mjs [--codex-validate]
 
-Verifies that mirrored files (${mirroredFiles.join(", ")}) are identical between
-the repo root and plugins/spec-dev, and that the plugin package contains no symlinks.
+Verifies that the three plugin manifests share the same version and that the
+plugin package contains no symlinks.
 
 Options:
-  --fix              Copy mirrored files from the repo root into plugins/spec-dev before checking.
   --codex-validate   Use the official Codex CLI in a temporary CODEX_HOME to install the local marketplace package.`);
 }
 
-function fixMirrors() {
-  for (const relativeFile of mirroredFiles) {
-    const source = path.join(repoRoot, relativeFile);
-    const target = path.join(packageRoot, relativeFile);
+// 三份清单各自面向 Claude marketplace、Claude 插件、Codex 插件，版本号必须一致
+function assertManifestVersionsInSync() {
+  const versionSources = [
+    {
+      label: ".claude-plugin/marketplace.json (metadata.version)",
+      version: readJson(path.join(repoRoot, ".claude-plugin", "marketplace.json")).metadata?.version,
+    },
+    {
+      label: ".claude-plugin/plugin.json (version)",
+      version: readJson(path.join(repoRoot, ".claude-plugin", "plugin.json")).version,
+    },
+    {
+      label: ".codex-plugin/plugin.json (version)",
+      version: readJson(path.join(repoRoot, ".codex-plugin", "plugin.json")).version,
+    },
+  ];
 
-    if (!existsSync(source)) {
-      throw new Error(`Missing mirror source: ${relativeFile}`);
-    }
-
-    copyFileSync(source, target);
-    console.log(`Copied ${relativeFile} -> plugins/spec-dev/${relativeFile}`);
-  }
-}
-
-function assertMirrorsInSync() {
-  const issues = [];
-
-  for (const relativeFile of mirroredFiles) {
-    const source = path.join(repoRoot, relativeFile);
-    const target = path.join(packageRoot, relativeFile);
-
-    if (!existsSync(source)) {
-      issues.push(`Missing mirror source: ${relativeFile}`);
-      continue;
-    }
-
-    if (!existsSync(target)) {
-      issues.push(`Missing mirror copy: plugins/spec-dev/${relativeFile}`);
-      continue;
-    }
-
-    if (!sameFile(source, target)) {
-      issues.push(`Out of sync: ${relativeFile} <-> plugins/spec-dev/${relativeFile}`);
-    }
+  const missing = versionSources.filter((s) => typeof s.version !== "string" || s.version === "");
+  if (missing.length > 0) {
+    throw new Error(`Manifest version missing:\n- ${missing.map((s) => s.label).join("\n- ")}`);
   }
 
-  if (issues.length > 0) {
+  const versions = new Set(versionSources.map((s) => s.version));
+  if (versions.size > 1) {
     throw new Error(
-      `Mirrored files are out of sync:\n- ${issues.join("\n- ")}\n` +
-        "Edit the repo root copy, then run `node scripts/check-mirrors.mjs --fix` to update plugins/spec-dev.",
+      `Manifest versions are out of sync:\n- ${versionSources
+        .map((s) => `${s.label}: ${s.version}`)
+        .join("\n- ")}`,
     );
   }
 }
@@ -132,7 +103,7 @@ function assertNoSymlinks(root) {
 
 function runOfficialCodexInstallCheck() {
   const marketplacePath = path.join(repoRoot, ".agents", "plugins", "marketplace.json");
-  const pluginManifestPath = path.join(packageRoot, ".codex-plugin", "plugin.json");
+  const pluginManifestPath = path.join(repoRoot, ".codex-plugin", "plugin.json");
   const marketplace = readJson(marketplacePath);
   const pluginManifest = readJson(pluginManifestPath);
   const marketplaceName = marketplace.name;
@@ -142,7 +113,7 @@ function runOfficialCodexInstallCheck() {
     throw new Error(".agents/plugins/marketplace.json must contain a string `name`");
   }
   if (!pluginName || typeof pluginName !== "string") {
-    throw new Error("plugins/spec-dev/.codex-plugin/plugin.json must contain a string `name`");
+    throw new Error(".codex-plugin/plugin.json must contain a string `name`");
   }
 
   const codexHome = mkdtempSync(path.join(os.tmpdir(), "spec-dev-codex-validate-"));
@@ -177,8 +148,4 @@ function runCodex(codexArgs, codexHome) {
 
 function readJson(filePath) {
   return JSON.parse(readFileSync(filePath, "utf8"));
-}
-
-function sameFile(left, right) {
-  return readFileSync(left).equals(readFileSync(right));
 }

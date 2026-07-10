@@ -5,7 +5,7 @@
 ## 一键安装到目标仓库
 
 ```bash
-node plugins/spec-dev/guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
+node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
 ```
 
 默认装进当前 git 仓库，幂等可重复运行。

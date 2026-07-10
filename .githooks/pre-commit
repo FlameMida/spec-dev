@@ -10,8 +10,8 @@ fi
 repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
 
-echo "Checking mirrored files and validating plugin package with official Codex CLI..."
-node scripts/check-mirrors.mjs --codex-validate
+echo "Validating plugin package with official Codex CLI..."
+node scripts/check-plugin.mjs --codex-validate
 
 echo "Validating bundled skills with skill-creator..."
 node scripts/validate-skills.mjs
