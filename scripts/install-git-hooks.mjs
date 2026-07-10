@@ -22,7 +22,7 @@ runGit(["config", "core.hooksPath", hooksPath]);
 console.log(`Configured git core.hooksPath=${hooksPath}`);
 
 runGit(["config", "push.followTags", "true"]);
-console.log("Configured git push.followTags=true (推送时自动带上版本 tag)");
+console.log("Configured git push.followTags=true (tags ride along on push / 推送时自动带上版本 tag)");
 
 function runGit(args) {
   const result = spawnSync("git", args, {

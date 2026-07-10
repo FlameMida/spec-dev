@@ -25,7 +25,7 @@ const autoMode = args.includes("--auto");
 const bumpArg = args.find((a) => !a.startsWith("--"));
 
 if (!bumpArg && !autoMode) {
-  console.error("用法: node scripts/release.mjs <patch|minor|major|X.Y.Z|--auto> [--dry-run]");
+  console.error("Usage / 用法: node scripts/release.mjs <patch|minor|major|X.Y.Z|--auto> [--dry-run]");
   process.exit(1);
 }
 
@@ -40,7 +40,7 @@ function main() {
   if (autoMode) {
     const skipReason = autoModeGuard();
     if (skipReason) {
-      console.log(`release --auto: ${skipReason}，跳过自动发版`);
+      console.log(`release --auto: ${skipReason}, skipping auto release / 跳过自动发版`);
       process.exit(0);
     }
   }
@@ -53,15 +53,15 @@ function main() {
 
   if (git(["tag", "-l", tag], true).trim()) {
     if (autoMode) {
-      console.log(`release --auto: tag ${tag} 已存在，跳过自动发版`);
+      console.log(`release --auto: tag ${tag} already exists, skipping auto release / tag 已存在，跳过自动发版`);
       process.exit(0);
     }
-    console.error(`tag ${tag} 已存在，请检查版本号`);
+    console.error(`tag ${tag} already exists, check the version number / tag 已存在，请检查版本号`);
     process.exit(1);
   }
 
   if (!autoMode && git(["status", "--porcelain"]).trim() && !dryRun) {
-    console.error("工作区不干净，请先提交或暂存当前修改再发布");
+    console.error("Working tree not clean; commit or stash before releasing / 工作区不干净，请先提交或暂存当前修改再发布");
     process.exit(1);
   }
 
@@ -73,17 +73,17 @@ function main() {
   const changelog = readFileSync(changelogPath, "utf8");
   const insertAt = changelog.indexOf("## [");
   if (insertAt === -1) {
-    console.error("CHANGELOG.md 中找不到 '## [' 章节锚点");
+    console.error("Cannot find '## [' section anchor in CHANGELOG.md / CHANGELOG.md 中找不到 '## [' 章节锚点");
     process.exit(1);
   }
 
-  console.log(`版本: ${current} -> ${next}`);
-  console.log("---- CHANGELOG 草稿 ----");
+  console.log(`Version / 版本: ${current} -> ${next}`);
+  console.log("---- CHANGELOG draft / 草稿 ----");
   console.log(section);
   console.log("------------------------");
 
   if (dryRun) {
-    console.log("(dry-run，未写入任何文件)");
+    console.log("(dry-run, nothing written / 未写入任何文件)");
     process.exit(0);
   }
 
@@ -105,16 +105,16 @@ function main() {
       // --no-verify：本次提交已通过 pre-commit 完整校验，amend 无需重跑（pre-commit 也识别 RELEASE_HOOK_RUNNING 双保险）
       gitWithEnv(["commit", "--amend", "--no-edit", "--no-verify"], { RELEASE_HOOK_RUNNING: "1" });
       git(["tag", "-a", tag, "-m", `release ${tag}`]);
-      console.log(`已将版本 ${next} 与 CHANGELOG 合并进当前提交，并创建 tag ${tag}。`);
+      console.log(`Merged version ${next} and CHANGELOG into the current commit, tag ${tag} created. / 已将版本 ${next} 与 CHANGELOG 合并进当前提交，并创建 tag ${tag}。`);
     } else {
       git(["commit", "-m", `release: ${tag}`]);
       git(["tag", "-a", tag, "-m", `release ${tag}`]);
-      console.log(`已创建提交与 tag ${tag}。执行 git push（pre-push 钩子会自动带上 tag）即可发布。`);
+      console.log(`Commit and tag ${tag} created; git push will publish (the pre-push hook carries the tag). / 已创建提交与 tag ${tag}。执行 git push（pre-push 钩子会自动带上 tag）即可发布。`);
     }
   } catch (err) {
     for (const [p, content] of originals) writeFileSync(p, content);
     git(["restore", "--staged", ...versionedFiles], true);
-    console.error(`发布失败，已回滚版本号与 CHANGELOG 改动。原因：\n${err.message ?? err}`);
+    console.error(`Release failed; version and CHANGELOG changes rolled back. Reason / 发布失败，已回滚版本号与 CHANGELOG 改动。原因：\n${err.message ?? err}`);
     process.exit(1);
   }
 }
@@ -181,7 +181,7 @@ function resolveNextVersion(cur, bump) {
   if (bump === "major") return `${maj + 1}.0.0`;
   if (bump === "minor") return `${maj}.${min + 1}.0`;
   if (bump === "patch") return `${maj}.${min}.${pat + 1}`;
-  console.error(`无法识别的版本参数: ${bump}`);
+  console.error(`Unrecognized version argument / 无法识别的版本参数: ${bump}`);
   process.exit(1);
 }
 

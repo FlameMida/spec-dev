@@ -33,7 +33,7 @@ const val = (name) => {
 };
 
 const repo = path.resolve(val("--repo") || detectRepo());
-log(`目标仓库：${repo}`);
+log(`Target repo / 目标仓库：${repo}`);
 
 const done = [];
 
@@ -49,26 +49,26 @@ mergeJsonHooks(
   path.join(repo, ".claude", "settings.json"),
   readJson(path.join(TPL, "claude-settings.json")).hooks,
 );
-done.push(".claude/settings.json (hooks 已合并)");
+done.push(".claude/settings.json (hooks merged / hooks 已合并)");
 
 // 3) Codex hooks.json —— 深合并 hooks
 const codexTpl = readJson(path.join(TPL, "codex-hooks.json"));
 mergeJsonHooks(path.join(repo, ".codex", "hooks.json"), codexTpl.hooks, codexTpl.description);
-done.push(".codex/hooks.json (hooks 已合并)");
+done.push(".codex/hooks.json (hooks merged / hooks 已合并)");
 
 // 4) 软提示段
 if (mergeSnippet(path.join(repo, "CLAUDE.md"), readFileSync(path.join(TPL, "CLAUDE.md.snippet"), "utf8")))
-  done.push("CLAUDE.md (守卫段已写入)");
+  done.push("CLAUDE.md (guard section written / 守卫段已写入)");
 if (mergeSnippet(path.join(repo, "AGENTS.md"), readFileSync(path.join(TPL, "AGENTS.md.snippet"), "utf8")))
-  done.push("AGENTS.md (守卫段已写入)");
+  done.push("AGENTS.md (guard section written / 守卫段已写入)");
 
 // 5) git hooks（版本化 pre-commit + pre-push）
 if (!opt("--no-git-hook")) {
   const res = installGitHooks(repo);
   if (res) {
-    done.push(`${res.hooksDir}/{pre-commit,pre-push} (守卫已安装)`);
-    if (res.configured) done.push("git config core.hooksPath .githooks (已设置)");
-    if (installPrepareScript(repo, res)) done.push("package.json prepare 脚本 (install 时自动启用 hooksPath)");
+    done.push(`${res.hooksDir}/{pre-commit,pre-push} (guard installed / 守卫已安装)`);
+    if (res.configured) done.push("git config core.hooksPath .githooks (set / 已设置)");
+    if (installPrepareScript(repo, res)) done.push("package.json prepare script (auto-enables hooksPath on install / install 时自动启用 hooksPath)");
   }
 }
 
@@ -80,9 +80,9 @@ if (!opt("--no-ci")) {
   done.push(".github/workflows/spec-dev-drift-guard.yml");
 }
 
-log("\n✓ 安装完成：");
+log("\n✓ Install complete / 安装完成：");
 for (const d of done) log(`  · ${d}`);
-log("\n提示：确保 spec 的 frontmatter 填了 spec_dev.covers 且 status: active，守卫才会生效。");
+log("\nNote: the guard only activates when spec frontmatter has spec_dev.covers filled and status: active. / 提示：确保 spec 的 frontmatter 填了 spec_dev.covers 且 status: active，守卫才会生效。");
 
 // —— helpers ——
 
@@ -130,7 +130,7 @@ function mergeSnippet(file, snippet) {
   const s = body.indexOf(START);
   const e = body.indexOf(END);
   if ((s === -1) !== (e === -1) || (s !== -1 && e < s)) {
-    log(`  ! ${path.relative(repo, file)} 的守卫标记不完整或顺序异常，已跳过该文件；请手工恢复成对的 start/end 标记后重装`);
+    log(`  ! ${path.relative(repo, file)} : guard markers incomplete or out of order; file skipped — restore paired start/end markers and reinstall. / 守卫标记不完整或顺序异常，已跳过该文件；请手工恢复成对的 start/end 标记后重装`);
     return false;
   }
   let next;
@@ -149,7 +149,7 @@ function installGitHooks(repo) {
   try {
     execFileSync("git", ["-C", repo, "rev-parse", "--git-dir"], { encoding: "utf8" });
   } catch {
-    log("  ! 非 git 仓库，跳过 git hooks");
+    log("  ! not a git repo, skipping git hooks / 非 git 仓库，跳过 git hooks");
     return null;
   }
   let hooksPath = "";
@@ -191,7 +191,7 @@ function installGitHooks(repo) {
       execFileSync("git", ["-C", repo, "config", "core.hooksPath", ".githooks"]);
       configured = true;
     } catch {
-      log("  ! 无法写 git config（沙箱只读？），请手工执行：git config core.hooksPath .githooks");
+      log("  ! cannot write git config (read-only sandbox?); run manually: git config core.hooksPath .githooks / 无法写 git config（沙箱只读？），请手工执行：git config core.hooksPath .githooks");
     }
   }
   return { hooksDir: hooksPath.replace(/\/+$/, ""), own, configured };

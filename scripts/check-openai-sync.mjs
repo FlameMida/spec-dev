@@ -33,13 +33,13 @@ for (const entry of readdirSync(skillsDir)) {
 
   const yamlPath = path.join(skillDir, "agents", "openai.yaml");
   if (!existsSync(yamlPath)) {
-    problems.push(`skills/${entry}: 缺少 agents/openai.yaml（Codex 平台接口文件）`);
+    problems.push(`skills/${entry}: missing agents/openai.yaml (Codex interface file) / 缺少 agents/openai.yaml（Codex 平台接口文件）`);
     continue;
   }
   const content = readFileSync(yamlPath, "utf8");
   for (const key of REQUIRED_KEYS) {
     if (!content.includes(key)) {
-      problems.push(`skills/${entry}/agents/openai.yaml: 缺少必需键 ${key.replace(/:$/, "")}`);
+      problems.push(`skills/${entry}/agents/openai.yaml: missing required key ${key.replace(/:$/, "")} / 缺少必需键 ${key.replace(/:$/, "")}`);
     }
   }
 }
@@ -60,8 +60,8 @@ if (process.env.SKIP_OPENAI_SYNC_CHECK !== "1") {
       const m = f.match(/^skills\/([^/]+)\/SKILL\.md$/);
       if (m && !files.has(`skills/${m[1]}/agents/openai.yaml`)) {
         problems.push(
-          `skills/${m[1]}/SKILL.md 已暂存修改，但同 skill 的 agents/openai.yaml 未同步。` +
-            `请核对 Codex 端触发描述是否需要更新；确认无需同步可用 SKIP_OPENAI_SYNC_CHECK=1 跳过`
+          `skills/${m[1]}/SKILL.md staged without its agents/openai.yaml. / 已暂存修改，但同 skill 的 agents/openai.yaml 未同步。` +
+            `Check whether the Codex trigger description needs sync, or skip with SKIP_OPENAI_SYNC_CHECK=1. / 请核对 Codex 端触发描述是否需要更新；确认无需同步可用 SKIP_OPENAI_SYNC_CHECK=1 跳过`
         );
       }
     }
@@ -69,7 +69,7 @@ if (process.env.SKIP_OPENAI_SYNC_CHECK !== "1") {
 }
 
 if (problems.length > 0) {
-  console.error("openai.yaml 同步检查未通过：");
+  console.error("openai.yaml sync check failed: / openai.yaml 同步检查未通过：");
   for (const p of problems) console.error(`  - ${p}`);
   process.exit(1);
 }
