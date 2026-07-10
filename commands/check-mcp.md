@@ -1,5 +1,5 @@
 ---
-description: 检查 MCP 配置状态，显示全部 4 个 MCP 的详细信息和降级方案
+description: Check MCP configuration status - details and fallback plans for all 4 MCPs / 检查 MCP 配置状态，显示全部 4 个 MCP 的详细信息和降级方案
 ---
 
 # MCP 配置检查
