@@ -1,7 +1,7 @@
 ---
 name: requirement-analysis
 description: >-
-  Requirement design workflow - mandatory before any creative development (new features, components, behavior changes, API/DB design): triage, parallel exploration, one-question-at-a-time clarification, adversarial validation and 2-3 option comparison produce a spec, then hand off to writing-plans. Use exploring first while the idea is unsettled; not for pure Q&A, test runs or trivial one-line fixes. / 需求设计工作流——在任何创造性开发工作（新功能、新组件、行为变更、API/数据库设计）开始前必须使用。通过需求分诊、并行探索、逐题澄清、对抗验证与 2-3 方案对比，把想法打磨成完整设计，落盘 spec 并交接 writing-plans。当用户已明确要交付某功能或变更（功能开发、API/数据库设计、行为变更、技术选型落地）时触发；想法尚未定型、还没决定要不要做时先用 exploring skill；不适用于纯问答、跑测试、修复单行明显笔误等无设计空间的任务。
+  Requirement design workflow - mandatory before any creative development (new features, components, behavior changes, API/DB design): triage, parallel exploration, one-question-at-a-time clarification, adversarial validation and 2-3 option comparison produce a spec, then hand off to writing-plans. Use exploring first while the idea is unsettled; not for pure Q&A, test runs, or no-design-space small fixes (use quick-fix). / 需求设计工作流——在任何创造性开发工作（新功能、新组件、行为变更、API/数据库设计）开始前必须使用。通过需求分诊、并行探索、逐题澄清、对抗验证与 2-3 方案对比，把想法打磨成完整设计，落盘 spec 并交接 writing-plans。当用户已明确要交付某功能或变更（功能开发、API/数据库设计、行为变更、技术选型落地）时触发；不适用于纯问答、跑测试、无设计空间的小 bug 修复/小调整（用 quick-fix）；想法尚未定型、还没决定要不要做时先用 exploring。
 ---
 
 > **Language Protocol / 语言协议**: Respond in the user's conversation language — an explicit user instruction (including the platform `language` setting) takes precedence, then the language of the user's recent messages; default to English when neither indicates a language. All deliverables written to the repo (specs, plans, reports, notes) follow the conversation language at creation; incremental edits keep the artifact's existing language. Fixed-wording prompts in this skill are semantic templates — express their meaning in the conversation language, don't quote them verbatim.
@@ -105,6 +105,7 @@ Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
 
 - 理解核心功能、业务实体、约束与成功标准；描述模糊或多模块时用 `mcp__sequential-thinking__sequentialthinking` 分解
 - **意图承诺检查**：用户仍在"要不要做"的犹豫期（探索性措辞、无交付承诺）→ 建议切换 exploring skill，不硬拉八阶段；存在相关的 `docs/explorations/` 探索笔记时作为本阶段输入，已探索过的部分阶段 2 不重做
+- **小修检查**：需求其实是"已决定要修、无设计空间"的小 bug 修复/小调整（单点 bug、单常量、单文案，无方案取舍、不跨模块、不引入新依赖）→ 建议切换 quick-fix skill，不硬拉八阶段；这是意图承诺检查的对偶——那边挡"还没决定要不要做"，这边挡"决定了但不值得走完整设计"。建议式（不自动切换），由用户裁决
 - **范围分解检查**：需求的意图必须能用一句话说清——说不清就该拆。出现过大信号（范围读起来像不相关功能清单、审查一份 spec 要一下午、两人同时做会撞车、一半任务可独立交付）或描述了多个独立子系统（如"做一个带聊天、文件存储、计费、分析的平台"）时立即指出，先帮用户分解为子项目（各自独立的 spec → plan → 实施周期），再对第一个子项目走本流程——不要在一个需要分解的项目上浪费澄清轮次
 - 判定档位并声明（见"执行档位"）
 - 打标记，供后续阶段消费：

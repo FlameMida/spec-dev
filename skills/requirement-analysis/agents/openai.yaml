@@ -1,6 +1,6 @@
 interface:
   display_name: "Requirement Analysis"
-  short_description: "Requirement design workflow - mandatory before any creative development (new features, components, behavior changes, API/DB design): triage, parallel exploration, one-question-at-a-time clarification, adversarial validation and 2-3 option comparison produce a spec, then hand off to writing-plans. Use exploring first while the idea is unsettled; not for pure Q&A, test runs or trivial one-line fixes. / 8 阶段需求设计工作流：分诊、并行探索、澄清、对抗验证、多方案、spec 落盘，终态交接 writing-plans。想法尚未定型、还没决定要不要做时先用 exploring；不适用于纯问答、跑测试、修复单行明显笔误等无设计空间的任务"
+  short_description: "Requirement design workflow - mandatory before any creative development (new features, components, behavior changes, API/DB design): triage, parallel exploration, one-question-at-a-time clarification, adversarial validation and 2-3 option comparison produce a spec, then hand off to writing-plans. Use exploring first while the idea is unsettled; not for pure Q&A, test runs, or no-design-space small fixes (use quick-fix). / 8 阶段需求设计工作流：分诊、并行探索、澄清、对抗验证、多方案、spec 落盘，终态交接 writing-plans。想法尚未定型、还没决定要不要做时先用 exploring；不适用于纯问答、跑测试、无设计空间的小 bug 修复/小调整（用 quick-fix）"
   default_prompt: "Use $requirement-analysis to design this feature through the 8-phase workflow and produce a spec. / 用 $requirement-analysis 走 8 阶段工作流设计这个功能并产出 spec。"
 
 policy:
