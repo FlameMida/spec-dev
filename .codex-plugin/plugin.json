@@ -1,6 +1,6 @@
 {
   "name": "spec-dev",
-  "version": "7.5.1",
+  "version": "7.5.2",
   "description": "Development workflow plugin suite: exploring (thinking partner), requirement-analysis (design workflow), writing-plans / executing-plans (planning and execution), visual-preview, using-git-worktrees / test-driven-development (engineering discipline), acceptance-qa (all-round acceptance). / 开发工作流插件集：exploring 探索模式、requirement-analysis 设计工作流、writing-plans/executing-plans 计划与执行、visual-preview 可视化预览、using-git-worktrees/test-driven-development 工程纪律、acceptance-qa 全能验收。",
   "author": {
     "name": "FlameMida",
