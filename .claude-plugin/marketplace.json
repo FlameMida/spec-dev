@@ -23,7 +23,8 @@
         "./skills/executing-plans",
         "./skills/using-git-worktrees",
         "./skills/test-driven-development",
-        "./skills/acceptance-qa"
+        "./skills/acceptance-qa",
+        "./skills/quick-fix"
       ]
     }
   ]

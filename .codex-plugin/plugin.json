@@ -1,7 +1,7 @@
 {
   "name": "spec-dev",
   "version": "7.5.4",
-  "description": "Development workflow plugin suite: exploring (thinking partner), requirement-analysis (design workflow), writing-plans / executing-plans (planning and execution), visual-preview, using-git-worktrees / test-driven-development (engineering discipline), acceptance-qa (all-round acceptance). / 开发工作流插件集：exploring 探索模式、requirement-analysis 设计工作流、writing-plans/executing-plans 计划与执行、visual-preview 可视化预览、using-git-worktrees/test-driven-development 工程纪律、acceptance-qa 全能验收。",
+  "description": "Development workflow plugin suite: exploring (thinking partner), requirement-analysis (design workflow), writing-plans / executing-plans (planning and execution), visual-preview, using-git-worktrees / test-driven-development (engineering discipline), acceptance-qa (all-round acceptance), quick-fix (lightweight bug-fix workflow). / 开发工作流插件集：exploring 探索模式、requirement-analysis 设计工作流、writing-plans/executing-plans 计划与执行、visual-preview 可视化预览、using-git-worktrees/test-driven-development 工程纪律、acceptance-qa 全能验收、quick-fix 轻量修复。",
   "author": {
     "name": "FlameMida",
     "url": "https://github.com/FlameMida"
@@ -26,14 +26,15 @@
     "testing",
     "performance",
     "development",
-    "requirements"
+    "requirements",
+    "quick-fix"
   ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Spec Dev",
     "shortDescription": "Bilingual (EN/zh) design-plan-execute skill pipeline and all-round acceptance workflows. / 中英双语的设计→计划→执行 skill 管线与全能验收工作流。",
-    "longDescription": "Spec Dev provides a bilingual (EN/zh) development workflow pipeline: exploring offers no-commitment thinking-partner exploration while an idea is unsettled; requirement-analysis polishes ideas into specs (parallel exploration, one-question-at-a-time clarification, adversarial validation, multi-option comparison, visual preview, acceptance matrix); writing-plans decomposes specs into zero-context executable plans (with acceptance tasks); executing-plans executes task-by-task with TDD in an isolated worktree plus multi-dimension adversarial review; supported by using-git-worktrees and test-driven-development discipline and acceptance-qa all-round acceptance (unit/integration/E2E/visual/a11y/performance + AI autonomous acceptance + diagnosis), with optional in-plugin MCP config for doc retrieval, web research, deep thinking and browser/performance acceptance. / Spec Dev 提供中英双语开发工作流管线：exploring 在想法未定型时提供无承诺的思考伙伴探索，requirement-analysis 把想法打磨成 spec（并行探索、逐题澄清、对抗验证、多方案对比、可视化预览、验收矩阵），writing-plans 拆解为零上下文可执行计划（含验收任务），executing-plans 在隔离 worktree 中以 TDD 逐任务执行并做多维对抗审查；配套 using-git-worktrees、test-driven-development 工程纪律与 acceptance-qa 全能验收（单元/集成/E2E/视觉/可访问性/性能 + AI 自主验收 + 诊断），并可通过插件内 MCP 配置增强文档检索、网页研究、深度思考和浏览器/性能验收。",
+    "longDescription": "Spec Dev provides a bilingual (EN/zh) development workflow pipeline: exploring offers no-commitment thinking-partner exploration while an idea is unsettled; requirement-analysis polishes ideas into specs (parallel exploration, one-question-at-a-time clarification, adversarial validation, multi-option comparison, visual preview, acceptance matrix); writing-plans decomposes specs into zero-context executable plans (with acceptance tasks); executing-plans executes task-by-task with TDD in an isolated worktree plus multi-dimension adversarial review; supported by using-git-worktrees and test-driven-development discipline and acceptance-qa all-round acceptance (unit/integration/E2E/visual/a11y/performance + AI autonomous acceptance + diagnosis), with optional in-plugin MCP config for doc retrieval, web research, deep thinking and browser/performance acceptance; quick-fix handles small already-decided fixes with no design space via a spec-back-lookup + contract-split fast path. / Spec Dev 提供中英双语开发工作流管线：exploring 在想法未定型时提供无承诺的思考伙伴探索，requirement-analysis 把想法打磨成 spec（并行探索、逐题澄清、对抗验证、多方案对比、可视化预览、验收矩阵），writing-plans 拆解为零上下文可执行计划（含验收任务），executing-plans 在隔离 worktree 中以 TDD 逐任务执行并做多维对抗审查；配套 using-git-worktrees、test-driven-development 工程纪律与 acceptance-qa 全能验收（单元/集成/E2E/视觉/可访问性/性能 + AI 自主验收 + 诊断），并可通过插件内 MCP 配置增强文档检索、网页研究、深度思考和浏览器/性能验收；quick-fix 通过 spec 反查 + 契约分流的快路径处理已决定、无设计空间的小修复。",
     "developerName": "FlameMida",
     "category": "Developer Tools",
     "capabilities": [
@@ -48,6 +49,7 @@
       "Use writing-plans to turn the approved spec into an implementation plan / 使用 writing-plans 把已批准的 spec 拆成实施计划",
       "Use executing-plans to execute this implementation plan / 使用 executing-plans 执行这份实施计划",
       "Use acceptance-qa to run all-round acceptance on this feature / 使用 acceptance-qa 全面验收这个功能",
+      "Use quick-fix to fix a small bug without the full design workflow / 使用 quick-fix 直接修小 bug，不走完整设计流程",
       "Check workspace MCP configuration and fallbacks / 检查当前工作区 MCP 配置与降级方案"
     ],
     "brandColor": "#2563EB"
