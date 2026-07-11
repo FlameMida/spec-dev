@@ -3,7 +3,7 @@
 spec_dev:
   version: 1
   feature: quick-fix-skill
-  status: draft            # draft | active | superseded —— 仅 active 参与漂移拦截
+  status: active           # draft | active | superseded —— 仅 active 参与漂移拦截
   covers:
     - "skills/quick-fix/**"
   sync_commit: null
