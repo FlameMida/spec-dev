@@ -1,0 +1,30 @@
+{
+  "skill_name": "quick-fix",
+  "evals": [
+    {
+      "id": "qf-small-bug-triggers",
+      "prompt": "修一下这个 bug：列表分页翻到第 0 页会崩溃",
+      "expected_output": "进入 quick-fix：入口分诊判定为无设计空间的小修，定位根因并对嫌疑文件做 spec 反查（三条 glob 对齐守卫）；逐题确认根因/方案/是否改变契约；强制 TDD 先写复现失败测试再修；按契约影响分流提交；收尾询问是否触发 acceptance-qa"
+    },
+    {
+      "id": "qf-escalate-cross-module",
+      "prompt": "（quick-fix 中）根因定位发现要同时改认证模块和会话模块才能修",
+      "expected_output": "升级门命中（跨模块）：停下向用户说明升级信号与继续修的风险，呈现『升级 requirement-analysis / 坚持在 quick-fix 继续』两选项，不擅自继续；用户坚持继续且契约变更时仍强制 spec 同步"
+    },
+    {
+      "id": "qf-contract-change-syncs-spec",
+      "prompt": "（quick-fix 中）用户确认这次修复会改变导出 spec 描述的错误提示行为，且只涉及该 spec",
+      "expected_output": "走 5a 分支：TDD 修复 + 同步该 spec 的对应 Requirement/Scenario 小节，spec 增量展示给用户过目，spec+代码+测试同一提交"
+    },
+    {
+      "id": "qf-contract-stable-trailer",
+      "prompt": "（quick-fix 中）用户确认修复不改变契约，但改动文件命中某 active spec 的 covers",
+      "expected_output": "走 5b 分支：不改 spec，以 SPEC_DEV_GUARD=off git commit 提交并留 Spec-Guard: off <原因> trailer（环境变量过本地闸、trailer 过 push/CI 闸，二者配合）；装了编辑期 hook 被拦时向用户说明后经确认继续，不伪造 spec 同步"
+    },
+    {
+      "id": "qf-new-feature-routes-away",
+      "prompt": "用 quick-fix 给导出功能加一个 PDF 格式选项",
+      "expected_output": "入口分诊自检判定该请求有设计空间（新功能），建议改用 requirement-analysis，不进入根因定位"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Quick Fix"
+  short_description: "Lightweight bug-fix workflow - for fixes already decided on with no design space (small bugs, minor adjustments): root cause with spec back-lookup, one-question-at-a-time confirmation, TDD fix, optional acceptance; splits on contract impact to avoid spec drift, escalates to requirement-analysis on contract-crossing / cross-module / new-dependency signals. Not for new features or design-space work (use requirement-analysis), nor undecided ideas (use exploring). / 轻量 bug 修复工作流：已决定要修、无设计空间的小修复——定位根因（含 spec 反查）、逐题校对、TDD 修复、可选验收；按契约影响分流规避 spec 漂移，涉及跨 spec 契约/跨模块/新依赖时升级 requirement-analysis。不适用于新功能或有设计空间的需求（用 requirement-analysis），也不适用于尚未决定要不要做的想法（用 exploring）。"
+  default_prompt: "Use $quick-fix to fix this small bug or adjustment end-to-end without the full design workflow. / 用 $quick-fix 直接修掉这个小 bug 或小调整，不走完整设计流程。"
+
+policy:
+  allow_implicit_invocation: true

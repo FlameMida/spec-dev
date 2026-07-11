@@ -1,0 +1,23 @@
+{
+  "skill_name": "quick-fix",
+  "description_under_test": "见 SKILL.md frontmatter",
+  "should_trigger": [
+    { "id": "t1", "prompt": "修一下这个 bug：列表分页翻到第 0 页会崩溃" },
+    { "id": "t2", "prompt": "刚跑完计划开发，发现导出的文件名少了时间戳，帮我调一下" },
+    { "id": "t3", "prompt": "这个报错提示文案写错了，改成正确的" },
+    { "id": "t4", "prompt": "登录超时时间从 30 分钟改成 60 分钟，就一个常量" },
+    { "id": "t5", "prompt": "fix a small bug: the total count is off by one on the cart page" },
+    { "id": "t6", "prompt": "这个函数边界情况没处理，空数组会抛异常，修一下" }
+  ],
+  "should_not_trigger": [
+    { "id": "n1", "prompt": "给系统加一个用户权限管理功能" },
+    { "id": "n2", "prompt": "重构一下整个订单模块，拆成多个服务" },
+    { "id": "n3", "prompt": "我在想要不要把缓存层换成 Redis，帮我想想" },
+    { "id": "n4", "prompt": "基于已批准的 spec 编写实施计划" },
+    { "id": "n5", "prompt": "设计一个新的通知系统" },
+    { "id": "n6", "prompt": "这个函数在哪里定义的？" },
+    { "id": "n7", "prompt": "add a user permission management feature to the system" },
+    { "id": "n8", "prompt": "not sure if we should adopt event sourcing - can we talk it through?" }
+  ],
+  "notes": "t1-t6 共同信号：已决定要修、无设计空间的小修（单点 bug、单常量、单文案、边界补全、计划后小调整）。n1/n2/n5 有设计空间（requirement-analysis 领地——新功能/跨模块重构/新系统设计）；n3 还在犹豫期（exploring 领地）；n4 属 writing-plans；n6 是单点事实问答（直接回答）。n2 特别用于检验『跨模块重构』被路由走——即使用户口语说『重构一下』，牵连多模块即超出 quick-fix。n7 英文新功能（requirement-analysis）、n8 英文犹豫期（exploring），检验英文侧双向互斥边界。这些 near-miss 检验 description 中『无设计空间 vs 有设计空间』与『已承诺 vs 未承诺』的双重边界。"
+}
