@@ -36,8 +36,12 @@ executing-plans (isolated execution + review + summary)
    ├── test-driven-development (TDD discipline)
    └── acceptance-qa (matrix-driven acceptance)
 
-quick-fix (already-decided small fix, no design space → root cause + spec back-lookup + contract split)
+quick-fix (already-decided small fix, no design space)  ── bypass fast path
+   root cause + spec back-lookup → one-question confirm → TDD fix → optional acceptance
+        ↑ escalates to requirement-analysis on contract-crossing / cross-module / new-dependency signals
 ```
+
+The three entry points split by commitment and design space: **exploring** (undecided — should we even do this?), **quick-fix** (decided, no design space — a small bug or adjustment), **requirement-analysis** (decided, has design space — a feature or change). quick-fix reuses test-driven-development and acceptance-qa, and hands control back to requirement-analysis the moment a fix turns out to need real design.
 
 Each skill also works standalone: start from exploring while the idea is unsettled; enter at writing-plans with an existing spec; go straight to executing-plans with an existing plan; acceptance-qa / using-git-worktrees / test-driven-development can be triggered from any workflow; quick-fix handles small already-decided fixes without the full design workflow.
 

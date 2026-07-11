@@ -36,8 +36,12 @@ executing-plans（隔离执行 + 审查 + 总结）
    ├── test-driven-development（TDD 纪律）
    └── acceptance-qa（矩阵化验收）
 
-quick-fix（已决定、无设计空间的小修复 → 根因 + spec 反查 + 契约分流）
+quick-fix（已决定、无设计空间的小修复）  ── 旁路快车道
+   根因 + spec 反查 → 逐题校对 → TDD 修复 → 可选验收
+        ↑ 命中跨 spec 契约 / 跨模块 / 新依赖信号时升级回 requirement-analysis
 ```
+
+三个入口按承诺状态与设计空间分工：**exploring**（还没决定要不要做）、**quick-fix**（已决定、无设计空间——小 bug 或小调整）、**requirement-analysis**（已决定、有设计空间——功能或变更）。quick-fix 复用 test-driven-development 与 acceptance-qa，一旦修复需要真正的设计就把控制权交还 requirement-analysis。
 
 每个 skill 也可独立使用：想法未定型可从 exploring 开始；已有 spec 可直接从 writing-plans 进入；已有计划可直接 executing-plans；acceptance-qa / using-git-worktrees / test-driven-development 可被任意工作流触发；quick-fix 处理已决定、无设计空间的小修复，不走完整设计流程。
 
