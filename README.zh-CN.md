@@ -34,9 +34,11 @@ executing-plans（隔离执行 + 审查 + 总结）
    ├── using-git-worktrees（隔离工作区）
    ├── test-driven-development（TDD 纪律）
    └── acceptance-qa（矩阵化验收）
+
+quick-fix（已决定、无设计空间的小修复 → 根因 + spec 反查 + 契约分流）
 ```
 
-每个 skill 也可独立使用：想法未定型可从 exploring 开始；已有 spec 可直接从 writing-plans 进入；已有计划可直接 executing-plans；acceptance-qa / using-git-worktrees / test-driven-development 可被任意工作流触发。
+每个 skill 也可独立使用：想法未定型可从 exploring 开始；已有 spec 可直接从 writing-plans 进入；已有计划可直接 executing-plans；acceptance-qa / using-git-worktrees / test-driven-development 可被任意工作流触发；quick-fix 处理已决定、无设计空间的小修复，不走完整设计流程。
 
 ## 安装
 
@@ -54,7 +56,7 @@ executing-plans（隔离执行 + 审查 + 总结）
 
 仓库已包含 Codex 插件清单：`.codex-plugin/plugin.json`。该清单会暴露：
 
-- `skills/`：`exploring`、`requirement-analysis`、`visual-preview`、`writing-plans`、`executing-plans`、`using-git-worktrees`、`test-driven-development`、`acceptance-qa`
+- `skills/`：`exploring`、`requirement-analysis`、`visual-preview`、`writing-plans`、`executing-plans`、`using-git-worktrees`、`test-driven-development`、`acceptance-qa`、`quick-fix`
 - `.mcp.json`：context7、sequential-thinking、playwright、chrome-devtools 的可选 MCP 配置（经插件清单 `mcpServers` 字段生效；Codex **不会**直接读取项目根的 `.mcp.json`，插件之外手工配置 MCP 需写入 `~/.codex/config.toml` 的 `[mcp_servers]` 表或用 `codex mcp add`）
 - 插件 UI 元数据：展示名称、分类、能力、默认提示词
 
@@ -206,6 +208,14 @@ spec 落盘至特性目录 `docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md` 
 
 与管线集成：spec 的验收矩阵 → writing-plans 生成验收任务 → executing-plans 收尾触发本 skill → 报告与证据落盘特性目录 `acceptance/`。
 
+## quick-fix 使用方法
+
+对于已经决定要修、且没有设计空间的 bug 或小调整，调用 quick-fix，而不是走完整的 requirement-analysis 流程：
+
+> 用 quick-fix 直接把这个小 bug 修好。
+
+它会定位根因（含与漂移守卫 `covers` 对齐的 spec 反查），逐题确认根因/修复方案/契约影响，在 TDD 下修复，并按契约影响分流——行为改变则同步对应 spec，不变则以 `Spec-Guard: off` trailer 提交——最后可选触发 acceptance-qa。若根因涉及跨 spec 的行为契约、跨多个模块或需要新依赖，quick-fix 会停下并提议升级到 requirement-analysis。
+
 ## MCP 工具增强（推荐但可选）
 
 所有功能在没有 MCP 的情况下也能正常工作，插件使用智能降级策略自动切换备用方案。
@@ -287,7 +297,8 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 │   ├── executing-plans/             # 计划执行 + 收尾审查
 │   ├── using-git-worktrees/         # 隔离工作区纪律
 │   ├── test-driven-development/     # TDD 纪律
-│   └── acceptance-qa/               # 全能验收工作流
+│   ├── acceptance-qa/               # 全能验收工作流
+│   └── quick-fix/                   # 轻量 bug 修复工作流
 ├── scripts/
 │   ├── check-plugin.mjs             # 清单版本一致性 + 符号链接 + Codex CLI 安装校验
 │   ├── validate-output.mjs          # 子代理输出契约校验器

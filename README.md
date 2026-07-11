@@ -34,9 +34,11 @@ executing-plans (isolated execution + review + summary)
    ├── using-git-worktrees (isolated workspace)
    ├── test-driven-development (TDD discipline)
    └── acceptance-qa (matrix-driven acceptance)
+
+quick-fix (already-decided small fix, no design space → root cause + spec back-lookup + contract split)
 ```
 
-Each skill also works standalone: start from exploring while the idea is unsettled; enter at writing-plans with an existing spec; go straight to executing-plans with an existing plan; acceptance-qa / using-git-worktrees / test-driven-development can be triggered from any workflow.
+Each skill also works standalone: start from exploring while the idea is unsettled; enter at writing-plans with an existing spec; go straight to executing-plans with an existing plan; acceptance-qa / using-git-worktrees / test-driven-development can be triggered from any workflow; quick-fix handles small already-decided fixes without the full design workflow.
 
 ## Installation
 
@@ -54,7 +56,7 @@ Each skill also works standalone: start from exploring while the idea is unsettl
 
 The repository ships a Codex plugin manifest: `.codex-plugin/plugin.json`. It exposes:
 
-- `skills/`: `exploring`, `requirement-analysis`, `visual-preview`, `writing-plans`, `executing-plans`, `using-git-worktrees`, `test-driven-development`, `acceptance-qa`
+- `skills/`: `exploring`, `requirement-analysis`, `visual-preview`, `writing-plans`, `executing-plans`, `using-git-worktrees`, `test-driven-development`, `acceptance-qa`, `quick-fix`
 - `.mcp.json`: optional MCP config for context7, sequential-thinking, playwright, chrome-devtools (activated via the manifest's `mcpServers` field; Codex does **not** read the project root `.mcp.json` directly — manual MCP setup outside the plugin goes into the `[mcp_servers]` table of `~/.codex/config.toml` or via `codex mcp add`)
 - Plugin UI metadata: display name, category, capabilities, default prompts
 
@@ -206,6 +208,14 @@ Runs over the dimension × execution-nature matrix:
 
 Pipeline integration: the spec's acceptance matrix → writing-plans generates the acceptance task → executing-plans triggers this skill at wrap-up → reports and evidence land in the feature directory `acceptance/`.
 
+## Using quick-fix
+
+For a bug or small adjustment you've already decided to make and that has no design space, invoke quick-fix instead of the full requirement-analysis workflow:
+
+> Use quick-fix to fix this small bug end-to-end.
+
+It locates the root cause (with a spec back-lookup aligned to the drift guard's `covers`), confirms root cause / fix / contract impact one question at a time, fixes under TDD, and splits on contract impact — syncing the owning spec when behavior changes, or committing with a `Spec-Guard: off` trailer when it does not — then optionally runs acceptance-qa. If the root cause turns out to cross a behavior contract across specs, span multiple modules, or need a new dependency, quick-fix stops and offers to escalate to requirement-analysis.
+
 ## MCP Enhancements (recommended, optional)
 
 Everything works without MCP; the plugin degrades gracefully to fallbacks.
@@ -287,7 +297,8 @@ spec-dev/                            # repo root is the plugin root (flat layout
 │   ├── executing-plans/             # plan execution + wrap-up review
 │   ├── using-git-worktrees/         # isolated workspace discipline
 │   ├── test-driven-development/     # TDD discipline
-│   └── acceptance-qa/               # all-round acceptance workflow
+│   ├── acceptance-qa/               # all-round acceptance workflow
+│   └── quick-fix/                   # lightweight bug-fix workflow
 ├── scripts/
 │   ├── check-plugin.mjs             # manifest version sync + symlink + Codex CLI install checks
 │   ├── validate-output.mjs          # subagent output contract validator
