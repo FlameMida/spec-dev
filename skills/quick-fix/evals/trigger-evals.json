@@ -19,5 +19,5 @@
     { "id": "n7", "prompt": "add a user permission management feature to the system" },
     { "id": "n8", "prompt": "not sure if we should adopt event sourcing - can we talk it through?" }
   ],
-  "notes": "t1-t6 共同信号：已决定要修、无设计空间的小修（单点 bug、单常量、单文案、边界补全、计划后小调整）。n1/n2/n5 有设计空间（requirement-analysis 领地——新功能/跨模块重构/新系统设计）；n3 还在犹豫期（exploring 领地）；n4 属 writing-plans；n6 是单点事实问答（直接回答）。n2 特别用于检验『跨模块重构』被路由走——即使用户口语说『重构一下』，牵连多模块即超出 quick-fix。n7 英文新功能（requirement-analysis）、n8 英文犹豫期（exploring），检验英文侧双向互斥边界。这些 near-miss 检验 description 中『无设计空间 vs 有设计空间』与『已承诺 vs 未承诺』的双重边界。"
+  "notes": "t1-t6 共同信号：已决定要修、无设计空间的小修（单点 bug、单常量、单文案、边界补全、计划后小调整）。n1/n2/n5 有设计空间（requirement-analysis 领地——新功能/跨模块重构/新系统设计）；n3 还在犹豫期（exploring 领地）；n4 属 writing-plans；n6 是单点事实问答（直接回答）。n2 特别用于检验「跨模块重构」被路由走——即使用户口语说「重构一下」，牵连多模块即超出 quick-fix。n7 英文新功能（requirement-analysis）、n8 英文犹豫期（exploring），检验英文侧双向互斥边界。这些 near-miss 检验 description 中「无设计空间 vs 有设计空间」与「已承诺 vs 未承诺」的双重边界。"
 }

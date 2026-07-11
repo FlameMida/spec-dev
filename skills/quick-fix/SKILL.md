@@ -70,8 +70,8 @@ description: >-
 - **不改 spec**（契约没变，spec 没说谎）。
 - **提交按守卫安装情况分两种**：
   - 改动**未命中**任何 active spec 的 covers → 普通提交即可，无需环境变量或 trailer。
-  - 改动**命中**某 active spec 的 covers → 提交必须以 `SPEC_DEV_GUARD=off git commit` 执行（过编辑期 `--hook` 与提交期 `--staged` 两道本地闸，二者都不识别 trailer），并在 message 留 `Spec-Guard: off <原因>` trailer（过 pre-push 与 CI 区间闸）——环境变量与 trailer 二者配合、缺一不可。
-- **编辑期拦截交互**：装了 guardrail 编辑期 hook 的仓库，因 hook 只认"文件是否命中 covers"、不认"契约是否改变"，改 covers 覆盖文件在**编辑时**就会被拦。此时向用户说明"这是契约不变的内部修复"，经用户确认后以 `SPEC_DEV_GUARD=off` 执行编辑与提交并留 trailer（环境变量实际注入点在 Bash 侧 `git commit`）。**不静默绕过、不伪造 spec 同步。**
+  - 改动**命中**某 active spec 的 covers → 提交用 `SPEC_DEV_GUARD=off git commit` 执行（该环境变量注入 commit 进程，令其 pre-commit 的提交期 `--staged` 闸放行——`--staged` 不识别 trailer，只认这个变量），并在 message 留 `Spec-Guard: off <原因>` trailer（trailer 才是 pre-push 与 CI 区间闸的放行凭证）。环境变量管本地提交期闸、trailer 管 push/CI 区间闸，二者配合、缺一不可。
+- **编辑期 hook 单独处理**：装了 guardrail 编辑期 hook（`--hook`）的仓库，因 hook 只认"文件是否命中 covers"、不认"契约是否改变"，改 covers 覆盖文件在**编辑动作发生时**就会被拦——这道闸早于 commit、不被上面的 `git commit` 前缀覆盖（`--hook` 进程环境由平台在 Edit 工具调用时设定）。所以契约不变分支要让编辑期放行，实际手段是让**写文件动作本身带上 `SPEC_DEV_GUARD=off`**：优先用 Bash 侧带该变量的写入命令（如 `SPEC_DEV_GUARD=off` 前缀的重定向/脚本）落盘改动，绕开受 hook 约束的 Edit 工具；或在会话/hook 进程环境层面置该变量。被拦时向用户说明"这是契约不变的内部修复"，经确认后再继续。**不静默绕过、不伪造 spec 同步。**
 
 ### 步骤 6：可选自动化验收
 

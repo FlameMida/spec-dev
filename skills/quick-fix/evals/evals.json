@@ -9,7 +9,7 @@
     {
       "id": "qf-escalate-cross-module",
       "prompt": "（quick-fix 中）根因定位发现要同时改认证模块和会话模块才能修",
-      "expected_output": "升级门命中（跨模块）：停下向用户说明升级信号与继续修的风险，呈现『升级 requirement-analysis / 坚持在 quick-fix 继续』两选项，不擅自继续；用户坚持继续且契约变更时仍强制 spec 同步"
+      "expected_output": "升级门命中（跨模块）：停下向用户说明升级信号与继续修的风险，呈现「升级 requirement-analysis / 坚持在 quick-fix 继续」两选项，不擅自继续；用户坚持继续且契约变更时仍强制 spec 同步"
     },
     {
       "id": "qf-contract-change-syncs-spec",
