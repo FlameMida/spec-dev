@@ -15,6 +15,7 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 - **Plan execution** — `executing-plans`: the main thread executes task-by-task (per-task commit + spec self-check), then wrap-up multi-dimension adversarial review (fan-out code-reviewer + contract validation + loop-until-dry + completeness critic), merge and summary
 - **Engineering discipline** — `using-git-worktrees` (isolated workspaces, native tools first) and `test-driven-development` (no production code without a failing test) are standalone skills reusable from any workflow
 - **All-round acceptance** — `acceptance-qa` runs acceptance over the dimension × execution-nature matrix: unit/integration/API, Playwright E2E, visual regression, accessibility, performance (web CWV / k6 for APIs / client), AI autonomous acceptance (mandatory evidence + serial recheck + verify-assertions-first) and failure diagnosis
+- **Lightweight fix** — `quick-fix`, a fast path for already-decided fixes with no design space (small bugs, minor adjustments): root cause with spec back-lookup, one-question-at-a-time confirmation, TDD fix, optional acceptance; splits on contract impact to avoid spec drift and escalates to requirement-analysis on contract-crossing / cross-module / new-dependency signals
 - **Contract-driven orchestration** — subagent output goes through JSON Schema contracts, deterministically validated by `validate-output.mjs`, with one retry on failure
 - **MCP enhancements** — integrates context7, sequential-thinking, playwright, chrome-devtools (optional, graceful degradation)
 - **3 specialized agents** — code-explorer, external-resource-explorer, code-reviewer (analysis and verification re-runs only; implementation code is always written by the main thread)
@@ -54,46 +55,15 @@ Each skill also works standalone: start from exploring while the idea is unsettl
 
 ### Codex
 
-The repository ships a Codex plugin manifest: `.codex-plugin/plugin.json`. It exposes:
-
-- `skills/`: `exploring`, `requirement-analysis`, `visual-preview`, `writing-plans`, `executing-plans`, `using-git-worktrees`, `test-driven-development`, `acceptance-qa`, `quick-fix`
-- `.mcp.json`: optional MCP config for context7, sequential-thinking, playwright, chrome-devtools (activated via the manifest's `mcpServers` field; Codex does **not** read the project root `.mcp.json` directly — manual MCP setup outside the plugin goes into the `[mcp_servers]` table of `~/.codex/config.toml` or via `codex mcp add`)
-- Plugin UI metadata: display name, category, capabilities, default prompts
-
-The repository also ships a Codex marketplace manifest: `.agents/plugins/marketplace.json`. Add this repository directly as a marketplace:
-
 ```bash
+# Add as a marketplace
 codex plugin marketplace add https://github.com/FlameMida/spec-dev
+
+# Install the plugin
+codex plugin add spec-dev@spec-agent-skills
 ```
 
-The repository uses a flat layout: the repo root is the plugin root, and both the Claude Code and Codex marketplace manifests point to `./`. The Codex manifest writes the plugin source as `{"source": "url", "url": "./"}` (a `source.path` of `./` gets normalized to an empty path by Codex and filtered out of `/plugin`; the `url` form has no such issue).
-
-If an older marketplace version was added locally, run `codex plugin marketplace upgrade spec-agent-skills` after a new release; for local development verification, remove the old source first, then add the current repository path.
-
-The marketplace manifest's top-level `name` is `spec-agent-skills` (the marketplace identifier, used by `upgrade` and `plugin@marketplace` references), while the plugin entry `name` is `spec-dev` (the plugin identifier, used by `codex plugin add spec-dev@spec-agent-skills`):
-
-```json
-{
-  "name": "spec-agent-skills",
-  "interface": {
-    "displayName": "Spec Dev"
-  },
-  "plugins": [
-    {
-      "name": "spec-dev",
-      "source": {
-        "source": "url",
-        "url": "./"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Developer Tools"
-    }
-  ]
-}
-```
+The Codex manifests (`.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`) also expose optional MCP config (context7, sequential-thinking, playwright, chrome-devtools) and plugin UI metadata. After a new release, run `codex plugin marketplace upgrade spec-agent-skills`.
 
 ## Plugin Package Maintenance
 

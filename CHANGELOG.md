@@ -7,6 +7,26 @@
 
 ---
 
+## [7.6.0] - 2026-07-11
+
+### ✨ 新增 (Added)
+
+- **T5**：三处清单登记 quick-fix skill
+- **T4**：exploring 分界表加 quick-fix 行 + description 互指
+- **T3**：requirement-analysis 阶段 1 加小修检查 + description 点名 quick-fix
+- **T1-T2**：新增 quick-fix skill（SKILL.md + openai.yaml + evals）
+
+### 🔧 修复 (Fixed)
+
+- **review**：审查处置——5b 编辑期措辞拆清 + evals 引号「」对齐仓库惯例 + exploring notes 点名 quick-fix 领地
+
+### 📝 文档 (Docs)
+
+- README 双版补 quick-fix 到 Features 段 + Codex 安装段瘦身到与 Claude Code 对称
+- **T7**：quick-fix 验收报告落盘（四行全 pass）
+- **T6**：README 双版登记 quick-fix skill
+
+
 ## [7.5.4] - 2026-07-11
 
 ### 📝 文档 (Docs)
