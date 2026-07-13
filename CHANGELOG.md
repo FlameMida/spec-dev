@@ -7,6 +7,13 @@
 
 ---
 
+## [7.11.1] - 2026-07-13
+
+### 📝 文档 (Docs)
+
+- **reconciliation**：guardrail README 双版判定逻辑节补 sync_commit 交付锚点语义
+
+
 ## [7.11.0] - 2026-07-13
 
 ### ✨ 新增 (Added)

@@ -33,6 +33,8 @@ node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
 
 每份 spec 的 frontmatter `spec_dev.covers`（glob）声明它拥有的代码。一批变更命中某 `status: active` spec 的 `covers`、却没同时改动该 spec，即判为漂移。
 
+frontmatter 的 `sync_commit` 是交付锚点：最近一次确认代码与本 spec 同步的提交——由 executing-plans 收尾在合并后写入；`git diff <sync_commit>..HEAD -- <covers>` 即此后的代码变化。守卫解析该字段但不参与拦截判定。
+
 编辑时（`--hook`）的"是否同步"认定包含工作区已有改动（暂存 + 未暂存 + 未跟踪）：**先把 spec 改好，再动覆盖代码即放行**；但工作区脏文件不会扩大触发集，编辑无关文件不受既有漂移影响。收尾审计（`--worktree`）以整个工作区为变更集，对回合内绕过工具面写入的文件兜底。
 
 ## 临时放行
