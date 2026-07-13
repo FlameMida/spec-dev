@@ -7,6 +7,13 @@
 
 ---
 
+## [7.9.0] - 2026-07-13
+
+### ✨ 新增 (Added)
+
+- **reconciliation**：验收报告加 Requirement Reconciliation 节 + SKILL 阶段5清单登记
+
+
 ## [7.8.0] - 2026-07-13
 
 ### ✨ 新增 (Added)

@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Bilingual (EN/zh) design-plan-execute skill pipeline and all-round acceptance workflow plugin suite / 中英双语的设计→计划→执行 skill 管线与全能验收工作流插件集",
-    "version": "7.8.0"
+    "version": "7.9.0"
   },
   "plugins": [
     {

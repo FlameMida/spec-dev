@@ -23,6 +23,17 @@
 | {{reject-expired-token}} | integration | pass | {{tests/auth.spec.ts passed}} |
 | {{login-redirects-to-dashboard}} | e2e | pass | {{e2e passed + trace.zip}} |
 
+## Requirement Reconciliation (delivery delta; filled by executing-plans wrap-up, remove when triggered standalone)
+
+All {{N}} requirements DELIVERED — see Requirement Coverage above.
+<!-- Expand the delta table only when DEFERRED / DROPPED / ADDED-IN-FLIGHT items exist: -->
+
+| Requirement | Verdict | Evidence / Reason |
+|-------------|---------|-------------------|
+| {{req-title}} | DEFERRED | {{one-line reason; also marked in spec}} |
+| {{req-title}} | DROPPED | {{one-line reason; also marked in spec}} |
+| {{unplanned behavior}} | ADDED-IN-FLIGHT | {{user-confirmed; spec revised in task N}} |
+
 ## Key Findings (by severity)
 
 1. **[P1] {{title}}** ({{dimension}}, Diagnosis #1) — {{one-line impact}}; root cause: {{file:line + verified root cause}}; suggestion: {{fix direction}}
