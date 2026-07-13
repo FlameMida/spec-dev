@@ -7,6 +7,13 @@
 
 ---
 
+## [7.12.0] - 2026-07-13
+
+### ✨ 新增 (Added)
+
+- **roadmap**：requirement-analysis 大目标分解登记与续接——新增 roadmap 模板，分解落盘 .spec-dev/roadmaps/，阶段6回填，阶段7堵伪聚焦（spec 内分阶段）旁路
+
+
 ## [7.11.2] - 2026-07-13
 
 ### 🧹 其他 (Misc)
