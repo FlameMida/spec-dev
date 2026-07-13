@@ -26,7 +26,7 @@ description: >-
 3. **逐任务执行** — TDD + 每任务提交 + spec 自检，连续执行
 4. **收尾审查** — 多维 fan-out + 对抗复核 + completeness critic；按验收矩阵触发 acceptance-qa
 5. **审查处置与交付对账** — 例外驱动：零发现且全 DELIVERED 静默通过；否则一次性征询修复与裁决
-6. **合并与总结** — 执行计划的最终任务（合并与清理，含 sync_commit 锚定），输出总结
+6. **合并与总结** — 执行计划的最终任务（合并与清理，含 sync_commit 锚定），回写 roadmap 状态（如属），输出总结
 
 ## 阶段 1：载入并批判性审阅计划
 
@@ -88,11 +88,13 @@ description: >-
 
 1. 审查与对账定稿后，**合并前在 worktree 内落盘并提交**：对账结果写入特性目录 `acceptance/acceptance-report.md` 的「Requirement Reconciliation」节——全绿一行带过，有偏差才展开差量表；acceptance-qa 未触发的特性按模板新建仅含头部与该节的轻量报告（一次交付一份时点记录）。DEFERRED / DROPPED 同时在 spec 原位标注（形制见 spec 模板行为规范节），DELIVERED 不标
 2. 执行计划的最终任务（全量验证 → 合并回来源分支 → 清理 worktree 与分支 → **sync_commit 锚定**：合并后主工作区 HEAD 写入 spec frontmatter 并单独提交；原生工具建的隔离用原生方式退出）；计划缺最终任务或缺锚定步骤（旧版计划）时按同等步骤手工收尾；非 git 仓库跳过锚定并注明
-3. 输出总结：
+3. **roadmap 状态回写（仅当 `.spec-dev/roadmaps/` 下某 active roadmap 引用本特性目录）**：把对应子项目行状态置 `delivered` 并提交；全部子项目已 delivered/dropped 时把该 roadmap frontmatter 的 `status` 翻 `done`。目录不存在或查无引用 → 跳过，零动作
+4. 输出总结：
    - **成果清单**：完成的任务、创建/修改的文件、对账计数（`X DELIVERED / Y DEFERRED / Z DROPPED / N ADDED-IN-FLIGHT`）
    - **质量指标**：测试数与结果、审查发现数与修复情况
    - **偏差记录**：执行中对计划的就地修正
    - **后续建议**：优化点、文档更新
+   - **roadmap 续接（仅当上一步命中 roadmap 且仍有 pending 子项目）**：列出依赖已满足的下一个子项目，询问「roadmap `<project>` 还有 N 个子项目待做，下一个是 <子项目>，现在开始它的需求设计吗？」——用户同意后走 requirement-analysis（其 spec 已存在时直接 writing-plans）；不同意则保持 roadmap 现状，随时可续
 
 ## Red Flags
 
@@ -106,3 +108,4 @@ description: >-
 - "零发现且全 DELIVERED 仍停下征询" → 例外驱动：没有要决策的事就静默进入合并，总结带一行计数
 - "改动不大，审查跳过吧" → 收尾审查是强制步骤，规模只影响维度数
 - "自己写的代码自己看一遍就行" → 审查必须由独立子代理承担
+- "子项目交付了，roadmap 回头再更新" → 交付即回写 delivered 并提示续接，否则剩余子项目无声搁浅
