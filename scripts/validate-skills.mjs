@@ -130,15 +130,25 @@ function resolvePython() {
   const venvPython = path.join(venvDir, process.platform === "win32" ? "Scripts/python.exe" : "bin/python");
 
   if (!existsSync(venvPython)) {
-    // 并行运行防踩踏：先在唯一临时目录建好 venv，再 rename 到共享路径；
-    // rename 失败说明另一进程已就位，用它的即可
+    // 并行运行防踩踏：先在唯一临时目录建好 venv，再 rename 到共享路径。
+    // rename 失败且 venvPython 已存在 = 另一进程已就位，用它的；
+    // rename 失败且 venvPython 仍缺失 = 共享路径残留半成品，清掉后重试一次。
+    // 不先 rmSync 再 rename——那会把并发进程刚建好的 venv 误删掉。
     const staging = mkdtempSync(path.join(os.tmpdir(), "spec-dev-skill-venv-"));
     run(directPython, ["-m", "venv", staging], "create skill validation venv");
     try {
-      rmSync(venvDir, { recursive: true, force: true });
       renameSync(staging, venvDir);
     } catch {
-      rmSync(staging, { recursive: true, force: true });
+      if (!existsSync(venvPython)) {
+        rmSync(venvDir, { recursive: true, force: true });
+        try {
+          renameSync(staging, venvDir);
+        } catch {
+          rmSync(staging, { recursive: true, force: true });
+        }
+      } else {
+        rmSync(staging, { recursive: true, force: true });
+      }
     }
   }
 

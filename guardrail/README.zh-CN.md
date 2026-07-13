@@ -7,7 +7,7 @@
 ## 一键安装到目标仓库
 
 ```bash
-node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
+node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci] [--no-migrate]
 ```
 
 默认装进当前 git 仓库，幂等可重复运行。
@@ -63,5 +63,5 @@ guardrail/
 
 ## 已知边界
 
-- 追加进已有自定义 hooks 目录（如 husky）的 pre-push 守卫行依赖 stdin 未被前面的脚本消费；模板版 hook 无此问题（先捕获 stdin 再转发）。
+- 注入进已有自定义 hooks 目录（如 husky）的 pre-push 守卫段会先捕获 stdin 喂给守卫，再经 `exec <<heredoc` 还原给宿主 hook——宿主脚本仍能读到 refs；极老的不支持 heredoc-`exec` 的 sh 需手工调整。模板版 hook 无此顾虑（先捕获 stdin 再转发）。
 - pre-push 对"新分支首推且解析不出 origin 默认分支"的 ref 放行（fail-open），由 CI 兜底。

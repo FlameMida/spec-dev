@@ -15,8 +15,15 @@ try {
     execFileSync("git", ["ls-files", ...patterns], { cwd: root, encoding: "utf8" })
       .split("\n")
       .filter(Boolean);
-  specs = lsSpecs([".spec-dev/**/spec/*-design.md", "docs/**/spec/*-design.md", ".specs/**/*.md"]);
-  legacySpecs = lsSpecs(["docs/**/spec/*-design.md"]);
+  // 与 check-spec-drift.mjs loadActiveSpecs 的五条 glob 逐字对齐——注入侧与拦截侧对 spec 的认定必须一致
+  specs = lsSpecs([
+    ".spec-dev/**/spec/*-design.md",
+    ".spec-dev/**/*-design.md",
+    "docs/**/spec/*-design.md",
+    "docs/**/*-design.md",
+    ".specs/**/*.md",
+  ]);
+  legacySpecs = lsSpecs(["docs/**/spec/*-design.md", "docs/**/*-design.md"]);
 } catch {
   // 非 git 环境静默退出，不污染会话
   process.exit(0);

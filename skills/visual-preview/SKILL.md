@@ -36,7 +36,7 @@ description: >-
 bash <skill-base-directory>/scripts/start-server.sh --project-dir /path/to/project --open
 ```
 
-返回 JSON 含 `port`、`url`、`screen_dir`、`state_dir`——保存后两者。会话文件落在 `<project>/.spec-dev/visual/`；提醒用户将 `.spec-dev/` 加入 `.gitignore`（如尚未加入）。
+返回 JSON 含 `port`、`url`、`screen_dir`、`state_dir`——保存后两者。会话文件落在 `<project>/.spec-dev/visual/`；提醒用户将 `.spec-dev/visual/` 加入 `.gitignore`（如尚未加入）。**不要忽略整个 `.spec-dev/`**——spec/plan/roadmap 等产物需要提交入库，漂移守卫也依赖已提交的 spec。
 
 **URL 含会话密钥（`?key=…`）**：始终把 `url` 字段的**完整 URL** 给用户，不得裁掉 query string——密钥同时守卫 HTTP 与 WebSocket 访问。
 

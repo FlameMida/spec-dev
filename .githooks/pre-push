@@ -41,8 +41,16 @@ if [ -n "$remote_sha" ] && [ -n "$local_sha" ] && [ "$remote_sha" != "$local_sha
 fi
 
 if [ -z "$(git tag -l "$tag")" ]; then
-  echo "为版本 $version 自动创建 tag $tag..."
-  git tag -a "$tag" -m "release $tag"
+  # 与 release.mjs --auto 的 main-only 护栏对称：仅在 main 分支自动补发布 tag，
+  # 避免在 feature 分支把发布 tag 钉在错误提交上。非 main 分支给提示、放行推送。
+  branch="$(git rev-parse --abbrev-ref HEAD)"
+  if [ "$branch" != "main" ]; then
+    echo "版本 ${version} 尚无 tag ${tag}，但当前分支为 ${branch}（非 main）——不自动打 tag。" >&2
+    echo "发布请在 main 分支进行（node scripts/release.mjs <patch|minor|major> 或经自动发版）。" >&2
+  else
+    echo "为版本 ${version} 自动创建 tag ${tag}..."
+    git tag -a "$tag" -m "release $tag"
+  fi
 fi
 
 exit 0

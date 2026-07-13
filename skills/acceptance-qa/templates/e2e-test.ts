@@ -121,11 +121,19 @@ test.describe('{{登录功能}}', () => {
     await expect(emailInput).toHaveAttribute('type', 'email');
     await expect(passwordInput).toHaveAttribute('type', 'password');
 
-    // 提交按钮可通过键盘触发
-    await page.keyboard.press('Tab'); // 聚焦到第一个输入
-    await page.keyboard.press('Tab'); // 聚焦到密码输入
-    await page.keyboard.press('Tab'); // 聚焦到提交按钮
+    // 提交按钮可通过键盘触发 —— 填入有效凭据后走纯键盘路径提交，
+    // 断言真的登录成功（键盘可达性坏了这条会失败，而不是无断言空跑）
+    await emailInput.fill(TEST_USER.email);
+    await passwordInput.fill(TEST_USER.password);
+    await emailInput.focus();
+    await page.keyboard.press('Tab'); // 焦点移到密码输入
+    await expect(passwordInput).toBeFocused();
+    await page.keyboard.press('Tab'); // 焦点移到提交按钮
+    await expect(page.getByTestId('{{submit-button}}')).toBeFocused();
     await page.keyboard.press('Enter'); // 通过键盘提交
+
+    // Assert — 键盘提交与鼠标提交结果一致
+    await expect(page).toHaveURL('{{/dashboard}}');
   });
 });
 

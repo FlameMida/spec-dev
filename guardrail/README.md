@@ -7,7 +7,7 @@ Stops documentation drift caused by "a successor skips the spec-dev workflow and
 ## One-command install into a target repo
 
 ```bash
-node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
+node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci] [--no-migrate]
 ```
 
 Installs into the current git repository by default; idempotent and safe to re-run.
@@ -63,5 +63,5 @@ guardrail/
 
 ## Known limitations
 
-- The pre-push guard line appended into an existing custom hooks directory (e.g. husky) relies on stdin not being consumed by earlier scripts; the template hook has no such issue (captures stdin first, then forwards).
+- The guard block injected into an existing custom hooks directory (e.g. husky) captures stdin first, feeds it to the guard, then restores it to the host hook via `exec <<heredoc` — the host script still reads its refs; very old `sh` without heredoc-`exec` support needs manual adjustment. The template hook has no such concern (captures stdin first, then forwards).
 - pre-push lets refs pass (fail-open) for "first push of a new branch where the origin default branch can't be resolved" — CI backstops those.

@@ -13,13 +13,14 @@ import { fileURLToPath } from "node:url";
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const skillsDir = path.join(repoRoot, "skills");
 
+// 必需键按行首锚定匹配（含预期缩进层级），避免 retry_policy: 或注释中的同名串造成假阳性
 const REQUIRED_KEYS = [
-  "interface:",
-  "display_name:",
-  "short_description:",
-  "default_prompt:",
-  "policy:",
-  "allow_implicit_invocation:",
+  { label: "interface", re: /^interface:/m },
+  { label: "interface.display_name", re: /^\s+display_name:/m },
+  { label: "interface.short_description", re: /^\s+short_description:/m },
+  { label: "interface.default_prompt", re: /^\s+default_prompt:/m },
+  { label: "policy", re: /^policy:/m },
+  { label: "policy.allow_implicit_invocation", re: /^\s+allow_implicit_invocation:/m },
 ];
 
 const problems = [];
@@ -38,8 +39,8 @@ for (const entry of readdirSync(skillsDir)) {
   }
   const content = readFileSync(yamlPath, "utf8");
   for (const key of REQUIRED_KEYS) {
-    if (!content.includes(key)) {
-      problems.push(`skills/${entry}/agents/openai.yaml: missing required key ${key.replace(/:$/, "")} / 缺少必需键 ${key.replace(/:$/, "")}`);
+    if (!key.re.test(content)) {
+      problems.push(`skills/${entry}/agents/openai.yaml: missing required key ${key.label} / 缺少必需键 ${key.label}`);
     }
   }
 }

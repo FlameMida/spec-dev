@@ -202,6 +202,7 @@ function readPluginVersion() {
   const root = path.join(__dirname, '../../..');
   const manifests = [
     path.join(root, 'package.json'),
+    path.join(root, '.claude-plugin/plugin.json'),
     path.join(root, '.codex-plugin/plugin.json')
   ];
 
@@ -210,7 +211,8 @@ function readPluginVersion() {
       const data = JSON.parse(fs.readFileSync(manifest, 'utf-8'));
       if (data.version) return String(data.version);
     } catch (e) {
-      // Packaged Codex plugins omit package.json; try the next manifest.
+      // Packaged plugins may omit any single manifest (Codex packages drop
+      // package.json, Claude packages may drop the Codex manifest); try the next.
     }
   }
 
@@ -402,7 +404,10 @@ function isAllowedWebSocketOrigin(req) {
   if (!origin) return true;
   const host = req.headers.host;
   if (!host) return false;
-  return origin === 'http://' + host;
+  // Behind a TLS-terminating proxy (https tunnel / cloud-IDE port forwarding)
+  // the page is https, so the browser is forced onto wss and sends an
+  // https-scheme Origin. Same-host check is what matters; accept both schemes.
+  return origin === 'http://' + host || origin === 'https://' + host;
 }
 
 // ========== HTTP Request Handler ==========
@@ -428,7 +433,14 @@ function handleRequest(req, res) {
     res.end(bootstrapPage(keyFromQuery));
   } else if (req.method === 'GET' && pathname === '/') {
     const screenFile = getNewestScreen();
-    let html = screenFile ? renderScreen(screenFile) : waitingPage();
+    let html;
+    try {
+      html = screenFile ? renderScreen(screenFile) : waitingPage();
+    } catch (e) {
+      // Screen file vanished between listing and read (TOCTOU) — fall back
+      // to the waiting page instead of crashing the whole server.
+      html = waitingPage();
+    }
 
     if (html.includes('</body>')) {
       html = html.replace('</body>', helperInjection + '\n</body>');
@@ -452,7 +464,15 @@ function handleRequest(req, res) {
       res.end('Not found');
       return;
     }
-    let html = renderScreen(filePath);
+    let html;
+    try {
+      html = renderScreen(filePath);
+    } catch (e) {
+      // File vanished between the check and the read (TOCTOU) — 404, not a crash.
+      res.writeHead(404, securityHeaders());
+      res.end('Not found');
+      return;
+    }
     if (html.includes('</body>')) {
       html = html.replace('</body>', helperInjection + '\n</body>');
     } else {
@@ -470,11 +490,19 @@ function handleRequest(req, res) {
       return;
     }
     const ext = path.extname(filePath).toLowerCase();
+    let body;
+    try {
+      body = fs.readFileSync(filePath); // read before writeHead so a TOCTOU miss can still 404
+    } catch (e) {
+      res.writeHead(404, securityHeaders());
+      res.end('Not found');
+      return;
+    }
     res.writeHead(200, securityHeaders({
       'Content-Type': MIME_TYPES[ext] || 'application/octet-stream',
       'Cache-Control': 'private, max-age=86400' // large static asset; safe to cache
     }));
-    res.end(fs.readFileSync(filePath));
+    res.end(body);
   } else if (req.method === 'GET' && pathname.startsWith('/files/')) {
     const fileName = path.basename(pathname.slice(7));
     const filePath = path.join(CONTENT_DIR, fileName);
@@ -487,8 +515,16 @@ function handleRequest(req, res) {
     }
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+    let body;
+    try {
+      body = fs.readFileSync(filePath); // read before writeHead so a TOCTOU miss can still 404
+    } catch (e) {
+      res.writeHead(404, securityHeaders());
+      res.end('Not found');
+      return;
+    }
     res.writeHead(200, securityHeaders({ 'Content-Type': contentType }));
-    res.end(fs.readFileSync(filePath));
+    res.end(body);
   } else {
     res.writeHead(404, securityHeaders());
     res.end('Not found');
@@ -646,7 +682,19 @@ function startServer() {
     fs.readdirSync(CONTENT_DIR).filter(f => !f.startsWith('.') && f.endsWith('.html'))
   );
 
-  const server = http.createServer(handleRequest);
+  // Belt over the per-route guards: an unexpected sync throw in the handler
+  // must fail the single request, never the whole preview server.
+  const server = http.createServer((req, res) => {
+    try {
+      handleRequest(req, res);
+    } catch (e) {
+      console.error('Request handler error:', e.message);
+      try {
+        if (!res.headersSent) res.writeHead(500, securityHeaders());
+        res.end('Internal error');
+      } catch (e2) { /* socket already gone */ }
+    }
+  });
   server.on('upgrade', handleUpgrade);
 
   const watcher = fs.watch(CONTENT_DIR, (eventType, filename) => {

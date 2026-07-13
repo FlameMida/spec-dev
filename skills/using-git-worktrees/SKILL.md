@@ -67,13 +67,13 @@ git rev-parse --show-superproject-working-tree 2>/dev/null
 
 #### 安全校验（仅项目内目录）
 
-**创建前必须确认目录被 git 忽略**：
+**创建前必须确认选定的目录被 git 忽略**——校验的目录必须与将要使用的目录同名，不要用"任一候选被忽略"代替：
 
 ```bash
-git check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/dev/null
+git check-ignore -q "$LOCATION"   # $LOCATION 即上一步选定的 .worktrees 或 worktrees
 ```
 
-**未被忽略** → 先加入 `.gitignore` 并提交，再继续。否则 worktree 内容会被跟踪、污染 git status。
+**未被忽略** → 先把该目录加入 `.gitignore` 并提交，再继续。否则 worktree 内容会被跟踪、污染 git status。
 
 #### 创建
 

@@ -103,7 +103,7 @@ The script looks for the Codex built-in `skill-creator` first, and also supports
 `skills/*/evals/` holds two kinds of files with different roles:
 
 - `evals.json` — **design-intent documents**: they record the expected key behaviors of each skill (HARD-GATE refusals, handoff gates, degradation paths, etc.) for human review and a future evaluation harness. There is no runner in the repo, and most cases carry conversational preconditions with prose assertions — they are **not** an automated regression line; treat them as a checklist to walk through manually when changing skill behavior
-- `trigger-evals.json` — **cold-startable, decidable trigger-surface cases** (should-trigger / should-not-trigger single-shot prompts + near-miss negatives): currently covering the three skills with the trickiest trigger boundaries — acceptance-qa, requirement-analysis, exploring; plug into any evaluation harness and run the verdicts directly
+- `trigger-evals.json` — **cold-startable, decidable trigger-surface cases** (should-trigger / should-not-trigger single-shot prompts + near-miss negatives): currently covering the four skills with the trickiest trigger boundaries — acceptance-qa, requirement-analysis, exploring, quick-fix; plug into any evaluation harness and run the verdicts directly
 
 ### Pre-commit hooks
 

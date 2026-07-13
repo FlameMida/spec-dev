@@ -47,7 +47,8 @@ function main() {
 
   const plugin = JSON.parse(readFileSync(pluginJsonPath, "utf8"));
   const current = plugin.version;
-  const bump = autoMode ? inferBumpSinceLastTag() : bumpArg;
+  const lastTag = git(["describe", "--tags", "--abbrev=0"], true).trim();
+  const bump = autoMode ? inferBumpSinceLastTag(lastTag) : bumpArg;
   const next = resolveNextVersion(current, bump);
   const tag = `v${next}`;
 
@@ -65,7 +66,6 @@ function main() {
     process.exit(1);
   }
 
-  const lastTag = git(["describe", "--tags", "--abbrev=0"], true).trim();
   const range = lastTag ? `${lastTag}..HEAD` : "HEAD";
   const section = buildChangelogSection(next, range);
 
@@ -161,15 +161,21 @@ function writeVersionField(filePath, keyPath, current, next) {
   writeFileSync(filePath, JSON.stringify(data, null, 2) + "\n");
 }
 
-function inferBumpSinceLastTag() {
-  const last = git(["describe", "--tags", "--abbrev=0"], true).trim();
-  const subjects = git(["log", last ? `${last}..HEAD` : "HEAD", "--pretty=%s", "--no-merges"], true)
+function inferBumpSinceLastTag(last) {
+  const range = last ? `${last}..HEAD` : "HEAD";
+  // subject 判 feat/feat!；BREAKING CHANGE 惯例写在 body/footer，故整条消息（%B）单独取一份判 major
+  const subjects = git(["log", range, "--pretty=%s", "--no-merges"], true)
     .split("\n")
     .map((s) => s.trim())
     .filter(Boolean);
+  const bodies = git(["log", range, "--pretty=%B%x1e", "--no-merges"], true)
+    .split("\x1e")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (bodies.some((b) => /(^|\n)BREAKING[ -]CHANGE:/.test(b))) return "major";
   let level = "patch";
   for (const s of subjects) {
-    if (/^\w+(\([^)]*\))?!:/.test(s) || /BREAKING CHANGE/.test(s)) return "major";
+    if (/^\w+(\([^)]*\))?!:/.test(s)) return "major";
     if (/^feat(\([^)]*\))?:/.test(s)) level = "minor";
   }
   return level;

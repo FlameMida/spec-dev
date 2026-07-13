@@ -216,11 +216,33 @@ function installGitHooks(repo) {
   return { hooksDir: hooksPath.replace(/\/+$/, ""), own, configured };
 }
 
+// 注入进既有 hook 的守卫段：与模板 hook 同等健壮——node 缺失或守卫脚本缺失时静默跳过，
+// 不让守卫自身故障阻断宿主 hook。pre-push 先整段捕获 stdin 喂给守卫，再用 exec heredoc
+// 还原给宿主 hook 的后续内容，避免守卫吃掉 refs 导致宿主脚本读到空 stdin。
 function guardLine(name) {
-  const guard = '"$(git rev-parse --show-toplevel)/scripts/spec-dev/check-spec-drift.mjs"';
-  return name === "pre-push"
-    ? `node ${guard} --push || exit 1`
-    : `node ${guard} --staged || exit 1`;
+  const resolve = 'spec_dev_guard="$(git rev-parse --show-toplevel)/scripts/spec-dev/check-spec-drift.mjs"';
+  if (name === "pre-push") {
+    return [
+      'spec_dev_refs="$(cat)"',
+      "if command -v node >/dev/null 2>&1; then",
+      `  ${resolve}`,
+      '  if [ -f "$spec_dev_guard" ]; then',
+      "    printf '%s\\n' \"$spec_dev_refs\" | node \"$spec_dev_guard\" --push || exit 1",
+      "  fi",
+      "fi",
+      "exec <<SPEC_DEV_REFS_EOF",
+      "$spec_dev_refs",
+      "SPEC_DEV_REFS_EOF",
+    ].join("\n");
+  }
+  return [
+    "if command -v node >/dev/null 2>&1; then",
+    `  ${resolve}`,
+    '  if [ -f "$spec_dev_guard" ]; then',
+    '    node "$spec_dev_guard" --staged || exit 1',
+    "  fi",
+    "fi",
+  ].join("\n");
 }
 
 // package.json prepare —— 仅当 .githooks 由本安装器启用时注入，

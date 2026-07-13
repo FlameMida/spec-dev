@@ -248,6 +248,11 @@ function loadActiveSpecs(repoRoot) {
     const sd = meta.spec_dev;
     if (sd.status !== "active") continue;
     const covers = Array.isArray(sd.covers) ? sd.covers.filter((c) => typeof c === "string" && c.trim()) : [];
+    if (covers.length === 0 && sd.coversSuspect) {
+      warn(
+        `spec ${relPath}: covers list detected but could not be parsed (indentation/format); this spec is NOT guarded until its frontmatter matches the template. / covers 疑似存在但未能解析（缩进或格式异常），该 spec 暂不受守卫保护——请对照模板修正 frontmatter。`,
+      );
+    }
     specs.push({
       relPath,
       feature: sd.feature || path.basename(relPath),
@@ -258,8 +263,10 @@ function loadActiveSpecs(repoRoot) {
   return specs;
 }
 
-// 极简 YAML frontmatter 解析：只认本模板产出的形状（spec_dev: 下的 version/feature/status/covers/sync_commit）。
-// 不引第三方 YAML 库，保持零依赖。
+// 极简 YAML frontmatter 解析：面向本模板产出的形状（spec_dev: 下的 version/feature/status/covers/sync_commit），
+// 并容忍常见合法变体——covers 行内注释、内联数组、≥2 空格缩进的 dash 条目（模板发行版的 covers 行自带注释，
+// 严格匹配会静默失守）。不引第三方 YAML 库，保持零依赖。
+// covers 疑似存在却未解析成功时置 coversSuspect，由 loadActiveSpecs 打告警——解析失败绝不允许静默。
 function parseFrontmatter(text) {
   if (!text.startsWith("---")) return null;
   const end = text.indexOf("\n---", 3);
@@ -277,15 +284,24 @@ function parseFrontmatter(text) {
       root.spec_dev = sd;
       continue;
     }
-    if (inSpecDev && /^\s{2}covers:\s*(\[\s*\])?\s*$/.test(line)) {
-      sd.covers = [];
-      inCovers = true;
+    if (inSpecDev && /^\s{2}covers:/.test(line)) {
+      const rest = stripComment(line.replace(/^\s{2}covers:/, "")).trim();
+      inCovers = false;
+      if (rest === "") {
+        sd.covers = [];
+        inCovers = true; // 块列表条目在后续行
+      } else if (rest.startsWith("[")) {
+        sd.covers = parseInlineList(rest); // covers: ["a", "b"] 或 covers: []
+      } else {
+        sd.covers = [unquote(rest)]; // 单标量按单元素列表接受——宁多保护，勿静默失守
+      }
       continue;
     }
     if (inCovers) {
-      const m = line.match(/^\s{4,}-\s*["']?([^"'#]+?)["']?\s*(#.*)?$/);
+      const m = line.match(/^\s{2,}-\s*(.*)$/);
       if (m) {
-        sd.covers.push(m[1].trim());
+        const item = unquote(stripComment(m[1]).trim());
+        if (item) sd.covers.push(item);
         continue;
       }
       inCovers = false; // covers 列表结束
@@ -295,15 +311,31 @@ function parseFrontmatter(text) {
       if (m) {
         const key = m[1];
         let val = stripComment(m[2]).trim();
-        if (key === "covers") continue;
+        if (key === "covers") continue; // 已由上方 covers 分支处理
         if (val === "null" || val === "~" || val === "") sd[key] = null;
-        else sd[key] = val.replace(/^["']|["']$/g, "");
+        else sd[key] = unquote(val);
         continue;
       }
+      // 游离的 dash 行且 covers 尚未解析成功：covers 列表疑似存在但缩进/格式超出解析能力
+      if (/^\s*-\s/.test(line) && !Array.isArray(sd.covers)) sd.coversSuspect = true;
       if (/^\S/.test(line)) inSpecDev = false; // 回到顶层键
     }
   }
   return root;
+}
+
+function unquote(s) {
+  return s.replace(/^["']|["']$/g, "");
+}
+
+// 内联数组解析：covers: ["src/a/**", 'src/b/**']——逗号分隔后逐项去引号，容错为主
+function parseInlineList(s) {
+  const inner = s.replace(/^\[/, "").replace(/\]\s*$/, "").trim();
+  if (!inner) return [];
+  return inner
+    .split(",")
+    .map((x) => unquote(x.trim()))
+    .filter(Boolean);
 }
 
 function stripComment(s) {
@@ -332,10 +364,13 @@ function globToRegExp(glob) {
     const c = glob[i];
     if (c === "*") {
       if (glob[i + 1] === "*") {
-        // ** 跨目录；吞掉可能紧随的 /
-        re += ".*";
-        i++;
-        if (glob[i + 1] === "/") i++;
+        i++; // 吞掉第二个 *
+        if (glob[i + 1] === "/") {
+          i++; // 吞掉紧随的 /
+          re += "(?:.*/)?"; // **/ 跨零或多级目录，保持路径段边界（a/**/b 不得匹配 a/xb）
+        } else {
+          re += ".*"; // 尾部 ** 匹配任意后缀
+        }
       } else {
         re += "[^/]*";
       }
