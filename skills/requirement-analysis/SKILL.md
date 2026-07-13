@@ -30,7 +30,7 @@ description: >-
 3. **澄清问题** — 一次一个问题，不限轮数；视觉问题 JIT 提议 visual-preview
 4. **对抗验证 + 提出 2-3 方案** — sequential-thinking 校验信息后给方案与推荐，用户选定
 5. **展示完整设计** — 整篇展示不分章节，获得用户批准
-6. **写 spec 并提交** — 落盘 `docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md` 并 git commit
+6. **写 spec 并提交** — 落盘 `.spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design.md` 并 git commit
 7. **Spec self-review + 对抗验证** — inline 自检 + 审查子代理；有修改则请用户再 review
 8. **交接 writing-plans** — 唯一终态；经用户确认后调用 writing-plans 生成实施计划
 
@@ -104,7 +104,7 @@ Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
 **目标**：理解意图，给流程定参。
 
 - 理解核心功能、业务实体、约束与成功标准；描述模糊或多模块时用 `mcp__sequential-thinking__sequentialthinking` 分解
-- **意图承诺检查**：用户仍在"要不要做"的犹豫期（探索性措辞、无交付承诺）→ 建议切换 exploring skill，不硬拉八阶段；存在相关的 `docs/explorations/` 探索笔记时作为本阶段输入，已探索过的部分阶段 2 不重做
+- **意图承诺检查**：用户仍在"要不要做"的犹豫期（探索性措辞、无交付承诺）→ 建议切换 exploring skill，不硬拉八阶段；存在相关的 `.spec-dev/explorations/` 探索笔记时作为本阶段输入，已探索过的部分阶段 2 不重做
 - **小修检查**：需求其实是"已决定要修、无设计空间"的小 bug 修复/小调整（单点 bug、单常量、单文案，无方案取舍、不跨模块、不引入新依赖）→ 建议切换 quick-fix skill，不硬拉八阶段；这是意图承诺检查的对偶——那边挡"还没决定要不要做"，这边挡"决定了但不值得走完整设计"。建议式（不自动切换），由用户裁决
 - **范围分解检查**：需求的意图必须能用一句话说清——说不清就该拆。出现过大信号（范围读起来像不相关功能清单、审查一份 spec 要一下午、两人同时做会撞车、一半任务可独立交付）或描述了多个独立子系统（如"做一个带聊天、文件存储、计费、分析的平台"）时立即指出，先帮用户分解为子项目（各自独立的 spec → plan → 实施周期），再对第一个子项目走本流程——不要在一个需要分解的项目上浪费澄清轮次
 - 判定档位并声明（见"执行档位"）
@@ -179,9 +179,9 @@ Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
 
 ## 阶段 6: 写 spec 并提交
 
-- 为本需求创建特性目录 `docs/YYYY-MM-DD-<feature>/`（feature 取需求主题的短语义名，跟随项目语言；同日同名冲突时追加序号 `-2`、`-3`），将批准的设计写入其 `spec/<feature>-design.md`（用户对 spec 位置的偏好优先于此默认值）
+- 为本需求创建特性目录 `.spec-dev/YYYY-MM-DD-<feature>/`（所有 spec-dev 产物统一收纳在项目根目录 `.spec-dev/` 下；feature 取需求主题的短语义名，跟随项目语言；同日同名冲突时追加序号 `-2`、`-3`），将批准的设计写入其 `spec/<feature>-design.md`（用户对 spec 位置的偏好优先于此默认值）
 - spec 与后续 writing-plans 的计划（同目录 `plan/<feature>-plan.md`）共用这一个特性目录——一个需求的全部产物收纳在一处
-- **决策分流（ADR）**：检查"已确认的关键决策"中是否有同时满足三判据的决策——**难以逆转**（事后改主意成本高）、**缺上下文会费解**（未来读者会问"当初为什么这么做"）、**真实取舍**（存在真正的备选且因具体理由选定其一）——满足者每条沉淀为仓库级 `docs/adr/NNNN-<slug>.md`（全项目共用一个目录、统一编号：扫描现有最高编号递增，目录不存在时随首个 ADR 创建；正文 1-3 句写清背景、决定与理由即可，值得记住的被否方案附一行），spec 决策节保留一行摘要并链接过去；三判据缺一即不建 ADR，留在 spec 决策节就够——ADR 泛滥和没有 ADR 一样没用
+- **决策分流（ADR）**：检查"已确认的关键决策"中是否有同时满足三判据的决策——**难以逆转**（事后改主意成本高）、**缺上下文会费解**（未来读者会问"当初为什么这么做"）、**真实取舍**（存在真正的备选且因具体理由选定其一）——满足者每条沉淀为仓库级 `.spec-dev/adr/NNNN-<slug>.md`（全项目共用一个目录、统一编号：扫描现有最高编号递增，目录不存在时随首个 ADR 创建；正文 1-3 句写清背景、决定与理由即可，值得记住的被否方案附一行），spec 决策节保留一行摘要并链接过去；三判据缺一即不建 ADR，留在 spec 决策节就够——ADR 泛滥和没有 ADR 一样没用
 - 结构参考 [spec-template.md](assets/spec-template.md)，按需增删节；**行为需求必须用 Requirement + Scenario 结构表达**（`### Requirement:` 一条一个 SHALL 且可观察，`#### Scenario:` 用 GIVEN/WHEN/THEN——它们是后续 TDD 测试与验收的直接锚点）；修改既有功能时行为部分改用差量三节（ADDED/MODIFIED/REMOVED Requirements，见模板）
 - **漂移守卫锚点（必填）**：落盘时保留模板顶部的 `spec_dev` frontmatter，填写 `feature` 与 `covers`（本特性拥有的代码路径 glob；纯文档特性留空数组 `[]`）——此阶段 `status` 保持 `draft`。该 frontmatter 是 pre-commit / CI 漂移守卫的锚点，缺失或永停 draft 意味着该特性代码不受"改了代码却没同步 spec"的拦截保护
 - git commit 该 spec 文件与本次新增的 ADR 文件（仅这些文件；非 git 仓库则跳过并向用户说明）

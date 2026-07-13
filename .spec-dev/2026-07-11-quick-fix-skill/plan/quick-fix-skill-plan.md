@@ -6,7 +6,7 @@
 
 **目标**：为 spec-dev 插件新增 quick-fix skill（轻量 bug 修复工作流），并接入 exploring/requirement-analysis 双向路由与全部注册面。
 
-**Spec**：`docs/2026-07-11-quick-fix-skill/spec/quick-fix-skill-design.md`
+**Spec**：`.spec-dev/2026-07-11-quick-fix-skill/spec/quick-fix-skill-design.md`
 
 **架构**：方案 A——单一 SKILL.md 纯文本指令承载 6 步流程（与 exploring 同构，无 references/、无 scripts/）+ Codex 接口文件 openai.yaml + evals 双件；再修改 requirement-analysis/exploring 两 skill 的分界措辞及各自 openai.yaml，同步三处清单与 README 双版。
 
@@ -585,7 +585,7 @@ git commit -m "docs(T6): README 双版登记 quick-fix skill"
 | README 双版四处注册面齐全且镜像一致 | — | 验收任务 (A) | README.md / README.zh-CN.md | Skill Pipeline、清单行、Using 段、Directory Layout 四处双版对齐 | 对照清单 |
 | 三方 description 互指闭环（exploring/quick-fix/requirement-analysis 各自点名相邻 skill 划界） | — | 验收任务 (A) | 三 skill 的 frontmatter description | 三方边界措辞无缺口、无矛盾 | 引用摘录 |
 
-- [ ] 验收执行：由 executing-plans 收尾触发 acceptance-qa，输入 = 本 spec 路径 + 本次变更文件清单 + 证据目录 `docs/2026-07-11-quick-fix-skill/acceptance/`。
+- [ ] 验收执行：由 executing-plans 收尾触发 acceptance-qa，输入 = 本 spec 路径 + 本次变更文件清单 + 证据目录 `.spec-dev/2026-07-11-quick-fix-skill/acceptance/`。
 
 ---
 

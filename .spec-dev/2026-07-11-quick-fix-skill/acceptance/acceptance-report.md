@@ -3,7 +3,7 @@
 **特性**：quick-fix skill（文档型交付）
 **日期**：2026-07-11
 **触发方**：executing-plans 收尾（T7）
-**spec**：docs/2026-07-11-quick-fix-skill/spec/quick-fix-skill-design.md
+**spec**：.spec-dev/2026-07-11-quick-fix-skill/spec/quick-fix-skill-design.md
 
 ## 验收矩阵结果
 

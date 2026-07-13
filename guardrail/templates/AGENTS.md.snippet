@@ -6,7 +6,7 @@ This repository follows the [spec-dev](https://github.com/FlameMida/spec-dev) wo
 
 ### Where artifacts live
 
-- **spec / plan**: `docs/YYYY-MM-DD-<feature>/` — `spec/<feature>-design.md` is the behavior contract and acceptance matrix; `plan/<feature>-plan.md` is the executable plan.
+- **spec / plan**: `.spec-dev/YYYY-MM-DD-<feature>/` — `spec/<feature>-design.md` is the behavior contract and acceptance matrix; `plan/<feature>-plan.md` is the executable plan. Legacy artifacts under `docs/` are auto-migrated here (`node scripts/spec-dev/migrate-to-spec-dev.mjs`).
 - The `spec_dev.covers` frontmatter at the top of each spec declares the code paths it covers.
 
 ### Obligations when changing code (plugin installed or not)
@@ -26,7 +26,7 @@ Drive work with the `requirement-analysis` (requirement→spec), `writing-plans`
 
 ### 产物位置
 
-- **spec / plan**：`docs/YYYY-MM-DD-<特性>/`，其中 `spec/<特性>-design.md` 是行为契约与验收矩阵，`plan/<特性>-plan.md` 是可执行计划。
+- **spec / plan**：`.spec-dev/YYYY-MM-DD-<特性>/`，其中 `spec/<特性>-design.md` 是行为契约与验收矩阵，`plan/<特性>-plan.md` 是可执行计划。`docs/` 历史位置的产物会被自动迁移到这里（`node scripts/spec-dev/migrate-to-spec-dev.mjs`）。
 - 每份 spec 顶部 frontmatter 的 `spec_dev.covers` 声明它覆盖的代码路径。
 
 ### 改代码的义务（无论是否安装插件）

@@ -6,7 +6,7 @@
 
 **目标**：插件全链路输出语言自适应（对话跟随用户语言、非中文默认英语、产物跟随对话语言）+ README 中英双版互跳。
 
-**Spec**：`docs/2026-07-10-bilingual-adaptation/spec/bilingual-adaptation-design.md`（含 ADR-0001）
+**Spec**：`.spec-dev/2026-07-10-bilingual-adaptation/spec/bilingual-adaptation-design.md`（含 ADR-0001）
 
 **架构**：单一「语言协议块」内联到 8 个 SKILL.md 驱动输出语言；配套清除确定性中文输出面——descriptions 中英拼接（英前中后）、agent 语言条款、产物模板双语指引、README/snippet/脚本文案双语化；evals 补英文触发样例。指令正文保持中文不翻译（ADR-0001）。
 

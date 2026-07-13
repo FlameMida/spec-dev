@@ -1,4 +1,4 @@
-# Spec 模板（`docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md`）
+# Spec 模板（`.spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design.md`）
 
 > **Language / 语言**: Fill in the conversation language — all narrative content (background, requirements, scenarios, decisions) follows the conversation language at creation; keep structural labels (Requirement / Scenario / GIVEN / WHEN / THEN, frontmatter keys) in English. / 以对话语言填写——叙述性内容（背景、需求、场景、决策）跟随创建时对话语言；结构标签（Requirement/Scenario/GIVEN/WHEN/THEN、frontmatter 键）保持英文。
 
@@ -45,7 +45,7 @@ spec_dev:
 ## 已确认的关键决策
 
 [阶段 3 澄清结论与阶段 4 方案选择：每条一行，含取舍理由。
-同时满足"难以逆转、缺上下文会费解、真实取舍"三判据的决策，额外沉淀为仓库级 `docs/adr/NNNN-<slug>.md`（全项目统一目录与编号），此处保留一行摘要并链接对应 ADR / One line per decision with rationale; decisions meeting the ADR bar also land in docs/adr/ with a link here]
+同时满足"难以逆转、缺上下文会费解、真实取舍"三判据的决策，额外沉淀为仓库级 `.spec-dev/adr/NNNN-<slug>.md`（全项目统一目录与编号），此处保留一行摘要并链接对应 ADR / One line per decision with rationale; decisions meeting the ADR bar also land in .spec-dev/adr/ with a link here]
 
 - [决策 1]：[选择] —— [理由]
 - [决策 2]：[选择] —— [理由]（详见 `../../adr/0007-<slug>.md`）

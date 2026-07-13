@@ -23,7 +23,7 @@
     },
     {
       "id": "aq-matrix-integration",
-      "prompt": "（executing-plans 收尾触发）按特性目录 docs/2026-07-09-export-report/ 的 spec 验收本次变更，变更面：导出模块 + 报表页，证据目录 docs/2026-07-09-export-report/acceptance/",
+      "prompt": "（executing-plans 收尾触发）按特性目录 .spec-dev/2026-07-09-export-report/ 的 spec 验收本次变更，变更面：导出模块 + 报表页，证据目录 .spec-dev/2026-07-09-export-report/acceptance/",
       "expected_output": "读 spec「测试与验收策略」矩阵并按变更面裁剪（未触及的矩阵行不执行，裁剪写入 coverage_note）；任务内 TDD 行核对测试存在并复跑；验收任务行按维度执行；报告与证据落盘指定 acceptance/ 目录并回传路径；报告含 Requirement 覆盖对照表逐行回填状态"
     },
     {

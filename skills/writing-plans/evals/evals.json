@@ -3,8 +3,8 @@
   "evals": [
     {
       "id": "wp-bite-sized-tdd",
-      "prompt": "基于已批准的 spec（docs/2026-07-03-export-report/spec/export-report-design.md，CLI 导出报告子命令）编写实施计划",
-      "expected_output": "计划保存至 docs/2026-07-03-export-report/plan/export-report-plan.md（与 spec 同一特性目录）；含头部（执行方式指向 executing-plans、目标、spec 路径、全局约束）；固定生成任务 0（建立隔离工作区：已隔离检测→worktree 建立→基线验证，含 git 降级命令）；先给文件结构映射；每任务含精确文件路径、接口消费/产出块、TDD 五步（失败测试代码→确认失败命令与预期输出→最小实现代码→确认通过→提交命令）；失败测试由 spec 的 Scenario 直译（GIVEN→arrange、WHEN→act、THEN→assert，测试名沿用 Scenario 名）；以最终任务（合并与清理）收尾；无任何 TBD/占位符"
+      "prompt": "基于已批准的 spec（.spec-dev/2026-07-03-export-report/spec/export-report-design.md，CLI 导出报告子命令）编写实施计划",
+      "expected_output": "计划保存至 .spec-dev/2026-07-03-export-report/plan/export-report-plan.md（与 spec 同一特性目录）；含头部（执行方式指向 executing-plans、目标、spec 路径、全局约束）；固定生成任务 0（建立隔离工作区：已隔离检测→worktree 建立→基线验证，含 git 降级命令）；先给文件结构映射；每任务含精确文件路径、接口消费/产出块、TDD 五步（失败测试代码→确认失败命令与预期输出→最小实现代码→确认通过→提交命令）；失败测试由 spec 的 Scenario 直译（GIVEN→arrange、WHEN→act、THEN→assert，测试名沿用 Scenario 名）；以最终任务（合并与清理）收尾；无任何 TBD/占位符"
     },
     {
       "id": "wp-self-review-catches-gap",
@@ -18,7 +18,7 @@
     },
     {
       "id": "wp-confirm-before-writing",
-      "prompt": "（隐式触发：用户消息只包含 docs/2026-07-02-notify/spec/notify-design.md 这个路径，没有其他说明）",
+      "prompt": "（隐式触发：用户消息只包含 .spec-dev/2026-07-02-notify/spec/notify-design.md 这个路径，没有其他说明）",
       "expected_output": "不默认开写——先确认「基于该 spec 开始编写实施计划？」，用户同意后才动笔；若本轮是显式指示（斜杠命令或明确说编写计划）或由 requirement-analysis 阶段 8 前置确认交接而来，则视为已同意、不重复问"
     },
     {

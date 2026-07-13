@@ -8,7 +8,7 @@
 
 ## 特性
 
-- **探索模式** — `exploring` 思考伙伴：想法未定型时的无承诺探索——只读不写码（HARD-GATE）、开支线而非审讯、ASCII 可视化、探索笔记提议制落盘 `docs/explorations/`；结晶后交接 requirement-analysis，executing-plans 卡壳时也可回探
+- **探索模式** — `exploring` 思考伙伴：想法未定型时的无承诺探索——只读不写码（HARD-GATE）、开支线而非审讯、ASCII 可视化、探索笔记提议制落盘 `.spec-dev/explorations/`；结晶后交接 requirement-analysis，executing-plans 卡壳时也可回探
 - **需求设计** — `requirement-analysis` 8 阶段设计工作流：需求分诊（light / standard / deep 三档）、内外部并行探索（不设子代理上限）、逐题澄清、sequential-thinking 对抗验证 + 2-3 方案对比、spec 落盘与双重 review（行为规范结构化：Requirement + Scenario）；HARD-GATE 保证设计获批前零实施动作
 - **可视化预览** — `visual-preview` 浏览器伴侣：设计对话中 JIT 提议，展示 mockup、线框、布局对比并回收点击选择
 - **实施计划** — `writing-plans` 把 spec 拆成零上下文可执行的 bite-sized 任务：精确文件路径、完整代码、TDD 五步内嵌、接口消费/产出契约、禁止占位符
@@ -23,9 +23,9 @@
 ## Skill 管线
 
 ```
-exploring（未定型想法 → 可选 docs/explorations/<topic>.md）
+exploring（未定型想法 → 可选 .spec-dev/explorations/<topic>.md）
         ↓ 结晶
-requirement-analysis（设计 → docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md）
+requirement-analysis（设计 → .spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design.md）
         ↕ JIT
   visual-preview
         ↓
@@ -42,6 +42,8 @@ quick-fix（已决定、无设计空间的小修复）  ── 旁路快车道
 ```
 
 三个入口按承诺状态与设计空间分工：**exploring**（还没决定要不要做）、**quick-fix**（已决定、无设计空间——小 bug 或小调整）、**requirement-analysis**（已决定、有设计空间——功能或变更）。quick-fix 复用 test-driven-development 与 acceptance-qa，一旦修复需要真正的设计就把控制权交还 requirement-analysis。
+
+所有产物（spec、plan、验收报告、探索笔记、ADR）统一收纳在项目根目录 `.spec-dev/` 下；历史项目 `docs/` 位置的产物默认自动迁移过去（守卫安装器自带 `migrate-to-spec-dev.mjs`，会话自检发现历史布局也会当场迁移），迁移前守卫仍识别旧位置兜底。
 
 每个 skill 也可独立使用：想法未定型可从 exploring 开始；已有 spec 可直接从 writing-plans 进入；已有计划可直接 executing-plans；acceptance-qa / using-git-worktrees / test-driven-development 可被任意工作流触发；quick-fix 处理已决定、无设计空间的小修复，不走完整设计流程。
 
@@ -125,7 +127,7 @@ git diff --cached --check
 /exploring 我在考虑要不要做实时协作，帮我想想
 ```
 
-思考伙伴姿态：只读代码、开支线对比方向、ASCII 图梳理，不写码、不建档、不强制结论（探索出"不值得做"也是有效出口）；结论有价值时提议落盘 `docs/explorations/<topic>.md`，想法结晶后交接 requirement-analysis（探索结论作为其阶段 1 输入）。
+思考伙伴姿态：只读代码、开支线对比方向、ASCII 图梳理，不写码、不建档、不强制结论（探索出"不值得做"也是有效出口）；结论有价值时提议落盘 `.spec-dev/explorations/<topic>.md`，想法结晶后交接 requirement-analysis（探索结论作为其阶段 1 输入）。
 
 ## requirement-analysis 使用方法
 
@@ -141,13 +143,13 @@ git diff --cached --check
 - **standard** — 默认档：3-5 个 code-explorer 按层/模块并行 + external-resource-explorer 外部研究 + 完整方案对比
 - **deep** — 跨层架构变更/新技术栈：multi-modal sweep 盲扫（模态数不设上限）+ 契约 JSON 校验合并
 
-spec 落盘至特性目录 `docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md` 并提交（后续计划落同目录 `plan/<feature>-plan.md`），经审查子代理对抗验证与用户 review 后交接 writing-plans。行为需求以 **Requirement + Scenario**（GIVEN/WHEN/THEN）结构表达，测试与验收策略以**验收矩阵**表达——Scenario 被 writing-plans 直译为 TDD 失败测试、矩阵被收尾审查与 acceptance-qa 用作验收锚点；修改既有功能时用 ADDED/MODIFIED/REMOVED 差量三节。
+spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design.md` 并提交（后续计划落同目录 `plan/<feature>-plan.md`），经审查子代理对抗验证与用户 review 后交接 writing-plans。行为需求以 **Requirement + Scenario**（GIVEN/WHEN/THEN）结构表达，测试与验收策略以**验收矩阵**表达——Scenario 被 writing-plans 直译为 TDD 失败测试、矩阵被收尾审查与 acceptance-qa 用作验收锚点；修改既有功能时用 ADDED/MODIFIED/REMOVED 差量三节。
 
 ## writing-plans / executing-plans 使用方法
 
 ```bash
-/writing-plans 基于 docs/2026-07-04-auth/spec/auth-design.md 编写实施计划
-/executing-plans 执行 docs/2026-07-04-auth/plan/auth-plan.md
+/writing-plans 基于 .spec-dev/2026-07-04-auth/spec/auth-design.md 编写实施计划
+/executing-plans 执行 .spec-dev/2026-07-04-auth/plan/auth-plan.md
 ```
 
 - **writing-plans**：假设执行者零上下文——每份计划固定以任务 0（建立隔离工作区，含已隔离检测与 git 降级命令）开头、以最终任务（合并与清理）收尾，spec 验收矩阵含「验收任务」行时在两者之间固定生成验收任务，worktree 生命周期在计划内闭合、脱离插件也能按序执行；头部随行偏差处理指引；每任务给精确文件路径、完整代码、TDD 五步（失败测试→确认失败→最小实现→确认通过→提交）、接口消费/产出块；写完跑三查（spec 覆盖/占位符/类型一致）再交接

@@ -14,7 +14,7 @@
     {
       "id": "ex-crystallize-handoff",
       "prompt": "（探索后）明白了，重复订单根因是 webhook 没有幂等键，就按幂等键方案做吧",
-      "expected_output": "想法已结晶且用户承诺交付——提议转正式设计并调用 requirement-analysis；探索结论（根因、选定方向、已排除的选项）作为阶段 1 输入，已探索过的代码事实阶段 2 不重做；可提议先落盘 docs/explorations/ 探索笔记（用户同意才写）"
+      "expected_output": "想法已结晶且用户承诺交付——提议转正式设计并调用 requirement-analysis；探索结论（根因、选定方向、已排除的选项）作为阶段 1 输入，已探索过的代码事实阶段 2 不重做；可提议先落盘 .spec-dev/explorations/ 探索笔记（用户同意才写）"
     },
     {
       "id": "ex-dead-end-is-fine",

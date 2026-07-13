@@ -8,7 +8,7 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 
 ## Features
 
-- **Exploration mode** — `exploring`, a thinking partner: no-commitment exploration while an idea is unsettled — read-only, no code (HARD-GATE), opens side threads instead of interrogating, ASCII visualization, opt-in exploration notes under `docs/explorations/`; hands off to requirement-analysis once the idea crystallizes, and executing-plans can drop back into it when stuck
+- **Exploration mode** — `exploring`, a thinking partner: no-commitment exploration while an idea is unsettled — read-only, no code (HARD-GATE), opens side threads instead of interrogating, ASCII visualization, opt-in exploration notes under `.spec-dev/explorations/`; hands off to requirement-analysis once the idea crystallizes, and executing-plans can drop back into it when stuck
 - **Requirement design** — `requirement-analysis`, an 8-phase design workflow: triage (light / standard / deep tiers), parallel internal+external exploration (no subagent cap), one-question-at-a-time clarification, sequential-thinking adversarial validation + 2-3 option comparison, spec writing with double review (structured behavior requirements: Requirement + Scenario); a HARD-GATE guarantees zero implementation before the design is approved
 - **Visual preview** — `visual-preview`, a browser companion: JIT-proposed during design conversations, renders mockups, wireframes and layout comparisons, and collects click-through choices
 - **Implementation plans** — `writing-plans` decomposes specs into bite-sized tasks executable with zero context: exact file paths, complete code, embedded 5-step TDD, consume/produce interface contracts, no placeholders allowed
@@ -23,9 +23,9 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 ## Skill Pipeline
 
 ```
-exploring (unsettled idea → optional docs/explorations/<topic>.md)
+exploring (unsettled idea → optional .spec-dev/explorations/<topic>.md)
         ↓ crystallizes
-requirement-analysis (design → docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md)
+requirement-analysis (design → .spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design.md)
         ↕ JIT
   visual-preview
         ↓
@@ -42,6 +42,8 @@ quick-fix (already-decided small fix, no design space)  ── bypass fast path
 ```
 
 The three entry points split by commitment and design space: **exploring** (undecided — should we even do this?), **quick-fix** (decided, no design space — a small bug or adjustment), **requirement-analysis** (decided, has design space — a feature or change). quick-fix reuses test-driven-development and acceptance-qa, and hands control back to requirement-analysis the moment a fix turns out to need real design.
+
+All artifacts (specs, plans, acceptance reports, exploration notes, ADRs) live under `.spec-dev/` at the project root; legacy artifacts under `docs/` are auto-migrated there by default (the guard installer ships `migrate-to-spec-dev.mjs`, and the session self-check migrates on sight of a legacy layout), while the drift guard keeps recognizing the old location until migration lands.
 
 Each skill also works standalone: start from exploring while the idea is unsettled; enter at writing-plans with an existing spec; go straight to executing-plans with an existing plan; acceptance-qa / using-git-worktrees / test-driven-development can be triggered from any workflow; quick-fix handles small already-decided fixes without the full design workflow.
 
@@ -125,7 +127,7 @@ The hook aborts the commit on validation failure; fix per the error and commit a
 /exploring I'm wondering whether to build real-time collaboration — help me think it through
 ```
 
-Thinking-partner posture: read-only code walks, side-by-side option threads, ASCII diagrams; no code, no files, no forced conclusions ("not worth building" is a valid outcome). When conclusions are worth keeping it offers to save `docs/explorations/<topic>.md`; once the idea crystallizes it hands off to requirement-analysis (the exploration notes feed its phase 1).
+Thinking-partner posture: read-only code walks, side-by-side option threads, ASCII diagrams; no code, no files, no forced conclusions ("not worth building" is a valid outcome). When conclusions are worth keeping it offers to save `.spec-dev/explorations/<topic>.md`; once the idea crystallizes it hands off to requirement-analysis (the exploration notes feed its phase 1).
 
 ## Using requirement-analysis
 
@@ -141,13 +143,13 @@ Phase 1 picks an execution tier and declares it to the user (overridable):
 - **standard** — the default: 3-5 code-explorers in parallel by layer/module + external-resource-explorer research + full option comparison
 - **deep** — cross-layer architecture changes / new tech stacks: multi-modal blind sweep (no cap on modality count) + contract JSON validation on merge
 
-The spec lands in the feature directory `docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md` and is committed (the later plan lands in `plan/<feature>-plan.md` of the same directory), then goes through an adversarial review subagent and user review before handing off to writing-plans. Behavior requirements use the **Requirement + Scenario** (GIVEN/WHEN/THEN) structure, and test & acceptance strategy uses the **acceptance matrix** — Scenarios translate directly into TDD failing tests by writing-plans, and the matrix anchors wrap-up review and acceptance-qa; changes to existing behavior use the ADDED/MODIFIED/REMOVED delta sections.
+The spec lands in the feature directory `.spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design.md` and is committed (the later plan lands in `plan/<feature>-plan.md` of the same directory), then goes through an adversarial review subagent and user review before handing off to writing-plans. Behavior requirements use the **Requirement + Scenario** (GIVEN/WHEN/THEN) structure, and test & acceptance strategy uses the **acceptance matrix** — Scenarios translate directly into TDD failing tests by writing-plans, and the matrix anchors wrap-up review and acceptance-qa; changes to existing behavior use the ADDED/MODIFIED/REMOVED delta sections.
 
 ## Using writing-plans / executing-plans
 
 ```bash
-/writing-plans write an implementation plan from docs/2026-07-04-auth/spec/auth-design.md
-/executing-plans execute docs/2026-07-04-auth/plan/auth-plan.md
+/writing-plans write an implementation plan from .spec-dev/2026-07-04-auth/spec/auth-design.md
+/executing-plans execute .spec-dev/2026-07-04-auth/plan/auth-plan.md
 ```
 
 - **writing-plans**: assumes a zero-context executor — every plan starts with a fixed Task 0 (set up an isolated workspace, with already-isolated detection and git fallback commands) and ends with a final task (merge & cleanup); when the spec's acceptance matrix has "acceptance task" rows, an acceptance task is generated between them. The worktree lifecycle closes within the plan, so it executes in order even outside this plugin. The header carries deviation-handling guidance; every task gets exact file paths, complete code, the 5 TDD steps (failing test → confirm fail → minimal implementation → confirm pass → commit) and consume/produce interface blocks; a three-way self-review (spec coverage / placeholders / type consistency) runs before handoff

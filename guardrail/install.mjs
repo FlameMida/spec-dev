@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 // spec-dev 漂移守卫安装器：把守卫全套装进目标仓库（默认当前仓库）。
 //
-//   node install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
+//   node install.mjs [--repo <path>] [--no-git-hook] [--no-ci] [--no-migrate]
 //
 // 装什么：
 //   scripts/spec-dev/check-spec-drift.mjs   核心校验器
 //   scripts/spec-dev/session-context.mjs    会话上下文注入脚本（含守卫健康自检）
+//   scripts/spec-dev/migrate-to-spec-dev.mjs 历史产物迁移脚本（docs/ → .spec-dev/）
 //   .claude/settings.json                   合并 PreToolUse + Stop + SessionStart hooks（Claude Code）
 //   .codex/hooks.json                       合并 PreToolUse + SessionStart hooks（Codex）
 //   CLAUDE.md / AGENTS.md                    追加/更新守卫软提示段（标记块内幂等替换）
@@ -13,6 +14,8 @@
 //                                            已设 core.hooksPath 时写入既有目录，不改配置）
 //   package.json                             注入 prepare 脚本自动启用 hooksPath（仅当 .githooks 由本安装器启用）
 //   .github/workflows/spec-dev-drift-guard.yml  CI 兜底（除非 --no-ci）
+//
+// 安装时默认自动迁移历史产物（docs/ 下的特性目录、adr/、explorations/ → .spec-dev/），--no-migrate 跳过。
 //
 // 幂等：可重复运行；软提示段与 hook 条目按标记/键去重，不重复堆叠。
 
@@ -42,7 +45,23 @@ const scriptsDir = path.join(repo, "scripts", "spec-dev");
 mkdirSync(scriptsDir, { recursive: true });
 copyFileSync(path.join(HERE, "check-spec-drift.mjs"), path.join(scriptsDir, "check-spec-drift.mjs"));
 copyFileSync(path.join(HERE, "session-context.mjs"), path.join(scriptsDir, "session-context.mjs"));
-done.push("scripts/spec-dev/{check-spec-drift,session-context}.mjs");
+copyFileSync(path.join(HERE, "migrate-to-spec-dev.mjs"), path.join(scriptsDir, "migrate-to-spec-dev.mjs"));
+done.push("scripts/spec-dev/{check-spec-drift,session-context,migrate-to-spec-dev}.mjs");
+
+// 1.5) 历史产物自动迁移（docs/ → .spec-dev/），默认执行
+if (!opt("--no-migrate")) {
+  try {
+    const out = execFileSync("node", [path.join(HERE, "migrate-to-spec-dev.mjs"), "--repo", repo], {
+      encoding: "utf8",
+    });
+    if (out.trim()) {
+      process.stdout.write(out);
+      done.push(".spec-dev/ (legacy artifacts migrated — review & commit / 历史产物已迁移，请检查后提交)");
+    }
+  } catch (e) {
+    log(`  ! migration failed, artifacts left in place / 历史产物迁移失败，保持原位（守卫仍识别旧位置）：${e.message}`);
+  }
+}
 
 // 2) Claude settings.json —— 深合并 hooks
 mergeJsonHooks(

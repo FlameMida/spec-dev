@@ -4,7 +4,7 @@
     {
       "id": "ra-light-add-field",
       "prompt": "帮我给 src/models/user.ts 的 User 实体加一个 nickname 字段，可空，最长 30 字符，顺便把 src/api/user.ts 的更新接口带上这个字段",
-      "expected_output": "判定为 light 档并向用户声明（允许覆盖）；探索由主线程直查或 1 个子代理完成；方案可收敛为 1 个但说明为何无分歧；设计仍必须展示并获用户批准（HARD-GATE 不豁免）；spec 几句话级写入 docs/YYYY-MM-DD-<feature>/spec/<feature>-design.md 并提交；终态交接 writing-plans，不直接写实现代码"
+      "expected_output": "判定为 light 档并向用户声明（允许覆盖）；探索由主线程直查或 1 个子代理完成；方案可收敛为 1 个但说明为何无分歧；设计仍必须展示并获用户批准（HARD-GATE 不豁免）；spec 几句话级写入 .spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design.md 并提交；终态交接 writing-plans，不直接写实现代码"
     },
     {
       "id": "ra-standard-notification",

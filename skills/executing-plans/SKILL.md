@@ -1,7 +1,7 @@
 ---
 name: executing-plans
 description: >-
-  Execute implementation plans - when a written plan from writing-plans exists (plan/*-plan.md under the feature docs directory): the main thread executes task-by-task in an isolated worktree (TDD + per-task commits + spec self-check), then orchestrates multi-dimension adversarial code review and matrix-driven acceptance. Not for improvised changes without a written plan. / 执行实施计划——当已有 writing-plans 产出的实施计划（特性目录 docs/ 下 plan/ 子目录的 *-plan.md）、准备动手实现时使用。主线程在隔离 worktree 中逐任务执行（TDD + 每任务提交 + spec 自检），全部完成后编排多维对抗代码审查（code-reviewer 子代理不写码、仅分析与复跑验证），并按验收矩阵触发 acceptance-qa 验收，最终合并总结。不适用于没有书面计划的即兴改动。
+  Execute implementation plans - when a written plan from writing-plans exists (plan/*-plan.md under the feature directory in .spec-dev/): the main thread executes task-by-task in an isolated worktree (TDD + per-task commits + spec self-check), then orchestrates multi-dimension adversarial code review and matrix-driven acceptance. Not for improvised changes without a written plan. / 执行实施计划——当已有 writing-plans 产出的实施计划（`.spec-dev/` 特性目录下 plan/ 子目录的 *-plan.md）、准备动手实现时使用。主线程在隔离 worktree 中逐任务执行（TDD + 每任务提交 + spec 自检），全部完成后编排多维对抗代码审查（code-reviewer 子代理不写码、仅分析与复跑验证），并按验收矩阵触发 acceptance-qa 验收，最终合并总结。不适用于没有书面计划的即兴改动。
 ---
 
 > **Language Protocol / 语言协议**: Respond in the user's conversation language — an explicit user instruction (including the platform `language` setting) takes precedence, then the language of the user's recent messages; default to English when neither indicates a language. All deliverables written to the repo (specs, plans, reports, notes) follow the conversation language at creation; incremental edits keep the artifact's existing language. Fixed-wording prompts in this skill are semantic templates — express their meaning in the conversation language, don't quote them verbatim.
@@ -30,7 +30,7 @@ description: >-
 
 ## 阶段 1：载入并批判性审阅计划
 
-1. 读取计划文件（`docs/YYYY-MM-DD-<feature>/plan/<feature>-plan.md`）与同特性目录的 `spec/<feature>-design.md`
+1. 读取计划文件（`.spec-dev/YYYY-MM-DD-<feature>/plan/<feature>-plan.md`）与同特性目录的 `spec/<feature>-design.md`；产物仍在历史位置 `docs/YYYY-MM-DD-<feature>/` 时，默认先自动迁移到 `.spec-dev/` 再执行（有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移并重写文件内路径引用），迁移单独提交
 2. 批判性审阅：步骤有歧义？接口块互相矛盾？与代码库现状不符？——**有疑虑先向用户提出，别带着疑虑开工**
 3. **执行确认门**：向用户呈现执行摘要（计划路径、任务数与分组、将创建的 worktree 分支名）并确认开始——用户本轮已显式指示执行（如"执行这份计划"）或经 writing-plans 交接确认的，视为已确认、不重复问
 4. 把计划任务注册进任务管理（每任务一条，`T{n}: 任务名` 命名），进入阶段 2

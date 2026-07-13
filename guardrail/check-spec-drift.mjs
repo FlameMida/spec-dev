@@ -225,7 +225,15 @@ function mergeBaseWithDefault(sha, repoRoot) {
 
 function loadActiveSpecs(repoRoot) {
   const files = gitLines(
-    ["ls-files", "docs/**/spec/*-design.md", "docs/**/*-design.md", ".specs/**/*.md"],
+    [
+      "ls-files",
+      ".spec-dev/**/spec/*-design.md",
+      ".spec-dev/**/*-design.md",
+      // 历史位置兜底：未迁移的旧分支 / CI 检查旧提交时仍受守护（新产物一律落 .spec-dev/）
+      "docs/**/spec/*-design.md",
+      "docs/**/*-design.md",
+      ".specs/**/*.md",
+    ],
     repoRoot,
   );
   const seen = new Set();
@@ -421,7 +429,7 @@ function report(violations) {
   );
   lines.push(`  3) If the spec is obsolete, set its frontmatter ${B("status")} to superseded. / 该 spec 已作废时，把其 frontmatter 的 status 改为 superseded。`);
   lines.push("");
-  lines.push(`  This applies without the spec-dev plugin too: artifacts live in docs/<date-feature>/; changing code means syncing the sibling spec. / 未安装 spec-dev 插件也应遵守：产物在 docs/<日期-特性>/，改代码即需同步同目录 spec。`);
+  lines.push(`  This applies without the spec-dev plugin too: artifacts live in .spec-dev/<date-feature>/; changing code means syncing the sibling spec. / 未安装 spec-dev 插件也应遵守：产物在 .spec-dev/<日期-特性>/，改代码即需同步同目录 spec。`);
   process.stderr.write(lines.join("\n") + "\n");
 }
 

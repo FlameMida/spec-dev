@@ -11,7 +11,7 @@
     { "id": "t7", "prompt": "商品搜索要支持拼音首字母，做一下" },
     { "id": "t8", "prompt": "这个导入功能行为要改：重复行改为跳过并汇总报告，先设计" },
     { "id": "t9", "prompt": "选型定了用 Redis 做限流，落地这个限流功能" },
-    { "id": "t10", "prompt": "帮我把这个探索结论转成正式的功能设计：docs/explorations/offline-sync.md" },
+    { "id": "t10", "prompt": "帮我把这个探索结论转成正式的功能设计：.spec-dev/explorations/offline-sync.md" },
     { "id": "t11", "prompt": "we've decided to build team workspaces - design this feature and produce the spec" }
   ],
   "should_not_trigger": [
@@ -21,7 +21,7 @@
     { "id": "n4", "prompt": "这个函数在哪里定义的？" },
     { "id": "n5", "prompt": "跑一下测试看看有没有挂" },
     { "id": "n6", "prompt": "README 里这个单词拼错了，修一下" },
-    { "id": "n7", "prompt": "基于已批准的 docs/2026-07-04-auth/spec/auth-design.md 编写实施计划" },
+    { "id": "n7", "prompt": "基于已批准的 .spec-dev/2026-07-04-auth/spec/auth-design.md 编写实施计划" },
     { "id": "n8", "prompt": "为什么这个页面加载这么慢？帮我分析下原因" },
     { "id": "n9", "prompt": "I'm still debating whether we need multi-tenancy at all - help me think it through" },
     { "id": "n10", "prompt": "where is this helper function defined?" }

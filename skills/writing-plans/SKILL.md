@@ -17,7 +17,7 @@ description: >-
 
 **动笔前确认**：编写计划须持有用户的明确同意——用户本轮显式指示编写计划、或上游流程已代为确认（requirement-analysis 阶段 8 的前置确认）时视为已同意、不重复问；除此之外（如隐式触发、只收到一个 spec 路径）先确认「基于 <spec 路径> 开始编写实施计划？」再动笔。
 
-**计划保存至**：spec 所在特性目录的 `plan/<feature-name>-plan.md`（即 `docs/YYYY-MM-DD-<feature-name>/plan/<feature-name>-plan.md`，特性目录由 requirement-analysis 在写 spec 时创建）；无 spec 输入的独立触发则自建特性目录。用户对计划位置的偏好优先于此默认值。
+**计划保存至**：spec 所在特性目录的 `plan/<feature-name>-plan.md`（即 `.spec-dev/YYYY-MM-DD-<feature-name>/plan/<feature-name>-plan.md`，特性目录由 requirement-analysis 在写 spec 时创建）；无 spec 输入的独立触发则自建特性目录。用户对计划位置的偏好优先于此默认值。
 
 **上下文**：编写计划阶段不建工作区——隔离以固定的「任务 0」写入每份计划，执行时才运行（见下方"任务 0"）。
 
@@ -235,7 +235,7 @@ git branch -d <分支名>
 
 保存计划后向用户交接：
 
-> 「计划已完成并保存至 `docs/<特性目录>/plan/<feature>-plan.md`。执行时我会用 executing-plans 从任务 0（隔离工作区）开始逐任务执行（TDD + 每任务提交 + 收尾多维审查）。
+> 「计划已完成并保存至 `.spec-dev/<特性目录>/plan/<feature>-plan.md`。执行时我会用 executing-plans 从任务 0（隔离工作区）开始逐任务执行（TDD + 每任务提交 + 收尾多维审查）。
 >
 > 现在开始执行，还是先 review 计划？」
 

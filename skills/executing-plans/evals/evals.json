@@ -3,7 +3,7 @@
   "evals": [
     {
       "id": "ep-continuous-execution",
-      "prompt": "执行 docs/2026-07-03-export-report/plan/export-report-plan.md（4 个任务，计划已获用户确认）",
+      "prompt": "执行 .spec-dev/2026-07-03-export-report/plan/export-report-plan.md（4 个任务，计划已获用户确认）",
       "expected_output": "先批判性审阅计划并注册任务；执行任务 0 建立隔离工作区（纪律遵循 using-git-worktrees）；任务 1 起逐任务 TDD 执行，每任务 commit（feat(TN): xxx）+ 主线程 spec 自检（只查 over/under-building 与契约锚定）；任务之间不停下向用户汇报；全部完成后才进入收尾审查"
     },
     {

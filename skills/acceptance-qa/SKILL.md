@@ -63,7 +63,7 @@ description: >-
 | 触发方 | 矩阵来源 |
 |--------|---------|
 | executing-plans 收尾（或其他工作流） | 读特性目录 spec 的「测试与验收策略」矩阵 + 计划「验收任务」的验收点，按本次变更面裁剪；报告与证据落盘特性目录 `acceptance/` 子目录并回传路径 |
-| 用户直接触发且存在相关特性目录 | 定位对应 spec（`docs/YYYY-MM-DD-<feature>/spec/`），沿用其矩阵；用户描述可收窄范围 |
+| 用户直接触发且存在相关特性目录 | 定位对应 spec（`.spec-dev/YYYY-MM-DD-<feature>/spec/`；仍在历史位置 `docs/` 的先自动迁移到 `.spec-dev/`——有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移），沿用其矩阵；用户描述可收窄范围 |
 | 独立触发（无 spec） | 从目标描述**现场生成迷你矩阵**（维度选择 + 每维度 3-6 条检查项），随报告前置呈现 |
 
 矩阵结构、Scenario→检查项的映射规则、与 writing-plans「验收任务」的分工见 [acceptance-matrix.md](references/acceptance-matrix.md)。**维度取舍原则**：矩阵行来自需求实际形态——纯后端接口不硬凑 visual 行，静态页面不硬凑 perf-api 行；被裁掉的维度在报告 `coverage_note` 中声明。
