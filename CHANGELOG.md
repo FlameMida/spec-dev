@@ -7,6 +7,13 @@
 
 ---
 
+## [7.11.0] - 2026-07-13
+
+### ✨ 新增 (Added)
+
+- **reconciliation**：writing-plans 合并清理模板加步骤4 sync_commit 锚定
+
+
 ## [7.10.0] - 2026-07-13
 
 ### ✨ 新增 (Added)
