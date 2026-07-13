@@ -23,7 +23,12 @@ description: >-
 
 ## 范围检查
 
-若 spec 覆盖多个独立子系统，本应在需求设计阶段就拆成子项目 spec；若没拆，建议按子系统拆成多份计划——每份计划独立产出可运行、可测试的软件。
+spec 聚焦单一交付物（绝大多数情况）→ 本节零动作。若 spec 覆盖多个独立子系统、或含阶段化结构（"第一阶段/Phase 1/先做 X 再做 Y"），这本应在需求设计阶段拆成子项目并登记 roadmap（requirement-analysis 的范围分解检查）；发现没拆时：
+
+- **首选回炉**：建议回 requirement-analysis 补分解——spec 收缩到第一个子项目、其余登记 `.spec-dev/roadmaps/`，然后只为收缩后的 spec 编写本计划
+- **用户不回炉**：只为第一个子系统/阶段编写本计划，剩余范围当场登记 roadmap（`.spec-dev/roadmaps/YYYY-MM-DD-<project>.md`，无则新建：frontmatter `spec_dev_roadmap`（version/project/status: active）+ 子项目表（序号/名称/一句话范围/依赖/状态/特性目录），本子项目行记 `in-progress`、剩余行记 `pending`）并 git commit——**被延后的范围必须有落盘登记，不允许只活在对话里**
+
+**不变式：一次只写一份计划，不为未实施的后续阶段预写计划**。计划要求每步含完整代码与精确路径，后续阶段的代码建立在前一阶段尚不存在的产物上——现在写出来必然失效。后续子项目在前置交付后按 roadmap 续接（executing-plans 收尾会核对 roadmap 并提示下一个）。
 
 ## 文件结构先行
 
@@ -249,11 +254,14 @@ git add <spec 路径> && git commit -m "chore(spec): sync_commit 锚定 ${SYNC:0
 >
 > 现在开始执行，还是先 review 计划？」
 
+本计划属于某 active roadmap 的子项目时，话术首句追加进度锚点「（roadmap `<project>` 第 N/M 个子项目）」——让用户在交接时刻看到全局位置。
+
 用户明确选择「开始执行」后才调用 executing-plans skill——未回复、或只给了计划修改意见时不得启动执行；用户要改计划则修订后重跑 Self-Review。
 
 ## Red Flags
 
 - 步骤里出现"适当的""必要的""类似的" → 写出具体内容
+- "spec 有三个阶段，那我写三份计划" → 一次只写一份：后续阶段的计划建立在尚不存在的代码上，写了必失效；剩余范围登记 roadmap
 - 计划缺任务 0（隔离工作区）或最终任务（合并与清理） → 按固定模板补上
 - 一个任务超过 5 个实施步骤 → 任务过大，继续拆
 - 测试步骤没有测试代码 → 补全
