@@ -17,7 +17,9 @@ spec_dev:
   status: draft            # draft | active | superseded —— 仅 active 参与漂移拦截
   covers:                  # 该特性拥有的代码 glob；无代码产物时留空数组 []
     - "src/<feature>/**"
-  sync_commit: null        # 最近一次"代码与本 spec 已同步"的提交 SHA；由守卫在同步后写入
+  sync_commit: null        # 最近一次"代码与本 spec 已同步"的提交 SHA；由 executing-plans
+                           # 收尾在合并后写入（计划最终任务的锚定步骤）。
+                           # git diff <sync_commit>..HEAD -- <covers> = 此后的代码变化
 ---
 
 # [主题] 设计
@@ -54,6 +56,9 @@ spec_dev:
 
 [系统"做什么"，用任何人都能检验的措辞表达——不写实现方式（怎么建留给方案设计节与代码）。
 全新功能按下例罗列；**修改既有功能时，把本节替换为文末的"行为差量三节"**。 / Observable behaviors only, no implementation; for changes to existing behavior use the delta sections at the end]
+
+[交付对账后，未交付的 Requirement 由 executing-plans 在其标题下原位标注（DELIVERED 不标，只标偏差），后续续作与审查一眼看清缺口 / After delivery reconciliation, executing-plans marks non-delivered Requirements in place under their title; DELIVERED stays unmarked：
+`> **Delivery: DEFERRED (YYYY-MM-DD)** — 一句原因 / one-line reason；详见 ../acceptance/acceptance-report.md`]
 
 ### Requirement: [一句话命名一个行为]
 
