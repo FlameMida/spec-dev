@@ -39,11 +39,14 @@ executing-plans (isolated execution + review + summary)
 quick-fix (already-decided small fix, no design space)  ── bypass fast path
    root cause + spec back-lookup → one-question confirm → TDD fix → optional acceptance
         ↑ escalates to requirement-analysis on contract-crossing / cross-module / new-dependency signals
+
+roadmap continuation (oversized goals)  ── decomposition registered at .spec-dev/roadmaps/<project>.md ── outer loop
+   requirement-analysis registers sub-projects → each runs the full pipeline independently → executing-plans marks delivery and offers the next one
 ```
 
 The three entry points split by commitment and design space: **exploring** (undecided — should we even do this?), **quick-fix** (decided, no design space — a small bug or adjustment), **requirement-analysis** (decided, has design space — a feature or change). quick-fix reuses test-driven-development and acceptance-qa, and hands control back to requirement-analysis the moment a fix turns out to need real design.
 
-All artifacts (specs, plans, acceptance reports, exploration notes, ADRs) live under `.spec-dev/` at the project root; legacy artifacts under `docs/` are auto-migrated there by default (the guard installer ships `migrate-to-spec-dev.mjs`, and the session self-check migrates on sight of a legacy layout), while the drift guard keeps recognizing the old location until migration lands.
+All artifacts (specs, plans, acceptance reports, exploration notes, ADRs, roadmaps) live under `.spec-dev/` at the project root; legacy artifacts under `docs/` are auto-migrated there by default (the guard installer ships `migrate-to-spec-dev.mjs`, and the session self-check migrates on sight of a legacy layout), while the drift guard keeps recognizing the old location until migration lands.
 
 Each skill also works standalone: start from exploring while the idea is unsettled; enter at writing-plans with an existing spec; go straight to executing-plans with an existing plan; acceptance-qa / using-git-worktrees / test-driven-development can be triggered from any workflow; quick-fix handles small already-decided fixes without the full design workflow.
 

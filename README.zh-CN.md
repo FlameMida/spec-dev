@@ -39,11 +39,14 @@ executing-plans（隔离执行 + 审查 + 总结）
 quick-fix（已决定、无设计空间的小修复）  ── 旁路快车道
    根因 + spec 反查 → 逐题校对 → TDD 修复 → 可选验收
         ↑ 命中跨 spec 契约 / 跨模块 / 新依赖信号时升级回 requirement-analysis
+
+roadmap 续接（大目标）  ── 分解登记 .spec-dev/roadmaps/<project>.md ── 外环
+   requirement-analysis 分解登记子项目 → 每个子项目独立走完整管线 → executing-plans 交付后回写状态并提示续接下一个
 ```
 
 三个入口按承诺状态与设计空间分工：**exploring**（还没决定要不要做）、**quick-fix**（已决定、无设计空间——小 bug 或小调整）、**requirement-analysis**（已决定、有设计空间——功能或变更）。quick-fix 复用 test-driven-development 与 acceptance-qa，一旦修复需要真正的设计就把控制权交还 requirement-analysis。
 
-所有产物（spec、plan、验收报告、探索笔记、ADR）统一收纳在项目根目录 `.spec-dev/` 下；历史项目 `docs/` 位置的产物默认自动迁移过去（守卫安装器自带 `migrate-to-spec-dev.mjs`，会话自检发现历史布局也会当场迁移），迁移前守卫仍识别旧位置兜底。
+所有产物（spec、plan、验收报告、探索笔记、ADR、roadmap）统一收纳在项目根目录 `.spec-dev/` 下；历史项目 `docs/` 位置的产物默认自动迁移过去（守卫安装器自带 `migrate-to-spec-dev.mjs`，会话自检发现历史布局也会当场迁移），迁移前守卫仍识别旧位置兜底。
 
 每个 skill 也可独立使用：想法未定型可从 exploring 开始；已有 spec 可直接从 writing-plans 进入；已有计划可直接 executing-plans；acceptance-qa / using-git-worktrees / test-driven-development 可被任意工作流触发；quick-fix 处理已决定、无设计空间的小修复，不走完整设计流程。
 
