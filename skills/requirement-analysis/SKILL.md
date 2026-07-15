@@ -126,7 +126,7 @@ Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
 - **standard**：按架构层次或功能模块拆 3-5 个 `code-explorer`；阶段 1 标记了外部探索时，同波次加 1-2 个 `external-resource-explorer`
 - **deep**：multi-modal sweep——每个模态一个 `code-explorer` 彼此盲扫，模态数由项目形态决定、不设上限；外部按主题拆多个 `external-resource-explorer` 同波次发起
 
-外部探索工具优先级：`context7`（库文档）→ `WebSearch` / `WebFetch`，降级链与模态定义、契约校验、失败隔离规则见 [exploration-patterns.md](references/exploration-patterns.md)。
+外部探索工具优先级：AnySearch（通用/垂直/批量，插件内嵌）与 `context7`（库文档）优先 → `WebSearch` / `WebFetch` 兜底；降级链与模态定义、契约校验、失败隔离规则见 [exploration-patterns.md](references/exploration-patterns.md)。
 
 **每个子代理必须给定**：清晰的主题或模态、相关文件线索、期望输出格式。失败的子代理先缩小范围重试 1 次，再失败由主线程接管。
 

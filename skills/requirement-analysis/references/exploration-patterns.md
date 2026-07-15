@@ -51,10 +51,11 @@
 - **standard**：1-2 个 agent（如：一个查库文档/官方指南，一个查行业实践/已知坑）
 - **deep**：按主题拆分，每主题一个 agent（如：候选库 A 对比、候选库 B 对比、安全基线、性能基准）
 
-**工具优先级**（agent 内部遵循）：
+**工具优先级与降级链**（agent 内部遵循，调用细节见 agents/external-resource-explorer.md）：
 
-1. 第三方库/框架文档：`context7` → 降级为网页搜索 + `rg` + 文件阅读
-2. 通用外部研究：`WebSearch` / `WebFetch`
+1. 通用外部研究/时效信息/垂直领域/多主题批量：AnySearch（插件内嵌 skill，`${CLAUDE_PLUGIN_ROOT}/skills/anysearch/`）→ 降级 `WebSearch` / `WebFetch`
+2. 第三方库/框架文档：`context7` → 降级 AnySearch → 再降级为网页搜索 + `rg` + 文件阅读
+3. 降级单向不回头：AnySearch 一旦判定不可用（CLI 缺失、两种 runtime 均失败、网络错误重试仍败、配额耗尽），本轮探索后续查询直接走降级目标，不反复试探；报告 Sources 注明实际链路与降级原因
 
 **回补探索**：阶段 3/4 发现新库或新领域时允许回补一轮，同样单响应发起，结果并入已有探索报告。
 

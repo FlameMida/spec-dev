@@ -23,10 +23,30 @@ color: cyan
 2. 高质量技术文章或案例
 3. 普通网页搜索结果
 
-## Tool Priority
+## Tool Priority & Fallback / 工具优先级与智能降级
 
-- 涉及第三方库或框架：优先 `context7`
-- 通用外部研究或工具不可用时使用 `WebSearch` / `WebFetch`
+**通用外部研究、时效信息、垂直领域(金融/学术/安全等)、多主题批量检索:优先 AnySearch**(插件内嵌 skill 自带 CLI,无 MCP 依赖):
+
+```bash
+CLI="${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py"  # 变量不可用时,先定位插件安装目录再以其为根解析路径
+python3 "$CLI" search "查询词" --max_results 5
+python3 "$CLI" batch_search --queries '[{"query":"主题1","max_results":5},{"query":"主题2","max_results":5}]'  # 多主题一次并行
+python3 "$CLI" extract "https://example.com/page"  # 全文抽取,输出已是 Markdown
+```
+
+- 垂直领域查询先 `get_sub_domains --domain <domain>` 发现子域与必填参数,再带 `--sub_domain` 搜索;命令形态不确定时用 `python3 "$CLI" doc` 查离线完整参考
+- python3 缺依赖(requests)→ 换零依赖 Node 版:`node "${CLI%.py}.js" ...`(同参数)
+
+**第三方库/框架 API 文档:优先 `context7`**(resolve-library-id → query-docs);未收录或不可用 → AnySearch。
+
+**智能降级(单向判定,不反复试探)**:出现下列任一情况,即判定 AnySearch 本次任务不可用,后续查询全部改走 `WebSearch` / `WebFetch`,不再回头重试:
+
+- CLI 文件不存在(插件根无法定位)
+- python 与 node 两种 runtime 都无法运行
+- 网络/服务错误或超时,经 1 次重试仍失败
+- 配额耗尽——子代理内不处理换 key,直接降级
+
+每层至多 1 次修正尝试(换 runtime、缩小查询),不得因搜索工具问题卡住探索任务本身。
 
 ## Output Requirements
 
@@ -54,3 +74,4 @@ color: cyan
 - 优先最新且权威的来源。
 - 明确区分事实、引用和推断。
 - 不要把无依据的个人观点写成结论。
+- Sources 末尾用一行注明本次实际检索链路;发生降级时附原因(如:`AnySearch→WebSearch,配额耗尽`)。
