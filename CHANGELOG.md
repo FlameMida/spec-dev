@@ -7,6 +7,17 @@
 
 ---
 
+## [7.15.0] - 2026-07-15
+
+### ✨ 新增 (Added)
+
+- **skills**：内嵌 anysearch 实时搜索 skill——subtree 锁上游稳定版 v2.1.0,frontmatter 规范化与 openai.yaml 双端合规,update-anysearch.mjs 一键同步上游稳定 tag
+
+### 🧹 其他 (Misc)
+
+- Squashed 'skills/anysearch/' content from commit 6ff6aa9
+
+
 ## [7.14.2] - 2026-07-13
 
 ### 🔧 修复 (Fixed)

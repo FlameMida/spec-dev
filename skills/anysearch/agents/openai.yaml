@@ -1,0 +1,7 @@
+interface:
+  display_name: "AnySearch"
+  short_description: "Real-time search engine supporting web search, vertical domain search, parallel batch search, and URL content extraction. / 实时搜索引擎:支持网页搜索、垂直领域搜索、并行批量搜索与 URL 内容提取。"
+  default_prompt: "Use $anysearch to search the web in real time or extract page content. / 用 $anysearch 实时搜索网页信息或提取页面内容。"
+
+policy:
+  allow_implicit_invocation: true
