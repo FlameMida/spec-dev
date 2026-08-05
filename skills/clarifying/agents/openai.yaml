@@ -1,0 +1,7 @@
+interface:
+  display_name: "Clarifying"
+  short_description: "Shared clarification discipline (grill-style) - one-question-at-a-time down the decision tree until shared understanding; standalone sessions end with three exits (hand off / stop / write to md), no forced deliverable; referenced by requirement-analysis and quick-fix. Not for divergent exploration (use exploring). / 共享澄清纪律（grill 式）：一次一题沿决策树逼近共识，独立会话三出口收束（转主流程/结束/写入 md）、不强制产出；被 requirement-analysis 与 quick-fix 引用。发散探索用 exploring"
+  default_prompt: "Use $clarifying to grill this idea, plan or decision into shared understanding, one question at a time. / 用 $clarifying 逐题把这个想法、计划或决定磨到共识。"
+
+policy:
+  allow_implicit_invocation: true

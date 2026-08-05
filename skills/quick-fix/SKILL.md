@@ -47,7 +47,7 @@ description: >-
 
 ### 步骤 3：逐题校对（一次一个问题）
 
-沿用 requirement-analysis 的提问纪律（Claude Code 用 `AskUserQuestion`，Codex 用对话消息；一次一个、选择题优先、先查后问）。核心确认三类：
+提问纪律遵循 clarifying skill 的核心纪律（被引用模式，纪律定义以 clarifying 为准）：一次一题、选择题优先且推荐项放首位（Claude Code 用 `AskUserQuestion`）、事实自查决策交用户。核心确认三类：
 
 1. **根因认定**对不对；
 2. **修复方案**选哪个（有多个修法时）；
@@ -92,7 +92,7 @@ skill 体系与守卫此前的唯一连接是 requirement-analysis 写 spec fron
 
 | 用途 | Claude Code | Codex |
 |------|-------------|-------|
-| 用户澄清/确认 | `AskUserQuestion`（单题带选项） | 对话消息提问并等待回复 |
+| 用户澄清/确认 | `AskUserQuestion`（单题带选项） | 对话消息提问（逐题规范见 clarifying 内嵌 Codex 规范节） |
 | 根因探索子代理 | `Agent`（subagent_type: code-explorer） | `spawn_agent`（`fork_turns: "none"`）+ `wait_agent` |
 | 复用 TDD/验收 | 引用 test-driven-development、触发 acceptance-qa | 同左（skill 通用） |
 
