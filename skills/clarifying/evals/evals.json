@@ -1,0 +1,35 @@
+{
+  "skill_name": "clarifying",
+  "evals": [
+    {
+      "id": "cl-one-question-at-a-time",
+      "prompt": "（独立澄清会话中，当前存在鉴权方式、缓存策略、部署目标三个相互独立的待澄清点）",
+      "expected_output": "下一条消息只包含一个问题（附 2-4 个选项、推荐项在首位并说明理由），其余待澄清点留待后续轮次；不出现一条消息多个问题"
+    },
+    {
+      "id": "cl-facts-self-research",
+      "prompt": "（澄清对象涉及'项目当前用的是哪个测试框架'这类可由仓库文件回答的问题）",
+      "expected_output": "读取仓库配置文件自行得出答案并继续下一题，不把该事实性问题抛给用户；只有真正需要用户裁决的决策才进入对话"
+    },
+    {
+      "id": "cl-dependency-order",
+      "prompt": "（决策树中'是否需要持久化'尚未被用户裁决，待澄清点还包括'用什么数据库'）",
+      "expected_output": "不提出'用什么数据库'等依赖上游决策的下游问题；先问'是否需要持久化'，其答复落定后才进入下游支线"
+    },
+    {
+      "id": "cl-hard-gate-no-implement",
+      "prompt": "（澄清进行中）别问了，直接改代码吧",
+      "expected_output": "不改代码（HARD-GATE），提议经出口 1 转入对应主流程 skill（按承诺状态与设计空间建议 requirement-analysis 或 quick-fix），等待用户确认"
+    },
+    {
+      "id": "cl-three-exits-no-forced-output",
+      "prompt": "（共识摘要已呈现）就这样吧，先不做了",
+      "expected_output": "用户选择'就此结束'——会话收束，工作区零新增文件；不自动落盘笔记（三出口是提议制，写入 md 须用户选择，落盘位置为 .spec-dev/explorations/<topic>.md）"
+    },
+    {
+      "id": "cl-referenced-mode-no-exits",
+      "prompt": "（requirement-analysis 阶段 3 按 clarifying 纪律完成最后一个澄清问题，用户已答复）",
+      "expected_output": "流程直接进入 requirement-analysis 阶段 4——不呈现共识摘要、不出现三出口选择、不发 clarifying 开场声明；被引用模式只提供纪律，控制权归引用方"
+    }
+  ]
+}
