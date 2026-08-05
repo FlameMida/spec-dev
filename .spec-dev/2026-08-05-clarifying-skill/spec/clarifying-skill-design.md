@@ -6,7 +6,7 @@ spec_dev:
   status: active
   covers:
     - "skills/clarifying/**"
-  sync_commit: null
+  sync_commit: "c234049c446c614579ea6288e88593239d0a3c9b"
 ---
 
 # clarifying-skill 设计
