@@ -3,7 +3,7 @@
 spec_dev:
   version: 1
   feature: clarifying-skill
-  status: draft
+  status: active
   covers:
     - "skills/clarifying/**"
   sync_commit: null
