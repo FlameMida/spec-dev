@@ -19,7 +19,7 @@ spec_dev_roadmap:
 
 | # | 子项目 | 范围（一句话） | 依赖 | 状态 | 特性目录 |
 |---|--------|--------------|------|------|---------|
-| 1 | clarifying-skill | 新建 skills/clarifying/（grilling 式逐题澄清 + 三出口 + 可独立调用），requirement-analysis 阶段 3 与 quick-fix 步骤 3 改为引用去重 | — | pending | — |
+| 1 | clarifying-skill | 新建 skills/clarifying/（grilling 式逐题澄清 + 三出口 + 可独立调用），requirement-analysis 阶段 3 与 quick-fix 步骤 3 改为引用去重 | — | in-progress | .spec-dev/2026-08-05-clarifying-skill/ |
 | 2 | triage-routing | 新增 commands/triage.md 薄命令（引用不复制分诊判据）；quick-fix 补升级上下文交接 + "拿不准档优先 quick-fix"默认倾向；requirement-analysis 阶段 1 加任务类型检查与报告通道出口（.spec-dev/reports/ 落盘约定） | #1 | pending | — |
 | 3 | resource-ledger | acceptance-qa 环境检测加复用策略（能隔离才复用，无法隔离则新建兜底）；writing-plans 最终任务模板加台账清理步骤；executing-plans / quick-fix 收尾接台账；共享缓存默认保留 | — | pending | — |
 

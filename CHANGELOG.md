@@ -7,6 +7,13 @@
 
 ---
 
+## [7.16.3] - 2026-08-05
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：clarifying-skill spec 落盘——共享澄清纪律抽取设计（draft），roadmap 子项目①置 in-progress
+
+
 ## [7.16.2] - 2026-08-05
 
 ### 📝 文档 (Docs)
