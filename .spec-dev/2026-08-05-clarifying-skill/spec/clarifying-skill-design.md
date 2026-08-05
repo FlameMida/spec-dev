@@ -50,19 +50,29 @@ requirement-analysis 阶段 3 与 quick-fix 步骤 3 各自内嵌了几乎同一
 
 ### Requirement: 独立会话逐题澄清至共识
 
-独立调用 clarifying 时，执行者 SHALL 一次只提出一个问题并等待用户答复，沿决策树逐支下行直至共识态，且能由环境（代码库、文件系统、已有探索产物）回答的事实性问题 SHALL 自行查证而不询问用户。
+独立调用 clarifying 时，执行者 SHALL 一次只提出一个问题并等待用户答复，沿决策树逐支下行直至共识态。
 
-#### Scenario: 事实不落到用户头上
+#### Scenario: 一次一题不倾泻
 
-- **GIVEN** 澄清对象涉及"项目当前用的是哪个测试框架"这类可由仓库文件回答的问题
-- **WHEN** 该问题成为下一个待澄清点
-- **THEN** 执行者读取仓库文件自行得出答案并继续，不把该问题抛给用户
+- **GIVEN** 当前存在三个相互独立的待澄清点
+- **WHEN** 执行者发出下一条澄清消息
+- **THEN** 该消息只包含一个问题，其余待澄清点留待后续轮次
 
 #### Scenario: 上游未定不问下游
 
 - **GIVEN** 决策树中"是否需要持久化"尚未被用户裁决
 - **WHEN** 执行者选择下一个提问
 - **THEN** 不提出"用什么数据库"等依赖该上游决策的下游问题
+
+### Requirement: 事实自查不外包给用户
+
+能由环境（代码库、文件系统、已有探索产物）回答的事实性问题，执行者 SHALL 自行查证而不询问用户。
+
+#### Scenario: 事实不落到用户头上
+
+- **GIVEN** 澄清对象涉及"项目当前用的是哪个测试框架"这类可由仓库文件回答的问题
+- **WHEN** 该问题成为下一个待澄清点
+- **THEN** 执行者读取仓库文件自行得出答案并继续，不把该问题抛给用户
 
 ### Requirement: 共识后呈现三出口且不强制产出
 
@@ -143,12 +153,12 @@ quick-fix 步骤 3 SHALL 声明提问纪律遵循 clarifying skill，三类核�
 ### 架构与组件
 
 - `skills/clarifying/SKILL.md`：frontmatter（name/description 双语，description 写清"未承诺的发散思考用 exploring"的分界）、语言协议块、核心纪律节（两模式共用）、独立会话模式节（含 HARD-GATE、共识态定义、三出口）、与 exploring 分界表、内嵌 Codex 规范节、Red Flags；
-- `skills/clarifying/agents/`、`skills/clarifying/evals/`：对齐套件惯例，eval 用例覆盖"一次一题""事实自查""被引用不触发出口"（用例细节 plan 阶段定）；
+- `skills/clarifying/agents/`、`skills/clarifying/evals/`：对齐套件惯例，eval 用例覆盖"一次一题""事实自查""被引用不触发出口""用户催促直接做"（用例细节 plan 阶段定）；
 - 引用方改动最小化：requirement-analysis 阶段 3 与 quick-fix 步骤 3 各改为"引用 + 锚定语 + 特有条款"，不动其余阶段/步骤。
 
 ### 数据流
 
-独立会话：用户输入 → （可选轻量探索）→ 逐题循环（AskUserQuestion / Codex 对话）→ 共识摘要 → 三出口分发（requirement-analysis / quick-fix / 报告通道 ｜ 结束 ｜ `.spec-dev/explorations/<topic>.md`）。被引用：引用方进入澄清环节 → 按 clarifying 纪律逐题 → 控制权回引用方下一阶段。
+独立会话：用户输入 → （可选轻量探索）→ 逐题循环（AskUserQuestion / Codex 对话）→ 共识摘要 → 三出口分发（requirement-analysis / quick-fix ｜ 结束 ｜ `.spec-dev/explorations/<topic>.md`；报告通道待 roadmap 子项目②落地后追加为转主流程目标）。被引用：引用方进入澄清环节 → 按 clarifying 纪律逐题 → 控制权回引用方下一阶段。
 
 ### 错误处理
 
@@ -165,6 +175,8 @@ quick-fix 步骤 3 SHALL 声明提问纪律遵循 clarifying skill，三类核�
 | 事实不落到用户头上 / 上游未定不问下游 / 一次一题 | eval | 验收任务（skill eval 用例） | eval 通过记录 |
 | 就此结束零产物 / 写入 md 复用 explorations | eval | 验收任务（skill eval 用例） | eval 通过记录 |
 | 被引用不触发出口 | eval | 验收任务（skill eval 用例） | eval 通过记录 |
+| 用户催促直接做（澄清中不实施） | eval | 验收任务（skill eval 用例） | eval 通过记录 |
+| 转主流程不重问已澄清问题 | 文档审查 | 验收任务（对照检查） | 检查记录 |
 | 改造后语义等价（两引用方） | 文档审查 | 验收任务（逐条对照清单） | 对照表 |
 | 无结构化提问工具（Codex） | 文档审查 | 验收任务（规范节完备性检查） | 检查记录 |
 | 发布面同步完整（双端清单/README/CHANGELOG） | 文档审查 | 验收任务 | 检查记录 |
