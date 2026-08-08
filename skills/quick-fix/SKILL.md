@@ -86,6 +86,8 @@ description: >-
 - **要** → 触发 acceptance-qa skill。输入按 spec 命中情况装配：命中 active spec 则传 spec 路径 + 变更文件清单（acceptance-qa 按变更面裁剪矩阵）；未命中则由 acceptance-qa 现场生成迷你矩阵。无需改动 acceptance-qa。
 - **不要** → 至少运行受影响的测试文件作为最低验证，区分"本次新增失败"与"既有失败"，结果呈现给用户，不留"没验证"空白。
 
+**收尾资源清理**：修复过程创建的持久资源（测试数据/表、临时容器等，对话内记账）在验证完成后展示清单（标识 + 清理命令）请用户确认——确认后逐条清理并报告结果；婉拒则保留并说明位置与手动清理方式；无创建资源时声明"无待清理资源"。共享缓存默认保留；台账纪律细则以 writing-plans 最终任务模板的资源台账定义为准。
+
 ## 与 guardrail 的关系
 
 skill 体系与守卫此前的唯一连接是 requirement-analysis 写 spec frontmatter 锚点。quick-fix 是第二个连接点：**消费**这些锚点（反查 covers/status）驱动修复决策，并在两分支上分别用"同步 spec"和"trailer 放行"与守卫协作。quick-fix 不改 guardrail 任何代码，是纯消费方 + 优雅降级。

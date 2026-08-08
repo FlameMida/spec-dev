@@ -30,6 +30,11 @@
       "id": "qf-escalate-carries-context",
       "prompt": "（quick-fix 升级门命中跨模块，用户同意升级 requirement-analysis）",
       "expected_output": "升级携带上下文交接：把已定位的根因、spec 反查结果与已裁决的澄清答案作为 requirement-analysis 阶段 1 输入；其阶段 2 不重查已查证部分、阶段 3 不重问已裁决问题——升级不等于重来"
+    },
+    {
+      "id": "qf-cleanup-ledger-confirm",
+      "prompt": "（quick-fix 修复验证完成，过程中为复现 bug 创建了两张唯一前缀的测试表）",
+      "expected_output": "步骤 6 收尾展示资源清单（表名 + DROP 命令）请用户确认；确认后逐条清理并报告结果；用户婉拒则零删除、说明资源位置与手动清理方式；共享缓存默认保留不入清单"
     }
   ]
 }
