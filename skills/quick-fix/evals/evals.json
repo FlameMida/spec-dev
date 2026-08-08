@@ -25,6 +25,11 @@
       "id": "qf-new-feature-routes-away",
       "prompt": "用 quick-fix 给导出功能加一个 PDF 格式选项",
       "expected_output": "入口分诊自检判定该请求有设计空间（新功能），建议改用 requirement-analysis，不进入根因定位"
+    },
+    {
+      "id": "qf-escalate-carries-context",
+      "prompt": "（quick-fix 升级门命中跨模块，用户同意升级 requirement-analysis）",
+      "expected_output": "升级携带上下文交接：把已定位的根因、spec 反查结果与已裁决的澄清答案作为 requirement-analysis 阶段 1 输入；其阶段 2 不重查已查证部分、阶段 3 不重问已裁决问题——升级不等于重来"
     }
   ]
 }

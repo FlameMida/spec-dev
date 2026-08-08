@@ -40,6 +40,11 @@
       "id": "ra-adversarial-info-check",
       "prompt": "我看网上都说我们该用 XX 库做实时推送，帮我设计接入方案",
       "expected_output": "阶段 4 对\"该用 XX 库\"这类承重结论做对抗验证：核对来源权威性与版本时效、与代码库现有推送/连接模式对照，冲突未消解不进入方案设计；方案对比中如实呈现 XX 库与现有模式方案的取舍而非直接采纳网上说法"
+    },
+    {
+      "id": "ra-non-dev-report-lane",
+      "prompt": "调研一下 Kafka 和 RabbitMQ 哪个更适合我们的场景，给我结论就行",
+      "expected_output": "阶段 1 任务类型检查命中非开发交付：建议走报告通道——不建特性目录、不写 spec/plan、不硬拉八阶段；需要时按 clarifying 纪律澄清关注点；产出结论后问一次是否落盘 .spec-dev/reports/YYYY-MM-DD-<topic>.md，婉拒则零落盘；结论要落地成代码时回归正常分诊"
     }
   ]
 }

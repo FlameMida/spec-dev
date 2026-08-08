@@ -239,6 +239,8 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design
 
 检查 MCP 配置状态：`/check-mcp`
 
+把一个需求分诊到正确通道：`/triage <需求>`
+
 ## 专门化 Agents
 
 主线程干活、子代理不写码——实现代码始终由主线程编写，agent 只承担探索、审查与复跑验证等分析性任务：
@@ -267,7 +269,7 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 │   └── pre-push                     # 发布兜底（校验 CHANGELOG 条目、补打版本 tag）
 ├── .mcp.json                        # MCP 配置（开发与插件分发共用一份）
 ├── agents/                          # 3 个专门化 agents（分析与复跑验证，不写实现代码）
-├── commands/                        # /check-mcp 命令
+├── commands/                        # /check-mcp、/triage 命令
 ├── guardrail/                       # spec 漂移守护（可装入目标仓库）
 ├── skills/
 │   ├── exploring/                   # 探索模式（思考伙伴）

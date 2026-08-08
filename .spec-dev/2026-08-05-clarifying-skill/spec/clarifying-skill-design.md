@@ -158,7 +158,7 @@ quick-fix 步骤 3 SHALL 声明提问纪律遵循 clarifying skill，三类核�
 
 ### 数据流
 
-独立会话：用户输入 → （可选轻量探索）→ 逐题循环（AskUserQuestion / Codex 对话）→ 共识摘要 → 三出口分发（requirement-analysis / quick-fix ｜ 结束 ｜ `.spec-dev/explorations/<topic>.md`；报告通道待 roadmap 子项目②落地后追加为转主流程目标）。被引用：引用方进入澄清环节 → 按 clarifying 纪律逐题 → 控制权回引用方下一阶段。
+独立会话：用户输入 → （可选轻量探索）→ 逐题循环（AskUserQuestion / Codex 对话）→ 共识摘要 → 三出口分发（requirement-analysis / quick-fix / 报告通道 ｜ 结束 ｜ `.spec-dev/explorations/<topic>.md`）。被引用：引用方进入澄清环节 → 按 clarifying 纪律逐题 → 控制权回引用方下一阶段。
 
 ### 错误处理
 

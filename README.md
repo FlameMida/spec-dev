@@ -239,6 +239,8 @@ Get an API key: [Context7](https://context7.com/)
 
 Check MCP configuration status: `/check-mcp`
 
+Triage a request to the right lane: `/triage <request>`
+
 ## Specialized Agents
 
 The main thread does the work; subagents never write code — implementation code is always written by the main thread, and agents only take on analysis tasks like exploration, review and verification re-runs:
@@ -267,7 +269,7 @@ spec-dev/                            # repo root is the plugin root (flat layout
 │   └── pre-push                     # release backstop (checks CHANGELOG entry, backfills version tag)
 ├── .mcp.json                        # MCP config (shared by development and plugin distribution)
 ├── agents/                          # 3 specialized agents (analysis and verification re-runs, no implementation code)
-├── commands/                        # /check-mcp command
+├── commands/                        # /check-mcp, /triage commands
 ├── guardrail/                       # spec drift guard (installable into target repos)
 ├── skills/
 │   ├── exploring/                   # exploration mode (thinking partner)
