@@ -7,6 +7,13 @@
 
 ---
 
+## [7.18.2] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：resource-ledger spec 落盘——资源台账/隔离复用/收尾清理设计（draft），roadmap 子项目③置 in-progress
+
+
 ## [7.18.1] - 2026-08-08
 
 ### 📝 文档 (Docs)
