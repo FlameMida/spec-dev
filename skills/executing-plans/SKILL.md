@@ -54,6 +54,8 @@ description: >-
    发现即就地修正并补提交（或 amend）。**禁止在此猎 bug、查风格、查规范**——那是阶段 4 的活，重复只造噪音与虚假安全感
 4. **勾选计划复选框、标记任务 completed**，进入下一任务
 
+**资源登记**：执行中创建了计划未预登记的持久资源（容器、测试库/表、临时目录、后台服务）时，当场向计划最终任务的资源台账追加一行（就地编辑计划文件；行格式以 writing-plans 最终任务模板的资源台账定义为准），不延迟到收尾补记。
+
 **连续执行**：任务之间不停下来向用户汇报或请示——用户已经确认过计划。仅三种情况停下：无法自行解除的 BLOCKED、真正阻断前进的歧义、全部任务完成。
 
 **偏差处理**（三档）：
@@ -87,7 +89,7 @@ description: >-
 ## 阶段 6：合并与总结
 
 1. 审查与对账定稿后，**合并前在 worktree 内落盘并提交**：对账结果写入特性目录 `acceptance/acceptance-report.md` 的「Requirement Reconciliation」节——全绿一行带过，有偏差才展开差量表；acceptance-qa 未触发的特性按模板新建仅含头部与该节的轻量报告（一次交付一份时点记录）。DEFERRED / DROPPED 同时在 spec 原位标注（形制见 spec 模板行为规范节），DELIVERED 不标
-2. 执行计划的最终任务（全量验证 → 合并回来源分支 → 清理 worktree 与分支 → **sync_commit 锚定**：合并后主工作区 HEAD 写入 spec frontmatter 并单独提交；原生工具建的隔离用原生方式退出）；计划缺最终任务或缺锚定步骤（旧版计划）时按同等步骤手工收尾；非 git 仓库跳过锚定并注明
+2. 执行计划的最终任务（全量验证 → 合并回来源分支 → 按资源台账逐条清理（worktree 与分支行在内，合并前核对台账全部勾清） → **sync_commit 锚定**：合并后主工作区 HEAD 写入 spec frontmatter 并单独提交；原生工具建的隔离用原生方式退出）；计划缺最终任务或缺锚定步骤（旧版计划）时按同等步骤手工收尾；非 git 仓库跳过锚定并注明
 3. **roadmap 状态回写（仅当 `.spec-dev/roadmaps/` 下某 active roadmap 引用本特性目录）**：把对应子项目行状态置 `delivered` 并提交；全部子项目已 delivered/dropped 时把该 roadmap frontmatter 的 `status` 翻 `done`。目录不存在或查无引用 → 跳过，零动作
 4. 输出总结：
    - **成果清单**：完成的任务、创建/修改的文件、对账计数（`X DELIVERED / Y DEFERRED / Z DROPPED / N ADDED-IN-FLIGHT`）
