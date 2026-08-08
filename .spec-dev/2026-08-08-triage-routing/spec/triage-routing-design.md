@@ -3,7 +3,7 @@
 spec_dev:
   version: 1
   feature: triage-routing
-  status: draft
+  status: active
   covers:
     - "commands/triage.md"
   sync_commit: null

@@ -7,6 +7,13 @@
 
 ---
 
+## [7.17.2] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：triage-routing spec 定稿激活——status 翻 active
+
+
 ## [7.17.1] - 2026-08-08
 
 ### 📝 文档 (Docs)
