@@ -16,6 +16,7 @@
 - **工程纪律** — `using-git-worktrees`（原生工具优先的隔离工作区）与 `test-driven-development`（没有失败测试就没有生产代码）独立成 skill，可被任何工作流复用
 - **全能验收** — `acceptance-qa` 按「验收维度 × 执行性质」矩阵验收：单元/集成/API、Playwright E2E、视觉回归、可访问性、性能（前端 CWV / 后端 k6 / 客户端）、AI 自主验收（证据强制 + 串行复核 + verify 断言优先）与失败诊断
 - **轻量修复** — `quick-fix`，已决定、无设计空间的小修复（小 bug、小调整）的快路径：定位根因（含 spec 反查）、逐题校对、TDD 修复、可选验收；按契约影响分流以规避 spec 漂移，涉及跨 spec 契约/跨模块/新依赖时升级 requirement-analysis
+- **共享澄清** — `clarifying`，grill 式提问纪律（沿决策树一次一题、事实自查、每个决策带推荐交用户裁决）；被 requirement-analysis 与 quick-fix 引用，也可独立调用，以三出口收束（转主流程/就此结束/写入 md）
 - **契约化编排** — 子代理输出走 JSON Schema 契约，`validate-output.mjs` 确定性校验，失败退回补全
 - **MCP 工具增强** — 集成 context7、sequential-thinking、playwright、chrome-devtools（可选，智能降级）
 - **3 个专门化 Agents** — code-explorer、external-resource-explorer、code-reviewer（分析与复跑验证，不写实现代码；实现始终由主线程编写）
@@ -48,7 +49,7 @@ roadmap 续接（大目标）  ── 分解登记 .spec-dev/roadmaps/<project>.
 
 所有产物（spec、plan、验收报告、探索笔记、ADR、roadmap）统一收纳在项目根目录 `.spec-dev/` 下；历史项目 `docs/` 位置的产物默认自动迁移过去（守卫安装器自带 `migrate-to-spec-dev.mjs`，会话自检发现历史布局也会当场迁移），迁移前守卫仍识别旧位置兜底。
 
-每个 skill 也可独立使用：想法未定型可从 exploring 开始；已有 spec 可直接从 writing-plans 进入；已有计划可直接 executing-plans；acceptance-qa / using-git-worktrees / test-driven-development 可被任意工作流触发；quick-fix 处理已决定、无设计空间的小修复，不走完整设计流程。
+每个 skill 也可独立使用：想法未定型可从 exploring 开始；已有 spec 可直接从 writing-plans 进入；已有计划可直接 executing-plans；acceptance-qa / using-git-worktrees / test-driven-development 可被任意工作流触发；quick-fix 处理已决定、无设计空间的小修复，不走完整设计流程；clarifying 不承诺任何工作流，单独把一个想法逐题磨到共识。
 
 ## 安装
 
@@ -238,6 +239,8 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design
 
 检查 MCP 配置状态：`/check-mcp`
 
+把一个需求分诊到正确通道：`/triage <需求>`
+
 ## 专门化 Agents
 
 主线程干活、子代理不写码——实现代码始终由主线程编写，agent 只承担探索、审查与复跑验证等分析性任务：
@@ -266,7 +269,7 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 │   └── pre-push                     # 发布兜底（校验 CHANGELOG 条目、补打版本 tag）
 ├── .mcp.json                        # MCP 配置（开发与插件分发共用一份）
 ├── agents/                          # 3 个专门化 agents（分析与复跑验证，不写实现代码）
-├── commands/                        # /check-mcp 命令
+├── commands/                        # /check-mcp、/triage 命令
 ├── guardrail/                       # spec 漂移守护（可装入目标仓库）
 ├── skills/
 │   ├── exploring/                   # 探索模式（思考伙伴）

@@ -7,6 +7,183 @@
 
 ---
 
+## [7.19.1] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：test-scoping 计划缝合③现状——最终任务模板保留资源台账并纳入新步骤序（1裁决/2退役/3合并/4台账清理/5锚定），行号引用校正
+
+
+## [7.19.0] - 2026-08-08
+
+### ✨ 新增 (Added)
+
+- **T4**：quick-fix 收尾清单式清理——对话记账、确认后清理、婉拒保留，附 eval
+- **T3**：acceptance-qa 已有服务隔离复用判定——能隔离才复用/新建兜底/禁破坏性操作，附 eval
+- **T2**：executing-plans 创建即登记纪律 + 收尾按台账清理核对
+- **T1**：writing-plans 最终任务模板加资源台账——权威定义（行格式+三总则），清理步骤改台账遍历
+
+### 📝 文档 (Docs)
+
+- **acceptance**：resource-ledger 验收报告——矩阵 6/6 PASS（1 行合并后核），5 DELIVERED
+
+### 🧹 其他 (Misc)
+
+- **spec**：resource-ledger sync_commit 锚定 086d8d3，roadmap 子项目③ delivered
+
+
+## [7.18.7] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：roadmap 子项目④依赖改 #3——最终任务模板与 executing-plans 收尾改动面重叠，④ 待③合并后缝合执行
+
+
+## [7.18.6] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：resource-ledger 实施计划落盘——7 任务（台账权威定义/三引用方接入/验收/合并），含树 SHA 空提交护栏与④冲突对策
+
+
+## [7.18.5] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：test-scoping 计划全局约束补环境中立（Codex 兼容）条款
+
+
+## [7.18.4] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：resource-ledger spec 定稿激活——status 翻 active
+
+
+## [7.18.3] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：resource-ledger spec 审查修订——R3 陈述补登记目标分流（Scenario 与陈述对齐）
+
+
+## [7.18.2] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：resource-ledger spec 落盘——资源台账/隔离复用/收尾清理设计（draft），roadmap 子项目③置 in-progress
+
+
+## [7.18.1] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：test-scoping 实施计划落盘——6 任务（头部节模板/任务0分域/最终任务裁决与退役/worktree 参数化/消费方引用/合并），纯文档特性空测试范围
+
+### 🧹 其他 (Misc)
+
+- **spec**：triage-routing sync_commit 锚定 4bd9c86，roadmap 子项目② delivered
+
+
+## [7.18.0] - 2026-08-08
+
+### ✨ 新增 (Added)
+
+- 落地 triage-routing——/triage 显式分诊命令、quick-fix 升级交接与拿不准档默认倾向、报告通道、clarifying 出口回填
+
+
+## [7.17.6] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：test-scoping spec 定稿激活——status 翻 active
+
+
+## [7.17.5] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：test-scoping spec 审查修订——归属裁决改列 MODIFIED 并钉死复跑机制、任务间验证措辞收敛、补空范围/命令失败 Scenario、退役判据锚定命名约定
+
+
+## [7.17.4] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：test-scoping spec 落盘——计划声明制测试分域/全量安全网/归属裁决/Scenario 锚点退役（draft），roadmap 登记子项目④，附探索笔记
+
+
+## [7.17.3] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：triage-routing 实施计划落盘——8 任务（命令主体/三引用方改造/发布面/验收/合并），含空提交护栏
+
+
+## [7.17.2] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：triage-routing spec 定稿激活——status 翻 active
+
+
+## [7.17.1] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：triage-routing spec 审查修订——报告通道路由机制钉死、发布面补自动发版承载、拿不准档补同向 Scenario、Codex 承载说明
+
+
+## [7.17.0] - 2026-08-08
+
+### ✨ 新增 (Added)
+
+- 落地 clarifying 共享澄清纪律 skill 与引用方改造
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：triage-routing spec 落盘——显式分诊入口/升级交接/报告通道设计（draft），roadmap 子项目②置 in-progress
+
+### 🧹 其他 (Misc)
+
+- **spec**：sync_commit 锚定 c234049，roadmap 子项目① delivered
+
+
+## [7.16.6] - 2026-08-05
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：clarifying-skill 实施计划落盘——8 任务（skill 主体/evals/双引用方改造/发布面/验收/合并）
+
+
+## [7.16.5] - 2026-08-05
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：clarifying spec 定稿激活——status 翻 active，漂移守卫生效
+
+
+## [7.16.4] - 2026-08-05
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：clarifying spec 审查修订——R1 拆分事实自查、数据流去除未落地报告通道、验收矩阵补两行
+
+
+## [7.16.3] - 2026-08-05
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：clarifying-skill spec 落盘——共享澄清纪律抽取设计（draft），roadmap 子项目①置 in-progress
+
+
+## [7.16.2] - 2026-08-05
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：登记 skill-flow-upgrade roadmap——澄清独立/分诊路由/资源台账三子项目分解
+
+
 ## [7.16.1] - 2026-07-15
 
 ### 🔧 修复 (Fixed)

@@ -23,6 +23,8 @@ description: >-
 | **quick-fix** | **已承诺 + 无设计空间**（小 bug、小调整） | **无** | **修复完成并验证** |
 | requirement-analysis | 已承诺 + 有设计空间 | 有 | 交接 writing-plans |
 
+**拿不准档默认倾向**：已承诺的开发请求、大小/设计空间拿不准时，默认先进 quick-fix——升级便宜、降级浪费；步骤 2.5 基于根因证据的升级门（含上下文交接）是安全网。与 requirement-analysis 阶段 1 小修检查的对偶表述同向。
+
 ## 流程（6 步）
 
 ### 步骤 1：接收问题 + 入口分诊自检
@@ -43,11 +45,11 @@ description: >-
 - **跨模块改动**（根因修复需要动多个模块、牵连面超出单点）；
 - **引入新依赖**（需要新第三方库/框架）。
 
-命中时向用户呈现两个选项：**升级到 requirement-analysis** / **明确坚持在 quick-fix 继续**。不自动切换、不强制终止。**若用户坚持继续且修复改变契约，仍强制走步骤 5a 的 spec 同步分支**——护栏放松的是流程重量，不是漂移防护。升级经用户同意后调用 requirement-analysis skill。
+命中时向用户呈现两个选项：**升级到 requirement-analysis** / **明确坚持在 quick-fix 继续**。不自动切换、不强制终止。**若用户坚持继续且修复改变契约，仍强制走步骤 5a 的 spec 同步分支**——护栏放松的是流程重量，不是漂移防护。升级经用户同意后调用 requirement-analysis skill，**并把已定位的根因、spec 反查结果与步骤 3 已裁决的澄清答案作为其阶段 1 输入——其阶段 2 不重查已查证部分、阶段 3 不重问已裁决问题，升级不等于重来**。
 
 ### 步骤 3：逐题校对（一次一个问题）
 
-沿用 requirement-analysis 的提问纪律（Claude Code 用 `AskUserQuestion`，Codex 用对话消息；一次一个、选择题优先、先查后问）。核心确认三类：
+提问纪律遵循 clarifying skill 的核心纪律（被引用模式，纪律定义以 clarifying 为准）：一次一题、选择题优先且推荐项放首位（Claude Code 用 `AskUserQuestion`）、事实自查决策交用户。核心确认三类：
 
 1. **根因认定**对不对；
 2. **修复方案**选哪个（有多个修法时）；
@@ -84,6 +86,8 @@ description: >-
 - **要** → 触发 acceptance-qa skill。输入按 spec 命中情况装配：命中 active spec 则传 spec 路径 + 变更文件清单（acceptance-qa 按变更面裁剪矩阵）；未命中则由 acceptance-qa 现场生成迷你矩阵。无需改动 acceptance-qa。
 - **不要** → 至少运行受影响的测试文件作为最低验证，区分"本次新增失败"与"既有失败"，结果呈现给用户，不留"没验证"空白。
 
+**收尾资源清理**：修复过程创建的持久资源（测试数据/表、临时容器等，对话内记账）在验证完成后展示清单（标识 + 清理命令）请用户确认——确认后逐条清理并报告结果；婉拒则保留并说明位置与手动清理方式；无创建资源时声明"无待清理资源"。共享缓存默认保留；台账纪律细则以 writing-plans 最终任务模板的资源台账定义为准。
+
 ## 与 guardrail 的关系
 
 skill 体系与守卫此前的唯一连接是 requirement-analysis 写 spec frontmatter 锚点。quick-fix 是第二个连接点：**消费**这些锚点（反查 covers/status）驱动修复决策，并在两分支上分别用"同步 spec"和"trailer 放行"与守卫协作。quick-fix 不改 guardrail 任何代码，是纯消费方 + 优雅降级。
@@ -92,7 +96,7 @@ skill 体系与守卫此前的唯一连接是 requirement-analysis 写 spec fron
 
 | 用途 | Claude Code | Codex |
 |------|-------------|-------|
-| 用户澄清/确认 | `AskUserQuestion`（单题带选项） | 对话消息提问并等待回复 |
+| 用户澄清/确认 | `AskUserQuestion`（单题带选项） | 对话消息提问（逐题规范见 clarifying 内嵌 Codex 规范节） |
 | 根因探索子代理 | `Agent`（subagent_type: code-explorer） | `spawn_agent`（`fork_turns: "none"`）+ `wait_agent` |
 | 复用 TDD/验收 | 引用 test-driven-development、触发 acceptance-qa | 同左（skill 通用） |
 

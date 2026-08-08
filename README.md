@@ -16,6 +16,7 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 - **Engineering discipline** — `using-git-worktrees` (isolated workspaces, native tools first) and `test-driven-development` (no production code without a failing test) are standalone skills reusable from any workflow
 - **All-round acceptance** — `acceptance-qa` runs acceptance over the dimension × execution-nature matrix: unit/integration/API, Playwright E2E, visual regression, accessibility, performance (web CWV / k6 for APIs / client), AI autonomous acceptance (mandatory evidence + serial recheck + verify-assertions-first) and failure diagnosis
 - **Lightweight fix** — `quick-fix`, a fast path for already-decided fixes with no design space (small bugs, minor adjustments): root cause with spec back-lookup, one-question-at-a-time confirmation, TDD fix, optional acceptance; splits on contract impact to avoid spec drift and escalates to requirement-analysis on contract-crossing / cross-module / new-dependency signals
+- **Shared clarification** — `clarifying`, the grill-style questioning discipline (one question at a time down the decision tree, facts self-researched, each decision put to the user with a recommendation); referenced by requirement-analysis and quick-fix, and usable standalone with three exits (hand off to the main workflow / stop / write notes to md)
 - **Contract-driven orchestration** — subagent output goes through JSON Schema contracts, deterministically validated by `validate-output.mjs`, with one retry on failure
 - **MCP enhancements** — integrates context7, sequential-thinking, playwright, chrome-devtools (optional, graceful degradation)
 - **3 specialized agents** — code-explorer, external-resource-explorer, code-reviewer (analysis and verification re-runs only; implementation code is always written by the main thread)
@@ -48,7 +49,7 @@ The three entry points split by commitment and design space: **exploring** (unde
 
 All artifacts (specs, plans, acceptance reports, exploration notes, ADRs, roadmaps) live under `.spec-dev/` at the project root; legacy artifacts under `docs/` are auto-migrated there by default (the guard installer ships `migrate-to-spec-dev.mjs`, and the session self-check migrates on sight of a legacy layout), while the drift guard keeps recognizing the old location until migration lands.
 
-Each skill also works standalone: start from exploring while the idea is unsettled; enter at writing-plans with an existing spec; go straight to executing-plans with an existing plan; acceptance-qa / using-git-worktrees / test-driven-development can be triggered from any workflow; quick-fix handles small already-decided fixes without the full design workflow.
+Each skill also works standalone: start from exploring while the idea is unsettled; enter at writing-plans with an existing spec; go straight to executing-plans with an existing plan; acceptance-qa / using-git-worktrees / test-driven-development can be triggered from any workflow; quick-fix handles small already-decided fixes without the full design workflow; clarifying grills an idea into shared understanding without committing to any workflow.
 
 ## Installation
 
@@ -238,6 +239,8 @@ Get an API key: [Context7](https://context7.com/)
 
 Check MCP configuration status: `/check-mcp`
 
+Triage a request to the right lane: `/triage <request>`
+
 ## Specialized Agents
 
 The main thread does the work; subagents never write code — implementation code is always written by the main thread, and agents only take on analysis tasks like exploration, review and verification re-runs:
@@ -266,7 +269,7 @@ spec-dev/                            # repo root is the plugin root (flat layout
 │   └── pre-push                     # release backstop (checks CHANGELOG entry, backfills version tag)
 ├── .mcp.json                        # MCP config (shared by development and plugin distribution)
 ├── agents/                          # 3 specialized agents (analysis and verification re-runs, no implementation code)
-├── commands/                        # /check-mcp command
+├── commands/                        # /check-mcp, /triage commands
 ├── guardrail/                       # spec drift guard (installable into target repos)
 ├── skills/
 │   ├── exploring/                   # exploration mode (thinking partner)

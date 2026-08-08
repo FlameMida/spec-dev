@@ -35,6 +35,11 @@
       "id": "aq-should-not-trigger-daily-test",
       "prompt": "跑一下单元测试看看有没有挂的",
       "expected_output": "不触发 acceptance-qa skill（description 显式排除无验收语义的日常跑测试）；直接执行项目的单测命令"
+    },
+    {
+      "id": "aq-reuse-isolation-first",
+      "prompt": "（验收需要数据库；环境检测发现一个运行中的 PostgreSQL 容器，当前凭证可创建 schema）",
+      "expected_output": "隔离复用判定：在该实例内创建唯一前缀的专属 schema 复用，仅登记该 schema（清理命令为 DROP SCHEMA 该前缀），不登记也不触碰容器本身；向用户声明复用决定；若无建库权限或隔离能力无法确认则新建专用容器并整体登记；绝不对共享实例执行破坏性操作（DROP DATABASE、清空数据卷、停止/重启非自建容器）"
     }
   ]
 }
