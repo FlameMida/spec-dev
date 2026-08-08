@@ -35,7 +35,7 @@ spec_dev:
 - 新增：`commands/triage.md`；
 - 修改：`skills/quick-fix/SKILL.md`（分诊三角 + 步骤 2.5）、`skills/requirement-analysis/SKILL.md`（阶段 1）、`skills/clarifying/SKILL.md`（出口 1）、`.spec-dev/2026-08-05-clarifying-skill/spec/clarifying-skill-design.md`（数据流行同步，消除"待追加"注记）；
 - evals：`skills/quick-fix/evals/evals.json`、`skills/requirement-analysis/evals/evals.json` 各加 1 条；
-- 发布面：README.md / README.zh-CN.md（用法区 + 目录树注释）、`.codex-plugin/plugin.json`（defaultPrompt + keywords）。
+- 发布面：README.md / README.zh-CN.md（用法区 + 目录树注释）、`.codex-plugin/plugin.json`（defaultPrompt + keywords）；CHANGELOG 与版本号递增（三处 version 字段：双端 plugin.json 与 marketplace metadata.version）由 post-commit 自动发版承载——计划不手写、不使用 SKIP_RELEASE_HOOK。
 
 ## 已确认的关键决策
 
@@ -73,7 +73,7 @@ spec_dev:
 
 ### Requirement: triage 确认后路由并传递上下文
 
-用户确认出口后，执行者 SHALL 调用对应 skill 并把请求原文与分诊依据作为其输入传递；triage 全程 SHALL NOT 落盘任何文件。
+用户确认出口后，执行者 SHALL 按出口类型路由：三个 skill 出口（quick-fix / requirement-analysis / exploring）调用对应 skill 并把请求原文与分诊依据作为其输入传递；报告通道出口按 requirement-analysis 阶段 1 权威定义的约定执行并传递同等上下文。triage 全程 SHALL NOT 落盘任何文件。
 
 #### Scenario: 用户改选出口照选
 
@@ -99,13 +99,19 @@ spec_dev:
 
 ### Requirement: 拿不准档默认路由 quick-fix
 
-对已承诺的开发请求，当大小/设计空间拿不准时，triage 与 requirement-analysis 阶段 1 小修检查 SHALL 建议先进 quick-fix（以其证据式升级门为安全网）；quick-fix 分诊三角 SHALL 记载同向的默认倾向表述。
+对已承诺的开发请求，当大小/设计空间拿不准时，triage、requirement-analysis 阶段 1 小修检查与 quick-fix 分诊三角 SHALL 以同向表述记载并执行"默认先进 quick-fix（以其证据式升级门为安全网）"的倾向。
 
 #### Scenario: 已承诺模糊请求路由 quick-fix
 
 - **GIVEN** 请求"改一下导出逻辑"，措辞无法判定是否跨模块
 - **WHEN** triage 判定
 - **THEN** 建议路线为 quick-fix 起步，依据中说明"看过根因后由升级门证据式判定"
+
+#### Scenario: 双向表述同向
+
+- **GIVEN** 改造后的 quick-fix 分诊三角文本与 requirement-analysis 小修检查对偶句
+- **WHEN** 逐句对照
+- **THEN** 两处对拿不准档的默认倾向语义一致且互相印证，无一处写"先走 requirement-analysis"之类的反向表述
 
 ### Requirement: quick-fix 升级携带上下文交接
 
@@ -168,7 +174,7 @@ clarifying 独立会话出口 1 SHALL 按承诺状态、设计空间与任务类
 ### 错误处理
 
 - 判定拿不准 → 列两候选出口交用户挑；
-- Codex 无 slash 命令 → defaultPrompt 自然语言触发同等分诊行为；
+- Codex 端 `commands/` 不随插件 `skills` 字段加载、triage 正文不可见 → 同等分诊行为由各 SKILL.md 的入口自检兜底 + defaultPrompt 提示词引导承载（与 check-mcp 仅有 defaultPrompt 条目的先例一致）；
 - 报告通道被当作实施后门 → 限定"交付物不是代码变更"，结论要落地即回归分诊。
 
 ## 测试与验收策略
@@ -183,7 +189,7 @@ clarifying 独立会话出口 1 SHALL 按承诺状态、设计空间与任务类
 | 判据变更不需改命令（引用不复制） | 文档审查 | 验收任务（grep 判据细节不在命令内） | 检查记录 |
 | 拿不准档双向表述同向（quick-fix 三角 vs RA 小修检查） | 文档审查 | 验收任务（对照检查） | 对照记录 |
 | 非开发共识转报告通道 + clarifying spec 注记消除 | 文档审查 | 验收任务（出口 1 文本 + spec 数据流行） | 检查记录 |
-| 发布面登记（README ×2、defaultPrompt、keywords） | 文档审查 | 验收任务 | 检查记录 |
+| 发布面登记（README ×2、defaultPrompt、keywords）+ CHANGELOG/版本号已随发版自动化递增 | 文档审查 | 验收任务 | 检查记录 |
 
 ## 风险与边缘情况
 
