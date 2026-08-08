@@ -7,6 +7,21 @@
 
 ---
 
+## [7.17.0] - 2026-08-08
+
+### ✨ 新增 (Added)
+
+- 落地 clarifying 共享澄清纪律 skill 与引用方改造
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：triage-routing spec 落盘——显式分诊入口/升级交接/报告通道设计（draft），roadmap 子项目②置 in-progress
+
+### 🧹 其他 (Misc)
+
+- **spec**：sync_commit 锚定 c234049，roadmap 子项目① delivered
+
+
 ## [7.16.6] - 2026-08-05
 
 ### 📝 文档 (Docs)
