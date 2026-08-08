@@ -7,6 +7,13 @@
 
 ---
 
+## [7.18.4] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：resource-ledger spec 定稿激活——status 翻 active
+
+
 ## [7.18.3] - 2026-08-08
 
 ### 📝 文档 (Docs)

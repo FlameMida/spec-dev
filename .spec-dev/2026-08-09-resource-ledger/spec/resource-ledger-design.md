@@ -3,7 +3,7 @@
 spec_dev:
   version: 1
   feature: resource-ledger
-  status: draft
+  status: active
   covers: []
   sync_commit: null
 ---
