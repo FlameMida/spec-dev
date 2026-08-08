@@ -7,6 +7,24 @@
 
 ---
 
+## [7.19.0] - 2026-08-08
+
+### ✨ 新增 (Added)
+
+- **T4**：quick-fix 收尾清单式清理——对话记账、确认后清理、婉拒保留，附 eval
+- **T3**：acceptance-qa 已有服务隔离复用判定——能隔离才复用/新建兜底/禁破坏性操作，附 eval
+- **T2**：executing-plans 创建即登记纪律 + 收尾按台账清理核对
+- **T1**：writing-plans 最终任务模板加资源台账——权威定义（行格式+三总则），清理步骤改台账遍历
+
+### 📝 文档 (Docs)
+
+- **acceptance**：resource-ledger 验收报告——矩阵 6/6 PASS（1 行合并后核），5 DELIVERED
+
+### 🧹 其他 (Misc)
+
+- **spec**：resource-ledger sync_commit 锚定 086d8d3，roadmap 子项目③ delivered
+
+
 ## [7.18.7] - 2026-08-08
 
 ### 📝 文档 (Docs)

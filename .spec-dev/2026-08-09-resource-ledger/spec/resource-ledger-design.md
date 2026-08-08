@@ -5,7 +5,7 @@ spec_dev:
   feature: resource-ledger
   status: active
   covers: []
-  sync_commit: null
+  sync_commit: "086d8d3390ed663df3f7f3d160b658fa7e2413db"
 ---
 
 # resource-ledger 设计
