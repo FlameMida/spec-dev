@@ -7,6 +7,17 @@
 
 ---
 
+## [7.18.1] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：test-scoping 实施计划落盘——6 任务（头部节模板/任务0分域/最终任务裁决与退役/worktree 参数化/消费方引用/合并），纯文档特性空测试范围
+
+### 🧹 其他 (Misc)
+
+- **spec**：triage-routing sync_commit 锚定 4bd9c86，roadmap 子项目② delivered
+
+
 ## [7.18.0] - 2026-08-08
 
 ### ✨ 新增 (Added)
