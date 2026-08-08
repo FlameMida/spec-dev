@@ -1,6 +1,6 @@
 {
   "name": "spec-dev",
-  "version": "7.17.5",
+  "version": "7.17.6",
   "description": "Development workflow plugin suite: exploring (thinking partner), requirement-analysis (design workflow), writing-plans / executing-plans (planning and execution), visual-preview, using-git-worktrees / test-driven-development (engineering discipline), acceptance-qa (all-round acceptance), quick-fix (lightweight bug-fix workflow), clarifying (shared clarification discipline). / 开发工作流插件集：exploring 探索模式、requirement-analysis 设计工作流、writing-plans/executing-plans 计划与执行、visual-preview 可视化预览、using-git-worktrees/test-driven-development 工程纪律、acceptance-qa 全能验收、quick-fix 轻量修复、clarifying 共享澄清纪律。",
   "author": {
     "name": "FlameMida",
@@ -29,6 +29,7 @@
     "requirements",
     "quick-fix",
     "clarifying",
+    "triage",
     "anysearch",
     "search"
   ],
@@ -54,6 +55,7 @@
       "Use acceptance-qa to run all-round acceptance on this feature / 使用 acceptance-qa 全面验收这个功能",
       "Use quick-fix to fix a small bug without the full design workflow / 使用 quick-fix 直接修小 bug，不走完整设计流程",
       "Use clarifying to grill this idea into shared understanding, one question at a time / 使用 clarifying 逐题把这个想法磨到共识",
+      "Triage this request to the right workflow lane (quick-fix / requirement-analysis / exploring / report) / 把这个需求分诊到正确的工作流通道（quick-fix / requirement-analysis / exploring / 报告通道）",
       "Check workspace MCP configuration and fallbacks / 检查当前工作区 MCP 配置与降级方案"
     ],
     "brandColor": "#2563EB"

@@ -7,6 +7,13 @@
 
 ---
 
+## [7.17.6] - 2026-08-08
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：test-scoping spec 定稿激活——status 翻 active
+
+
 ## [7.17.5] - 2026-08-08
 
 ### 📝 文档 (Docs)

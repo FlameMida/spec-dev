@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: test-scoping
-  status: draft
+  status: active
   covers:
     - "skills/writing-plans/SKILL.md"
     - "skills/using-git-worktrees/SKILL.md"
