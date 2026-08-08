@@ -6,7 +6,7 @@ spec_dev:
   status: active
   covers:
     - "commands/triage.md"
-  sync_commit: null
+  sync_commit: "4bd9c86c457ca88eb66aea26502086741a35668f"
 ---
 
 # triage-routing 设计
