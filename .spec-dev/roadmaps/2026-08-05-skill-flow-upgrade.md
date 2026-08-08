@@ -22,9 +22,11 @@ spec_dev_roadmap:
 | 1 | clarifying-skill | 新建 skills/clarifying/（grilling 式逐题澄清 + 三出口 + 可独立调用），requirement-analysis 阶段 3 与 quick-fix 步骤 3 改为引用去重 | — | delivered | .spec-dev/2026-08-05-clarifying-skill/ |
 | 2 | triage-routing | 新增 commands/triage.md 薄命令（引用不复制分诊判据）；quick-fix 补升级上下文交接 + "拿不准档优先 quick-fix"默认倾向；requirement-analysis 阶段 1 加任务类型检查与报告通道出口（.spec-dev/reports/ 落盘约定） | #1 | in-progress | .spec-dev/2026-08-08-triage-routing/ |
 | 3 | resource-ledger | acceptance-qa 环境检测加复用策略（能隔离才复用，无法隔离则新建兜底）；writing-plans 最终任务模板加台账清理步骤；executing-plans / quick-fix 收尾接台账；共享缓存默认保留 | — | pending | — |
+| 4 | test-scoping | 计划声明制"相关测试范围"（TIA 工具优先、covers glob 兜底）让基线与任务间验证分域执行；最终任务保留全量安全网 + 归属裁决 + Scenario 锚点孤儿测试退役检查 | — | in-progress | .spec-dev/2026-08-09-test-scoping/ |
 
 ## 备注
 
 - 已裁决的全局约定：报告通道=分流出口 + 落盘约定（不独立成 skill）；台账载体=plan 最终任务清理清单动态追加（无 plan 流程对话内记账）；共享缓存（~/.cargo、pnpm store 等）默认保留，仅用户显式要求时清理；套件保持"一次一题"铁律，batch-grill 的 frontier 模式不引入。
 - 保留不动：exploring skill（与 clarifying 发散/收敛互补，不合并）、HARD-GATE、TDD 铁律、spec 漂移守卫、分诊三角的双向建议式转介。
 - 风险：clarifying 被两处引用，后续修改需同步检查引用方语境（见子项目①设计）。
+- 子项目④来源：2026-08-09 探索（.spec-dev/explorations/test-accumulation-and-handoff.md）；与③正交（③管资源/环境台账，④管测试选择与退役）。同次探索的"spec 模板实施线索附录"降级分流为独立小特性，不入本 roadmap。
