@@ -7,7 +7,7 @@ spec_dev:
     - "skills/writing-plans/SKILL.md"
     - "skills/using-git-worktrees/SKILL.md"
     - "skills/executing-plans/SKILL.md"
-  sync_commit: null
+  sync_commit: 4d50e9a
 ---
 
 # 测试分域执行 + 测试退役纪律（test-scoping）设计
