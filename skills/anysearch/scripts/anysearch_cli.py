@@ -14,6 +14,9 @@ if sys.stderr.encoding != "utf-8":
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 ENDPOINT = "https://api.anysearch.com/mcp"
+# Identifies access mode + spec version to the backend (X-Anysearch-Client).
+# Keep the version aligned with SKILL.md `version`.
+CLIENT_HEADER = "skill/3.0.1"
 
 def _load_env():
     """Load API keys from .env files near the skill.
@@ -55,7 +58,10 @@ AVAILABLE_DOMAINS = [
 
 
 def _build_headers(api_key: str) -> dict:
-    headers = {"Content-Type": "application/json"}
+    headers = {
+        "Content-Type": "application/json",
+        "X-Anysearch-Client": CLIENT_HEADER,
+    }
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"
     return headers
@@ -108,6 +114,41 @@ def _parse_json_list(value: str) -> list:
         return [s.strip() for s in value.split(",") if s.strip()]
 
 
+def _parse_sub_domain_params(value: str):
+    """Parse sub_domain_params from JSON, {key:value} or key=value format."""
+    if not value:
+        return None
+    try:
+        return json.loads(value)
+    except json.JSONDecodeError:
+        # {key:value,key2:value2} format (PowerShell strips inner quotes from JSON)
+        if value.startswith("{") and value.endswith("}"):
+            inner = value[1:-1].strip()
+            if inner:
+                result = {}
+                for pair in inner.split(","):
+                    if ":" not in pair:
+                        continue
+                    idx = pair.index(":")
+                    key = pair[:idx].strip().strip("'\"")
+                    val = pair[idx + 1:].strip().strip("'\"")
+                    if key:
+                        result[key] = val
+                if result:
+                    return result
+        # key=value,key2=value2 format
+        result = {}
+        for pair in value.split(","):
+            if "=" not in pair:
+                continue
+            idx = pair.index("=")
+            key = pair[:idx].strip()
+            val = pair[idx + 1:].strip()
+            if key:
+                result[key] = val
+        return result if result else None
+
+
 def cmd_search(args):
     """Execute search (general or vertical)."""
     arguments = {"query": args.query}
@@ -117,11 +158,11 @@ def cmd_search(args):
         if args.sub_domain:
             arguments["sub_domain"] = args.sub_domain
         if args.sub_domain_params:
-            try:
-                arguments["sub_domain_params"] = json.loads(args.sub_domain_params)
-            except json.JSONDecodeError:
-                print("Error: --sub_domain_params must be valid JSON", file=sys.stderr)
+            parsed = _parse_sub_domain_params(args.sub_domain_params)
+            if not parsed:
+                print("Error: --sub_domain_params must be valid JSON or key=value pairs", file=sys.stderr)
                 sys.exit(1)
+            arguments["sub_domain_params"] = parsed
 
     if args.max_results is not None:
         arguments["max_results"] = min(args.max_results, 10)
@@ -270,6 +311,26 @@ def cmd_batch_search(args):
         print("Error: provide --queries or --query", file=sys.stderr)
         sys.exit(1)
 
+    # Inject shared params into each query item (item's own fields take precedence)
+    shared_domain = getattr(args, "batch_domain", None)
+    shared_sub_domain = getattr(args, "batch_sub_domain", None)
+    shared_sdp_raw = getattr(args, "batch_sdp", None)
+    shared_sdp = _parse_sub_domain_params(shared_sdp_raw) if shared_sdp_raw else None
+    shared_max_results = getattr(args, "batch_max_results", None)
+
+    for item in queries:
+        if shared_domain and not item.get("domain"):
+            item["domain"] = shared_domain
+        if shared_sub_domain and not item.get("sub_domain"):
+            item["sub_domain"] = shared_sub_domain
+        if shared_sdp and not item.get("sub_domain_params"):
+            item["sub_domain_params"] = shared_sdp
+        if shared_max_results is not None and item.get("max_results") is None:
+            item["max_results"] = min(shared_max_results, 10)
+        # Parse KV string sub_domain_params inside query items
+        if isinstance(item.get("sub_domain_params"), str):
+            item["sub_domain_params"] = _parse_sub_domain_params(item["sub_domain_params"])
+
     arguments = {"queries": queries}
     print(_call_api("batch_search", arguments, args.api_key))
 
@@ -308,7 +369,7 @@ def build_parser() -> argparse.ArgumentParser:
         epilog=(
             "examples:\n"
             "  anysearch search \"quantum computing\"\n"
-            "  anysearch search \"AAPL\" --domain finance --sub_domain finance.us_stock\n"
+            "  anysearch search \"AAPL\" --domain finance --sub_domain finance.quote\n"
             "  anysearch get_sub_domains --domain finance\n"
             "  anysearch extract --url https://example.com\n"
             "  anysearch batch_search --queries '[{\"query\":\"AAPL\"},{\"query\":\"GOOG\"}]'\n"
@@ -348,11 +409,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     search_p.add_argument(
         "--sub_domain", "-s",
-        help="Sub-domain routing key (e.g. finance.us_stock). Required for vertical search; obtain via get_sub_domains.",
+        help="Sub-domain routing key (e.g. finance.quote). Required for vertical search; obtain via get_sub_domains.",
     )
     search_p.add_argument(
-        "--sub_domain_params",
-        help="Additional sub_domain parameters as JSON string. Schema depends on the sub_domain (see get_sub_domains output).",
+        "--sub_domain_params", "--sdp", "-p",
+        help="Sub_domain parameters as JSON or key=value pairs (e.g. type=stock,symbol=AAPL,cn_code=). Schema depends on the sub_domain (see get_sub_domains output).",
     )
     search_p.add_argument(
         "--max_results", "-m",
@@ -443,6 +504,28 @@ def build_parser() -> argparse.ArgumentParser:
         action="append",
         dest="query_items",
         help="Shorthand: repeatable single-query string. Easier for PowerShell. Up to 5.",
+    )
+    batch_p.add_argument(
+        "--domain", "-d",
+        dest="batch_domain",
+        choices=AVAILABLE_DOMAINS,
+        help="Shared domain injected into all query items (item's own domain takes precedence).",
+    )
+    batch_p.add_argument(
+        "--sub_domain", "-s",
+        dest="batch_sub_domain",
+        help="Shared sub_domain injected into all query items (item's own sub_domain takes precedence).",
+    )
+    batch_p.add_argument(
+        "--sub_domain_params", "--sdp", "-p",
+        dest="batch_sdp",
+        help="Shared sub_domain_params as JSON or key=value pairs, injected into all query items.",
+    )
+    batch_p.add_argument(
+        "--max_results", "-m",
+        dest="batch_max_results",
+        type=int,
+        help="Shared max results (1-10) injected into all query items (item's own max_results takes precedence).",
     )
     batch_p.set_defaults(func=cmd_batch_search)
 

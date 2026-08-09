@@ -7,6 +7,31 @@
 
 ---
 
+## [7.20.0] - 2026-08-09
+
+### ✨ 新增 (Added)
+
+- **T4**：executing-plans 引用相关测试范围/归属裁决/退役检查新语义（引用不复制）
+- **T3**：using-git-worktrees Step 3 基线验证按计划声明范围参数化
+- **T2**：writing-plans 最终任务模板加归属裁决与测试退役检查（保留资源台账，步骤序 1裁决/2退役/3合并/4台账清理/5锚定）
+- **T1**：writing-plans 计划头部模板加「相关测试范围」节；feat(T2 部分): 任务 0 基线分域措辞与收尾说明段步骤序预调
+
+### 🔧 修复 (Fixed)
+
+- **review**：修复路径统一路由到退役检查步骤；worktrees 回退句补齐失效注明措辞
+
+### 📝 文档 (Docs)
+
+- **spec-dev**：roadmap 子项目④ delivered，skill-flow-upgrade 全部交付、status 翻 done
+- **acceptance**：test-scoping 验收对账——11/11 Scenario COVERED，6 DELIVERED，审查 2 发现已修复复审通过
+- **spec**：test-scoping spec 修复至用户批准版——补回 rtk 代理提交丢失的四处修订，删除 ADDED 节重复的旧版归属裁决
+
+### 🧹 其他 (Misc)
+
+- Squashed 'skills/anysearch/' changes from 6ff6aa9..caed9ea
+- **spec**：test-scoping sync_commit 锚定 4d50e9a
+
+
 ## [7.19.1] - 2026-08-08
 
 ### 📝 文档 (Docs)
