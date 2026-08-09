@@ -20,8 +20,8 @@ Two modes: general (omit --domain) and vertical (requires --domain + --sub_domai
 |--------|------|----------|-------------|
 | query | string | YES | Search query (positional) |
 | --domain, -d | string | no | Vertical domain: {{DOMAINS_SPACE}} |
-| --sub_domain, -s | string | no | Sub-domain routing key (e.g. finance.us_stock). REQUIRED for vertical search |
-| --sub_domain_params | JSON | conditional | Extra params per sub_domain schema from get_sub_domains. ALL params marked (required) MUST be included, use "" for inapplicable ones. Omit entirely if no params are listed. |
+| --sub_domain, -s | string | no | Sub-domain routing key (e.g. finance.quote). REQUIRED for vertical search |
+| --sdp, --sub_domain_params, -p | string | conditional | Extra params per sub_domain schema. Accepts **key=value pairs** (e.g. `type=stock,symbol=AAPL,cn_code=`) or JSON. ALL params marked (required) MUST be included, use empty value for inapplicable ones (e.g. `cn_code=`). Omit entirely if no params are listed. |
 | --max_results, -m | int | no | 1-10, default 10 |
 
 ### 2. get_sub_domains — Query vertical domain directory
@@ -41,10 +41,15 @@ Single failure does not block others; results are merged.
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
-| --query | string | YES (x1-5) | Repeatable single-query shorthand (CLI-only). Each value becomes `{"query":"..."}` — equivalent to the `queries` array with plain query objects |
-| --queries, -q | JSON | YES | JSON array of query objects, or @file.json to read from file |
+| --query | string | choose one | Repeatable single-query shorthand (CLI-only), 1-5 times. Each value becomes `{"query":"..."}` — equivalent to the `queries` array with plain query objects |
+| --queries, -q | JSON | choose one | JSON array of query objects (1-5), or @file.json to read from file |
+| --domain, -d | string | no | Shared domain injected into all query items (per-item domain overrides) |
+| --sub_domain, -s | string | no | Shared sub_domain injected into all query items (per-item sub_domain overrides) |
+| --sdp, --sub_domain_params, -p | string | no | Shared sub_domain_params (key=value or JSON) injected into all query items |
+| --max_results, -m | int | no | Shared max results (1-10) injected into all query items (item's own max_results takes precedence) |
 
-Each query object supports: query (required), domain, sub_domain, sub_domain_params, max_results.
+Each query object supports: query (required), domain, sub_domain, sub_domain_params (key=value string or object), max_results.
+Shared --domain/--sub_domain/--sdp/--max_results are injected into items that lack their own values; per-item fields always take precedence.
 
 ### 4. extract — Fetch full page content as Markdown
 Truncated at 50,000 chars. HTML pages only.
@@ -70,11 +75,11 @@ EVERYTHING that is NOT pure encyclopedia. Structured data, domain-specific topic
 specialized info, real-time data, locations, or ANY ambiguity.
 
 Step 1: {{LANG_INVOKE}} get_sub_domains --domains domain1,domain2,...
-Step 2: {{LANG_INVOKE}} search "query" --domain X --sub_domain Y [--sub_domain_params '{}']
+Step 2: {{LANG_INVOKE}} search "query" --domain X --sub_domain Y [--sdp key=value]
 Step 3 (optional): {{LANG_INVOKE}} extract "url"
 
 **CRITICAL: When UNSURE, use hybrid via batch_search:**
-{{LANG_INVOKE}} batch_search --queries '[{"query":"..."}, {"query":"...","domain":"X","sub_domain":"Y"}]'
+{{LANG_INVOKE}} batch_search --queries '[{"query":"..."},{"query":"...","domain":"X","sub_domain":"Y","sub_domain_params":"key=val"}]'
 This fires 1 general query + N vertical queries in parallel. Coverage beats guessing.
 
 **Multi-domain intersection:** When a SINGLE topic crosses multiple domains,
@@ -102,13 +107,14 @@ Before performing vertical search, you MUST call get_sub_domains for the target 
 and strictly obey the returned semantic constraints:
 
 1. **params**: Parameters for the sub_domain. get_sub_domains output marks each param
-   as `(required)` or not. You MUST pass ALL required params via `--sub_domain_params`,
-   even if they have no meaningful value — use the key with an empty string:
-   `--sub_domain_params '{"param1":"value","param2":""}'`.
-   Optional params can be omitted if not needed.
+   as `(required)` or not. You MUST pass ALL required params via `--sdp`,
+   even if they have no meaningful value — use the key with an empty value:
+   `--sdp param1=value,param2=`.
+   Optional params can be omitted if not needed. JSON format also accepted:
+   `--sdp '{"param1":"value","param2":""}'`.
 
 2. **sub_domain selection**: Match the user's intent to the best sub_domain description.
-   Example: for "AAPL earnings report", prefer finance.us_stock over finance.forex.
+   Example: for "AAPL earnings report", prefer finance.quote (type=stock) over finance.news.
 
 ---
 
@@ -132,16 +138,16 @@ Step 1: Discover available sub_domains for finance:
 {{LANG_INVOKE}} get_sub_domains --domain finance
 ```
 
-Step 2: Search with the correct sub_domain and required params (use "" for inapplicable ones):
+Step 2: Search with the correct sub_domain and required params (use empty value for inapplicable ones):
 
 ```bash
-{{LANG_INVOKE}} search "AAPL" --domain finance --sub_domain finance.us_stock --sub_domain_params '{"ticker":"AAPL"}' --max_results 5
+{{LANG_INVOKE}} search "AAPL" --domain finance --sub_domain finance.quote --sdp type=stock,symbol=AAPL,cn_code= --max_results 5
 ```
 
-If a param is marked `(required)` but has no meaningful value, pass it as empty string:
+If a param is marked `(required)` but has no meaningful value, pass it with empty value:
 
 ```bash
-{{LANG_INVOKE}} search "latest market trends" --domain finance --sub_domain finance.market --sub_domain_params '{"region":"","timeframe":""}' --max_results 5
+{{LANG_INVOKE}} search "latest market trends" --domain finance --sub_domain finance.market --sdp region=,timeframe= --max_results 5
 ```
 
 ### Scenario 3: Vertical search — academic paper lookup
@@ -176,16 +182,22 @@ Step 2: Search with the correct sub_domain:
 
 ### Scenario 6: Batch search — multiple independent queries in one call
 
-CLI shorthand (`--query`, repeatable for simple queries):
+CLI shorthand with shared domain (`--query` repeatable + shared params):
 
 ```bash
-{{LANG_INVOKE}} batch_search --query "AAPL stock price" --query "TSLA earnings 2025" --query "GOOG market cap"
+{{LANG_INVOKE}} batch_search --query "AAPL stock price" --query "TSLA earnings 2025" --query "GOOG market cap" --domain finance --sub_domain finance.quote --sdp type=stock,symbol=,cn_code=
 ```
 
-With full query objects (vertical domain + parameters):
+With per-item sub_domain_params as key=value strings:
 
 ```bash
-{{LANG_INVOKE}} batch_search --queries '[{"query":"AAPL","domain":"finance","sub_domain":"finance.us_stock"},{"query":"react:hooks","domain":"code","sub_domain":"code.doc"}]'
+{{LANG_INVOKE}} batch_search --queries '[{"query":"AAPL","sub_domain_params":"type=stock,symbol=AAPL,cn_code="},{"query":"MSFT","sub_domain_params":"type=stock,symbol=MSFT,cn_code="}]' --domain finance --sub_domain finance.quote
+```
+
+Hybrid (mixed domains — no shared params, specify per-query):
+
+```bash
+{{LANG_INVOKE}} batch_search --queries '[{"query":"quantum computing"},{"query":"QBTS","domain":"finance","sub_domain":"finance.quote","sub_domain_params":"type=stock,symbol=QBTS,cn_code="}]'
 ```
 
 From a JSON file:
