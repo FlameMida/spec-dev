@@ -3,7 +3,7 @@
 spec_dev:
   version: 1
   feature: supersede-lifecycle
-  status: draft
+  status: active
   covers:
     - "skills/requirement-analysis/SKILL.md"
     - "skills/requirement-analysis/assets/spec-template.md"

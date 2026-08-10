@@ -12,6 +12,8 @@ spec_dev:
 
 # 测试分域执行 + 测试退役纪律（test-scoping）设计
 
+> **Superseded-pending (2026-08-10)** — 本 spec 的「Requirement: 随周期测试退役检查」及术语表"孤儿测试"定义将被 `.spec-dev/2026-08-10-supersede-lifecycle/spec/supersede-lifecycle-design.md` 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
+
 ## 背景与目标
 
 随开发推进测试只增不减，套件现有三处全量测试触点（worktree 基线验证、writing-plans 任务 0 与最终任务）使每次开发的测试成本线性恶化。本设计引入"计划声明的相关测试范围"让基线与过程验证只跑相关测试，保留最终全量安全网；并以 Scenario 锚点为判据建立随周期的测试退役纪律。
