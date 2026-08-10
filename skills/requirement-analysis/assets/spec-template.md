@@ -4,7 +4,7 @@
 
 > 按需增删节：light 档几句话 + 关键决策 + 1-2 条 Requirement 即可；节的篇幅与其复杂度匹配，不为凑结构而注水。
 >
-> **顶部 frontmatter 是漂移守卫锚点，必须保留**：它把本 spec 与其覆盖的代码路径绑定，供 pre-commit / CI / Claude·Codex 的 PreToolUse hook 校验"改了代码却没同步 spec"。填 `feature` 与 `covers`，spec 定稿转 `status: active`；无守卫需求（如纯文档特性）可将 `covers` 留空数组，守卫即跳过。
+> **顶部 frontmatter 是漂移守卫锚点，必须保留**：它把本 spec 与其覆盖的代码路径绑定，供 pre-commit / CI / Claude·Codex 的 PreToolUse hook 校验"改了代码却没同步 spec"。填 `feature` 与 `covers`，spec 定稿转 `status: active`；无守卫需求（如纯文档特性）可将 `covers` 留空数组，守卫即跳过。取代关系走生命周期：`supersedes` 在设计期声明、交付时由取代回写把旧 spec 翻 `superseded` 并填 `superseded_by`——`superseded` 是有正式后继指向的终态，不是绕过守卫的手段。
 
 ```markdown
 ---
@@ -20,6 +20,10 @@ spec_dev:
   sync_commit: null        # 最近一次"代码与本 spec 已同步"的提交 SHA；由 executing-plans
                            # 收尾在合并后写入（计划最终任务的锚定步骤）。
                            # git diff <sync_commit>..HEAD -- <covers> = 此后的代码变化
+  supersedes: []           # 本 spec 取代的旧 spec 路径列表（仓库根相对），设计期由阶段 6 取代分流
+                           # 填写；部分取代同样登记于此，粒度细节写正文「取代与共存」节；无取代留空数组。
+  superseded_by: null      # 本 spec 被取代时由交付回写填入后继 spec 路径（仓库根相对），
+                           # 与 status: superseded 必须成对出现；消费方读到后沿此指针跳转后继。
 ---
 
 # [主题] 设计
@@ -51,6 +55,15 @@ spec_dev:
 
 - [决策 1]：[选择] —— [理由]
 - [决策 2]：[选择] —— [理由]（详见 `../../adr/0007-<slug>.md`）
+
+## 取代与共存
+
+[阶段 6 取代分流结论：对探索命中的每份行为相交 active spec 三分类，逐份一行；无相交时写"无相交 active spec"。
+完全取代登记 frontmatter supersedes + 一句理由；部分取代登记 supersedes + 列出被取代的具体 Requirement 标题，每条附一句取代理由；分面共存不登记 supersedes，记一行判定理由并各自声明 covers（改单面时对另一份用 Spec-Guard: off trailer 放行）。删除整个特性且无新行为承接时，本 spec 应为仅含 REMOVED Requirements 的轻量后继（记录删除理由），交付时按完全取代回写旧 spec。 / Supersede triage: full / partial / facet-coexist, one line per overlapping active spec]
+
+- [完全取代] `<旧spec仓库根路径>`：[一句理由]
+- [部分取代] `<旧spec仓库根路径>`：Requirement「[标题]」——[一句取代理由]
+- [分面共存] `<旧spec仓库根路径>`：[一行判定理由]
 
 ## 行为规范（Requirements）
 
@@ -132,3 +145,16 @@ Requirement 标题后括注一句"改了什么"帮助审查 / Existing behavior 
 ```
 
 **分类判据**：拿不准时先看当前实现的行为——行为已存在就是 MODIFIED（把真实变更标成 ADDED 会留下两条竞争的需求），行为不存在就是 ADDED（把新行为标成 MODIFIED 则无物可替换）。只写用到的节。
+
+## 取代标注形制（供取代流程引用，非 spec 正文节）
+
+- **窗口期**（新 spec 激活时打在旧 spec H1 标题下一行）：
+  `> **Superseded-pending (YYYY-MM-DD)** — 本 spec 的「Requirement: [标题]」将被 <新spec仓库根路径> 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。`
+  完全取代则中段改写为"本 spec 将被 <新spec仓库根路径> 完全取代（待其交付）"。
+- **完全取代**（交付回写）：frontmatter `status: superseded` + `superseded_by: <后继仓库根路径>`；pending 行替换为
+  `> **Superseded (YYYY-MM-DD)** — 本 spec 已被 <后继仓库根路径> 取代，本文仅作历史参考，现行契约以取代方为准。`
+  此后 sync_commit 冻结不再更新；covers 保留原值供考古（守卫因 status 自然忽略）。
+- **部分取代**（交付回写）：旧 spec 保持 `active`，每条被取代 `### Requirement:` 标题下插入
+  `> **Superseded (YYYY-MM-DD)** — by <新spec仓库根路径>#<requirement 锚>；原文保留仅作历史参考。`
+  H1 下的 pending 行移除。
+- **路径风格**：以上标注与 frontmatter 字段中的路径一律仓库根相对；正文 markdown 超链接沿用相对当前文件路径；ADR 互指用同目录文件名相对链接。
