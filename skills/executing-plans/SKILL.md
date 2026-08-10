@@ -62,7 +62,7 @@ description: >-
 
 - **小偏差**（路径笔误、步骤缺失但意图明确）→ 就地修正，在最终总结中记录
 - **契约级偏差**（接口/数据结构与计划不符且影响后续任务）→ 停下向用户确认修正方向，不猜着改；卡在子问题想不清时可切 exploring skill 想透再回来，洞见按其归位表回填（设计决策→修 spec 并请用户 review、新任务→补进 plan）
-- **意图级偏差**（真正要做的已是另一件工作：意图变了、范围爆炸如"修登录 bug"变成"重写认证"、或原计划可独立标记完成而新工作自成一体）→ 停下建议收尾当前计划，新工作另起特性目录走 requirement-analysis——**更新保留上下文，新起提供清晰**
+- **意图级偏差**（真正要做的已是另一件工作：意图变了、范围爆炸如"修登录 bug"变成"重写认证"、或原计划可独立标记完成而新工作自成一体）→ 停下建议收尾当前计划，新工作另起特性目录走 requirement-analysis——**更新保留上下文，新起提供清晰**；收尾废弃计划时，若其 spec 已激活并已打出 Superseded-pending 标注，一并回收（删除旧 spec 上的 pending 行）并在最终总结注明
 
 ## 阶段 4：收尾审查
 
@@ -89,7 +89,7 @@ description: >-
 ## 阶段 6：合并与总结
 
 1. 审查与对账定稿后，**合并前在 worktree 内落盘并提交**：对账结果写入特性目录 `acceptance/acceptance-report.md` 的「Requirement Reconciliation」节——全绿一行带过，有偏差才展开差量表；acceptance-qa 未触发的特性按模板新建仅含头部与该节的轻量报告（一次交付一份时点记录）。DEFERRED / DROPPED 同时在 spec 原位标注（形制见 spec 模板行为规范节），DELIVERED 不标
-2. 执行计划的最终任务（全量验证——范围外失败的归属裁决与测试退役检查按 writing-plans 最终任务模板执行 → 合并回来源分支 → 按资源台账逐条清理（worktree 与分支行在内，合并前核对台账全部勾清） → **sync_commit 锚定**：合并后主工作区 HEAD 写入 spec frontmatter 并单独提交；原生工具建的隔离用原生方式退出）；计划缺最终任务或缺锚定步骤（旧版计划）时按同等步骤手工收尾；非 git 仓库跳过锚定并注明
+2. 执行计划的最终任务（全量验证——范围外失败的归属裁决与测试退役检查按 writing-plans 最终任务模板执行 → **取代回写**（按 spec 取代与共存节执行翻转/标注/covers 接管核对，无声明则跳过） → 合并回来源分支 → 按资源台账逐条清理（worktree 与分支行在内，合并前核对台账全部勾清） → **sync_commit 锚定**：合并后主工作区 HEAD 写入 spec frontmatter 并单独提交；原生工具建的隔离用原生方式退出）；计划缺最终任务或缺锚定步骤（旧版计划）时按同等步骤（含取代回写）手工收尾；非 git 仓库跳过锚定并注明
 3. **roadmap 状态回写（仅当 `.spec-dev/roadmaps/` 下某 active roadmap 引用本特性目录）**：把对应子项目行状态置 `delivered` 并提交；全部子项目已 delivered/dropped 时把该 roadmap frontmatter 的 `status` 翻 `done`。目录不存在或查无引用 → 跳过，零动作
 4. 输出总结：
    - **成果清单**：完成的任务、创建/修改的文件、对账计数（`X DELIVERED / Y DEFERRED / Z DROPPED / N ADDED-IN-FLIGHT`）
