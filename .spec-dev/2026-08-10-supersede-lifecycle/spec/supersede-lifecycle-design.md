@@ -59,7 +59,7 @@ skill 指令层 11 个文件（requirement-analysis×4、writing-plans、executi
 - 取代生效时点双轨：spec 随交付、ADR 随裁决 —— 详见 [ADR-0001](../../adr/0001-supersede-timing-dual-track.md)
 - ADR 封闭三态 + 禁止部分推翻（新 ADR 完整重述整体取代）—— 详见 [ADR-0002](../../adr/0002-adr-closed-status-no-partial.md)
 - 声明方向"新指旧为权威、旧指新由工具交付时物化"：单向声明、双向落盘 —— RFC/OpenSpec/RAC/adr-tools 四先例一致；spec-dev 无索引系统、消费方直接读文件，反向指针必须写进旧文档本体（W3C MUST-link）
-- covers 竞合取双声明：分面共存各自声明 covers，改单面对另一份用既有 `Spec-Guard: off` trailer 放行 —— trailer 语义恰为"与该 spec 契约无关"；保护面与反查发现面双全；已否备选：主 owner+touches 字段（守卫需新字段且保护洞不消失）、后来者让位（双洞制度化）
+- covers 竞合取双声明：分面共存各自声明 covers，改单面对另一份用既有 `Spec-Guard: off` trailer 放行 —— trailer 语义恰为"与该 spec 契约无关"；保护面与反查发现面双全；已否备选：主 owner+touches 字段（守卫需新字段且保护洞不消失）、后来者让位（双洞制度化）。适用前提：active 集合经对账为真现行集合——重度存量仓库（多 spec 高密度重叠 covers，实测案例单文件被 11 份 active spec 覆盖）应先对账收敛再启用双声明纪律，否则 trailer 频率不可行
 - 被取代 Requirement 不进验收矩阵 —— 改动收敛于 acceptance-matrix 三条规则与报告模板差量表（新增 SUPERSEDED 行），schema enum/if-then 免改；已取代行为的遗留测试由孤儿测试退役机制承接（判据对接不重叠）
 - 部分取代仅"冲突型"触发过滤，"扩展型补充"归入分面共存、零标注零指针 —— 防 IETF Updates 式语义过载
 - 取代路径风格分双面：**frontmatter 字段（`supersedes`/`superseded_by`）与 blockquote 标注中的路径字符串一律仓库根相对**（供机器/AI 解析，迁移脚本既有重写规则天然覆盖）；**正文 markdown 超链接沿用相对当前文件路径**（渲染兼容，`../../adr/…` 等既有风格不变）
@@ -219,6 +219,16 @@ session-context.mjs 的注入行 SHALL 在保留既有总数的基础上附 acti
 - **GIVEN** 仓库有 4 份 active 与 1 份 superseded spec
 - **WHEN** SessionStart hook 运行 session-context.mjs
 - **THEN** stdout 注入行呈现两个分离的计数，而非单一总数
+
+### Requirement: 未知 status 值告警
+
+session-context.mjs 的健康自检与 check-spec-drift.mjs 的 loadActiveSpecs SHALL 对 status 值不在 `draft | active | superseded` 枚举内的 spec 发出告警（列出值与数量，说明该 spec 不受守卫保护，并给出合法枚举修正指引：现行用 active、已被取代用 superseded 并填 superseded_by）；未知值 SHALL NOT 计入注入行的状态细分。
+
+#### Scenario: 工作状态误用被提示
+
+- **GIVEN** 仓库存在 status 为 delivered、completed 等非枚举值的 spec（生命周期字段被误当工作状态使用）
+- **WHEN** SessionStart 注入或守卫检查运行
+- **THEN** 输出告警列出未知值及计数并给出修正指引，不静默忽略；注入行细分计数不含这些 spec
 
 ### Requirement: 装机侧把 superseded 重写为生命周期终态
 

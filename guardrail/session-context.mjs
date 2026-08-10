@@ -34,6 +34,7 @@ if (specs.length === 0) process.exit(0);
 // 状态细分计数：active 参与守卫，superseded 是历史层——接手会话第一眼需要知道两者都存在。
 // 最小 frontmatter 读取（仅 status 一键），解析失败的文件不计入细分、仍在总数内。
 const statusCount = { active: 0, superseded: 0 };
+const unknownStatus = new Map(); // 非法枚举值 → 计数（draft 合法但不入细分；delivered/completed 等误用要显式告警）
 for (const rel of specs) {
   try {
     // 只在顶部 frontmatter 块内匹配并容忍引号值——与 check-spec-drift.mjs 的 parseFrontmatter
@@ -43,7 +44,9 @@ for (const rel of specs) {
     const end = text.indexOf("\n---", 3);
     if (end === -1) continue;
     const m = text.slice(0, end).match(/^\s{2}status:\s*["']?([\w-]+)["']?/m);
-    if (m && statusCount[m[1]] !== undefined) statusCount[m[1]] += 1;
+    if (!m) continue;
+    if (statusCount[m[1]] !== undefined) statusCount[m[1]] += 1;
+    else if (m[1] !== "draft") unknownStatus.set(m[1], (unknownStatus.get(m[1]) || 0) + 1);
   } catch {
     // 单文件读取失败不影响注入
   }
@@ -82,6 +85,12 @@ try {
   }
 } catch {
   // 自检失败不阻塞上下文注入
+}
+if (unknownStatus.size > 0) {
+  const detail = [...unknownStatus].map(([v, n]) => `${v}×${n}`).join(", ");
+  issues.push(
+    `unknown spec status value(s): ${detail} — not in draft|active|superseded, so these specs are NOT guarded. Fix them now: use active for current specs, or superseded (with superseded_by filled) for replaced ones. / 检测到未知 status 值（${detail}）——不在 draft|active|superseded 枚举内，这些 spec 不受守卫保护；请立即修正：现行 spec 用 active，已被取代的用 superseded 并填写 superseded_by。`,
+  );
 }
 const health = issues.length ? `\n${issues.map((i) => `- ⚠ ${i}`).join("\n")}` : "";
 

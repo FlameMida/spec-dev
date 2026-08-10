@@ -246,6 +246,11 @@ function loadActiveSpecs(repoRoot) {
     const meta = parseFrontmatter(readFileSync(abs, "utf8"));
     if (!meta || !meta.spec_dev) continue;
     const sd = meta.spec_dev;
+    if (sd.status && !["draft", "active", "superseded"].includes(sd.status)) {
+      warn(
+        `spec ${relPath}: unknown status "${sd.status}" (not draft|active|superseded) — this spec is NOT guarded; use active, or superseded with superseded_by. / status 值非法（不在 draft|active|superseded 枚举内），该 spec 不受守卫保护——现行用 active，已被取代用 superseded 并填 superseded_by。`,
+      );
+    }
     if (sd.status !== "active") continue;
     const covers = Array.isArray(sd.covers) ? sd.covers.filter((c) => typeof c === "string" && c.trim()) : [];
     if (covers.length === 0 && sd.coversSuspect) {
