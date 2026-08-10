@@ -689,7 +689,7 @@ SKIP_CODEX_PACKAGE_HOOK=1 SKIP_RELEASE_HOOK=1 /usr/bin/git commit -m "feat(T10):
 **资源台账**（清理依据；执行中创建即追加；行格式 `- [ ] <类型>: <标识> —— <清理命令>`）：
 
 - [ ] worktree: .worktrees/plan-2026-08-10-supersede-lifecycle —— `git worktree remove .worktrees/plan-2026-08-10-supersede-lifecycle && git branch -d plan/2026-08-10-supersede-lifecycle`
-- [ ] 临时目录: 任务 8 fixture `$TMP`（/tmp/spec-dev-fixture.*） —— `rm -rf <任务 8 记录的路径>`
+- [ ] 临时目录: 任务 8 fixture `$TMP`（/tmp/spec-dev-fixture.*） —— `rm -rf /tmp/spec-dev-fixture.VSRPUH`
 
 台账总则：清理只遍历本台账、台账外一律不动；共享缓存默认保留。
 
