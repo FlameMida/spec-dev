@@ -23,7 +23,8 @@ spec_dev:
     - "guardrail/session-context.mjs"
     - "guardrail/check-spec-drift.mjs"
   sync_commit: null
-  supersedes: []
+  supersedes:
+    - ".spec-dev/2026-08-09-test-scoping/spec/test-scoping-design.md"
   superseded_by: null
 ---
 
@@ -59,9 +60,9 @@ skill 指令层 11 个文件（requirement-analysis×4、writing-plans、executi
 - ADR 封闭三态 + 禁止部分推翻（新 ADR 完整重述整体取代）—— 详见 [ADR-0002](../../adr/0002-adr-closed-status-no-partial.md)
 - 声明方向"新指旧为权威、旧指新由工具交付时物化"：单向声明、双向落盘 —— RFC/OpenSpec/RAC/adr-tools 四先例一致；spec-dev 无索引系统、消费方直接读文件，反向指针必须写进旧文档本体（W3C MUST-link）
 - covers 竞合取双声明：分面共存各自声明 covers，改单面对另一份用既有 `Spec-Guard: off` trailer 放行 —— trailer 语义恰为"与该 spec 契约无关"；保护面与反查发现面双全；已否备选：主 owner+touches 字段（守卫需新字段且保护洞不消失）、后来者让位（双洞制度化）
-- 被取代 Requirement 不进验收矩阵 —— 改动收敛于 acceptance-matrix 三条规则，schema enum/if-then/报告模板免改；已取代行为的遗留测试由孤儿测试退役机制承接（判据对接不重叠）
+- 被取代 Requirement 不进验收矩阵 —— 改动收敛于 acceptance-matrix 三条规则与报告模板差量表（新增 SUPERSEDED 行），schema enum/if-then 免改；已取代行为的遗留测试由孤儿测试退役机制承接（判据对接不重叠）
 - 部分取代仅"冲突型"触发过滤，"扩展型补充"归入分面共存、零标注零指针 —— 防 IETF Updates 式语义过载
-- 取代链接一律仓库根相对路径 —— 迁移脚本既有重写规则天然覆盖；ADR 链接同风格
+- 取代路径风格分双面：**frontmatter 字段（`supersedes`/`superseded_by`）与 blockquote 标注中的路径字符串一律仓库根相对**（供机器/AI 解析，迁移脚本既有重写规则天然覆盖）；**正文 markdown 超链接沿用相对当前文件路径**（渲染兼容，`../../adr/…` 等既有风格不变）
 - 窗口期在旧 spec 打 pending 标注（而非消费侧动态反查）—— 一次物化、全消费方与人类读者可见；DROPPED 时回收
 - 翻 superseded 必须同时填 superseded_by；删除整个特性写 REMOVED-only spec 作为后继 —— 无后继作废不提供（IESG Historic 教训：被降级文档必须能指到降级理由）
 
@@ -85,7 +86,7 @@ spec 的 `spec_dev` frontmatter SHALL 支持可选字段 `supersedes`（仓库�
 
 ### Requirement: requirement-analysis 阶段 6 取代分流
 
-requirement-analysis 阶段 6 写 spec 时 SHALL 对探索期命中的每份行为相交 active spec 做三分类判定（完全取代 / 部分取代 / 分面共存）并落盘：完全与部分取代登记进新 spec frontmatter `supersedes` 与正文「取代与共存」节（部分取代 SHALL 列出旧 spec 被取代的具体 Requirement 清单，每条附一句取代理由），分面共存 SHALL 记一行判定理由并执行 covers 双声明。
+requirement-analysis 阶段 6 写 spec 时 SHALL 对探索期命中的每份行为相交 active spec 做三分类判定（完全取代 / 部分取代 / 分面共存）并落盘：完全与部分取代登记进新 spec frontmatter `supersedes` 与正文「取代与共存」节（部分取代 SHALL 列出旧 spec 被取代的具体 Requirement 清单，每条附一句取代理由），分面共存 SHALL 记一行判定理由并执行 covers 双声明；用户要求删除整个特性且无新行为承接时，SHALL 产出仅含 REMOVED Requirements 的轻量 spec 作为后继（记录删除理由，交付时按完全取代回写旧 spec）。
 
 #### Scenario: 部分取代声明含 Requirement 清单
 
@@ -121,7 +122,7 @@ requirement-analysis 阶段 8 激活携带非空 `supersedes` 的 spec 时，SHA
 
 ### Requirement: 交付期取代回写为强制步骤
 
-writing-plans 的最终任务模板 SHALL 含取代回写步骤（与 sync_commit 锚定同一提交组）：按 spec「取代与共存」节执行完全取代翻转（含 pending 行替换与 `superseded_by` 写入）、部分取代的 Requirement 原位标注、covers 接管核对（完全取代时列出旧 covers 中不被新 spec covers 覆盖且仍存在的路径差集，经用户确认处置）；executing-plans 阶段 6 SHALL 执行该步骤；spec 无取代声明时该步骤 SHALL 声明"无取代回写"后跳过。
+writing-plans 的最终任务模板 SHALL 含取代回写步骤（与 sync_commit 锚定同一提交组）：按 spec「取代与共存」节执行完全取代翻转（含 pending 行替换与 `superseded_by` 写入）、部分取代的 Requirement 原位标注、covers 接管核对（完全取代时列出旧 covers 中不被新 spec covers 覆盖且仍存在的路径差集，经用户确认处置）；executing-plans 阶段 6 SHALL 执行该步骤；spec 无取代声明时该步骤 SHALL 声明"无取代回写"后跳过；executing-plans 以意图级偏差收尾废弃计划时 SHALL 回收其 spec 已打出的 pending 标注并在总结注明。
 
 #### Scenario: 交付时旧 spec 被回写
 
@@ -143,7 +144,7 @@ writing-plans 的最终任务模板 SHALL 含取代回写步骤（与 sync_commi
 
 ### Requirement: ADR 状态行与裁决期回写
 
-ADR SHALL 在标题下携带封闭三态状态行（`Accepted (日期)` / `Deprecated (日期) — 原因` / `Superseded by [ADR-NNNN](仓库根路径) (日期)`；缺状态行的历史 ADR 视同 Accepted）；requirement-analysis 阶段 6 落盘声明 `Supersedes: ADR-NNNN` 的新 ADR 时 SHALL 在同一提交回写旧 ADR 状态行为 Superseded by（不等待实施交付）；Deprecated SHALL 强制携带一句原因，Superseded SHALL 强制携带编号链接。
+ADR SHALL 在标题下携带封闭三态状态行（`Accepted (日期)` / `Deprecated (日期) — 原因` / `Superseded by [ADR-NNNN](NNNN-<slug>.md) (日期)`，ADR 互指用同目录文件名相对链接；缺状态行的历史 ADR 视同 Accepted）；requirement-analysis 阶段 6 落盘声明 `Supersedes: ADR-NNNN` 的新 ADR 时 SHALL 在同一提交回写旧 ADR 状态行为 Superseded by（不等待实施交付）；Deprecated SHALL 强制携带一句原因，Superseded SHALL 强制携带编号链接。
 
 #### Scenario: 决策推翻即时回写
 
@@ -183,6 +184,12 @@ quick-fix 步骤 2 反查、writing-plans 载入检查、acceptance-qa 阶段 0 
 - **WHEN** 阶段 0 定位执行
 - **THEN** 沿链跳转至 active 后继 spec 并以其矩阵验收，报告头记录原始路径、实际使用路径与跳转链
 
+#### Scenario: 指针链成环时停下
+
+- **GIVEN** 两份 spec 的 `superseded_by` 因人为错误互相指向对方
+- **WHEN** 任一消费入口沿链跳转
+- **THEN** 已访问路径集合检出重复，跳转停止并向用户报告环上的文件清单，不进入无限循环、不擅自选边
+
 ### Requirement: 验收矩阵只含现行 Requirement
 
 验收矩阵的行数纪律 SHALL 以现行 Requirement 为准：被 Superseded 标注的 Requirement 不出矩阵行、其 Scenario 不被引用；执行期裁剪 SHALL 将"Requirement 已被取代"作为独立裁剪原因并入 coverage_note（与"变更面未触及"区分）；交付对账 verdict 集合 SHALL 新增 SUPERSEDED（判定：契约移交给后继 spec；与 DROPPED 的分界为行为是否继续存在）。
@@ -205,7 +212,7 @@ executing-plans 收尾的 completeness critic SHALL 只对照现行 Requirement/
 
 ### Requirement: session-context 注入区分状态计数
 
-session-context.mjs 的注入行 SHALL 将 spec 计数拆分为 active 与 superseded 两个数字（如 `5 spec(s): 4 active, 1 superseded`），使接手会话第一眼可知历史层存在。
+session-context.mjs 的注入行 SHALL 在保留既有总数的基础上附 active 与 superseded 细分计数（如 `5 spec(s): 4 active, 1 superseded`；draft 等其他状态不入细分、仍计入总数），使接手会话第一眼可知历史层存在；实现 SHALL 为该脚本新增最小 frontmatter status 读取。
 
 #### Scenario: 含取代历史的仓库注入可见
 
@@ -235,9 +242,9 @@ guardrail 的 CLAUDE.md.snippet、AGENTS.md.snippet 与 README（中英）SHALL 
 - **WHEN** 按派发要求发起内部探索
 - **THEN** 探索报告按三类分别列出，superseded/pending 项不进入"现行契约"结论，旧 plan 中的代码块未被当作代码现状引用
 
-### Requirement: 孤儿测试退役判据可闭环（改了什么：判据依赖的 superseded 状态自本设计起真实产生，判定基础不变）
+### Requirement: 孤儿测试退役判据可闭环（改了什么：判据第二条件新增"被 Superseded 标注"分支——对 test-scoping「随周期测试退役检查」的部分取代，见取代与共存节）
 
-最终任务的测试退役检查 SHALL 沿用既有双条件判据（测试名对不上任何 active spec 的 Scenario，且对应 Requirement 已 REMOVED 或被 Superseded 标注、或所属 spec 已 superseded）；本设计交付后该判据的 superseded 分支 SHALL 具备真实输入（取代回写产生 superseded 状态与 Requirement 标注）。
+最终任务的测试退役检查判据 SHALL 为：测试名对不上任何 active spec 的现行 Scenario，且对应 Requirement 已 REMOVED、**或被 Superseded 标注**、或所属 spec 已 superseded——第二条件的"被 Superseded 标注"分支为本设计新增（writing-plans 最终任务步骤 2 判据文本与 test-scoping 术语表 SHALL 同步该扩展）；本设计交付后该判据的 superseded 分支 SHALL 具备真实输入（取代回写产生 superseded 状态与 Requirement 标注）。
 
 #### Scenario: 取代交付后的下一周期可退役旧测试
 
@@ -247,8 +254,8 @@ guardrail 的 CLAUDE.md.snippet、AGENTS.md.snippet 与 README（中英）SHALL 
 
 ## 取代与共存（本 spec 对既有 active spec 的判定，自举示范）
 
-- **test-scoping**（covers: writing-plans/using-git-worktrees/executing-plans SKILL.md）：**分面共存**——其拥有测试范围与退役切面，本 spec 拥有取代机制切面，行为无冲突；本 spec 依新规则自行声明 covers，交付提交命中其 covers 时按双声明规则以 `Spec-Guard: off` trailer 放行或同步。
-- **resource-ledger**（covers: []）：**分面共存**——其拥有资源台账切面；存量对账时（见验收矩阵）按双声明规则为其补 covers 声明（writing-plans/executing-plans/acceptance-qa/quick-fix 四个 SKILL.md），消除其自述的保护空洞。
+- **test-scoping**（covers: writing-plans/using-git-worktrees/executing-plans SKILL.md）：**部分取代 + 分面共存**——其「Requirement: 随周期测试退役检查」及术语表"孤儿测试"定义被本 spec 部分取代（判据第二条件由"已 REMOVED 或所属 spec 已 superseded"扩为含"被 Superseded 标注"分支，同一前置下判定结果相反，属冲突型变更；取代理由：Requirement 级取代自本 spec 起真实存在，判据必须识别它）——交付时按本机制在其该 Requirement 打 Superseded 标注并同步 writing-plans 最终任务步骤 2 判据文本与其术语表；其余切面（相关测试范围声明、归属裁决、基线分域）**分面共存**，行为无冲突。本 spec 依双声明规则自行声明 covers，交付提交命中其 covers 时以 `Spec-Guard: off` trailer 放行或同步。
+- **resource-ledger**（covers: []）：**分面共存**——其拥有资源台账切面；存量对账时（见验收矩阵）按双声明规则为其补 covers 声明（writing-plans/executing-plans/acceptance-qa/quick-fix 四个 SKILL.md），并同步删改其「已确认的关键决策」中"`covers: []` 留空规避双 spec 抢占"一行（否则对账后其决策与自身 frontmatter 自相矛盾）。
 - **clarifying-skill**（covers: skills/clarifying/**）：无行为交集（本 spec 不动 clarifying），零动作。
 - **triage-routing**（covers: commands/triage.md）：无行为交集（triage 不读落盘产物，已核实），零动作。
 
@@ -265,9 +272,9 @@ guardrail 的 CLAUDE.md.snippet、AGENTS.md.snippet 与 README（中英）SHALL 
 | 结构校验（validate-skills / check-plugin / check-openai-sync 全绿） | integration | 任务内 TDD | 脚本通过输出 |
 | session-context 注入区分状态计数（superseded fixture 直跑） | integration | 任务内 TDD | stdout 含双计数 |
 | 完全取代 / 部分取代 / 分面共存三场景产物形态走查（对照本 spec 各 Scenario） | ai-acceptance | 验收任务 (A) | 走查记录（逐 Scenario 对照） |
-| 存量对账：resource-ledger 补 covers + 四份 spec 交集裁决落地 | integration | 验收任务 (D) | 对账后 frontmatter diff |
+| 存量对账：resource-ledger 补 covers 并删改其"covers: [] 规避抢占"决策行 + 四份 spec 交集裁决落地（含对 test-scoping 的部分取代回写） | integration | 验收任务 (D) | 对账后 frontmatter 与正文 diff |
 | 装机侧 snippet/README 语义重写核对（superseded 不在放行清单） | docs | 任务内 TDD | diff review |
-| acceptance-qa evals.json expected_output 与新 verdict 集合一致 | docs | 任务内 TDD | eval 文本核对 |
+| acceptance-qa evals.json 报告结构断言与改动后报告模板一致性核对 | docs | 任务内 TDD | eval 文本核对 |
 
 ## 风险与边缘情况
 
