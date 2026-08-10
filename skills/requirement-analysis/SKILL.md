@@ -114,6 +114,7 @@ Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
 - 打标记，供后续阶段消费：
   - **需要外部探索？**——涉及新第三方库/框架、需要行业最新实践、内部示例不足，任一满足即标记
   - **视觉候选？**——需求涉及 UI 布局、页面结构、视觉风格等"看比说清楚"的题材时标记；此标记只影响阶段 3 的 JIT 提议时机，**不在此时提议**
+  - **契约姿态判定**：需求措辞含破坏性重构信号（"重构""推翻""可破坏""不留兼容"等）且预计触及既有 active spec/ADR 时，**在本阶段（先于阶段 2 派发）以一道澄清题当场确认**这些旧契约是**硬约束**（默认）还是**仅现状输入**——姿态结论决定探索派发词，不能等到阶段 3。确认降格后：阶段 2 主波次与回补探索的派发词均须携带该姿态结论，子代理不得把降格契约当设计约束报告（仅作现状与迁移分析输入）；阶段 4 方案对比不因"违反旧 spec 契约"排除选项
 
 ## 阶段 2: 并行探索
 
@@ -129,7 +130,7 @@ Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
 
 外部探索工具优先级：AnySearch（通用/垂直/批量，插件内嵌）与 `context7`（库文档）优先 → `WebSearch` / `WebFetch` 兜底；**派发外部探索子代理时须在派发词中主动重申此优先级**（不依赖 agent 定义文件生效，Codex 端尤其如此）；降级链与模态定义、契约校验、失败隔离规则见 [exploration-patterns.md](references/exploration-patterns.md)。
 
-**每个子代理必须给定**：清晰的主题或模态、相关文件线索、期望输出格式。失败的子代理先缩小范围重试 1 次，再失败由主线程接管。
+**每个子代理必须给定**：清晰的主题或模态、相关文件线索、期望输出格式、工具优先级与文档时效规则提醒（后两项定义见 exploration-patterns 派发要求）。失败的子代理先缩小范围重试 1 次，再失败由主线程接管。
 
 ## 阶段 3: 澄清问题
 
@@ -181,7 +182,8 @@ Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
 
 - 为本需求创建特性目录 `.spec-dev/YYYY-MM-DD-<feature>/`（所有 spec-dev 产物统一收纳在项目根目录 `.spec-dev/` 下；feature 取需求主题的短语义名，跟随项目语言；同日同名冲突时追加序号 `-2`、`-3`），将批准的设计写入其 `spec/<feature>-design.md`（用户对 spec 位置的偏好优先于此默认值）
 - spec 与后续 writing-plans 的计划（同目录 `plan/<feature>-plan.md`）共用这一个特性目录——一个需求的全部产物收纳在一处
-- **决策分流（ADR）**：检查"已确认的关键决策"中是否有同时满足三判据的决策——**难以逆转**（事后改主意成本高）、**缺上下文会费解**（未来读者会问"当初为什么这么做"）、**真实取舍**（存在真正的备选且因具体理由选定其一）——满足者每条沉淀为仓库级 `.spec-dev/adr/NNNN-<slug>.md`（全项目共用一个目录、统一编号：扫描现有最高编号递增，目录不存在时随首个 ADR 创建；正文 1-3 句写清背景、决定与理由即可，值得记住的被否方案附一行），spec 决策节保留一行摘要并链接过去；三判据缺一即不建 ADR，留在 spec 决策节就够——ADR 泛滥和没有 ADR 一样没用
+- **决策分流（ADR）**：检查"已确认的关键决策"中是否有同时满足三判据的决策——**难以逆转**（事后改主意成本高）、**缺上下文会费解**（未来读者会问"当初为什么这么做"）、**真实取舍**（存在真正的备选且因具体理由选定其一）——满足者每条沉淀为仓库级 `.spec-dev/adr/NNNN-<slug>.md`（全项目共用一个目录、统一编号：扫描现有最高编号递增，目录不存在时随首个 ADR 创建；正文 1-3 句写清背景、决定与理由即可，值得记住的被否方案附一行），spec 决策节保留一行摘要并链接过去；三判据缺一即不建 ADR——ADR 泛滥和没有 ADR 一样没用。**ADR 状态纪律**：每条 ADR 标题下带状态行，封闭三态——`**Status**: Accepted (YYYY-MM-DD)` / `**Status**: Deprecated (YYYY-MM-DD) — <一句原因，强制>` / `**Status**: Superseded by [ADR-NNNN](NNNN-<slug>.md) (YYYY-MM-DD)`（同目录文件名相对链接，编号强制；缺状态行的历史 ADR 视同 Accepted）。判据一句话：有替代决策用 Superseded，无替代者且决策语境消失用 Deprecated。Accepted 后正文不可变（仅 status 行、错别字、坏链可改）；**不做部分推翻**——推翻既有 ADR 的任何部分时，新 ADR 完整重述仍有效的结论并整体取代，标题下声明 `**Supersedes**: ADR-NNNN` 行，且在本阶段同一提交把旧 ADR 状态行回写为 Superseded by（ADR 取代随裁决即时生效，不等实施交付）
+- **取代分流（supersede triage）**：对阶段 2 探索命中的每份行为相交 active spec 做三分类判定并写入 spec——**完全取代**（新 spec 整体替换旧特性）与**部分取代**（替换旧 spec 的部分 Requirement）登记进 frontmatter `supersedes`（仓库根相对路径）与正文「取代与共存」节（部分取代必须列出被取代的具体 Requirement 标题清单，每条附一句取代理由）；**分面共存**（同文件不同行为切面、无冲突）不登记 supersedes，记一行判定理由并各自声明 covers。节模板与标注形制见 [spec-template.md](assets/spec-template.md)。用户要求删除整个特性且无新行为承接时，产出仅含 REMOVED Requirements 的轻量 spec 作为后继（记录删除理由，交付时按完全取代回写旧 spec）。spec 的取代回写随交付生效（executing-plans 最终任务），与 ADR 的即时回写构成双轨
 - 结构参考 [spec-template.md](assets/spec-template.md)，按需增删节；**行为需求必须用 Requirement + Scenario 结构表达**（`### Requirement:` 一条一个 SHALL 且可观察，`#### Scenario:` 用 GIVEN/WHEN/THEN——它们是后续 TDD 测试与验收的直接锚点）；修改既有功能时行为部分改用差量三节（ADDED/MODIFIED/REMOVED Requirements，见模板）
 - **漂移守卫锚点（必填）**：落盘时保留模板顶部的 `spec_dev` frontmatter，填写 `feature` 与 `covers`（本特性拥有的代码路径 glob；纯文档特性留空数组 `[]`）——此阶段 `status` 保持 `draft`。该 frontmatter 是 pre-commit / CI 漂移守卫的锚点，缺失或永停 draft 意味着该特性代码不受"改了代码却没同步 spec"的拦截保护
 - **roadmap 回填（仅当本特性是某 active roadmap 的子项目）**：把特性目录路径回填至 roadmap 对应子项目行、状态置 `in-progress`；不属于任何 roadmap 则无此步
@@ -209,6 +211,7 @@ Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
 
 - **前置确认**：须持有用户对「开始编写实施计划」的明确同意——阶段 7 的确认话术已包含此询问；用户仅认可 spec、未表态是否继续时，先问「现在开始编写实施计划吗？」，同意后才交接
 - **激活漂移守卫**：交接前把 spec frontmatter 的 `status: draft` 翻为 `active` 并 commit（仅 `active` 参与漂移拦截——不翻转则守卫对本特性静默失效）
+- **打取代预告（仅当 spec 的 `supersedes` 非空）**：翻 active 的同一提交内，向每份被指向的旧 spec H1 标题下写入 Superseded-pending 标注（形制见 spec-template「取代标注形制」节；部分取代写明将被取代的 Requirement 标题）——窗口期的双 active 状态由此对全部消费方显式可判定；后续该计划若被废弃，由 executing-plans 意图级偏差收尾回收此标注
 - 调用 writing-plans skill，基于已批准的 spec 生成实施计划
 - **不得调用任何其他 skill**——writing-plans 是本流程唯一的下一步；实施纪律（worktree 隔离、TDD、审查编排）由 writing-plans → executing-plans 链路承接
 

@@ -62,8 +62,8 @@ description: >-
 
 | 触发方 | 矩阵来源 |
 |--------|---------|
-| executing-plans 收尾（或其他工作流） | 读特性目录 spec 的「测试与验收策略」矩阵 + 计划「验收任务」的验收点，按本次变更面裁剪；报告与证据落盘特性目录 `acceptance/` 子目录并回传路径 |
-| 用户直接触发且存在相关特性目录 | 定位对应 spec（`.spec-dev/YYYY-MM-DD-<feature>/spec/`；仍在历史位置 `docs/` 的先自动迁移到 `.spec-dev/`——有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移），沿用其矩阵；用户描述可收窄范围 |
+| executing-plans 收尾（或其他工作流） | 读特性目录 spec 的「测试与验收策略」矩阵 + 计划「验收任务」的验收点，按本次变更面裁剪，并跳过被 `Superseded` 标注 Requirement 对应行（独立裁剪原因，见 acceptance-matrix 裁剪规则）；报告与证据落盘特性目录 `acceptance/` 子目录并回传路径 |
+| 用户直接触发且存在相关特性目录 | 定位对应 spec（`.spec-dev/YYYY-MM-DD-<feature>/spec/`；仍在历史位置 `docs/` 的先自动迁移到 `.spec-dev/`——有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移），沿用其矩阵；定位后读 spec frontmatter `status`：为 `superseded` 时沿 `superseded_by` 跳转 active 后继（记录已访问路径防环，出现环停下报告环上文件；`superseded_by` 缺失或悬空时报告"无可达后继"并与用户确认验收依据），以后继矩阵验收，报告头记录原始路径、实际使用路径与跳转链；正文带 `Superseded-pending` 标注时在报告头注明"取代进行中"；用户描述可收窄范围 |
 | 独立触发（无 spec） | 从目标描述**现场生成迷你矩阵**（维度选择 + 每维度 3-6 条检查项），随报告前置呈现 |
 
 矩阵结构、Scenario→检查项的映射规则、与 writing-plans「验收任务」的分工见 [acceptance-matrix.md](references/acceptance-matrix.md)。**维度取舍原则**：矩阵行来自需求实际形态——纯后端接口不硬凑 visual 行，静态页面不硬凑 perf-api 行；被裁掉的维度在报告 `coverage_note` 中声明。
@@ -141,7 +141,7 @@ pass 项   → 独立子代理证据审计（只读证据不占浏览器，试�
 
 1. **总览矩阵**：维度 × {通过/失败/警告/未验证} 计数 + 每维度执行方式（D/A）与耗时
 2. **Requirement 覆盖对照**（有 spec 时）：矩阵每行的最终状态；未覆盖行显式列出
-3. **Requirement 对账**（executing-plans 收尾触发时由其主线程填写；独立触发时省略本节）：全部 DELIVERED 一行带过；存在 DEFERRED / DROPPED / ADDED-IN-FLIGHT 时展开差量表，逐条附原因
+3. **Requirement 对账**（executing-plans 收尾触发时由其主线程填写；独立触发时省略本节）：全部 DELIVERED 一行带过；存在 DEFERRED / DROPPED / SUPERSEDED / ADDED-IN-FLIGHT 时展开差量表，逐条附原因（SUPERSEDED＝契约已移交后继 spec；与 DROPPED 的分界：行为是否继续存在——存在但契约易主记 SUPERSEDED，不再交付记 DROPPED）
 4. **关键发现**：按严重性排序，标注来源维度与诊断根因（如有）
 5. **证据索引**：契约 JSON 路径、测试文件、截图/trace/报告产物清单
 6. **coverage_note**：被裁剪的维度、未验证项及原因——截断必须显式声明

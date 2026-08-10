@@ -19,12 +19,12 @@
 
 **列定义**：
 
-- **Scenario / 检查项**：优先直接引用 spec 行为规范中的 `#### Scenario:` 名称（GIVEN/WHEN/THEN 即验收步骤）；性能/视觉等非行为项写成可判定的一句话（含阈值数字）
+- **Scenario / 检查项**：优先直接引用 spec 行为规范中的 `#### Scenario:` 名称（GIVEN/WHEN/THEN 即验收步骤；仅现行 Requirement 下的 Scenario——被 `Superseded` 标注者不引用）；性能/视觉等非行为项写成可判定的一句话（含阈值数字）
 - **维度**：`unit | integration | e2e | visual | a11y | perf-web | perf-api`（客户端环境以括注修饰，如 `e2e (electron)`）
 - **执行方式**：二选一——`任务内 TDD`（由 writing-plans 翻译为任务内失败测试，acceptance-qa 只复跑复核）或 `验收任务 (D|A)`（进入计划尾部验收任务，由 acceptance-qa 执行，括注执行性质）
 - **验收证据**：判定依据的产物形态；Tier A 行的证据必须是可回看的（快照片段/截图/trace），"操作过了"不算证据
 
-**行数纪律**：每条 Requirement 至少一行；一行只验一件事；没有阈值数字的性能行是无效行（"性能要好"不可判定）——写不出数字就回到澄清。
+**行数纪律**：每条**现行** Requirement 至少一行（被 `Superseded` 标注的 Requirement 不出行）；一行只验一件事；没有阈值数字的性能行是无效行（"性能要好"不可判定）——写不出数字就回到澄清。
 
 ## 上游分工（谁写、谁翻译、谁执行）
 
@@ -44,7 +44,7 @@ acceptance-qa（执行与回填）
   └─ 按矩阵执行 → 报告落盘特性目录 acceptance/ → 每行回填最终状态
 ```
 
-**变更面裁剪**（executing-plans 触发时）：只执行与本次变更面相交的矩阵行——变更未触及支付流程就不跑支付的 e2e 行；裁剪结果写入 coverage_note。全量回归仅在用户显式要求或计划注明时执行。
+**变更面裁剪**（executing-plans 触发时）：只执行与本次变更面相交的矩阵行——变更未触及支付流程就不跑支付的 e2e 行；裁剪结果写入 coverage_note。「Requirement 已被取代」是独立于变更面的裁剪原因，同样写入 coverage_note（与"本次未触及"区分）。全量回归仅在用户显式要求或计划注明时执行。
 
 ## 独立触发：迷你矩阵生成
 

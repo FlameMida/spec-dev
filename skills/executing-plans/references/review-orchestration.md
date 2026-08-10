@@ -31,7 +31,8 @@ repeat (最多 2 轮):
 
 # completeness critic（1 个子代理）：
 #   "对照本次变更文件清单与维度表，哪些文件/风险面没有被任何发现覆盖？
-#    对照 spec 行为规范的 Requirement 清单，哪些 Requirement/Scenario
+#    对照 spec 行为规范的现行 Requirement 清单（被 `Superseded` 标注的
+#    Requirement 及其 Scenario 排除，不得报为未覆盖），哪些 Requirement/Scenario
 #    没有任何测试或发现覆盖？
 #    哪些维度的 coverage_note 声明了截断？" → 输出并入报告"覆盖声明"节
 ```
@@ -58,7 +59,7 @@ repeat (最多 2 轮):
 
 ## acceptance-qa 联动
 
-计划含验收任务、或 spec 验收矩阵含「验收任务」行时，在维度审查之外触发 acceptance-qa skill 按矩阵执行——输入为 spec 路径、计划验收任务、本次变更文件清单与证据目录（特性目录 `acceptance/`）；acceptance-qa 按变更面裁剪矩阵行（裁剪写入其 coverage_note），Tier A 检查项直接引用 spec 中的 Scenario（GIVEN/WHEN/THEN 即验收步骤），发现失败项时自动追加诊断。旧版计划无矩阵时，变更涉及 UI（页面、组件、样式、前端交互）即按其验收点触发。acceptance-qa 报告（含 Requirement 覆盖对照）并入审查报告。
+计划含验收任务、或 spec 验收矩阵含「验收任务」行时，在维度审查之外触发 acceptance-qa skill 按矩阵执行——输入为 spec 路径、计划验收任务、本次变更文件清单与证据目录（特性目录 `acceptance/`）；acceptance-qa 按变更面裁剪矩阵行（裁剪写入其 coverage_note），Tier A 检查项直接引用 spec 中的现行 Scenario（GIVEN/WHEN/THEN 即验收步骤），发现失败项时自动追加诊断。旧版计划无矩阵时，变更涉及 UI（页面、组件、样式、前端交互）即按其验收点触发。acceptance-qa 报告（含 Requirement 覆盖对照）并入审查报告。
 
 ## 报告与处置
 

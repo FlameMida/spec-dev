@@ -462,7 +462,7 @@ function report(violations) {
   lines.push(
     `  2) If this change truly does not affect the spec's behavior contract, leave a ${B("Spec-Guard: off <reason>")} trailer in the commit message (range checks pass it), or set ${B("SPEC_DEV_GUARD=off")} temporarily. / 若本次改动确不影响该 spec 的行为契约，在提交信息留该 trailer（区间检查会放行），或临时设该环境变量；`,
   );
-  lines.push(`  3) If the spec is obsolete, set its frontmatter ${B("status")} to superseded. / 该 spec 已作废时，把其 frontmatter 的 status 改为 superseded。`);
+  lines.push(`  3) If the spec is obsolete, set its frontmatter ${B("status")} to superseded AND fill ${B("superseded_by")} with the successor spec path (write a lightweight REMOVED-only successor spec if the feature is simply deleted). / 该 spec 已作废时，把其 frontmatter 的 status 改为 superseded 并同时填写 superseded_by 指向后继 spec（特性纯删除时先写一份仅含 REMOVED 的轻量后继 spec）。`);
   lines.push("");
   lines.push(`  This applies without the spec-dev plugin too: artifacts live in .spec-dev/<date-feature>/; changing code means syncing the sibling spec. / 未安装 spec-dev 插件也应遵守：产物在 .spec-dev/<日期-特性>/，改代码即需同步同目录 spec。`);
   process.stderr.write(lines.join("\n") + "\n");

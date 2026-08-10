@@ -3,7 +3,7 @@
 // stdout 会作为附加上下文注入会话，让未安装 spec-dev 插件的接手者也知道本仓库的流程义务；
 // 同时做守卫健康自检——git 闸门未启用时，明确要求会话内的 agent 当场修复（会话自愈）。
 import { execFileSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 let root = "";
@@ -30,6 +30,24 @@ try {
 }
 
 if (specs.length === 0) process.exit(0);
+
+// 状态细分计数：active 参与守卫，superseded 是历史层——接手会话第一眼需要知道两者都存在。
+// 最小 frontmatter 读取（仅 status 一键），解析失败的文件不计入细分、仍在总数内。
+const statusCount = { active: 0, superseded: 0 };
+for (const rel of specs) {
+  try {
+    // 只在顶部 frontmatter 块内匹配并容忍引号值——与 check-spec-drift.mjs 的 parseFrontmatter
+    // 认定对齐（不以 --- 开头或无闭合线的文件整份忽略），防止正文 yaml 示例块被误计。
+    const text = readFileSync(path.join(root, rel), "utf8");
+    if (!text.startsWith("---")) continue;
+    const end = text.indexOf("\n---", 3);
+    if (end === -1) continue;
+    const m = text.slice(0, end).match(/^\s{2}status:\s*["']?([\w-]+)["']?/m);
+    if (m && statusCount[m[1]] !== undefined) statusCount[m[1]] += 1;
+  } catch {
+    // 单文件读取失败不影响注入
+  }
+}
 
 // —— 守卫健康自检 ——
 const issues = [];
@@ -68,7 +86,7 @@ try {
 const health = issues.length ? `\n${issues.map((i) => `- ⚠ ${i}`).join("\n")}` : "";
 
 console.log(`[spec-dev workflow notice / spec-dev 流程提示] This repository uses spec-driven development / 本仓库采用 spec 驱动开发（spec-dev 工作流）:
-- Existing spec/plan artifacts live under .spec-dev/ (${specs.length} spec(s)); legacy ones under docs/ are auto-migrated there. / 现有 spec/plan 产物位于 .spec-dev/<日期-特性>/ 目录（共 ${specs.length} 份 spec）；docs/ 历史位置的产物会被自动迁移过去。
+- Existing spec/plan artifacts live under .spec-dev/ (${specs.length} spec(s): ${statusCount.active} active, ${statusCount.superseded} superseded); legacy ones under docs/ are auto-migrated there. / 现有 spec/plan 产物位于 .spec-dev/<日期-特性>/ 目录（共 ${specs.length} 份 spec：${statusCount.active} active, ${statusCount.superseded} superseded）；docs/ 历史位置的产物会被自动迁移过去。
 - Before changing code, check the owning feature's spec; behavior changes must update the spec (requirements + acceptance matrix) in the same commit. / 修改代码前，先查看其所属特性的 spec；行为变更必须同步更新 spec 的行为规范与验收矩阵，并与代码同一提交。
 - The drift guard (PreToolUse/Stop hooks / pre-commit / pre-push / CI) blocks code changes that skip spec sync; update the spec first, then the code. / 漂移守卫（PreToolUse/Stop hook / pre-commit / pre-push / CI）会拦截"改代码不同步 spec"的操作；先改 spec 再改代码即放行。
 - With the spec-dev plugin installed, use requirement-analysis / writing-plans / executing-plans; otherwise honor the sync obligations above. / 若安装了 spec-dev 插件，请用 requirement-analysis / writing-plans / executing-plans 工作流开展开发；未安装时，至少遵守上述同步义务。${health}`);

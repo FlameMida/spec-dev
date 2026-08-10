@@ -19,7 +19,7 @@ description: >-
 
 **计划保存至**：spec 所在特性目录的 `plan/<feature-name>-plan.md`（即 `.spec-dev/YYYY-MM-DD-<feature-name>/plan/<feature-name>-plan.md`，特性目录由 requirement-analysis 在写 spec 时创建）；无 spec 输入的独立触发则自建特性目录。用户对计划位置的偏好优先于此默认值。
 
-**Spec 状态检查**：载入 spec 时读其 frontmatter 的 `spec_dev.status`——仍为 `draft` 时说明漂移守卫尚未激活（requirement-analysis 阶段 8 的激活动作未执行，常见于跨会话独立触发）：与用户确认 spec 已定稿后，把 `status` 翻为 `active` 并单独 commit，再开始编写计划；不翻转则守卫对该特性静默失效。无 frontmatter 的旧版/外部 spec 跳过本检查。
+**Spec 状态检查**：载入 spec 时读其 frontmatter 的 `spec_dev.status`——仍为 `draft` 时说明漂移守卫尚未激活（requirement-analysis 阶段 8 的激活动作未执行，常见于跨会话独立触发）：与用户确认 spec 已定稿后，把 `status` 翻为 `active` 并单独 commit，再开始编写计划；不翻转则守卫对该特性静默失效。为 `superseded` 时停下告知用户该 spec 已被取代（附 `superseded_by` 指向，指针缺失或悬空时说明"无可达后继"；沿指针链跳转时记录已访问路径，链上出现环则列出环上文件并停止），经用户显式确认才可继续按旧 spec 编写计划；正文带 `Superseded-pending` 标注时向用户提示「该 spec 正被 <新 spec> 取代中（待交付）」后再继续。无 frontmatter 的旧版/外部 spec 跳过本检查。
 
 **上下文**：编写计划阶段不建工作区——隔离以固定的「任务 0」写入每份计划，执行时才运行（见下方"任务 0"）。
 
@@ -219,12 +219,21 @@ spec 验收矩阵（「测试与验收策略」节）中执行方式为「任务
 - [ ] **步骤 2：测试退役检查**
 
 扫描路径落在本计划「相关测试范围」内的测试，找孤儿测试：测试名对不上任何 active spec
-的 Scenario（判定基础是本 skill"测试名沿用 Scenario 名"约定；不合该命名约定的历史测试
-不进候选，保守豁免），且对应 Requirement 已 REMOVED 或所属 spec 已 superseded——双条件
-缺一不可。候选清单非空 → 列清单征询用户，同意后删除并计入本任务提交；用户未确认则不删除
+的**现行** Scenario（现行=所在 Requirement 未被 `Superseded` 标注；判定基础是本 skill
+"测试名沿用 Scenario 名"约定，不合该命名约定的历史测试不进候选，保守豁免），且对应
+Requirement 已 REMOVED、**或其标题下带 `Superseded` 标注**、或所属 spec 已 superseded——
+双条件缺一不可。候选清单非空 → 列清单征询用户，同意后删除并计入本任务提交；用户未确认则不删除
 任何测试。无候选 → 声明"无孤儿测试"后跳过。计划无「相关测试范围」节 → 跳过本步骤。
 
-- [ ] **步骤 3：合并回来源分支**
+- [ ] **步骤 3：取代回写（spec 的 `supersedes` 为空——字段缺失或空数组——时声明"无取代回写"后跳过）**
+
+按 spec「取代与共存」节逐项执行（形制见 spec-template「取代标注形制」节；实施任务中已完成的回写在此逐项核对后勾选）：
+- 完全取代：旧 spec frontmatter `status` 翻 `superseded`、`superseded_by` 填本 spec 仓库根路径；H1 下 `Superseded-pending` 行替换为 `Superseded` 行；此后该 spec 的 sync_commit 冻结。
+- 部分取代：旧 spec 保持 active，每条被取代 `### Requirement:` 标题下插入 Superseded 标注行；H1 下 pending 行移除；同步「取代与共存」节要求的关联文本（判据、术语表等）。
+- covers 接管核对（仅完全取代）：列出旧 spec covers 中不被本 spec covers 覆盖且仍存在的路径差集；差集非空 → 停下征询用户（补进本 spec covers / 确认放弃保护并记录），不静默翻转。
+- 回写随本分支合并进主线生效，与步骤 6 的 sync_commit 锚定构成取代提交组（revert 该组即原子恢复）。
+
+- [ ] **步骤 4：合并回来源分支**
 
 ```bash
 cd "$(dirname "$(git rev-parse --git-common-dir)")"   # 回到主工作区
@@ -233,11 +242,11 @@ git merge <分支名>                                     # 任务 0 创建的�
 
 合并冲突、或主工作区有未提交改动 → 停下向计划作者确认，不强行合并。
 
-- [ ] **步骤 4：清理（按资源台账逐条执行）**
+- [ ] **步骤 5：清理（按资源台账逐条执行）**
 
 逐条执行资源台账各行的清理命令并勾选（worktree 行即台账首行命令）。命令执行失败 → 该行保留未勾选并报告用户，不静默跳过；资源已不存在 → 勾选并注明"已不存在"。台账外的文件、容器、数据一律不动。
 
-- [ ] **步骤 5：sync_commit 锚定**
+- [ ] **步骤 6：sync_commit 锚定**
 
 ```bash
 SYNC=$(git rev-parse HEAD)   # 合并完成后的主工作区 HEAD
@@ -248,7 +257,7 @@ git add <spec 路径> && git commit -m "chore(spec): sync_commit 锚定 ${SYNC:0
 此后 `git diff <sync_commit>..HEAD -- <covers glob>` 即"spec 上次确认同步以来的代码变化"。非 git 仓库跳过。
 ````
 
-任务 0 未由本计划建立 worktree（此前已在隔离环境、原生工具建立、或降级原地执行）→ 只执行步骤 1、2 与步骤 5，步骤 3-4 交回原有隔离机制收尾并注明。计划无对应 spec（无 spec 输入的独立触发）→ 生成本任务时省略步骤 5，或在执行记录注明"无 spec，跳过锚定"。
+任务 0 未由本计划建立 worktree（此前已在隔离环境、原生工具建立、或降级原地执行）→ 只执行步骤 1、2、3 与步骤 6，步骤 4-5 交回原有隔离机制收尾并注明。计划无对应 spec（无 spec 输入的独立触发）→ 生成本任务时省略步骤 3 与步骤 6，或在执行记录注明"无 spec，跳过取代回写与锚定"。
 
 ## 禁止占位符
 

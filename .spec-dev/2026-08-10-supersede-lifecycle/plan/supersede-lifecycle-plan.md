@@ -37,19 +37,19 @@ SKIP_OPENAI_SYNC_CHECK=1 node scripts/check-openai-sync.mjs   # 结构项校验�
 
 ### 任务 0：建立隔离工作区
 
-- [ ] **步骤 1：检测已有隔离**
+- [x] **步骤 1：检测已有隔离**
 
 运行：`git rev-parse --git-dir` 与 `git rev-parse --git-common-dir`
 两者不同、且 `git rev-parse --show-superproject-working-tree` 无输出（排除 submodule）
 → 已在隔离工作区，跳过本任务。
 
-- [ ] **步骤 2：建立 worktree**
+- [x] **步骤 2：建立 worktree**
 
 有原生 worktree 工具（如 EnterWorktree）或 using-git-worktrees skill 时优先使用；否则手工降级：
 确认 `.worktrees/` 已被忽略（`git check-ignore -q .worktrees`，未忽略先加入 `.gitignore` 并提交），然后
 `git worktree add .worktrees/plan-2026-08-10-supersede-lifecycle -b plan/2026-08-10-supersede-lifecycle` 并切换到该目录。
 
-- [ ] **步骤 3：安装依赖并验证基线**
+- [x] **步骤 3：安装依赖并验证基线**
 
 本仓库零 npm 依赖，无需安装。按「相关测试范围」跑三条校验命令，预期全部通过（当前主线即为绿基线）。
 基线失败 → 停下报告，先问再继续。
@@ -66,14 +66,14 @@ SKIP_OPENAI_SYNC_CHECK=1 node scripts/check-openai-sync.mjs   # 结构项校验�
 **接口**：
 - 产出：「取代与共存」节模板结构、「取代标注形制」节（pending/完全/部分三种 blockquote 的权威文本）、frontmatter `supersedes`/`superseded_by` 字段注释——任务 2/4/5/6/7 的文本以此为形制引用源。
 
-- [ ] **步骤 1：断言红**
+- [x] **步骤 1：断言红**
 
 ```bash
 grep -c "supersedes" skills/requirement-analysis/assets/spec-template.md
 ```
 预期：0（exit 1）。
 
-- [ ] **步骤 2：编辑**
+- [x] **步骤 2：编辑**
 
 2a. frontmatter 模板块中 `sync_commit` 注释行之后（`---` 结束线之前）追加：
 
@@ -120,7 +120,7 @@ grep -c "supersedes" skills/requirement-analysis/assets/spec-template.md
 - **路径风格**：以上标注与 frontmatter 字段中的路径一律仓库根相对；正文 markdown 超链接沿用相对当前文件路径；ADR 互指用同目录文件名相对链接。
 ```
 
-- [ ] **步骤 3：断言绿 + 校验**
+- [x] **步骤 3：断言绿 + 校验**
 
 ```bash
 grep -c "supersedes" skills/requirement-analysis/assets/spec-template.md   # 预期 ≥3
@@ -128,7 +128,7 @@ grep -c "取代标注形制" skills/requirement-analysis/assets/spec-template.md
 node scripts/validate-skills.mjs
 ```
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 /usr/bin/git add skills/requirement-analysis/assets/spec-template.md
@@ -145,14 +145,14 @@ SKIP_CODEX_PACKAGE_HOOK=1 SKIP_RELEASE_HOOK=1 /usr/bin/git commit -m "feat(T1): 
 - 消费：任务 1 的「取代与共存」节模板与「取代标注形制」节（文本中引用其名）。
 - 产出：阶段 6 取代分流条目与 ADR 状态行规则——任务 3（审查维度）、任务 4（回写步骤）与之呼应的术语（"取代分流""三分类""状态行"）。
 
-- [ ] **步骤 1：断言红**
+- [x] **步骤 1：断言红**
 
 ```bash
 grep -c "取代分流\|契约姿态" skills/requirement-analysis/SKILL.md
 ```
 预期：0（exit 1）。
 
-- [ ] **步骤 2：编辑（四处）**
+- [x] **步骤 2：编辑（四处）**
 
 2a. 阶段 1 末尾「打标记，供后续阶段消费」列表（视觉候选条目）之后追加同级条目：
 
@@ -179,7 +179,7 @@ grep -c "取代分流\|契约姿态" skills/requirement-analysis/SKILL.md
 - **打取代预告（仅当 spec 的 `supersedes` 非空）**：翻 active 的同一提交内，向每份被指向的旧 spec H1 标题下写入 Superseded-pending 标注（形制见 spec-template「取代标注形制」节；部分取代写明将被取代的 Requirement 标题）——窗口期的双 active 状态由此对全部消费方显式可判定；后续该计划若被废弃，由 executing-plans 意图级偏差收尾回收此标注
 ```
 
-- [ ] **步骤 3：断言绿 + 校验**
+- [x] **步骤 3：断言绿 + 校验**
 
 ```bash
 grep -c "取代分流" skills/requirement-analysis/SKILL.md    # 预期 ≥2
@@ -188,7 +188,7 @@ grep -c "Superseded-pending" skills/requirement-analysis/SKILL.md # 预期 ≥1
 node scripts/validate-skills.mjs && SKIP_OPENAI_SYNC_CHECK=1 node scripts/check-openai-sync.mjs
 ```
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 /usr/bin/git add skills/requirement-analysis/SKILL.md
@@ -205,7 +205,7 @@ SKIP_CODEX_PACKAGE_HOOK=1 SKIP_RELEASE_HOOK=1 /usr/bin/git commit -m "feat(T2): 
 **接口**：
 - 消费：任务 2 的"取代分流"术语（审查维度引用「取代与共存」节名）。
 
-- [ ] **步骤 1：断言红**
+- [x] **步骤 1：断言红**
 
 ```bash
 grep -c "文档时效" skills/requirement-analysis/references/exploration-patterns.md
@@ -213,7 +213,7 @@ grep -c "外部一致性" skills/requirement-analysis/references/spec-reviewer-p
 ```
 预期：均为 0。
 
-- [ ] **步骤 2：编辑**
+- [x] **步骤 2：编辑**
 
 2a. exploration-patterns.md「派发要求与失败隔离」节的 4 项清单（第 4 项工具优先级提醒）之后追加：
 
@@ -227,7 +227,7 @@ grep -c "外部一致性" skills/requirement-analysis/references/spec-reviewer-p
 | 外部一致性 | 对照 spec「取代与共存」节与 `.spec-dev/` 下既有 active spec/ADR：有无未声明的行为冲突（新 Requirement 与既有 active 的现行 Requirement 矛盾、但取代与共存节未提及该 spec）；完全取代时新 spec covers 是否接管旧 covers 中仍存在的路径（真空差集列为 issue）；部分取代清单中的 Requirement 标题是否与旧 spec 实文对得上 |
 ```
 
-- [ ] **步骤 3：断言绿 + 校验**
+- [x] **步骤 3：断言绿 + 校验**
 
 ```bash
 grep -c "文档时效" skills/requirement-analysis/references/exploration-patterns.md   # ≥1
@@ -235,7 +235,7 @@ grep -c "外部一致性" skills/requirement-analysis/references/spec-reviewer-p
 node scripts/validate-skills.mjs
 ```
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 /usr/bin/git add skills/requirement-analysis/references/exploration-patterns.md skills/requirement-analysis/references/spec-reviewer-prompt.md
@@ -259,14 +259,14 @@ SKIP_CODEX_PACKAGE_HOOK=1 SKIP_RELEASE_HOOK=1 /usr/bin/git commit -m "feat(T3): 
 
 > 本任务同时修改 writing-plans 判据文本（test-scoping 部分取代面的实施）与 test-scoping spec 本体（Requirement 标注 + 术语表同步 + pending 行移除）——同一提交，合并时一并生效，符合 ADR-0001 交付时点。
 
-- [ ] **步骤 1：断言红**
+- [x] **步骤 1：断言红**
 
 ```bash
 grep -c "取代回写" skills/writing-plans/SKILL.md                                        # 预期 0
 grep -c "被 \`Superseded\` 标注" .spec-dev/2026-08-09-test-scoping/spec/test-scoping-design.md  # 预期 0
 ```
 
-- [ ] **步骤 2：编辑 writing-plans/SKILL.md（三处）**
+- [x] **步骤 2：编辑 writing-plans/SKILL.md（三处）**
 
 2a. 「Spec 状态检查」段中「无 frontmatter 的旧版/外部 spec 跳过本检查」句之前插入：
 
@@ -296,7 +296,7 @@ Requirement 已 REMOVED、**或其标题下带 `Superseded` 标注**、或所属
 2c. 最终任务模板在步骤 2 与原步骤 3（合并回来源分支）之间插入新步骤 3，原步骤 3/4/5 顺延为 4/5/6（同步改模板内步骤引用文字与示意编号）：
 
 ```markdown
-- [ ] **步骤 3：取代回写（spec 无 `supersedes` 声明时声明"无取代回写"后跳过）**
+- [x] **步骤 3：取代回写（spec 无 `supersedes` 声明时声明"无取代回写"后跳过）**
 
 按 spec「取代与共存」节逐项执行（形制见 spec-template「取代标注形制」节；实施任务中已完成的回写在此逐项核对后勾选）：
 - 完全取代：旧 spec frontmatter `status` 翻 `superseded`、`superseded_by` 填本 spec 仓库根路径；H1 下 `Superseded-pending` 行替换为 `Superseded` 行；此后该 spec 的 sync_commit 冻结。
@@ -305,7 +305,7 @@ Requirement 已 REMOVED、**或其标题下带 `Superseded` 标注**、或所属
 - 回写随本分支合并进主线生效，与步骤 6 的 sync_commit 锚定构成取代提交组（revert 该组即原子恢复）。
 ```
 
-- [ ] **步骤 3：编辑 test-scoping spec（部分取代回写，三处）**
+- [x] **步骤 3：编辑 test-scoping spec（部分取代回写，三处）**
 
 3a. 移除 H1 下的 `> **Superseded-pending (2026-08-10)** — …` 整行。
 
@@ -321,7 +321,7 @@ Requirement 已 REMOVED、**或其标题下带 `Superseded` 标注**、或所属
 - **孤儿测试**：测试名对不上任何 active spec 的现行 Scenario，且对应 Requirement 已 REMOVED、或被 `Superseded` 标注、或所属 spec 已 superseded 的测试（判据自 supersede-lifecycle 起含标注分支）。_Avoid_：过期测试、废弃测试
 ```
 
-- [ ] **步骤 4：断言绿 + 校验**
+- [x] **步骤 4：断言绿 + 校验**
 
 ```bash
 grep -c "取代回写" skills/writing-plans/SKILL.md                                        # ≥2
@@ -331,7 +331,7 @@ grep -c "原文保留仅作历史参考" .spec-dev/2026-08-09-test-scoping/spec/
 node scripts/validate-skills.mjs && SKIP_OPENAI_SYNC_CHECK=1 node scripts/check-openai-sync.mjs
 ```
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 /usr/bin/git add skills/writing-plans/SKILL.md .spec-dev/2026-08-09-test-scoping/spec/test-scoping-design.md
@@ -348,14 +348,14 @@ SKIP_CODEX_PACKAGE_HOOK=1 SKIP_RELEASE_HOOK=1 /usr/bin/git commit -m "feat(T4): 
 **接口**：
 - 消费：任务 4 的最终任务新步骤序（1 验证 / 2 退役 / 3 取代回写 / 4 合并 / 5 台账 / 6 锚定）。
 
-- [ ] **步骤 1：断言红**
+- [x] **步骤 1：断言红**
 
 ```bash
 grep -c "取代回写" skills/executing-plans/SKILL.md                       # 预期 0
 grep -c "现行 Requirement" skills/executing-plans/references/review-orchestration.md  # 预期 0
 ```
 
-- [ ] **步骤 2：编辑 SKILL.md（两处）**
+- [x] **步骤 2：编辑 SKILL.md（两处）**
 
 2a. 阶段 6 第 2 点中「执行计划的最终任务（全量验证——…」的括注步骤枚举里，在「→ 合并回来源分支」之前插入「→ **取代回写**（按 spec 取代与共存节执行翻转/标注/covers 接管核对，无声明则跳过）」；同句尾「计划缺最终任务或缺锚定步骤（旧版计划）时按同等步骤手工收尾」中"同等步骤"后追加「（含取代回写）」。
 
@@ -365,13 +365,13 @@ grep -c "现行 Requirement" skills/executing-plans/references/review-orchestrat
 ；收尾废弃计划时，若其 spec 已激活并已打出 Superseded-pending 标注，一并回收（删除旧 spec 上的 pending 行）并在最终总结注明
 ```
 
-- [ ] **步骤 3：编辑 review-orchestration.md（两处）**
+- [x] **步骤 3：编辑 review-orchestration.md（两处）**
 
 3a. completeness critic 指令中「对照 spec 行为规范的 Requirement 清单」改为「对照 spec 行为规范的**现行** Requirement 清单（被 `Superseded` 标注的 Requirement 及其 Scenario 排除，不得报为未覆盖）」。
 
 3b. acceptance-qa 联动句「Tier A 检查项直接引用 spec 中的 Scenario」改为「Tier A 检查项直接引用 spec 中的现行 Scenario」。
 
-- [ ] **步骤 4：断言绿 + 校验**
+- [x] **步骤 4：断言绿 + 校验**
 
 ```bash
 grep -c "取代回写" skills/executing-plans/SKILL.md                       # ≥1
@@ -379,7 +379,7 @@ grep -c "现行" skills/executing-plans/references/review-orchestration.md  # �
 node scripts/validate-skills.mjs && SKIP_OPENAI_SYNC_CHECK=1 node scripts/check-openai-sync.mjs
 ```
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 /usr/bin/git add skills/executing-plans/SKILL.md skills/executing-plans/references/review-orchestration.md
@@ -392,14 +392,14 @@ SKIP_CODEX_PACKAGE_HOOK=1 SKIP_RELEASE_HOOK=1 /usr/bin/git commit -m "feat(T5): 
 **文件**：
 - 修改：`skills/quick-fix/SKILL.md`
 
-- [ ] **步骤 1：断言红**
+- [x] **步骤 1：断言红**
 
 ```bash
 grep -c "superseded_by" skills/quick-fix/SKILL.md
 ```
 预期：0。
 
-- [ ] **步骤 2：编辑**
+- [x] **步骤 2：编辑**
 
 步骤 2「spec 反查」小节中「筛出 `spec_dev.status: active` 且 `covers` glob 命中嫌疑文件的 spec，把其相关 Requirement/Scenario 读入上下文」句之后插入：
 
@@ -407,14 +407,14 @@ grep -c "superseded_by" skills/quick-fix/SKILL.md
 **命中 spec 的时效处理**：status 为 `superseded` 的沿其 frontmatter `superseded_by` 跳转至 active 后继（跳转记录已访问路径集合，出现环即停下向用户报告环上文件清单）；正文带 `Superseded-pending` 标注的，以其指向的新 spec 为新工作依据、旧文为已实现行为描述，两者并陈说明。被 `Superseded` 标注的 Requirement 不作为"实现偏离 spec"的修复判据；诊断存量行为时可将已取代契约作为历史参考读取——排障允许读旧契约，修复方向以现行契约为准。同一行为面出现两份 active spec 矛盾且互无取代声明时，列出双方交用户裁决（此即升级门信号之一）。
 ```
 
-- [ ] **步骤 3：断言绿 + 校验**
+- [x] **步骤 3：断言绿 + 校验**
 
 ```bash
 grep -c "superseded_by" skills/quick-fix/SKILL.md   # ≥1
 node scripts/validate-skills.mjs && SKIP_OPENAI_SYNC_CHECK=1 node scripts/check-openai-sync.mjs
 ```
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 /usr/bin/git add skills/quick-fix/SKILL.md
@@ -434,7 +434,7 @@ SKIP_CODEX_PACKAGE_HOOK=1 SKIP_RELEASE_HOOK=1 /usr/bin/git commit -m "feat(T6): 
 - 修改：`skills/acceptance-qa/templates/acceptance-report.md`
 - 核对：`skills/acceptance-qa/evals/evals.json`（只在断言脱节时改）
 
-- [ ] **步骤 1：断言红**
+- [x] **步骤 1：断言红**
 
 ```bash
 grep -c "SUPERSEDED" skills/acceptance-qa/SKILL.md skills/acceptance-qa/templates/acceptance-report.md
@@ -442,7 +442,7 @@ grep -c "现行 Requirement" skills/acceptance-qa/references/acceptance-matrix.m
 ```
 预期：均为 0。
 
-- [ ] **步骤 2：编辑 SKILL.md（三处）**
+- [x] **步骤 2：编辑 SKILL.md（三处）**
 
 2a. 阶段 0 用户直接触发路径「定位对应 spec…沿用其矩阵」句后追加：
 
@@ -454,7 +454,7 @@ grep -c "现行 Requirement" skills/acceptance-qa/references/acceptance-matrix.m
 
 2c. 阶段 5 报告结构中「存在 DEFERRED / DROPPED / ADDED-IN-FLIGHT 时展开差量表」改为「存在 DEFERRED / DROPPED / SUPERSEDED / ADDED-IN-FLIGHT 时展开差量表（SUPERSEDED＝契约已移交后继 spec；与 DROPPED 的分界：行为是否继续存在——存在但契约易主记 SUPERSEDED，不再交付记 DROPPED）」。
 
-- [ ] **步骤 3：编辑 acceptance-matrix.md（三处）**
+- [x] **步骤 3：编辑 acceptance-matrix.md（三处）**
 
 3a. Scenario 引用规则句「优先直接引用 spec 行为规范中的 `#### Scenario:` 名称」后加「（仅现行 Requirement 下的 Scenario——被 `Superseded` 标注者不引用）」。
 
@@ -462,7 +462,7 @@ grep -c "现行 Requirement" skills/acceptance-qa/references/acceptance-matrix.m
 
 3c. 变更面裁剪句追加「；「Requirement 已被取代」是独立于变更面的裁剪原因，同样写入 coverage_note（与"本次未触及"区分）」。
 
-- [ ] **步骤 4：编辑 acceptance-report.md（两处）**
+- [x] **步骤 4：编辑 acceptance-report.md（两处）**
 
 4a. 头部 `> Spec: {{spec path or "none (mini matrix)"}}` 行后追加一行：
 
@@ -476,14 +476,14 @@ grep -c "现行 Requirement" skills/acceptance-qa/references/acceptance-matrix.m
 | [Requirement 名] | SUPERSEDED | 契约移交 {{后继 spec 仓库根路径}}（取代交付于 YYYY-MM-DD） |
 ```
 
-- [ ] **步骤 5：核对 evals.json**
+- [x] **步骤 5：核对 evals.json**
 
 ```bash
 grep -n "Requirement 覆盖\|回填" skills/acceptance-qa/evals/evals.json
 ```
 逐条核对 expected_output 断言与改动后报告结构是否仍一致（报告仍含 Requirement 覆盖对照表与逐行回填状态——本任务未删除这些结构，预期无脱节）；发现脱节才修改对应断言文本，无脱节则零改动并在提交信息注明"evals 核对通过"。
 
-- [ ] **步骤 6：断言绿 + 校验**
+- [x] **步骤 6：断言绿 + 校验**
 
 ```bash
 grep -c "SUPERSEDED" skills/acceptance-qa/SKILL.md                         # ≥2
@@ -492,7 +492,7 @@ grep -c "SUPERSEDED" skills/acceptance-qa/templates/acceptance-report.md    # �
 node scripts/validate-skills.mjs && SKIP_OPENAI_SYNC_CHECK=1 node scripts/check-openai-sync.mjs
 ```
 
-- [ ] **步骤 7：提交**
+- [x] **步骤 7：提交**
 
 ```bash
 /usr/bin/git add skills/acceptance-qa/SKILL.md skills/acceptance-qa/references/acceptance-matrix.md skills/acceptance-qa/templates/acceptance-report.md
@@ -513,7 +513,7 @@ SKIP_CODEX_PACKAGE_HOOK=1 SKIP_RELEASE_HOOK=1 /usr/bin/git commit -m "feat(T7): 
 **接口**：
 - 产出：注入行格式 `${specs.length} spec(s): ${active} active, ${superseded} superseded`（任务 9 的 README 描述引用此格式）。
 
-- [ ] **步骤 1：写失败测试（fixture 红）**
+- [x] **步骤 1：写失败测试（fixture 红）**
 
 ```bash
 REPO=$(git rev-parse --show-toplevel)   # 先在 worktree 内记录仓库根，再进 fixture
@@ -525,11 +525,11 @@ git add -A && git -c user.email=t@t -c user.name=t commit -qm init
 node "$REPO/guardrail/session-context.mjs" | grep "1 active, 1 superseded"
 ```
 
-- [ ] **步骤 2：运行确认失败**
+- [x] **步骤 2：运行确认失败**
 
 预期：grep 无匹配（exit 1）——现版注入行只有 `2 spec(s)` 总数。
 
-- [ ] **步骤 3：写最小实现**
+- [x] **步骤 3：写最小实现**
 
 3a. `guardrail/session-context.mjs` 顶部 import 行 `import { existsSync } from "node:fs";` 改为 `import { existsSync, readFileSync } from "node:fs";`。
 
@@ -557,11 +557,11 @@ for (const rel of specs) {
   lines.push(`  3) If the spec is obsolete, set its frontmatter ${B("status")} to superseded AND fill ${B("superseded_by")} with the successor spec path (write a lightweight REMOVED-only successor spec if the feature is simply deleted). / 该 spec 已作废时，把其 frontmatter 的 status 改为 superseded 并同时填写 superseded_by 指向后继 spec（特性纯删除时先写一份仅含 REMOVED 的轻量后继 spec）。`);
 ```
 
-- [ ] **步骤 4：运行确认通过**
+- [x] **步骤 4：运行确认通过**
 
 重跑步骤 1 的 fixture 命令，预期 grep 命中；另在本仓库根跑 `node guardrail/session-context.mjs | head -3`，预期含 `5 spec(s): 5 active, 0 superseded`（本仓库现状 5 份 active——含本特性 spec）。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 /usr/bin/git add guardrail/session-context.mjs guardrail/check-spec-drift.mjs
@@ -579,14 +579,14 @@ SKIP_CODEX_PACKAGE_HOOK=1 SKIP_RELEASE_HOOK=1 /usr/bin/git commit -m "feat(T8): 
 **接口**：
 - 消费：任务 8 的注入行格式（README 如有描述则同步）。
 
-- [ ] **步骤 1：断言红**
+- [x] **步骤 1：断言红**
 
 ```bash
 grep -rc "superseded_by" guardrail/templates/ guardrail/README.md guardrail/README.zh-CN.md
 ```
 预期：全部 0。
 
-- [ ] **步骤 2：编辑两份 snippet（各自中英两段，共四处）**
+- [x] **步骤 2：编辑两份 snippet（各自中英两段，共四处）**
 
 将义务清单第 4 条中「; mark an obsolete spec's frontmatter `status` as `superseded`. / …spec 作废则把其 frontmatter `status` 改为 `superseded`。」从该条移除（该条只保留 trailer 与环境变量），并在其后新增第 5 条：
 
@@ -602,7 +602,7 @@ grep -rc "superseded_by" guardrail/templates/ guardrail/README.md guardrail/READ
 5. `superseded` 是生命周期终态，不是逃生舱。把 spec 置为 superseded 必须在同一变更内填写 `superseded_by` 指向后继 spec；后继 spec 的 `covers` 须接管旧 spec 中仍存在的路径（不留守卫真空），旧 spec 的 `sync_commit` 自此冻结。读到 superseded spec 时沿 `superseded_by` 跳转后继——不得依据其行为规范开展新工作（它仅作历史可读）。特性纯删除、无后继行为时，写一份仅含 REMOVED 的轻量 spec 作为后继以记录原因。
 ```
 
-- [ ] **步骤 3：编辑 README.zh-CN.md（三处）与 README.md（等价镜像同步）**
+- [x] **步骤 3：编辑 README.zh-CN.md（三处）与 README.md（等价镜像同步）**
 
 3a. 判定逻辑句「一批变更命中某 `status: active` spec 的 `covers`、却没同时改动该 spec，即判为漂移。」后追加：「spec 被取代（superseded）时其 covers 退出拦截——后继 spec 必须接管仍存在的路径，否则出现无人守护的真空；取代回写由 spec-dev 的 executing-plans 收尾强制执行。」
 
@@ -610,14 +610,14 @@ grep -rc "superseded_by" guardrail/templates/ guardrail/README.md guardrail/READ
 
 3c. 「临时放行」清单中「spec 作废：把 frontmatter `status` 改为 `superseded`。」一行移出该清单，改写为独立段落（语义同 snippet 第 5 条中文段，措辞可精简为两句）。
 
-- [ ] **步骤 4：断言绿 + 校验**
+- [x] **步骤 4：断言绿 + 校验**
 
 ```bash
 grep -rc "superseded_by" guardrail/templates/CLAUDE.md.snippet guardrail/templates/AGENTS.md.snippet guardrail/README.md guardrail/README.zh-CN.md   # 每文件 ≥1
 node scripts/check-plugin.mjs
 ```
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 /usr/bin/git add guardrail/templates/CLAUDE.md.snippet guardrail/templates/AGENTS.md.snippet guardrail/README.md guardrail/README.zh-CN.md
@@ -630,14 +630,14 @@ SKIP_CODEX_PACKAGE_HOOK=1 SKIP_RELEASE_HOOK=1 /usr/bin/git commit -m "feat(T9): 
 **文件**：
 - 修改：`.spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md`
 
-- [ ] **步骤 1：断言红**
+- [x] **步骤 1：断言红**
 
 ```bash
 grep -c "covers: \[\]" .spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md
 ```
 预期：≥1（现状为空数组）。
 
-- [ ] **步骤 2：编辑（两处）**
+- [x] **步骤 2：编辑（两处）**
 
 2a. frontmatter `covers: []` 改为：
 
@@ -655,14 +655,14 @@ grep -c "covers: \[\]" .spec-dev/2026-08-09-resource-ledger/spec/resource-ledger
 - covers 声明四个 SKILL.md（writing-plans / executing-plans / acceptance-qa / quick-fix）：依 supersede-lifecycle 的双声明规则，与 test-scoping 等 spec 分面共存、各自声明所辖切面（改单面时对另一份用 `Spec-Guard: off` trailer 放行）。历史上曾留空规避"双 spec 抢占"，于 2026-08-10 存量对账修正。
 ```
 
-- [ ] **步骤 3：断言绿**
+- [x] **步骤 3：断言绿**
 
 ```bash
 grep -c "covers: \[\]" .spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md   # 0
 grep -c "双声明规则" .spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md      # ≥1
 ```
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 /usr/bin/git add .spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md
@@ -689,21 +689,21 @@ SKIP_CODEX_PACKAGE_HOOK=1 SKIP_RELEASE_HOOK=1 /usr/bin/git commit -m "feat(T10):
 **资源台账**（清理依据；执行中创建即追加；行格式 `- [ ] <类型>: <标识> —— <清理命令>`）：
 
 - [ ] worktree: .worktrees/plan-2026-08-10-supersede-lifecycle —— `git worktree remove .worktrees/plan-2026-08-10-supersede-lifecycle && git branch -d plan/2026-08-10-supersede-lifecycle`
-- [ ] 临时目录: 任务 8 fixture `$TMP`（/tmp/spec-dev-fixture.*） —— `rm -rf <任务 8 记录的路径>`
+- [ ] 临时目录: 任务 8 fixture `$TMP`（/tmp/spec-dev-fixture.*） —— `rm -rf /tmp/spec-dev-fixture.VSRPUH`
 
 台账总则：清理只遍历本台账、台账外一律不动；共享缓存默认保留。
 
 > 本最终任务按任务 4 引入的**新步骤序**自举执行（1 全量验证 / 2 退役检查 / 3 取代回写 / 4 合并 / 5 台账清理 / 6 sync_commit 锚定）。
 
-- [ ] **步骤 1：全量验证（安全网）**
+- [x] **步骤 1：全量验证（安全网）**
 
 在 worktree 内跑「相关测试范围」三条校验命令 + 任务 8 fixture 断言。全绿 → 步骤 2；失败 → 修复复跑（本特性无范围外测试，归属裁决不适用）。
 
-- [ ] **步骤 2：测试退役检查**
+- [x] **步骤 2：测试退役检查**
 
 本仓库无传统测试套件，「相关测试范围」为校验脚本而非测试文件——扫描无对象，声明"无孤儿测试候选"后跳过。
 
-- [ ] **步骤 3：取代回写核对**
+- [x] **步骤 3：取代回写核对**
 
 本 spec 声明部分取代 test-scoping（见其「取代与共存」节），回写已在任务 4 随实施完成——逐项核对后勾选：test-scoping「随周期测试退役检查」标题下有 Superseded 标注行；H1 下 pending 行已移除；术语表已同步；本 spec 无完全取代 → covers 接管核对不适用。核对不通过 → 回任务 4 补齐后重跑。
 

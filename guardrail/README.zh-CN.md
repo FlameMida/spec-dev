@@ -31,9 +31,9 @@ node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci] [--no-migra
 
 ## 判定逻辑
 
-每份 spec 的 frontmatter `spec_dev.covers`（glob）声明它拥有的代码。一批变更命中某 `status: active` spec 的 `covers`、却没同时改动该 spec，即判为漂移。
+每份 spec 的 frontmatter `spec_dev.covers`（glob）声明它拥有的代码。一批变更命中某 `status: active` spec 的 `covers`、却没同时改动该 spec，即判为漂移。spec 被取代（superseded）时其 covers 退出拦截——后继 spec 必须接管仍存在的路径，否则出现无人守护的真空；取代回写由 spec-dev 的 executing-plans 收尾强制执行。
 
-frontmatter 的 `sync_commit` 是交付锚点：最近一次确认代码与本 spec 同步的提交——由 executing-plans 收尾在合并后写入；`git diff <sync_commit>..HEAD -- <covers>` 即此后的代码变化。守卫解析该字段但不参与拦截判定。
+frontmatter 的 `sync_commit` 是交付锚点：最近一次确认代码与本 spec 同步的提交——由 executing-plans 收尾在合并后写入；`git diff <sync_commit>..HEAD -- <covers>` 即此后的代码变化。守卫解析该字段但不参与拦截判定。superseded spec 的 sync_commit 冻结在取代提交，此后不再更新。
 
 编辑时（`--hook`）的"是否同步"认定包含工作区已有改动（暂存 + 未暂存 + 未跟踪）：**先把 spec 改好，再动覆盖代码即放行**；但工作区脏文件不会扩大触发集，编辑无关文件不受既有漂移影响。收尾审计（`--worktree`）以整个工作区为变更集，对回合内绕过工具面写入的文件兜底。
 
@@ -41,8 +41,11 @@ frontmatter 的 `sync_commit` 是交付锚点：最近一次确认代码与本 s
 
 - 推荐：提交信息留 `Spec-Guard: off <原因>` trailer——pre-push 与 CI 的区间检查会识别并放行该提交（打印计数供人工复核），全链路一致。
 - 单次命令：`SPEC_DEV_GUARD=off git commit …`（打印告警后放行；建议同时留 trailer，否则推送/CI 区间检查仍会拦）。
-- spec 作废：把 frontmatter `status` 改为 `superseded`。
 - 纯文档特性无需守卫：`covers` 留 `[]`。
+
+## 取代（superseded）
+
+`superseded` 是生命周期终态、不是放行手段：置 superseded 必须同一变更内填 `superseded_by` 指向后继 spec（仓库根相对路径），后继的 covers 接管旧 spec 仍存在的路径。读到 superseded spec 沿指针跳转后继，不得据其行为规范开展新工作；特性纯删除时先写一份仅含 REMOVED 的轻量后继 spec 记录原因。
 
 ## 文件
 

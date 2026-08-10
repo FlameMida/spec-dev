@@ -4,7 +4,11 @@ spec_dev:
   version: 1
   feature: resource-ledger
   status: active
-  covers: []
+  covers:
+    - "skills/writing-plans/SKILL.md"
+    - "skills/executing-plans/SKILL.md"
+    - "skills/acceptance-qa/SKILL.md"
+    - "skills/quick-fix/SKILL.md"
   sync_commit: "086d8d3390ed663df3f7f3d160b658fa7e2413db"
 ---
 
@@ -42,7 +46,7 @@ spec_dev:
 - 台账权威定义唯一落在 writing-plans 最终任务模板，其余三处（executing-plans / acceptance-qa / quick-fix）引用不复制——与报告通道同款的"权威定义唯一"模式。
 - 复用前提 = 能隔离（独立 database/schema/唯一前缀/命名空间）；无法隔离则新建专用实例兜底；复用决定向用户声明——用户裁决。
 - 共享缓存（~/.cargo、pnpm store、npm cache 等）默认保留，仅用户显式要求时清理并单独登记——用户裁决。
-- `covers: []`：本特性无新增文件，且 writing-plans/executing-plans 已被子项目④的 active spec 声明拥有，留空规避双 spec 抢占。
+- covers 声明四个 SKILL.md（writing-plans / executing-plans / acceptance-qa / quick-fix）：依 supersede-lifecycle 的双声明规则，与 test-scoping 等 spec 分面共存、各自声明所辖切面（改单面时对另一份用 `Spec-Guard: off` trailer 放行）。历史上曾留空规避"双 spec 抢占"，于 2026-08-10 存量对账修正。
 
 （ADR 检查：均为可低成本逆转的文档约定，不建 ADR。）
 
@@ -128,7 +132,7 @@ writing-plans 生成的每份计划最终任务 SHALL 含资源台账小节（�
 
 ### 架构与组件
 
-- `writing-plans/SKILL.md`：最终任务模板加"资源台账"小节（**权威定义**：行格式、只遍历台账、共享缓存默认保留三条总则）+ 步骤 3 改写 + 任务结构说明一句；
+- `writing-plans/SKILL.md`：最终任务模板加"资源台账"小节（**权威定义**：行格式、只遍历台账、共享缓存默认保留三条总则）+ 清理步骤改写（历史编号步骤 3，后续插步重编号后现为步骤 5）+ 任务结构说明一句；
 - `executing-plans/SKILL.md`：阶段 3 纪律句（创建即登记）+ 阶段 6 括注（合并前核对台账全勾）；
 - `acceptance-qa/SKILL.md`：阶段 1"缺件处置"段后新增"已有服务复用判定"段（三分支 + 禁令 + 登记目标分流：计划台账 / 对话记账+报告清单）；
 - `quick-fix/SKILL.md`：步骤 6 尾部加收尾清理段；
