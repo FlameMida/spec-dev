@@ -31,9 +31,9 @@ The single source of truth is `check-spec-drift.mjs`; every defense calls it, ju
 
 ## Detection logic
 
-Each spec's frontmatter `spec_dev.covers` (glob) declares the code it owns. A batch of changes that hits the `covers` of a `status: active` spec without also touching that spec is judged as drift.
+Each spec's frontmatter `spec_dev.covers` (glob) declares the code it owns. A batch of changes that hits the `covers` of a `status: active` spec without also touching that spec is judged as drift. When a spec is superseded its covers leave the blocking set — the successor spec must take over the still-existing paths, or those paths fall into an unguarded vacuum; the supersede write-back is enforced by spec-dev's executing-plans wrap-up.
 
-The frontmatter `sync_commit` is the delivery anchor: the commit where code and this spec were last confirmed in sync — written by the executing-plans wrap-up after merge; `git diff <sync_commit>..HEAD -- <covers>` shows code drift since. The guard parses this field but it plays no part in blocking decisions.
+The frontmatter `sync_commit` is the delivery anchor: the commit where code and this spec were last confirmed in sync — written by the executing-plans wrap-up after merge; `git diff <sync_commit>..HEAD -- <covers>` shows code drift since. The guard parses this field but it plays no part in blocking decisions. A superseded spec's `sync_commit` is frozen at the supersede commit and never updated afterwards.
 
 At edit time (`--hook`), "already synced" includes existing working-tree changes (staged + unstaged + untracked): **update the spec first, then touch the covered code, and you pass**; dirty files in the working tree do not expand the trigger set, and editing unrelated files is unaffected by pre-existing drift. The wrap-up audit (`--worktree`) uses the whole working tree as the change set, backstopping files written by tools that bypassed the tool surface within the turn.
 
@@ -41,8 +41,11 @@ At edit time (`--hook`), "already synced" includes existing working-tree changes
 
 - Recommended: leave a `Spec-Guard: off <reason>` trailer in the commit message — the range checks in pre-push and CI recognize it and let the commit through (printing a count for human review), consistent across the chain.
 - One-off command: `SPEC_DEV_GUARD=off git commit …` (warns then passes; leaving the trailer as well is recommended, otherwise push/CI range checks still block).
-- Obsolete spec: set its frontmatter `status` to `superseded`.
 - Pure-documentation features need no guard: leave `covers` as `[]`.
+
+## Superseding
+
+`superseded` is a lifecycle terminal state, not a bypass: mark a spec superseded only together with `superseded_by` pointing to its successor spec in the same change, and the successor's covers must take over the old spec's still-existing paths. When you land on a superseded spec, follow the pointer to the successor — never base new work on it; if a feature is simply deleted, write a lightweight REMOVED-only successor spec to record the reason.
 
 ## Files
 

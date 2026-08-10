@@ -14,7 +14,8 @@ This repository follows the [spec-dev](https://github.com/FlameMida/spec-dev) wo
 1. Before touching code, find the owning feature and what its spec says about the behavior.
 2. **When behavior changes, update that spec in the same commit** (behavior requirements + acceptance matrix).
 3. The drift guard blocks changes that touch code covered by an active spec without syncing it: at edit time (PreToolUse hook), turn wrap-up (Stop hook workspace audit), commit (pre-commit), push (pre-push) and CI. Update the spec first (working-tree changes count), then touch the covered code.
-4. For changes genuinely unrelated to the behavior contract, leave a `Spec-Guard: off <reason>` trailer in the commit message (range checks pass it through), or set `SPEC_DEV_GUARD=off` temporarily; mark an obsolete spec's frontmatter `status` as `superseded`.
+4. For changes genuinely unrelated to the behavior contract, leave a `Spec-Guard: off <reason>` trailer in the commit message (range checks pass it through), or set `SPEC_DEV_GUARD=off` temporarily.
+5. `superseded` is a lifecycle terminal state, not an escape hatch. Mark a spec superseded only together with `superseded_by` pointing to its successor spec (same change); the successor's `covers` must take over the old spec's still-existing paths (no guard vacuum), and the old spec's `sync_commit` freezes at that point. When you land on a superseded spec, follow `superseded_by` to the successor — never base new work on it (it stays readable as history). If a feature is simply deleted with no successor behavior, write a lightweight REMOVED-only spec as the successor to record the reason.
 
 ### With the spec-dev plugin installed
 
@@ -34,7 +35,8 @@ Drive work with the `requirement-analysis` (requirement→spec), `writing-plans`
 1. 动某块代码前，先看它属于哪个特性、对应 spec 怎么规定的行为。
 2. **行为发生变化时，必须同步更新该 spec**（行为规范 + 验收矩阵），并与代码放在同一次提交。
 3. 漂移守卫会拦截"改了 `covers` 覆盖的代码却没同步 spec"的操作：编辑时（PreToolUse hook）、回合收尾（Stop hook 工作区审计）、提交时（pre-commit）、推送时（pre-push）与 CI。先把 spec 改好（工作区改动即可），再动覆盖代码即放行。
-4. 确实与行为契约无关的改动，在提交信息留 `Spec-Guard: off <原因>` trailer（提交区间检查会放行），或临时设 `SPEC_DEV_GUARD=off`；spec 作废则把其 frontmatter `status` 改为 `superseded`。
+4. 确实与行为契约无关的改动，在提交信息留 `Spec-Guard: off <原因>` trailer（提交区间检查会放行），或临时设 `SPEC_DEV_GUARD=off`。
+5. `superseded` 是生命周期终态，不是逃生舱。把 spec 置为 superseded 必须在同一变更内填写 `superseded_by` 指向后继 spec；后继 spec 的 `covers` 须接管旧 spec 中仍存在的路径（不留守卫真空），旧 spec 的 `sync_commit` 自此冻结。读到 superseded spec 时沿 `superseded_by` 跳转后继——不得依据其行为规范开展新工作（它仅作历史可读）。特性纯删除、无后继行为时，写一份仅含 REMOVED 的轻量 spec 作为后继以记录原因。
 
 ### 装了 spec-dev 插件时
 
