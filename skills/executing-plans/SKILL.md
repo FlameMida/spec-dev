@@ -106,7 +106,7 @@ description: >-
 - "每完成一个任务都汇报一下" → 连续执行，别打断用户
 - "spec 自检时顺便找找 bug" → 自检只查 over/under-building 与契约锚定
 - "审查发现直接修了" → 先征询用户处理方式
-- "没做完的 Requirement 含糊带过" → 对账逐条裁决，DEFERRED/DROPPED 必须记原因并回写 spec
+- "没做完的 Requirement 含糊带过" → 对账逐条裁决，DEFERRED/DROPPED/SUPERSEDED 必须记原因（SUPERSEDED 记后继指向）并回写 spec
 - "零发现且全 DELIVERED 仍停下征询" → 例外驱动：没有要决策的事就静默进入合并，总结带一行计数
 - "改动不大，审查跳过吧" → 收尾审查是强制步骤，规模只影响维度数
 - "自己写的代码自己看一遍就行" → 审查必须由独立子代理承担

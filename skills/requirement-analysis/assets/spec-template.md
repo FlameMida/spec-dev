@@ -157,5 +157,6 @@ Requirement 标题后括注一句"改了什么"帮助审查 / Existing behavior 
 - **部分取代**（交付回写）：旧 spec 保持 `active`，每条被取代 `### Requirement:` 标题下插入
   `> **Superseded (YYYY-MM-DD)** — by <新spec仓库根路径>#<requirement 锚>；原文保留仅作历史参考。`
   H1 下的 pending 行移除。`<requirement 锚>` 取新 spec 中对应 Requirement 标题**主名**（去掉"改了什么"等括注）的 slug 形式——它是供 Grep/人工定位的定位符，不保证在所有渲染器中可点击。
-- **路径风格**：以上标注与 frontmatter 字段中的路径一律仓库根相对；正文 markdown 超链接沿用相对当前文件路径；ADR 互指用同目录文件名相对链接。
+- **路径风格**：以上标注与 frontmatter 字段中的路径一律仓库根相对；正文 markdown 超链接沿用相对当前文件路径；ADR 互指用同目录文件名相对链接。（既有 DEFERRED 标注指向同特性目录内的验收报告，沿用相对当前文件路径，属例外、不适用本条。）
+- **语言**：标注字面量跟随所在 spec 的语言表达其意（上文为中文示例；英文 spec 用等义英文，如 `> **Superseded (YYYY-MM-DD)** — superseded by <repo-root path>; kept for historical reference only.`）；结构标签（`Superseded` / `Superseded-pending`、日期、`by ` + 路径的形态）保持稳定，供 Grep 与消费方跨语言匹配。
 - **指针的机器提取**：完全取代的权威指针在 frontmatter `superseded_by`（消费方读字段、不解析句子）；部分取代的指针在标注行 `by ` 之后的路径。标注中的路径一律裸文本，不加反引号或链接包装（保证 Grep 稳定匹配）。
