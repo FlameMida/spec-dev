@@ -22,7 +22,7 @@ spec_dev:
     - "guardrail/README.zh-CN.md"
     - "guardrail/session-context.mjs"
     - "guardrail/check-spec-drift.mjs"
-  sync_commit: null
+  sync_commit: 8dc5c71c
   supersedes:
     - ".spec-dev/2026-08-09-test-scoping/spec/test-scoping-design.md"
   superseded_by: null

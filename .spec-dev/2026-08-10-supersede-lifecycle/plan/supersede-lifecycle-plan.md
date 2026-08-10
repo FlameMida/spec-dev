@@ -688,8 +688,8 @@ SKIP_CODEX_PACKAGE_HOOK=1 SKIP_RELEASE_HOOK=1 /usr/bin/git commit -m "feat(T10):
 
 **资源台账**（清理依据；执行中创建即追加；行格式 `- [ ] <类型>: <标识> —— <清理命令>`）：
 
-- [ ] worktree: .worktrees/plan-2026-08-10-supersede-lifecycle —— `git worktree remove .worktrees/plan-2026-08-10-supersede-lifecycle && git branch -d plan/2026-08-10-supersede-lifecycle`
-- [ ] 临时目录: 任务 8 fixture `$TMP`（/tmp/spec-dev-fixture.*） —— `rm -rf /tmp/spec-dev-fixture.VSRPUH`
+- [x] worktree: .worktrees/plan-2026-08-10-supersede-lifecycle —— `git worktree remove .worktrees/plan-2026-08-10-supersede-lifecycle && git branch -d plan/2026-08-10-supersede-lifecycle`
+- [x] 临时目录: 任务 8 fixture `$TMP`（/tmp/spec-dev-fixture.*） —— `rm -rf /tmp/spec-dev-fixture.VSRPUH`
 
 台账总则：清理只遍历本台账、台账外一律不动；共享缓存默认保留。
 
@@ -707,7 +707,7 @@ SKIP_CODEX_PACKAGE_HOOK=1 SKIP_RELEASE_HOOK=1 /usr/bin/git commit -m "feat(T10):
 
 本 spec 声明部分取代 test-scoping（见其「取代与共存」节），回写已在任务 4 随实施完成——逐项核对后勾选：test-scoping「随周期测试退役检查」标题下有 Superseded 标注行；H1 下 pending 行已移除；术语表已同步；本 spec 无完全取代 → covers 接管核对不适用。核对不通过 → 回任务 4 补齐后重跑。
 
-- [ ] **步骤 4：合并回来源分支**
+- [x] **步骤 4：合并回来源分支**
 
 ```bash
 cd "$(dirname "$(git rev-parse --git-common-dir)")"
@@ -716,11 +716,11 @@ cd "$(dirname "$(git rev-parse --git-common-dir)")"
 
 合并冲突、或主工作区有未提交改动 → 停下向计划作者确认，不强行合并。
 
-- [ ] **步骤 5：清理（按资源台账逐条执行）**
+- [x] **步骤 5：清理（按资源台账逐条执行）**
 
 逐条执行台账清理命令并勾选；失败的行保留未勾选并报告；台账外一律不动。
 
-- [ ] **步骤 6：sync_commit 锚定**
+- [x] **步骤 6：sync_commit 锚定**
 
 ```bash
 SYNC=$(git rev-parse HEAD)

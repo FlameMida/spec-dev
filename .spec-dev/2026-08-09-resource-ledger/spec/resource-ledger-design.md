@@ -9,7 +9,7 @@ spec_dev:
     - "skills/executing-plans/SKILL.md"
     - "skills/acceptance-qa/SKILL.md"
     - "skills/quick-fix/SKILL.md"
-  sync_commit: "086d8d3390ed663df3f7f3d160b658fa7e2413db"
+  sync_commit: 8dc5c71c   # 2026-08-10 covers 补声明后重锚（历史锚 086d8d33 早于 covers 扩张）
 ---
 
 # resource-ledger 设计
