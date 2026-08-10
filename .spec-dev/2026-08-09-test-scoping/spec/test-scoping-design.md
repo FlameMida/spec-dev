@@ -12,8 +12,6 @@ spec_dev:
 
 # 测试分域执行 + 测试退役纪律（test-scoping）设计
 
-> **Superseded-pending (2026-08-10)** — 本 spec 的「Requirement: 随周期测试退役检查」及术语表"孤儿测试"定义将被 `.spec-dev/2026-08-10-supersede-lifecycle/spec/supersede-lifecycle-design.md` 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
-
 ## 背景与目标
 
 随开发推进测试只增不减，套件现有三处全量测试触点（worktree 基线验证、writing-plans 任务 0 与最终任务）使每次开发的测试成本线性恶化。本设计引入"计划声明的相关测试范围"让基线与过程验证只跑相关测试，保留最终全量安全网；并以 Scenario 锚点为判据建立随周期的测试退役纪律。
@@ -29,7 +27,7 @@ spec_dev:
 ## 术语表
 
 - **相关测试范围**：计划头部声明的、与本特性改动相关的测试执行命令或清单；"范围内的测试"以路径落在声明清单/命令覆盖内为判定（机械执行，不做依赖分析）。_Avoid_：测试分组、模块测试、任务间验证
-- **孤儿测试**：测试名对不上任何 active spec 的 Scenario，且对应 Requirement 已 REMOVED 或所属 spec 已 superseded 的测试。_Avoid_：过期测试、废弃测试
+- **孤儿测试**：测试名对不上任何 active spec 的现行 Scenario，且对应 Requirement 已 REMOVED、或被 `Superseded` 标注、或所属 spec 已 superseded 的测试（判据自 supersede-lifecycle 起含标注分支）。_Avoid_：过期测试、废弃测试
 - **归属裁决**：全量验证中范围外测试失败时，回源分支复跑以判定"本次引入 vs 既有失败"的程序
 
 ## 影响面
@@ -79,6 +77,8 @@ writing-plans 生成计划时 SHALL 在计划头部产出「相关测试范围�
 - **THEN** 回退运行完整测试套件，并向用户注明声明已失效、建议修订计划
 
 ### Requirement: 随周期测试退役检查
+
+> **Superseded (2026-08-10)** — by .spec-dev/2026-08-10-supersede-lifecycle/spec/supersede-lifecycle-design.md#requirement-孤儿测试退役判据可闭环；原文保留仅作历史参考。
 
 最终任务在全量验证通过后、合并前 SHALL 执行测试退役检查：扫描路径落在本计划「相关测试范围」内的测试中的孤儿测试，列清单征询用户，同意后删除并计入提交；无孤儿测试时声明后跳过。"对不上 Scenario"的判定基础是 writing-plans 既有的"测试名沿用 Scenario 名"约定；不遵循该命名约定的历史测试 SHALL 不进入候选（保守豁免）。
 
