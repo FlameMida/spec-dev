@@ -156,5 +156,5 @@ Requirement 标题后括注一句"改了什么"帮助审查 / Existing behavior 
   此后 sync_commit 冻结不再更新；covers 保留原值供考古（守卫因 status 自然忽略）。
 - **部分取代**（交付回写）：旧 spec 保持 `active`，每条被取代 `### Requirement:` 标题下插入
   `> **Superseded (YYYY-MM-DD)** — by <新spec仓库根路径>#<requirement 锚>；原文保留仅作历史参考。`
-  H1 下的 pending 行移除。
+  H1 下的 pending 行移除。`<requirement 锚>` 取新 spec 中对应 Requirement 标题**主名**（去掉"改了什么"等括注）的 slug 形式——它是供 Grep/人工定位的定位符，不保证在所有渲染器中可点击。
 - **路径风格**：以上标注与 frontmatter 字段中的路径一律仓库根相对；正文 markdown 超链接沿用相对当前文件路径；ADR 互指用同目录文件名相对链接。

@@ -72,7 +72,7 @@ description: >-
 - **维度派发**（按变更规模）：小 diff（<100 行）1 路；常规 A/B/C 3 路；大变更/用户要求"彻底"时 5 路——单条消息一次性 fan-out `code-reviewer` 子代理
 - **契约校验**：每份报告落盘后 `node ${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs review-findings <file>`，失败退回补全一次，再失败主线程接管该维度
 - **loop-until-dry**：去重后无新发现即停（最多 2 轮）；高/中严重性发现逐条派独立子代理对抗复核（指令=试图反驳）
-- **completeness critic**：1 个子代理对照变更文件清单与 spec 的 Requirement/Scenario 查覆盖缺口，输出并入报告
+- **completeness critic**：1 个子代理对照变更文件清单与 spec 的现行 Requirement/Scenario（被 `Superseded` 标注者除外）查覆盖缺口，输出并入报告
 - **acceptance-qa**：计划含验收任务、或 spec 验收矩阵含「验收任务」行时，触发 acceptance-qa skill 按矩阵执行（输入=spec 路径+计划验收任务+本次变更文件清单+证据目录 `acceptance/`）；旧版计划无矩阵时，变更涉及 UI 即按其验收点触发。验收结论并入审查报告
 
 ## 阶段 5：审查处置与交付对账
@@ -82,7 +82,7 @@ description: >-
 **例外驱动的停顿门**（审查与对账共用一道门）：
 
 - **零 confirmed 发现且全部 DELIVERED**（常态）→ 输出覆盖声明与对账计数，直接进入阶段 6——没有要用户决策的事，不停顿
-- **存在 confirmed 发现或非 DELIVERED 嫌疑项** → **一次性征询**：按严重性分组展示发现 + 列出待裁决 Requirement（补做→回阶段 3 补任务 / DEFERRED 记一句原因 / DROPPED 记一句原因）——哪些值得修、什么没交付是用户的优先级决策，不自动修复、不擅自定稿
+- **存在 confirmed 发现或非 DELIVERED 嫌疑项** → **一次性征询**：按严重性分组展示发现 + 列出待裁决 Requirement（补做→回阶段 3 补任务 / DEFERRED 记一句原因 / DROPPED 记一句原因 / SUPERSEDED 记后继 spec 指向——契约已移交后继、行为仍存在时用此裁决，与"不再交付"的 DROPPED 区分）——哪些值得修、什么没交付是用户的优先级决策，不自动修复、不擅自定稿
 
 用户确认后在 worktree 内修复（修复本身同样走 TDD：先写复现测试），修复后受影响维度复审一次；裁决结果即对账定稿。
 
@@ -92,7 +92,7 @@ description: >-
 2. 执行计划的最终任务（全量验证——范围外失败的归属裁决与测试退役检查按 writing-plans 最终任务模板执行 → **取代回写**（按 spec 取代与共存节执行翻转/标注/covers 接管核对，无声明则跳过） → 合并回来源分支 → 按资源台账逐条清理（worktree 与分支行在内，合并前核对台账全部勾清） → **sync_commit 锚定**：合并后主工作区 HEAD 写入 spec frontmatter 并单独提交；原生工具建的隔离用原生方式退出）；计划缺最终任务或缺锚定步骤（旧版计划）时按同等步骤（含取代回写）手工收尾；非 git 仓库跳过锚定并注明
 3. **roadmap 状态回写（仅当 `.spec-dev/roadmaps/` 下某 active roadmap 引用本特性目录）**：把对应子项目行状态置 `delivered` 并提交；全部子项目已 delivered/dropped 时把该 roadmap frontmatter 的 `status` 翻 `done`。目录不存在或查无引用 → 跳过，零动作
 4. 输出总结：
-   - **成果清单**：完成的任务、创建/修改的文件、对账计数（`X DELIVERED / Y DEFERRED / Z DROPPED / N ADDED-IN-FLIGHT`）
+   - **成果清单**：完成的任务、创建/修改的文件、对账计数（`X DELIVERED / Y DEFERRED / Z DROPPED / S SUPERSEDED / N ADDED-IN-FLIGHT`）
    - **质量指标**：测试数与结果、审查发现数与修复情况
    - **偏差记录**：执行中对计划的就地修正
    - **后续建议**：优化点、文档更新
