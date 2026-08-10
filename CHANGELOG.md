@@ -7,6 +7,46 @@
 
 ---
 
+## [7.21.0] - 2026-08-10
+
+### ✨ 新增 (Added)
+
+- **quick-fix**：未知 status 值告警——session-context 健康自检 + 守卫 loadActiveSpecs 双侧提示，spec 新增 Requirement 同步
+- **T10**：resource-ledger 存量对账——covers 双声明补全、抢占规避决策行修正
+- **T9**：装机侧 superseded 重写为生命周期终态（指针义务、covers 接管、sync_commit 冻结）
+- **T8**：session-context 状态细分计数；守卫报错第 3 条补 superseded_by 义务；台账登记 fixture
+- **T7**：acceptance-qa 定位跳转、矩阵现行 Requirement 规则、SUPERSEDED verdict（evals 核对通过：断言只涉'含覆盖对照表逐行回填'结构，未变更）
+- **T6**：quick-fix 反查时效过滤、链跳转防环、排障放宽
+- **T5**：executing-plans 取代回写引用、pending 回收、critic 现行过滤
+- **T4**：writing-plans 载入取代检查与最终任务取代回写步骤；test-scoping 部分取代回写（自举）
+- **T3**：探索派发文档时效规则 + spec 审查外部一致性维度
+- **T2**：requirement-analysis 契约姿态判定、取代分流、ADR 状态纪律、激活期 pending 标注
+- **T1**：spec-template 取代字段、取代与共存节模板与标注形制
+
+### 🔧 修复 (Fixed)
+
+- **review**：审查重写版残留 4 小项——Red Flag 枚举补 SUPERSEDED、DEFERRED 路径例外注明、守卫指引补路径风格、形制节跨语言表达规则
+- **review**：三维审查修复——session-context 限定 frontmatter 块并容忍引号值、quick-fix 反查先命中后分流、superseded_by 悬空处置（三入口+spec 错误处理）、SUPERSEDED 原位标注归属、supersedes 空值措辞统一、形制节补机器提取与裸路径与完全取代 pending 全文、report 模板占位符英文化、SKILL 删悬空 ADR 引用并补模板链接、resource-ledger 步骤号锚定、roadmap superseded 语义澄清、装机侧指针路径风格
+- **review**：critic 缺口 1-4 补修——对账枚举加 SUPERSEDED、契约姿态提问挪至阶段 1、critic 摘要行现行限定、部分取代锚点取值说明
+
+### 📝 文档 (Docs)
+
+- **exploration**：ADR 索引与存量对账工具两候选特性落盘（TDM-Library 实证数据 + 设计取舍 + 已完成清单）
+- **quick-fix**：ADR 落盘防撞号一句、形制节双语 gloss、双声明适用前提（对账先行）入 spec 决策节
+- **acceptance**：supersede-lifecycle 验收报告与对账——14/14 DELIVERED，审查 22+5 项发现全处置
+- **plan**：supersede-lifecycle 实施计划（任务 0-12，含 test-scoping 部分取代自举与新最终任务步骤序）
+- **spec**：supersede-lifecycle 审查修订——test-scoping 改判部分取代等 3 问题 4 建议
+- **spec**：supersede-lifecycle 取代生命周期机制设计 spec + 首批 ADR
+- **explore**：外部探索派发词主动重申 AnySearch 第一优先，补齐 Codex 端降级链
+
+### 🧹 其他 (Misc)
+
+- **spec**：supersede-lifecycle sync_commit 锚定 8dc5c71（resource-ledger 对账重锚同组）+ 最终任务复选框勾清
+- **plan**：勾选任务 0-10 复选框
+- ignore .worktrees/
+- **spec**：supersede-lifecycle 激活漂移守卫 + test-scoping 打 Superseded-pending 标注（机制自举首运转）
+
+
 ## [7.20.0] - 2026-08-09
 
 ### ✨ 新增 (Added)
