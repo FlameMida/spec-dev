@@ -83,6 +83,7 @@ light/standard 档不要求契约 JSON，子代理按其自身定义的 markdown
 1. 清晰的主题或模态（一个子代理一个角度，允许在该范围内展开）
 2. 相关文件线索、目标层次（内部）或检索主题与关键词（外部）
 3. 期望输出格式
+4. **（外部探索）工具优先级提醒**：派发 prompt 中显式写明「AnySearch 第一优先（通用/时效/垂直/批量；CLI 在 `${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/`）→ `context7`（库文档）→ `WebSearch`/`WebFetch` 兜底」——agent 定义文件虽已内置此优先级，但派发词重申才能保证在不加载 agent 定义的环境（如 Codex `spawn_agent`）同样生效
 
 **失败隔离**：某子代理失败 → 缩小该主题范围重试 1 次 → 仍失败由主线程接管该主题，其余子代理不受影响。
 

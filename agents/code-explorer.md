@@ -154,6 +154,8 @@ mcp__context7__resolve-library-id: libraryName="express", query="需要了解 Ex
 mcp__context7__query-docs: libraryId="/expressjs/express", query="routing and middleware setup"
 ```
 
+context7 未收录或不可用时，降级为 AnySearch（插件内嵌 skill 自带 CLI：`python3 ${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py search "查询词"`，python 缺依赖换同目录 `anysearch_cli.js`），再降级 `WebSearch`。
+
 ## 探索策略
 
 1. **自顶向下**：从入口点开始，逐层深入
