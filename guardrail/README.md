@@ -45,7 +45,7 @@ At edit time (`--hook`), "already synced" includes existing working-tree changes
 
 ## Superseding
 
-`superseded` is a lifecycle terminal state, not a bypass: mark a spec superseded only together with `superseded_by` pointing to its successor spec in the same change, and the successor's covers must take over the old spec's still-existing paths. When you land on a superseded spec, follow the pointer to the successor — never base new work on it; if a feature is simply deleted, write a lightweight REMOVED-only successor spec to record the reason.
+`superseded` is a lifecycle terminal state, not a bypass: mark a spec superseded only together with `superseded_by` pointing to its successor spec (repo-root-relative path) in the same change, and the successor's covers must take over the old spec's still-existing paths. When you land on a superseded spec, follow the pointer to the successor — never base new work on it; if a feature is simply deleted, write a lightweight REMOVED-only successor spec to record the reason.
 
 ## Files
 

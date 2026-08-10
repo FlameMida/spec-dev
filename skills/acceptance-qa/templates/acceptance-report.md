@@ -3,7 +3,7 @@
 > **Language / 语言**: Fill report content in the conversation language; keep table headers and structural labels in English. / 报告内容以对话语言填写；表头与结构标签保持英文。
 > Time: {{time}} | Triggered by: {{executing-plans wrap-up / direct user request}} | Tier: {{light/standard/deep}}
 > Spec: {{spec path or "none (mini matrix)"}} | Evidence dir: {{acceptance/ path}}
-> Spec status: {{active / superseded→跳转链 origin→…→actual / pending-取代进行中}}
+> Spec status: {{active / superseded → chain origin→…→actual / supersede-pending}}
 
 ## Overview
 
@@ -33,7 +33,7 @@ All {{N}} requirements DELIVERED — see Requirement Coverage above.
 |-------------|---------|-------------------|
 | {{req-title}} | DEFERRED | {{one-line reason; also marked in spec}} |
 | {{req-title}} | DROPPED | {{one-line reason; also marked in spec}} |
-| {{req-title}} | SUPERSEDED | {{契约移交 <后继 spec 仓库根路径>（取代交付于 YYYY-MM-DD）}} |
+| {{req-title}} | SUPERSEDED | {{contract handed over to <successor spec repo-root path> (superseded on YYYY-MM-DD)}} |
 | {{unplanned behavior}} | ADDED-IN-FLIGHT | {{user-confirmed; spec revised in task N}} |
 
 ## Key Findings (by severity)

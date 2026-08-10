@@ -45,7 +45,7 @@ frontmatter 的 `sync_commit` 是交付锚点：最近一次确认代码与本 s
 
 ## 取代（superseded）
 
-`superseded` 是生命周期终态、不是放行手段：置 superseded 必须同一变更内填 `superseded_by` 指向后继 spec，后继的 covers 接管旧 spec 仍存在的路径。读到 superseded spec 沿指针跳转后继，不得据其行为规范开展新工作；特性纯删除时先写一份仅含 REMOVED 的轻量后继 spec 记录原因。
+`superseded` 是生命周期终态、不是放行手段：置 superseded 必须同一变更内填 `superseded_by` 指向后继 spec（仓库根相对路径），后继的 covers 接管旧 spec 仍存在的路径。读到 superseded spec 沿指针跳转后继，不得据其行为规范开展新工作；特性纯删除时先写一份仅含 REMOVED 的轻量后继 spec 记录原因。
 
 ## 文件
 

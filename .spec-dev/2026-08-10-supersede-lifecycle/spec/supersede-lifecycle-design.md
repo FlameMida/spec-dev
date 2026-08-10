@@ -263,7 +263,7 @@ guardrail 的 CLAUDE.md.snippet、AGENTS.md.snippet 与 README（中英）SHALL 
 
 **数据流**：设计期——探索报告命中旧 spec/ADR → 契约姿态判定 → 阶段 6 三分类落盘（`supersedes` + 取代与共存节；ADR 即时回写）→ 阶段 7 外部一致性审查 → 阶段 8 激活 + pending 标注。交付期——最终任务取代回写 + covers 接管核对 + sync_commit 同组提交 → 合并。消费期——各入口按 status/标注/链跳转过滤。
 
-**错误处理**：指针链成环 → 记录已访问集停下报告；draft 滞留 → supersedes 永不执行；并发取代同一旧 spec 不同 Requirement → roadmap 依赖序保证回写串行；撤销 → revert 取代提交组原子恢复；旧 spec 无 frontmatter → 跳过机制；非 git → 沿既有跳过先例；`docs/` 迁移 → 仓库根相对路径被迁移脚本既有规则覆盖。
+**错误处理**：指针链成环 → 记录已访问集停下报告；`superseded_by` 缺失或悬空（存量装机仓库常见——旧纪律不要求指针）→ 消费方按无后继处理：向用户报告并以历史参考对待，不阻塞流程；draft 滞留 → supersedes 永不执行；并发取代同一旧 spec 不同 Requirement → roadmap 依赖序保证回写串行；撤销 → revert 取代提交组原子恢复；旧 spec 无 frontmatter → 跳过机制；非 git → 沿既有跳过先例；`docs/` 迁移 → 仓库根相对路径被迁移脚本既有规则覆盖。
 
 ## 测试与验收策略
 

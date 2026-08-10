@@ -36,7 +36,13 @@ if (specs.length === 0) process.exit(0);
 const statusCount = { active: 0, superseded: 0 };
 for (const rel of specs) {
   try {
-    const m = readFileSync(path.join(root, rel), "utf8").match(/^\s{2}status:\s*([\w-]+)/m);
+    // 只在顶部 frontmatter 块内匹配并容忍引号值——与 check-spec-drift.mjs 的 parseFrontmatter
+    // 认定对齐（不以 --- 开头或无闭合线的文件整份忽略），防止正文 yaml 示例块被误计。
+    const text = readFileSync(path.join(root, rel), "utf8");
+    if (!text.startsWith("---")) continue;
+    const end = text.indexOf("\n---", 3);
+    if (end === -1) continue;
+    const m = text.slice(0, end).match(/^\s{2}status:\s*["']?([\w-]+)["']?/m);
     if (m && statusCount[m[1]] !== undefined) statusCount[m[1]] += 1;
   } catch {
     // 单文件读取失败不影响注入

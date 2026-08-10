@@ -19,7 +19,7 @@ description: >-
 
 **计划保存至**：spec 所在特性目录的 `plan/<feature-name>-plan.md`（即 `.spec-dev/YYYY-MM-DD-<feature-name>/plan/<feature-name>-plan.md`，特性目录由 requirement-analysis 在写 spec 时创建）；无 spec 输入的独立触发则自建特性目录。用户对计划位置的偏好优先于此默认值。
 
-**Spec 状态检查**：载入 spec 时读其 frontmatter 的 `spec_dev.status`——仍为 `draft` 时说明漂移守卫尚未激活（requirement-analysis 阶段 8 的激活动作未执行，常见于跨会话独立触发）：与用户确认 spec 已定稿后，把 `status` 翻为 `active` 并单独 commit，再开始编写计划；不翻转则守卫对该特性静默失效。为 `superseded` 时停下告知用户该 spec 已被取代（附 `superseded_by` 指向；沿指针链跳转时记录已访问路径，链上出现环则列出环上文件并停止），经用户显式确认才可继续按旧 spec 编写计划；正文带 `Superseded-pending` 标注时向用户提示「该 spec 正被 <新 spec> 取代中（待交付）」后再继续。无 frontmatter 的旧版/外部 spec 跳过本检查。
+**Spec 状态检查**：载入 spec 时读其 frontmatter 的 `spec_dev.status`——仍为 `draft` 时说明漂移守卫尚未激活（requirement-analysis 阶段 8 的激活动作未执行，常见于跨会话独立触发）：与用户确认 spec 已定稿后，把 `status` 翻为 `active` 并单独 commit，再开始编写计划；不翻转则守卫对该特性静默失效。为 `superseded` 时停下告知用户该 spec 已被取代（附 `superseded_by` 指向，指针缺失或悬空时说明"无可达后继"；沿指针链跳转时记录已访问路径，链上出现环则列出环上文件并停止），经用户显式确认才可继续按旧 spec 编写计划；正文带 `Superseded-pending` 标注时向用户提示「该 spec 正被 <新 spec> 取代中（待交付）」后再继续。无 frontmatter 的旧版/外部 spec 跳过本检查。
 
 **上下文**：编写计划阶段不建工作区——隔离以固定的「任务 0」写入每份计划，执行时才运行（见下方"任务 0"）。
 
@@ -225,7 +225,7 @@ Requirement 已 REMOVED、**或其标题下带 `Superseded` 标注**、或所属
 双条件缺一不可。候选清单非空 → 列清单征询用户，同意后删除并计入本任务提交；用户未确认则不删除
 任何测试。无候选 → 声明"无孤儿测试"后跳过。计划无「相关测试范围」节 → 跳过本步骤。
 
-- [ ] **步骤 3：取代回写（spec 无 `supersedes` 声明时声明"无取代回写"后跳过）**
+- [ ] **步骤 3：取代回写（spec 的 `supersedes` 为空——字段缺失或空数组——时声明"无取代回写"后跳过）**
 
 按 spec「取代与共存」节逐项执行（形制见 spec-template「取代标注形制」节；实施任务中已完成的回写在此逐项核对后勾选）：
 - 完全取代：旧 spec frontmatter `status` 翻 `superseded`、`superseded_by` 填本 spec 仓库根路径；H1 下 `Superseded-pending` 行替换为 `Superseded` 行；此后该 spec 的 sync_commit 冻结。

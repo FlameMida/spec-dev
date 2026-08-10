@@ -11,7 +11,9 @@
 spec_dev_roadmap:
   version: 1
   project: <project-name>
-  status: active          # active | done | superseded —— 全部子项目 delivered/dropped 后翻 done
+  status: active          # active | done | superseded —— 全部子项目 delivered/dropped 后翻 done；
+                          # superseded 仅表整份 roadmap 被新 roadmap 替代（罕用、无指针字段，
+                          # 与 spec 的 superseded 生命周期无关）
 ---
 
 # [项目名] Roadmap

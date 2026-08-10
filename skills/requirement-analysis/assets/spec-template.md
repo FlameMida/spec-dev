@@ -150,7 +150,7 @@ Requirement 标题后括注一句"改了什么"帮助审查 / Existing behavior 
 
 - **窗口期**（新 spec 激活时打在旧 spec H1 标题下一行）：
   `> **Superseded-pending (YYYY-MM-DD)** — 本 spec 的「Requirement: [标题]」将被 <新spec仓库根路径> 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。`
-  完全取代则中段改写为"本 spec 将被 <新spec仓库根路径> 完全取代（待其交付）"。
+  完全取代的完整文本：`> **Superseded-pending (YYYY-MM-DD)** — 本 spec 将被 <新spec仓库根路径> 完全取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。`
 - **完全取代**（交付回写）：frontmatter `status: superseded` + `superseded_by: <后继仓库根路径>`；pending 行替换为
   `> **Superseded (YYYY-MM-DD)** — 本 spec 已被 <后继仓库根路径> 取代，本文仅作历史参考，现行契约以取代方为准。`
   此后 sync_commit 冻结不再更新；covers 保留原值供考古（守卫因 status 自然忽略）。
@@ -158,3 +158,4 @@ Requirement 标题后括注一句"改了什么"帮助审查 / Existing behavior 
   `> **Superseded (YYYY-MM-DD)** — by <新spec仓库根路径>#<requirement 锚>；原文保留仅作历史参考。`
   H1 下的 pending 行移除。`<requirement 锚>` 取新 spec 中对应 Requirement 标题**主名**（去掉"改了什么"等括注）的 slug 形式——它是供 Grep/人工定位的定位符，不保证在所有渲染器中可点击。
 - **路径风格**：以上标注与 frontmatter 字段中的路径一律仓库根相对；正文 markdown 超链接沿用相对当前文件路径；ADR 互指用同目录文件名相对链接。
+- **指针的机器提取**：完全取代的权威指针在 frontmatter `superseded_by`（消费方读字段、不解析句子）；部分取代的指针在标注行 `by ` 之后的路径。标注中的路径一律裸文本，不加反引号或链接包装（保证 Grep 稳定匹配）。
