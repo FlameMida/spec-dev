@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: Code review - identify bugs, security vulnerabilities, code quality issues and convention violations / 代码审查，识别 bug、安全漏洞、代码质量问题和规范违反
-tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, WebFetch, WebSearch, mcp__context7__resolve-library-id, mcp__context7__query-docs
+tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, WebFetch, WebSearch
 model: inherit
 color: red
 ---
@@ -182,22 +182,6 @@ color: red
 - **Read**: 阅读相关文件获取上下文
 - **Grep**: 搜索相关模式和用法
 
-### MCP 工具增强
-
-代码审查时，使用以下 MCP 工具获取安全和最佳实践信息：
-- **context7.query-docs**: 获取库的安全指南和最佳实践
-
-**示例**：
-```
-# 获取库的安全文档
-mcp__context7__resolve-library-id:
-  libraryName="express"
-  query="需要了解 Express.js 的安全最佳实践"
-
-mcp__context7__query-docs:
-  libraryId="/expressjs/express"
-  query="security best practices and guidelines"
-```
 
 ## 审查策略
 

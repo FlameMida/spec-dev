@@ -1,7 +1,7 @@
 ---
 name: external-resource-explorer
 description: External resource exploration - find best practices, standards, official docs and cases for requirement-analysis parallel and follow-up exploration; reports conclusions, evidence and sources / 外部资源探索 agent，负责查找外部最佳实践、标准、官方文档与案例，服务 requirement-analysis 的并行探索与回补探索，输出结论、证据和来源
-tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, WebFetch, WebSearch, mcp__context7__resolve-library-id, mcp__context7__query-docs
+tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, WebFetch, WebSearch
 model: inherit
 color: cyan
 ---
@@ -37,7 +37,7 @@ python3 "$CLI" extract "https://example.com/page"  # 全文抽取,输出已是 M
 - 垂直领域查询先 `get_sub_domains --domain <domain>` 发现子域与必填参数,再带 `--sub_domain` 搜索;命令形态不确定时用 `python3 "$CLI" doc` 查离线完整参考
 - python3 缺依赖(requests)→ 换零依赖 Node 版:`node "${CLI%.py}.js" ...`(同参数)
 
-**第三方库/框架 API 文档:优先 `context7`**(resolve-library-id → query-docs);未收录或不可用 → AnySearch。
+**第三方库/框架 API 文档:优先 AnySearch。
 
 **智能降级(单向判定,不反复试探)**:出现下列任一情况,即判定 AnySearch 本次任务不可用,后续查询全部改走 `WebSearch` / `WebFetch`,不再回头重试:
 

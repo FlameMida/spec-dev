@@ -26,7 +26,6 @@ description: Check MCP configuration status - details and fallback plans for all
 
 | MCP 服务器 | 功能 | 主要消费方 | 降级方案 |
 |-----------|------|-----------|---------|
-| `context7` | 最新库文档和 API 参考 | 探索/设计/审查各环节 | WebSearch + 项目依赖分析 |
 | `sequential-thinking` | 深度结构化思考 | requirement-analysis 对抗验证 | 回复中显式分点推演 |
 | `playwright` | 浏览器自动化验收（verify 断言、trace/video 取证） | acceptance-qa Tier A | 原生 Playwright 测试 |
 | `chrome-devtools` | 性能追踪（CWV/insight）、堆快照、调试诊断 | acceptance-qa 性能与诊断 | Playwright trace / 控制台日志 |
@@ -39,15 +38,11 @@ description: Check MCP configuration status - details and fallback plans for all
 
 | MCP 服务器 | 配置来源（全局/项目/插件） | 状态 | 使用方案 |
 |-----------|------------------------|------|---------|
-| context7 | ✅/❌ + 来源 | 正常/降级/需API Key | 最新文档/WebSearch |
 | sequential-thinking | ✅/❌ + 来源 | 正常/降级 | 结构化思考/分点推演 |
 | playwright | ✅/❌ + 来源 | 正常/降级 | MCP 驱动验收/原生测试 |
 | chrome-devtools | ✅/❌ + 来源 | 正常/降级 | 性能 trace/替代取证 |
 
 #### 环境变量检查
-
-检查必需的环境变量：
-- `CONTEXT7_API_KEY` - context7 所需
 
 对于每个环境变量：
 - ✅ 已配置
@@ -66,29 +61,12 @@ description: Check MCP configuration status - details and fallback plans for all
 **如果有 MCP 未配置**：
 ```
 ℹ️  以下 MCP 未配置，将使用降级方案：
-  • context7 → WebSearch + 项目依赖分析
   • playwright → 原生 Playwright 测试（acceptance-qa Tier A 将降级）
 
 ✅ 所有功能仍可正常工作！
 
 💡 如需最佳体验，建议在全局配置中安装 MCP：
   参见 README 的"推荐配置"章节
-```
-
-**如果缺少 API Key**：
-```
-⚠️  以下环境变量未配置，相关 MCP 将使用降级方案：
-  • CONTEXT7_API_KEY → 将使用 WebSearch
-
-✅ 功能完全可用，只是搜索质量可能略低。
-
-设置方式：
-# macOS/Linux: 在 ~/.zshrc 或 ~/.bashrc 中添加
-# Windows: 在系统环境变量中添加
-export CONTEXT7_API_KEY="your-api-key"
-
-获取 API Key:
-  • Context7: https://context7.com/
 ```
 
 ### 5. 总结

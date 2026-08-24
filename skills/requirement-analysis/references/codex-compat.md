@@ -57,10 +57,10 @@
 
 ## 外部探索（阶段 2 外部波次）
 
-- 工具优先级与 Claude Code 端一致：通用外部研究/时效信息/垂直领域/多主题批量检索优先 **AnySearch**（插件内嵌 skill 自带 CLI，无 MCP 依赖）；第三方库/框架文档优先 `context7`；两者不可用再降级 Codex 内置 web 搜索（托管 `web_search` 工具）
-- **派发词必须显式携带 AnySearch 提醒**：Codex 的 `spawn_agent` 不加载 `agents/*.md` 定义文件，子代理对工具优先级零感知——主线程派发外部探索任务时，须在派发 prompt 中写明 AnySearch 第一优先、CLI 调用方式（`python3 <插件根>/skills/anysearch/scripts/anysearch_cli.py search "查询词" --max_results 5`；python 缺依赖换同目录零依赖 Node 版 `anysearch_cli.js`，同参数；插件根定位不到时先找插件安装目录再以其为根解析路径）与降级链（AnySearch → `context7`（库文档）→ 内置 web 搜索），重试与降级纪律以 [exploration-patterns.md](exploration-patterns.md) 为准
+- 工具优先级与 Claude Code 端一致：通用外部研究/时效信息/垂直领域/多主题批量检索优先 **AnySearch**（插件内嵌 skill 自带 CLI，无 MCP 依赖）优先；不可用再降级 Codex 内置 web 搜索（托管 `web_search` 工具）
+- **派发词必须显式携带 AnySearch 提醒**：Codex 的 `spawn_agent` 不加载 `agents/*.md` 定义文件，子代理对工具优先级零感知——主线程派发外部探索任务时，须在派发 prompt 中写明 AnySearch 第一优先、CLI 调用方式（`python3 <插件根>/skills/anysearch/scripts/anysearch_cli.py search "查询词" --max_results 5`；python 缺依赖换同目录零依赖 Node 版 `anysearch_cli.js`，同参数；插件根定位不到时先找插件安装目录再以其为根解析路径）与降级链（AnySearch → 内置 web 搜索），重试与降级纪律以 [exploration-patterns.md](exploration-patterns.md) 为准
 - 网页搜索兜底：沙箱默认禁网，全部搜索工具不可用时降级为 `rg` + 本地文件阅读并向用户说明
-- 库文档：无 `context7` 时降级 AnySearch，再降级为网页搜索 + `rg` + 文件阅读
+- 库文档： AnySearch，不可用再降级为网页搜索 + `rg` + 文件阅读
 
 ---
 

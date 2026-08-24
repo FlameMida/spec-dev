@@ -18,7 +18,7 @@
 - **轻量修复** — `quick-fix`，已决定、无设计空间的小修复（小 bug、小调整）的快路径：定位根因（含 spec 反查）、逐题校对、TDD 修复、可选验收；按契约影响分流以规避 spec 漂移，涉及跨 spec 契约/跨模块/新依赖时升级 requirement-analysis
 - **共享澄清** — `clarifying`，grill 式提问纪律（沿决策树一次一题、事实自查、每个决策带推荐交用户裁决）；被 requirement-analysis 与 quick-fix 引用，也可独立调用，以三出口收束（转主流程/就此结束/写入 md）
 - **契约化编排** — 子代理输出走 JSON Schema 契约，`validate-output.mjs` 确定性校验，失败退回补全
-- **MCP 工具增强** — 集成 context7、sequential-thinking、playwright、chrome-devtools（可选，智能降级）
+- **MCP 工具增强** — 集成 sequential-thinking、playwright、chrome-devtools（可选，智能降级）
 - **3 个专门化 Agents** — code-explorer、external-resource-explorer、code-reviewer（分析与复跑验证，不写实现代码；实现始终由主线程编写）
 
 ## Skill 管线
@@ -73,7 +73,7 @@ codex plugin marketplace add https://github.com/FlameMida/spec-dev
 codex plugin add spec-dev@spec-agent-skills
 ```
 
-Codex 清单（`.codex-plugin/plugin.json`、`.agents/plugins/marketplace.json`）另外提供可选 MCP 配置（context7、sequential-thinking、playwright、chrome-devtools）与插件 UI 元数据。新版本发布后执行 `codex plugin marketplace upgrade spec-agent-skills` 升级。
+Codex 清单（`.codex-plugin/plugin.json`、`.agents/plugins/marketplace.json`）另外提供可选 MCP 配置（sequential-thinking、playwright、chrome-devtools）与插件 UI 元数据。新版本发布后执行 `codex plugin marketplace upgrade spec-agent-skills` 升级。
 
 ## 插件包维护
 
@@ -202,7 +202,6 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design
 
 | MCP 工具 | 主要功能 | 降级方案 |
 |---------|---------|---------|
-| **context7** | 最新库文档和 API 参考 | WebSearch + 项目依赖分析 |
 | **sequential-thinking** | 结构化深度思考 | 回复中显式分点推演 |
 | **playwright** | 浏览器自动化验收（含 verify 断言与 trace/video 取证） | 原生 Playwright 测试 |
 | **chrome-devtools** | 性能追踪（CWV/insight）、堆快照、调试诊断 | Playwright trace / 控制台日志 |
@@ -214,11 +213,6 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design
 ```json
 {
   "mcpServers": {
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"],
-      "env": { "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}" }
-    },
     "sequential-thinking": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
@@ -234,8 +228,6 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design
   }
 }
 ```
-
-获取 API Key：[Context7](https://context7.com/)
 
 检查 MCP 配置状态：`/check-mcp`
 

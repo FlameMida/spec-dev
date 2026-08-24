@@ -18,7 +18,7 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 - **Lightweight fix** — `quick-fix`, a fast path for already-decided fixes with no design space (small bugs, minor adjustments): root cause with spec back-lookup, one-question-at-a-time confirmation, TDD fix, optional acceptance; splits on contract impact to avoid spec drift and escalates to requirement-analysis on contract-crossing / cross-module / new-dependency signals
 - **Shared clarification** — `clarifying`, the grill-style questioning discipline (one question at a time down the decision tree, facts self-researched, each decision put to the user with a recommendation); referenced by requirement-analysis and quick-fix, and usable standalone with three exits (hand off to the main workflow / stop / write notes to md)
 - **Contract-driven orchestration** — subagent output goes through JSON Schema contracts, deterministically validated by `validate-output.mjs`, with one retry on failure
-- **MCP enhancements** — integrates context7, sequential-thinking, playwright, chrome-devtools (optional, graceful degradation)
+- **MCP enhancements** — integrates sequential-thinking, playwright, chrome-devtools (optional, graceful degradation)
 - **3 specialized agents** — code-explorer, external-resource-explorer, code-reviewer (analysis and verification re-runs only; implementation code is always written by the main thread)
 
 ## Skill Pipeline
@@ -73,7 +73,7 @@ codex plugin marketplace add https://github.com/FlameMida/spec-dev
 codex plugin add spec-dev@spec-agent-skills
 ```
 
-The Codex manifests (`.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`) also expose optional MCP config (context7, sequential-thinking, playwright, chrome-devtools) and plugin UI metadata. After a new release, run `codex plugin marketplace upgrade spec-agent-skills`.
+The Codex manifests (`.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`) also expose optional MCP config (sequential-thinking, playwright, chrome-devtools) and plugin UI metadata. After a new release, run `codex plugin marketplace upgrade spec-agent-skills`.
 
 ## Plugin Package Maintenance
 
@@ -202,7 +202,6 @@ Everything works without MCP; the plugin degrades gracefully to fallbacks.
 
 | MCP tool | Main capability | Fallback |
 |---------|---------|---------|
-| **context7** | Up-to-date library docs and API references | WebSearch + project dependency analysis |
 | **sequential-thinking** | Structured deep thinking | Explicit point-by-point reasoning in replies |
 | **playwright** | Browser automation acceptance (verify assertions plus trace/video evidence) | Native Playwright tests |
 | **chrome-devtools** | Performance tracing (CWV/insights), heap snapshots, debugging | Playwright trace / console logs |
@@ -214,11 +213,6 @@ Edit `~/.claude.json`:
 ```json
 {
   "mcpServers": {
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"],
-      "env": { "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}" }
-    },
     "sequential-thinking": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
@@ -235,7 +229,6 @@ Edit `~/.claude.json`:
 }
 ```
 
-Get an API key: [Context7](https://context7.com/)
 
 Check MCP configuration status: `/check-mcp`
 

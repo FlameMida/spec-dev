@@ -1,7 +1,7 @@
 ---
 name: code-explorer
 description: Deep codebase analysis - trace execution paths, map architecture layers, understand design patterns and abstractions / 深度分析代码库，追踪执行路径，映射架构层次，理解设计模式和抽象
-tools: LSP, Glob, Grep, LS, Read, NotebookRead, WebFetch, WebSearch, mcp__context7__resolve-library-id, mcp__context7__query-docs
+tools: LSP, Glob, Grep, LS, Read, NotebookRead, WebFetch, WebSearch
 model: inherit
 color: yellow
 ---
@@ -142,19 +142,10 @@ color: yellow
 - **Grep**: 搜索代码内容，追踪函数调用
 - **Read**: 读取文件内容，理解实现细节
 
-### MCP 工具增强
+### 工具增强
 
-当需要了解外部库/框架时，使用以下 MCP 工具：
-- **context7.query-docs**: 获取依赖库的最新 API 文档
-
-**示例**：
-```
-# 获取框架文档
-mcp__context7__resolve-library-id: libraryName="express", query="需要了解 Express.js 的路由功能"
-mcp__context7__query-docs: libraryId="/expressjs/express", query="routing and middleware setup"
-```
-
-context7 未收录或不可用时，降级为 AnySearch（插件内嵌 skill 自带 CLI：`python3 ${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py search "查询词"`，python 缺依赖换同目录 `anysearch_cli.js`），再降级 `WebSearch`。
+当需要了解外部库/框架时，使用以下工具：
+AnySearch（插件内嵌 skill 自带 CLI：`python3 ${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py search "查询词"`，python 缺依赖换同目录 `anysearch_cli.js`），再降级 `WebSearch`。
 
 ## 探索策略
 

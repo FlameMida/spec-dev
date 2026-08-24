@@ -7,6 +7,13 @@
 
 ---
 
+## [7.21.1] - 2026-08-24
+
+### 🧹 其他 (Misc)
+
+- remove context7 MCP dependency and all references
+
+
 ## [7.21.0] - 2026-08-10
 
 ### ✨ 新增 (Added)
