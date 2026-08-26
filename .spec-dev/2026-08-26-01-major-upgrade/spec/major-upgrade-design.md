@@ -42,7 +42,6 @@ spec_dev:
     - "README.zh-CN.md"
   sync_commit: null
   supersedes:
-    - ".spec-dev/2026-08-05-clarifying-skill/spec/clarifying-skill-design.md"
     - ".spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md"
   superseded_by: null
 ---
@@ -86,8 +85,8 @@ spec-dev 现为 Claude Code + Codex 双平台 skill 插件（v7.21.1）。本次
 
 ## 取代与共存
 
-- [部分取代] `.spec-dev/2026-08-05-clarifying-skill/spec/clarifying-skill-design.md`：Requirement「核心纪律（两种角色共用）」——新增第 0 条自我披露，条目列举变化；Requirement「与 exploring 的分界」——分界从对立改嵌套。取代理由：澄清纪律的内容与边界由本 spec 重新定义。
-- [部分取代] `.spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md`：Requirement「资源台账登记位置」（若其实文标题不同，以"台账行就地编辑计划文件"语义定位）——分文件形态下台账移入 progress.yaml 的 resources 键，单文件形态不变。取代理由：新形态下计划文件不再是运行时状态载体。
+- [部分取代] `.spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md`：Requirement「执行中创建即登记」——分文件形态下登记目标由"就地编辑计划文件的台账行"改为 progress.yaml 的 resources 键（同一前置下登记位置结论相反，冲突型变更）；Requirement「writing-plans 最终任务模板含资源台账（改了什么：清理步骤由固定 worktree 命令扩为台账遍历，新增台账小节）」——分文件形态下台账小节由 progress.yaml 承接，最终任务改为引用其清单。单文件形态下两条原文继续成立；其余三条 Requirement（清理只遍历台账、acceptance-qa 隔离复用判定、quick-fix 收尾清单式清理）语义不变，仅载体细节随形态分流。
+- [分面共存] `.spec-dev/2026-08-05-clarifying-skill/spec/clarifying-skill-design.md`：本 spec 仅新增自我披露纪律与嵌套式 exploring 分界（新增切面）；其全部既有 Requirement（逐题澄清、事实自查、三出口、被引用模式不触发出口、Codex 降级、两处引用方声明）在改造后语句保持为真，无冲突型变更；covers 重叠按双声明规则处理。
 - [分面共存] `.spec-dev/2026-08-09-test-scoping/spec/test-scoping-design.md`：本 spec 仅移动「相关测试范围」声明在分文件形态下的物理位置（index.md 头部），判定语义零变化；MODIFIED 差量已在本 spec 行为节声明。
 - [分面共存] `.spec-dev/2026-08-10-supersede-lifecycle/spec/supersede-lifecycle-design.md`：本 spec 大量编辑其 covers 文件但不触碰取代生命周期行为；提交命中其 covers 时按双声明规则同步或 `Spec-Guard: off` trailer 放行。
 - [零动作] `.spec-dev/2026-08-08-triage-routing/spec/triage-routing-design.md`：不改 `commands/triage.md`，doctor 为新增命令无行为交集。
