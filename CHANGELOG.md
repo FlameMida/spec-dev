@@ -7,6 +7,13 @@
 
 ---
 
+## [7.22.2] - 2026-08-26
+
+### 📝 文档 (Docs)
+
+- **acceptance**：pi/grok 限制解除——本机实机验证(grok validate/install/inspect 全链 13 skills+hooks;pi 真实会话自报 13/13 skills 含 test-strategy),矩阵行升级,残留仅 grok hook 运行时触发未观察
+
+
 ## [7.22.1] - 2026-08-26
 
 ### 📝 文档 (Docs)
