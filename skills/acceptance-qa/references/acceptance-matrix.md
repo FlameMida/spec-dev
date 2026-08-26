@@ -32,9 +32,11 @@
 requirement-analysis（写矩阵）
   └─ spec「测试与验收策略」节按上表结构落矩阵；
      unit/integration 行通常逐 Scenario 生成，e2e 行覆盖关键用户流程，
-     visual/a11y/perf 行仅在需求形态需要时出现（见下方维度取舍）
+     visual/a11y/perf 行仅在需求形态需要时出现（见下方维度取舍）；
+     每行标注 Lane 归属（fast/PR/nightly，语义见 test-strategy skill），性能行必须带阈值数字
 writing-plans（翻译矩阵）
-  ├─ 「任务内 TDD」行 → 对应任务的失败测试步骤（GIVEN→arrange、WHEN→act、THEN→assert）
+  ├─ 「任务内 TDD」行 → 对应任务的失败测试步骤（GIVEN→arrange、WHEN→act、THEN→assert）；
+  │  翻译时继承 Lane 归属并对照 test-strategy 的栈处方
   └─ 「验收任务」行 → 计划固定生成的「验收任务」（位于最终任务之前），
      逐行列出验收点：维度、目标（URL/端点/页面）、阈值、证据要求
 executing-plans（触发执行）

@@ -61,7 +61,7 @@ spec 聚焦单一交付物（绝大多数情况）→ 本节零动作。若 spec
 
 TDD 循环的完整纪律遵循 test-driven-development skill——计划里的每个任务显式内嵌上述五步。
 
-**Scenario 直译为测试**：spec 行为规范里的每个 `#### Scenario:` 至少翻译成一个失败测试，映射固定：GIVEN→arrange（构造前置状态）、WHEN→act（触发动作）、THEN→assert（断言可观察结果）；测试名沿用 Scenario 名。规范到测试零翻译损耗——不要自己另编测试场景后把 Scenario 丢在一边。
+**Scenario 直译为测试**：spec 行为规范里的每个 `#### Scenario:` 至少翻译成一个失败测试，映射固定：GIVEN→arrange（构造前置状态）、WHEN→act（触发动作）、THEN→assert（断言可观察结果）；测试名沿用 Scenario 名。规范到测试零翻译损耗——不要自己另编测试场景后把 Scenario 丢在一边。测试步骤的 Lane 归属与 DB/前端/Agent 处方遵循 test-strategy skill（矩阵行标注的 lane 直接继承；DB 类步骤对照其 references/db-testing.md，不得出现每测试一容器）。
 
 **大型计划的分组导航**：任务数超过 6 个时，按工作域插入分组标题（如 `## 数据层`、`## 接口层`、`## 测试与验收`）组织任务顺序；任务编号保持全局连续（任务 0..N）不受分组影响——commit 前缀 `feat(TN)`、勾选与接口块引用都以全局编号为准。分组同时暴露并行边界：不同组且无接口依赖的任务天然可并行。
 
