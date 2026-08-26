@@ -7,6 +7,62 @@
 
 ---
 
+## [7.22.0] - 2026-08-26
+
+### ✨ 新增 (Added)
+
+- **T25**：validate-output 新增 plan-index 结构校验（一致性/悬空/环）
+- **T24**：executing-plans 渐进执行与断点恢复接线（分文件形态 + 单文件轻量恢复）
+- **T23**：plan 分文件形态规范（阈值门控 + index 导航表 + progress.yaml 单一状态源）
+- **T22**：test-strategy 挂载接线（writing-plans 翻译层 / acceptance-qa / 矩阵分工链 / spec 模板）
+- **T21**：test-strategy 栈特定处方三件（DB/前端/Agent eval）
+- **T20**：test-strategy skill 本体（三 Lane/治理顺序/Agent 骨架/矩阵对接）
+- **T19**：设计原则 reference 落盘并接线阶段4/5与计划头部声明块
+- **T18**：exploring 全套接入澄清——开场披露 + 关键分岔转漏斗，分界改嵌套
+- **T17**：引用方锚定语同步披露条（requirement-analysis 阶段3 / quick-fix 步骤3）
+- **T16**：clarifying 核心纪律第 0 条——提问前自我披露（假设/关键信息/易犯错）
+- **T15**：visual-preview 产物归位特性目录（--feature-dir + 回退不变 + 归档约定）
+- **T14**：roadmap 上下文胶囊（原始需求全文+裁决+指针+已扫范围）与续接免重扫（无触发描述变更）
+- **T13**：同日顺序编号 YYYY-MM-DD-NN 全套件落地（存量 grandfather；无触发描述变更，openai.yaml 无需同步）
+- **T12**：guardrail snippet 注入全局搜索优先级规则（AGENTS.md 家族跨平台生效）
+- **T11**：九 skill 统一搜索条款 + 环境映射表纳入 anysearch + 派发词模板固定化（条款不涉触发描述，openai.yaml 无需同步）
+- **T10**：code-explorer 白名单加 Bash（修 anysearch CLI 物理不可达），external-resource-explorer 排版修复
+- **T9**：插件声明式 SessionStart hook（打包校验通过；实装注入验证入验收走查）
+- **T8**：注入链去静默——session-context --explain 决策重放 + install prepare 跳过原因
+- **T7**：doctor 六域诊断命令（平台/guardrail/标记/注入回放/anysearch 双副本/推理运行时链）
+- **T6**：根级 AP 1.0.0 manifest 与 pi 分发清单，版本同步扩为五处，README 平台矩阵（官方 schema 校验挪验收）
+- **T5**：MCP 清零——删 .mcp.json/check-mcp，Codex manifest 与双语 README 同步，mcp-setup 转 opt-in
+- **T4**：结构化推理消费点改写为内嵌 sequential-thinking skill（降级语义不变；无触发描述变更，openai.yaml 无需同步）
+- **T3**：vendored skill 统一同步脚本（subtree/snapshot 双模式 + normalize 增强注入），删除旧入口
+- **T2**：think.mjs 零依赖 Node 端口（手工类型剥离 + reset/submit/status 契约测试）
+- **T1**：vendor sequential-thinking skill（SHA 快照 + 本地适配 + 注册）
+
+### 🔧 修复 (Fixed)
+
+- **review-R10**：复审追加修复——visual-path 测试去硬编码路径(合并后在 main 可跑)；anysearch description 链 bundled→vendored 三处联动(同步源+normalize 重放+openai.yaml 副本,中文升内嵌 CLI)；exploring 降级句补注明原因(第 5 表述点)；writing-plans 分支名举例升 NN；doctor 标记顺序颠倒判 broken(补 TDD 用例)
+- **review-R9**：--check 用例对齐实际 CLI 行为——latestTarget 在打印前求值、网络不可达只剩 stderr、超时被杀零输出，三路径均纳入断言并加 45s 超时保护
+- **review-R8**：低级 16 条打包修复——旧命名残留×5 升 NN（README 双语管线图/详述、acceptance-qa 定位行+兼容句）；英文 bundled→vendored×5 对齐术语表；spec-template/hooks.json 英文补齐丢句；exploring 不必做枚举辖域改写（分岔漏斗不产出文档）；exploration-patterns 派发模板内联实路径；db-testing 来源自包含；search-clause 补 test-strategy；NN 扫描口径目录→产物（含 reports/roadmaps 文件名）；doctor 标记常量提为模块级并以测试锁定与 install.mjs 双源同步
+- **review-R7**：think.mjs 重做为 esbuild 一次性转译生成物（对齐计划 T2 实现方式；头注释改生成声明与再生成指引；契约测试 2/2 保持绿）
+- **review-R5/R6**：sequential-thinking evals 键名统一全仓惯例（skill_name/evals/prompt）；ra evals 旧用例路径升 YYYY-MM-DD-NN；四降级文本补「注明工具降级原因」（eval st-degrade 子断言闭环）
+- **review-R4**：资源预登记按计划形态分流落地——writing-plans 分流条款/牢记节/最终任务模板与 progressive-plan-format 生成规则接 progress.yaml resources（含 docs 回归测试）
+- **review-R3**：doctor 补齐 spec 六域——SessionStart hook 挂载域（declarative 三态+注入回放并入 hooks 节）与 anysearch 版本滞后（复用 update-vendored --check，网络失败归 unknown 不阻塞）；commands/doctor.md 同步
+- **review-R2**：validate-output 补 const/pattern/maxLength/additionalProperties 四关键字——官方 AP schema 判别约束生效（含坏 manifest 四场景回归测试与 schemas/README 子集表同步）
+- **review-R1**：start-server.sh 路径参数绝对化（修相对 --feature-dir 在内部 cd 后失效）+ port/token 记忆文件从 FEATURE_DIR 推导（修无 --project-dir 时悬空）+ dry-run 暴露 PORT_FILE/TOKEN_FILE
+- **T26**：验收修复——官方 AP schema 落盘入库并按 const 修正 plugin.json（$schema 指向 plugin.schema.json、删 schema 外 skills 键，以 schema 为准）；README 双语清 MCP 残留（/check-mcp 与 .mcp.json 目录树行）、版本同步三处改五处并补 /doctor；check-plugin 注释同步五清单
+- check-plugin 剥离子进程 GIT_* 环境变量（修 worktree 下 codex-validate 劫持 index 产出空提交）
+
+### 📝 文档 (Docs)
+
+- **spec**：取代回写——resource-ledger 两条 Requirement 标 Superseded by major-upgrade#资源登记纪律按计划形态分流，Superseded-pending 预告回收（covers 四路径已由 major spec 接管，其余三条分面共存）
+- **acceptance**：验收报告定稿——矩阵 13 行全过、17 DELIVERED 对账表、复审结论与 R10 追加修复记录
+- **review**：ultracode 收尾审查报告落盘（24 confirmed + 验收演练 + critic 缺口）
+
+### 🧹 其他 (Misc)
+
+- **spec**：sync_commit 锚定 76eb9e2（major-upgrade 交付合并点）
+- **review-R9**：update-vendored --check 补 CLI 契约用例（只读、退出码 0/1 语义、网络不可达同归 1、工作区零改动）
+
+
 ## [7.21.6] - 2026-08-26
 
 ### 📝 文档 (Docs)
