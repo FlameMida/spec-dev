@@ -61,4 +61,15 @@
 
 ## 受影响维度复审
 
-(复审进行中,结论待补)
+两路独立复审(A 功能正确性 / C2 文档交叉引用一致性),对修复区间 536a6fd..HEAD 逐 diff 核验并独立复跑全量:
+
+**结论:R1-R9 核心发现全部真解决。** 关键实证:A 路用独立 esbuild 从 think.ts 再生成与 think.mjs 逐字节一致(R7 生成物声明属实);R2 新关键字回归面全仓仅 agent-plugin-1.0.0 使用、零误伤;R3 lag 三态链路端到端实跑(lagging 为真实网络检出);独立复跑 43/43 测试、validate-skills 13/13、check-plugin、AP schema ok:true、doctor hooks=ok 全绿。
+
+复审追加发现 5 项收尾项(3 项属用户已裁决范围的漏网、1 项修复引入的新问题、1 项低危残留),已全部以 R10 修复(1d181e1):
+1. **[合并阻塞] visual-path.test.sh 硬编码本 worktree 绝对路径**——合并回 main 删 worktree 后必挂;改为 cd 后捕获 `$SCRIPT` 变量锚定
+2. **bundled→vendored 辖域漏网且会自我复制**——anysearch description 链三处联动改(同步源 enhancedDescription → normalize 重放 SKILL.md → openai.yaml 副本),中文同步升「内嵌 CLI」
+3. exploring:78 降级句为第 5 个平行表述点,补「并注明工具降级原因」
+4. writing-plans:126 分支名举例(非 grandfather 语境)升 `plan/YYYY-MM-DD-NN-<feature>`
+5. doctor markerState 补顺序检查(END 先于 START 判 broken,与 install.mjs 拒改写判定对齐;含 TDD 用例)
+
+R10 后全量:44/44 mjs 测试 + visual-path.sh PASS + validate-skills + check-openai-sync 全绿。**边缘项(未修,复审判定可不动)**:server.cjs:484 普通英语注释"bundled third-party assets"(非术语辖域);update-vendored usage 对 --check 网络失败退出码语义描述不全(测试已锁定该语义);anysearch/SKILL.md:21/:97 上游正文"bundled cross-platform CLI tools"(上游内容,改需 local adaptation 登记,且系 CLI 分发描述非 skill 称呼)。
