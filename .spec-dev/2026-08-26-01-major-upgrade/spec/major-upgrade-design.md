@@ -1,5 +1,7 @@
 ---
 # —— spec-dev 漂移守卫锚点（机器可校验，勿删）——
+
+> **Superseded-pending (2026-08-27)** — 本 spec 的「Requirement: plan 分文件形态（阈值门控）」「Requirement: 渐进执行与断点恢复」「Requirement: 资源登记纪律（按计划形态分流）（改了什么：登记与模板载体由"计划文件台账行"扩展为随计划形态分流，创建即登记语义不变）」三条将被 .spec-dev/2026-08-27-01-plan-single-format/spec/plan-single-format-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 spec_dev:
   version: 1
   feature: major-upgrade

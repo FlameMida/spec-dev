@@ -7,6 +7,13 @@
 
 ---
 
+## [8.0.3] - 2026-08-26
+
+### 📝 文档 (Docs)
+
+- **spec**：plan-single-format 激活漂移守卫（draft→active）并给 major-upgrade 三条 Requirement 打 Superseded-pending 预告
+
+
 ## [8.0.2] - 2026-08-26
 
 ### 📝 文档 (Docs)
