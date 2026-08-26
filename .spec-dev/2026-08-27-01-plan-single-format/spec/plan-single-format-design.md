@@ -3,7 +3,7 @@
 spec_dev:
   version: 1
   feature: plan-single-format
-  status: draft
+  status: active
   covers:
     - "skills/writing-plans/SKILL.md"
     - "skills/writing-plans/references/progressive-plan-format.md"
