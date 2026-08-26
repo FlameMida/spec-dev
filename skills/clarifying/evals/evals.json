@@ -30,6 +30,11 @@
       "id": "cl-referenced-mode-no-exits",
       "prompt": "（requirement-analysis 阶段 3 按 clarifying 纪律完成最后一个澄清问题，用户已答复）",
       "expected_output": "流程直接进入 requirement-analysis 阶段 4——不呈现共识摘要、不出现三出口选择、不发 clarifying 开场声明；被引用模式只提供纪律，控制权归引用方"
+    },
+    {
+      "id": "cl-disclosure-before-first-question",
+      "prompt": "quick-fix 步骤 3 以被引用模式进入澄清，存在两个待确认点",
+      "expected_output": "第一题之前先输出三段自我披露（默认假设/关键信息缺口/易犯错误），随后一次一题逐题确认；不呈现三出口（被引用模式）"
     }
   ]
 }
