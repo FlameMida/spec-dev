@@ -1,14 +1,14 @@
 format_version: 1
-current: T06
+current: T07
 tasks:
-  T00: { status: completed, commit: T00-local, tests: pass }
-  T01: { status: completed, tests: pass }
-  T02: { status: completed, tests: pass }
-  T03: { status: completed, tests: pass, deviations: ["断言正则适配实际措辞(反引号/跨行);executing-plans 读取句补回 NN 前缀"] }
-  T04: { status: completed, tests: pass }
-  T05: { status: completed, tests: pass }
-  T06: { status: completed, tests: pass }
-  T07: { status: pending }
+  T00: { status: completed, commit: 3e07f65, tests: pass }
+  T01: { status: completed, commit: 220158e, tests: pass}
+  T02: { status: completed, commit: cfe11fc, tests: pass}
+  T03: { status: completed, commit: 33941a4, tests: pass}
+  T04: { status: completed, commit: 8a889e0, tests: pass}
+  T05: { status: completed, commit: 9e43713, tests: pass}
+  T06: { status: completed, commit: f50870e, tests: pass}
+  T07: { status: completed, tests: pass }
   T08: { status: pending }
 resources:
   - "worktree: .worktrees/plan-2026-08-27-01-plan-single-format —— git worktree remove .worktrees/plan-2026-08-27-01-plan-single-format && git branch -d plan/2026-08-27-01-plan-single-format"
