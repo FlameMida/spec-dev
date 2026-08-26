@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// spec-dev doctor：平台 / guardrail / 注入标记 / 会话注入决策 / anysearch / sequential-thinking 六域健康诊断。
+// spec-dev doctor：平台 / guardrail / 注入标记 / SessionStart hook 挂载（含注入决策回放）/ anysearch（含双副本歧义与版本滞后）/ sequential-thinking 六域健康诊断。
 // 用法：node scripts/doctor.mjs [--json]   退出码：0 健康或仅提示；1 存在需修复项。
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -55,14 +55,30 @@ const markerState = (file) => {
 report.markers = { "CLAUDE.md": markerState("CLAUDE.md"), "AGENTS.md": markerState("AGENTS.md") };
 if (Object.values(report.markers).includes("broken")) needsFix = true;
 
-// 4. 会话注入决策回放（重放 session-context --explain：同输入同决策）
+// 4. SessionStart hook 挂载：声明式 hooks.json 状态 + 会话注入决策回放（重放 session-context --explain：同输入同决策）
+let declarative = "missing";
+try {
+  const hooksJson = JSON.parse(readFileSync(path.join(pluginRoot, "hooks/hooks.json"), "utf8"));
+  const sessionStart = hooksJson?.hooks?.SessionStart;
+  declarative = Array.isArray(sessionStart) && sessionStart.length > 0 ? "ok" : "declared-empty";
+} catch {
+  declarative = existsSync(path.join(pluginRoot, "hooks/hooks.json")) ? "declared-empty" : "missing";
+}
 const explain = spawnSync("node", [path.join(pluginRoot, "guardrail/session-context.mjs"), "--explain"], {
   cwd,
   encoding: "utf8",
 });
-report.injection = { lastDecision: ((explain.stdout || "") + (explain.stderr || "")).trim() || "（--explain 未实现或无输出 / no output）" };
+report.hooks = {
+  declarative,
+  injectionReplay: ((explain.stdout || "") + (explain.stderr || "")).trim() || "（--explain 未实现或无输出 / no output）",
+  hint:
+    declarative === "ok"
+      ? ""
+      : "插件级 hooks/hooks.json 缺失或 SessionStart 声明为空：装载平台（Claude Code / Grok Build）不会自动注入会话上下文——重装插件恢复；git 闸门不受影响（guardrail/install.mjs 独立提供）。/ Plugin-level SessionStart hook missing or empty; reinstall the plugin. The git gate is unaffected (provided by guardrail/install.mjs).",
+};
+if (declarative !== "ok") needsFix = true;
 
-// 5. anysearch：内嵌可用性 / 独立副本歧义
+// 5. anysearch：内嵌可用性 / 独立副本歧义 / 版本滞后
 const embedded = path.join(pluginRoot, "skills/anysearch");
 const duplicates = [];
 for (const base of [".claude/skills", ".codex/skills"]) {
@@ -74,12 +90,32 @@ for (const base of [".claude/skills", ".codex/skills"]) {
     // 目录不可读不阻塞诊断
   }
 }
+// 版本滞后检测：复用 update-vendored-skill --check（0=最新；1 且输出含"发现新版本"=滞后；
+// 其余含网络失败——它同样 exit 1 但无该标记——归 unknown，离线不阻塞诊断）
+let lag = "unknown";
+try {
+  const check = spawnSync(
+    "node",
+    [path.join(pluginRoot, "scripts/update-vendored-skill.mjs"), "--skill", "anysearch", "--check"],
+    { cwd: pluginRoot, encoding: "utf8", timeout: 20000 }
+  );
+  if (check.status === 0) lag = "up-to-date";
+  else if (check.status === 1 && /发现新版本/.test((check.stdout ?? "") + (check.stderr ?? ""))) lag = "lagging";
+} catch {
+  // 超时/无法启动 → unknown
+}
+const dupHint = duplicates.length
+  ? "检测到插件内嵌版之外的独立副本（standalone）：两者 description 相近会造成 skill 选择歧义，建议移除独立副本或知悉取舍。/ Standalone anysearch copies detected; consider removing them to avoid skill-selection ambiguity."
+  : "";
+const lagHint =
+  lag === "lagging"
+    ? "内嵌 anysearch 落后上游：运行 node scripts/update-vendored-skill.mjs --skill anysearch 同步。/ Embedded anysearch lags upstream; run update-vendored-skill to sync."
+    : "";
 report.anysearch = {
   embedded: existsSync(path.join(embedded, "SKILL.md")),
   duplicates,
-  hint: duplicates.length
-    ? "检测到插件内嵌版之外的独立副本（standalone）：两者 description 相近会造成 skill 选择歧义，建议移除独立副本或知悉取舍。/ Standalone anysearch copies detected; consider removing them to avoid skill-selection ambiguity."
-    : "",
+  lag,
+  hint: [dupHint, lagHint].filter(Boolean).join(" "),
 };
 
 // 6. sequential-thinking 运行时链：bun/tsx → node 端口 → 纯推演

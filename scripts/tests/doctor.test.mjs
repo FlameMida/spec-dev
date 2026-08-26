@@ -49,3 +49,23 @@ test("sequential-thinking 运行时链探测有三态", () => {
   const r = JSON.parse(out);
   assert.ok(["ts-runtime", "node-port", "prose-fallback"].includes(r.sequentialThinking.chain));
 });
+
+test("Scenario: SessionStart hook 挂载域——声明式 hooks.json 与注入回放", () => {
+  const { out } = runIn(repoRoot);
+  const r = JSON.parse(out);
+  assert.ok(["ok", "declared-empty", "missing"].includes(r.hooks.declarative), "declarative 应为三态之一");
+  assert.equal(r.hooks.declarative, "ok", "本插件自带 hooks/hooks.json，SessionStart 声明应判 ok");
+  assert.ok(r.hooks.injectionReplay.length > 0, "注入决策回放不应为空");
+});
+
+test("Scenario: anysearch 版本滞后检测——三态且默认可判定", () => {
+  const { out } = runIn(repoRoot);
+  const r = JSON.parse(out);
+  assert.ok(
+    ["up-to-date", "lagging", "unknown"].includes(r.anysearch.lag),
+    "lag 应为三态之一（unknown=离线/检查失败不阻塞诊断）"
+  );
+  if (r.anysearch.lag === "lagging") {
+    assert.match(r.anysearch.hint, /滞后|lagging|update-vendored/);
+  }
+});
