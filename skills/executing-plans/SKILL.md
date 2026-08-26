@@ -32,7 +32,7 @@ description: >-
 
 ## 阶段 1：载入并批判性审阅计划
 
-1. 读取计划（格式嗅探）：`plan/tasks/` 子目录存在 → 分文件形态（全部新生成计划的唯一形态），渐进加载——启动只读 index + progress + spec，执行 TN 时只读 `tasks/TN.md` 与导航表中依赖行的「产出接口」列，不提前读无关后继任务正文；不存在 → 存量单文件形态，按 `plan/*-plan.md` 原样一次性读取计划全文与同特性目录 `spec/<feature>-design.md`（旧命名 `YYYY-MM-DD-<feature>` 目录按原样读取）。**该读分支为冻结侧**——后续流程演进不再为其新增条款，仅维持既有语义。产物仍在历史位置 `docs/YYYY-MM-DD-<feature>/` 时，默认先自动迁移到 `.spec-dev/` 再执行（有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移并重写文件内路径引用），迁移单独提交
+1. 读取计划（格式嗅探）：`plan/tasks/` 子目录存在 → 分文件形态（全部新生成计划的唯一形态），渐进加载——启动只读 index + progress + spec，执行 TN 时只读 `tasks/TN.md` 与导航表中依赖行的「产出接口」列，不提前读无关后继任务正文；不存在 → 存量单文件形态，按 `.spec-dev/YYYY-MM-DD-NN-<feature>/plan/*-plan.md` 原样一次性读取计划全文与同特性目录 `spec/<feature>-design.md`（旧命名 `YYYY-MM-DD-<feature>` 目录按原样读取）。**该读分支为冻结侧**——后续流程演进不再为其新增条款，仅维持既有语义。产物仍在历史位置 `docs/YYYY-MM-DD-<feature>/` 时，默认先自动迁移到 `.spec-dev/` 再执行（有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移并重写文件内路径引用），迁移单独提交
 2. 批判性审阅：步骤有歧义？接口块互相矛盾？与代码库现状不符？——**有疑虑先向用户提出，别带着疑虑开工**
 3. **执行确认门**：向用户呈现执行摘要（计划路径、任务数与分组、将创建的 worktree 分支名）并确认开始——用户本轮已显式指示执行（如"执行这份计划"）或经 writing-plans 交接确认的，视为已确认、不重复问
 4. 把计划任务注册进任务管理（每任务一条，`T{n}: 任务名` 命名），进入阶段 2
