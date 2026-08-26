@@ -46,3 +46,24 @@ test("未知 --skill 退出码 2 并列出可选项", () => {
 test("旧脚本已删除（不留兼容垫片）", () => {
   assert.ok(!existsSync(path.join(repoRoot, "scripts/update-anysearch.mjs")));
 });
+
+test("--check 只读探测：输出当前引入行、退出码 0/1 语义且不改工作区（网络不可达时同为退出码 1）", () => {
+  const before = execFileSync("git", ["status", "--porcelain"], { cwd: repoRoot, encoding: "utf8" });
+  let out = "";
+  let code = 0;
+  try {
+    out = run(["--skill", "anysearch", "--check"]);
+  } catch (e) {
+    code = e.status ?? 1;
+    out = (e.stdout ?? "") + (e.stderr ?? "");
+  }
+  // CLI 契约：无论最新与否，先打印「当前引入:…上游目标:…」；0=已最新、1=有新版或探测失败
+  assert.match(out, /当前引入[:：]/);
+  assert.ok(code === 0 || code === 1, `退出码应为 0/1，实际 ${code}`);
+  if (code === 1) {
+    // 二选一：有新版（给出同步指引）或上游不可达（doctor 归 unknown 的同一形态）
+    assert.match(out, /发现新版本|无法从上游读取|Failed:/);
+  }
+  const after = execFileSync("git", ["status", "--porcelain"], { cwd: repoRoot, encoding: "utf8" });
+  assert.equal(after, before, "--check 不得改动工作区");
+});
