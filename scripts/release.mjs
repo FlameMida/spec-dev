@@ -16,8 +16,10 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."
 const pluginJsonPath = path.join(repoRoot, ".claude-plugin", "plugin.json");
 const marketplaceJsonPath = path.join(repoRoot, ".claude-plugin", "marketplace.json");
 const codexPluginJsonPath = path.join(repoRoot, ".codex-plugin", "plugin.json");
+const rootPluginJsonPath = path.join(repoRoot, "plugin.json");
+const packageJsonPath = path.join(repoRoot, "package.json");
 const changelogPath = path.join(repoRoot, "CHANGELOG.md");
-const versionedFiles = [pluginJsonPath, marketplaceJsonPath, codexPluginJsonPath, changelogPath];
+const versionedFiles = [pluginJsonPath, marketplaceJsonPath, codexPluginJsonPath, rootPluginJsonPath, packageJsonPath, changelogPath];
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
@@ -95,6 +97,8 @@ function main() {
     writeFileSync(pluginJsonPath, JSON.stringify(plugin, null, 2) + "\n");
     writeVersionField(marketplaceJsonPath, ["metadata", "version"], current, next);
     writeVersionField(codexPluginJsonPath, ["version"], current, next);
+    writeVersionField(rootPluginJsonPath, ["version"], current, next);
+    writeVersionField(packageJsonPath, ["version"], current, next);
     writeFileSync(
       changelogPath,
       changelog.slice(0, insertAt) + section + "\n" + changelog.slice(insertAt)

@@ -75,6 +75,16 @@ codex plugin add spec-dev@spec-agent-skills
 
 Codex 清单（`.codex-plugin/plugin.json`、`.agents/plugins/marketplace.json`）另外提供插件 UI 元数据。新版本发布后执行 `codex plugin marketplace upgrade spec-agent-skills` 升级。
 
+### 平台矩阵
+
+| 平台 | Skills | Agents（子代理） | Hooks | Manifest |
+|---|---|---|---|---|
+| Claude Code | ✅ marketplace `skills[]` | ✅ `agents/*.md` | ✅ guardrail 安装 | `.claude-plugin/` |
+| Codex | ✅ 目录自动发现 | ⚠️ 靠派发词（`spawn_agent` 不读 `agents/*.md`） | ✅ codex-hooks | `.codex-plugin/` |
+| Grok Build | ✅ 零配置兼容 Claude Code（官方声明） | ✅ 同 Claude Code（字段生效情况见验收走查） | ✅ 同 Claude Code | 复用 `.claude-plugin/` |
+| Pi (pi.dev) | ✅ `package.json` 的 `pi.skills` | ⚠️ 需 `pi-subagents` 扩展 | ❌ 需 TS extension（未适配） | `package.json` |
+| Agent plugins 1.0.0 | ✅ 根级 `plugin.json` + `skills/` | —（不在标准便携范围） | —（同左） | `plugin.json` |
+
 ## 插件包维护
 
 仓库根即插件根（扁平结构）：`skills/`、`agents/`、`commands/`、`scripts/`、`.claude-plugin/plugin.json`（Claude Code 清单）、`.codex-plugin/plugin.json`（Codex 清单）都在仓库根直接修改，`README.md`、`CHANGELOG.md`、`.mcp.json` 只有一份，无需任何镜像同步。发版时需同步更新三处版本号（`.claude-plugin/marketplace.json` 的 `metadata.version` 与两份 `plugin.json` 的 `version`），`check-plugin.mjs` 会校验它们保持一致：

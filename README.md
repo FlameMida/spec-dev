@@ -75,6 +75,16 @@ codex plugin add spec-dev@spec-agent-skills
 
 The Codex manifests (`.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`) also expose plugin UI metadata. After a new release, run `codex plugin marketplace upgrade spec-agent-skills`.
 
+### Platform matrix
+
+| Platform | Skills | Agents (subagents) | Hooks | Manifest |
+|---|---|---|---|---|
+| Claude Code | ✅ marketplace `skills[]` | ✅ `agents/*.md` | ✅ guardrail install | `.claude-plugin/` |
+| Codex | ✅ directory auto-discovery | ⚠️ via dispatch prompts (`spawn_agent` does not read `agents/*.md`) | ✅ codex-hooks | `.codex-plugin/` |
+| Grok Build | ✅ zero-config Claude-compat (official claim) | ✅ same as Claude Code (field behavior: see acceptance walkthrough) | ✅ same as Claude Code | reuses `.claude-plugin/` |
+| Pi (pi.dev) | ✅ `package.json` `pi.skills` | ⚠️ requires the `pi-subagents` extension | ❌ needs a TS extension (not adapted) | `package.json` |
+| Agent plugins 1.0.0 | ✅ root `plugin.json` + `skills/` | — (outside the portable standard) | — (same) | `plugin.json` |
+
 ## Plugin Package Maintenance
 
 The repo root is the plugin root (flat layout): `skills/`, `agents/`, `commands/`, `scripts/`, `.claude-plugin/plugin.json` (Claude Code manifest) and `.codex-plugin/plugin.json` (Codex manifest) are edited in place at the repo root; `README.md`, `CHANGELOG.md` and `.mcp.json` exist as single copies with no mirror syncing. A release must bump the version in three places (`metadata.version` in `.claude-plugin/marketplace.json` plus `version` in both `plugin.json` files), and `check-plugin.mjs` verifies they stay in sync:

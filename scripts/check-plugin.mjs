@@ -67,6 +67,14 @@ function assertManifestVersionsInSync() {
       label: ".codex-plugin/plugin.json (version)",
       version: readJson(path.join(repoRoot, ".codex-plugin", "plugin.json")).version,
     },
+    {
+      label: "plugin.json (version, Agent plugins 1.0.0)",
+      version: readJson(path.join(repoRoot, "plugin.json")).version,
+    },
+    {
+      label: "package.json (version, pi distribution)",
+      version: readJson(path.join(repoRoot, "package.json")).version,
+    },
   ];
 
   const missing = versionSources.filter((s) => typeof s.version !== "string" || s.version === "");
