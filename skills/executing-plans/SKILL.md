@@ -1,7 +1,7 @@
 ---
 name: executing-plans
 description: >-
-  Execute implementation plans - when a written plan from writing-plans exists (plan/ split-file layout: index.md + tasks/ + progress.yaml; legacy single-file plans read as-is — under the feature directory in .spec-dev/): the main thread executes task-by-task in an isolated worktree (TDD + per-task commits + spec self-check), then orchestrates multi-dimension adversarial code review and matrix-driven acceptance. Not for improvised changes without a written plan. / 执行实施计划——当已有 writing-plans 产出的实施计划（`.spec-dev/` 特性目录下 plan/ 的分文件结构 index.md + tasks/ + progress.yaml；存量单文件计划按原样读取）、准备动手实现时使用。主线程在隔离 worktree 中逐任务执行（TDD + 每任务提交 + spec 自检），全部完成后编排多维对抗代码审查（code-reviewer 子代理不写码、仅分析与复跑验证），并按验收矩阵触发 acceptance-qa 验收，最终合并总结。不适用于没有书面计划的即兴改动。
+  Execute implementation plans - when a written plan from writing-plans exists (plan/ split-file layout: index.md + tasks/ + progress.yaml; legacy single-file plans read as-is — under the feature directory in .spec-dev/): the main thread executes task-by-task in an isolated worktree (TDD + per-task commits + spec self-check), then orchestrates multi-dimension adversarial code review and matrix-driven acceptance. Not for improvised changes without a written plan. / 执行实施计划——当已有 writing-plans 产出的实施计划（`.spec-dev/` 特性目录下 plan/ 的分文件形态：index.md + tasks/ + progress.yaml；存量单文件计划按原样读取）、准备动手实现时使用。主线程在隔离 worktree 中逐任务执行（TDD + 每任务提交 + spec 自检），全部完成后编排多维对抗代码审查（code-reviewer 子代理不写码、仅分析与复跑验证），并按验收矩阵触发 acceptance-qa 验收，最终合并总结。不适用于没有书面计划的即兴改动。
 ---
 
 > **Language Protocol / 语言协议**: Respond in the user's conversation language — an explicit user instruction (including the platform `language` setting) takes precedence, then the language of the user's recent messages; default to English when neither indicates a language. All deliverables written to the repo (specs, plans, reports, notes) follow the conversation language at creation; incremental edits keep the artifact's existing language. Fixed-wording prompts in this skill are semantic templates — express their meaning in the conversation language, don't quote them verbatim.
@@ -32,18 +32,13 @@ description: >-
 
 ## 阶段 1：载入并批判性审阅计划
 
-1. 读取计划（格式嗅探）：`plan/tasks/` 子目录存在 → 分文件形态（全部新生成计划的唯一形态），渐进加载——启动只读 index + progress + spec，执行 TN 时只读 `tasks/TN.md` 与导航表中依赖行的「产出接口」列，不提前读无关后继任务正文；不存在 → 存量单文件形态，按 `.spec-dev/YYYY-MM-DD-NN-<feature>/plan/*-plan.md` 原样一次性读取计划全文与同特性目录 `spec/<feature>-design.md`（旧命名 `YYYY-MM-DD-<feature>` 目录按原样读取）。**该读分支为冻结侧**——后续流程演进不再为其新增条款，仅维持既有语义。产物仍在历史位置 `docs/YYYY-MM-DD-<feature>/` 时，默认先自动迁移到 `.spec-dev/` 再执行（有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移并重写文件内路径引用），迁移单独提交
+1. 读取计划（格式嗅探）：`plan/tasks/` 子目录存在 → 分文件形态（全部新生成计划的唯一形态），按下文「渐进加载与断点恢复」节渐进加载（启动只读、按需读任务文件）；不存在 → 存量单文件形态，按 `.spec-dev/YYYY-MM-DD-NN-<feature>/plan/*-plan.md` 原样一次性读取计划全文与同特性目录 `spec/<feature>-design.md`（旧命名 `YYYY-MM-DD-<feature>` 目录按原样读取）。**该读分支为冻结侧**——后续流程演进不再为其新增条款，仅维持既有语义。产物仍在历史位置 `docs/YYYY-MM-DD-<feature>/` 时，默认先自动迁移到 `.spec-dev/` 再执行（有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移并重写文件内路径引用），迁移单独提交
 2. 批判性审阅：步骤有歧义？接口块互相矛盾？与代码库现状不符？——**有疑虑先向用户提出，别带着疑虑开工**
-3. **执行确认门**：向用户呈现执行摘要（计划路径、任务数与分组、将创建的 worktree 分支名）并确认开始——用户本轮已显式指示执行（如"执行这份计划"）或经 writing-plans 交接确认的，视为已确认、不重复问
+3. **执行确认门**：向用户呈现执行摘要（计划入口、任务数与依赖拓扑、将创建的 worktree 分支名）并确认开始——用户本轮已显式指示执行（如"执行这份计划"）或经 writing-plans 交接确认的，视为已确认、不重复问
 4. 把计划任务注册进任务管理（每任务一条，`T{n}: 任务名` 命名），进入阶段 2
 
-**恢复入口**：会话开始即发现未完成的 progress.yaml（或单文件计划有未勾选步骤）且用户要求继续 → 走阶段 2「渐进加载与断点恢复」节的恢复流程（校验一致性 → ready 任务续跑），不从任务 0 重来。
+**恢复入口**：会话开始即发现未完成的 progress.yaml（或单文件计划有未勾选步骤）且用户要求继续 → 走「渐进加载与断点恢复」节的恢复流程（校验一致性 → ready 任务续跑），不从任务 0 重来。
 
-## 阶段 2：隔离工作区
-
-执行计划的任务 0（建立隔离工作区）——完整纪律遵循 using-git-worktrees skill（已隔离检测、原生工具优先、git 降级、基线测试验证），分支名对齐计划（如 `plan/2026-07-03-export-report`）。计划缺任务 0（旧版计划）时，直接调用 using-git-worktrees 补齐同等效果。基线验证范围遵循计划头部「相关测试范围」声明（判据见 using-git-worktrees Step 3 与 writing-plans 任务 0 模板）；旧版计划无该节 → 按全量执行。
-
-**降级**：非 git 仓库、受保护分支未授权、沙箱无写权限 → 原地实施并向用户注明"未隔离"及原因。
 
 ### 渐进加载与断点恢复（分文件形态＝全部新计划）
 
@@ -58,6 +53,13 @@ description: >-
 3. 恢复不重跑已 completed 任务的测试（最终任务的全量验证是安全网）。
 
 **存量单文件的轻量恢复（兼容分支）**：单文件计划无 progress.yaml——按复选框判读：首个含未勾选步骤的任务即续跑点；勾选状态与 git log 的 `feat(TN)` 提交对照，不一致时以提交为准并报告。
+
+## 阶段 2：隔离工作区
+
+执行计划的任务 0（建立隔离工作区）——完整纪律遵循 using-git-worktrees skill（已隔离检测、原生工具优先、git 降级、基线测试验证），分支名对齐计划（如 `plan/2026-07-03-export-report`）。计划缺任务 0（旧版计划）时，直接调用 using-git-worktrees 补齐同等效果。基线验证范围遵循计划头部「相关测试范围」声明（判据见 using-git-worktrees Step 3 与 writing-plans 任务 0 模板）；旧版计划无该节 → 按全量执行。
+
+**降级**：非 git 仓库、受保护分支未授权、沙箱无写权限 → 原地实施并向用户注明"未隔离"及原因。
+
 
 ## 阶段 3：逐任务执行
 
@@ -107,7 +109,7 @@ description: >-
 ## 阶段 6：合并与总结
 
 1. 审查与对账定稿后，**合并前在 worktree 内落盘并提交**：对账结果写入特性目录 `acceptance/acceptance-report.md` 的「Requirement Reconciliation」节——全绿一行带过，有偏差才展开差量表；acceptance-qa 未触发的特性按模板新建仅含头部与该节的轻量报告（一次交付一份时点记录）。DEFERRED / DROPPED 同时在 spec 原位标注（形制见 spec 模板行为规范节）；SUPERSEDED 的原位标注即取代机制的 Requirement 级 `Superseded` 标注（形制见 spec-template「取代标注形制」节，含后继指向）；DELIVERED 不标
-2. 执行计划的最终任务（全量验证——范围外失败的归属裁决与测试退役检查按 writing-plans 最终任务模板执行 → **取代回写**（按 spec 取代与共存节执行翻转/标注/covers 接管核对；`supersedes` 为空——缺失或空数组——则跳过） → 合并回来源分支 → 按资源台账逐条清理（worktree 与分支行在内，合并前核对台账全部勾清） → **sync_commit 锚定**：合并后主工作区 HEAD 写入 spec frontmatter 并单独提交；原生工具建的隔离用原生方式退出）；计划缺最终任务或缺锚定步骤（旧版计划）时按同等步骤（含取代回写）手工收尾；非 git 仓库跳过锚定并注明
+2. 执行计划的最终任务（全量验证——范围外失败的归属裁决与测试退役检查按 writing-plans 最终任务模板执行 → **取代回写**（按 spec 取代与共存节执行翻转/标注/covers 接管核对；`supersedes` 为空——缺失或空数组——则跳过） → 合并回来源分支 → 按资源台账逐条清理（worktree 与分支行在内，合并前核对 resources 清单全部清理完毕） → **sync_commit 锚定**：合并后主工作区 HEAD 写入 spec frontmatter 并单独提交；原生工具建的隔离用原生方式退出）；计划缺最终任务或缺锚定步骤（旧版计划）时按同等步骤（含取代回写）手工收尾；非 git 仓库跳过锚定并注明
 3. **roadmap 状态回写（仅当 `.spec-dev/roadmaps/` 下某 active roadmap 引用本特性目录）**：把对应子项目行状态置 `delivered` 并提交，同时在该子项目的上下文胶囊追加一行「留给后继的注意事项」（交付摘要、接口变化、给下一子项目的提醒）；全部子项目已 delivered/dropped 时把该 roadmap frontmatter 的 `status` 翻 `done`。目录不存在或查无引用 → 跳过，零动作
 4. 输出总结：
    - **成果清单**：完成的任务、创建/修改的文件、对账计数（`X DELIVERED / Y DEFERRED / Z DROPPED / S SUPERSEDED / N ADDED-IN-FLIGHT`）

@@ -22,9 +22,10 @@ test("Scenario: 阈值条款不复存在 + reference 已并入本体", () => {
   assert.match(wp, /format_version/, "progress.yaml 键结构应并入本体");
 });
 
-test("Scenario: 任务文件无复选框(步骤标题式)", () => {
+test("Scenario: 任务文件无复选框(步骤标题式;复选框动作语义清零)", () => {
   assert.match(wp, /「?\*\*步骤 N:\*\*」?标题式/, "应声明步骤标题式");
   assert.doesNotMatch(wp, /步骤用复选框|用复选框（`- \[ \]`）语法跟踪/, "不应保留复选框跟踪语义");
+  assert.doesNotMatch(wp, /勾选|勾清/, "writing-plans 不应残留复选框动作语义(存量勾选语境属 executing-plans)");
 });
 
 test("Scenario: 资源台账规范定义点在 progress.yaml 键结构节", () => {
@@ -48,5 +49,5 @@ test("Scenario: 旧单文件计划可执行(读宽容句在位)", () => {
 
 test("openai.yaml 与 SKILL description 同步含分文件入口", () => {
   const yaml = readFileSync(path.join(repoRoot, "skills/executing-plans/agents/openai.yaml"), "utf8");
-  assert.match(yaml, /plan\/|tasks\//, "openai.yaml 应含分文件形态入口");
+  assert.match(yaml, /index\.md \+ tasks\/ \+ progress\.yaml/, "openai.yaml 应含分文件三件套特征串");
 });

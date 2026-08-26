@@ -30,7 +30,7 @@ requirement-analysis (design → .spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature
         ↕ JIT
   visual-preview
         ↓
-writing-plans (plan → plan/ split files: index.md + tasks/ + progress.yaml)
+writing-plans (plan → plan/ split-file layout: index.md + tasks/ + progress.yaml)
         ↓
 executing-plans (isolated execution + review + summary)
    ├── using-git-worktrees (isolated workspace)
@@ -168,7 +168,7 @@ The spec lands in the feature directory `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/
 /executing-plans execute .spec-dev/2026-07-04-auth/plan/index.md
 ```
 
-- **writing-plans**: assumes a zero-context executor — every plan starts with a fixed Task 0 (set up an isolated workspace, with already-isolated detection and git fallback commands) and ends with a final task (merge & cleanup); when the spec's acceptance matrix has "acceptance task" rows, an acceptance task is generated between them. The worktree lifecycle closes within the plan, so it executes in order even outside this plugin. The header carries deviation-handling guidance; every task gets exact file paths, complete code, the 5 TDD steps (failing test → confirm fail → minimal implementation → confirm pass → commit) and consume/produce interface blocks; a three-way self-review (spec coverage / placeholders / type consistency) runs before handoff
+- **writing-plans**: assumes a zero-context executor — every plan starts with a fixed Task 0 (set up an isolated workspace, with already-isolated detection and git fallback commands) and ends with a final task (merge & cleanup); when the spec's acceptance matrix has "acceptance task" rows, an acceptance task is generated between them. The worktree lifecycle closes within the plan, so it executes in order even outside this plugin. The header carries deviation-handling guidance; every task gets exact file paths, complete code, the 5 TDD steps (failing test → confirm fail → minimal implementation → confirm pass → commit) and consume/produce interface blocks; a four-way self-review (spec coverage / placeholders / type consistency) runs before handoff
 - **executing-plans**: after execution confirmation, starts from Task 0 (isolated workspace, discipline per using-git-worktrees) and executes tasks continuously on the main thread (per-task commit `feat(TN): xxx` + spec self-check); when all tasks complete it fans out code-reviewer for multi-dimension adversarial review (review-findings contract validation + adversarial recheck of high/medium findings + completeness critic), triggers acceptance-qa per the acceptance matrix, consults the user on finding disposition, then runs the final task (merge & cleanup) and summarizes
 
 ## Using visual-preview

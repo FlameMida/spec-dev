@@ -3,13 +3,13 @@
   "evals": [
     {
       "id": "ep-continuous-execution",
-      "prompt": "执行 .spec-dev/2026-07-03-export-report/plan/export-report-plan.md（4 个任务，计划已获用户确认）",
+      "prompt": "执行 .spec-dev/2026-07-03-export-report/plan/export-report-plan.md（存量单文件计划）（4 个任务，计划已获用户确认）",
       "expected_output": "先批判性审阅计划并注册任务；执行任务 0 建立隔离工作区（纪律遵循 using-git-worktrees）；任务 1 起逐任务 TDD 执行，每任务 commit（feat(TN): xxx）+ 主线程 spec 自检（只查 over/under-building 与契约锚定）；任务之间不停下向用户汇报；全部完成后才进入收尾审查"
     },
     {
       "id": "ep-execution-confirm-gate",
       "prompt": "（上一轮刚展示完计划全文，用户回复）嗯，看起来不错",
-      "expected_output": "\"看起来不错\"是对计划的认可、不是执行指令——呈现执行摘要（计划路径、任务数与分组、将创建的 worktree 分支名）并明确询问是否开始执行，获确认后才建 worktree 开工；仅当用户显式指示执行或经 writing-plans 交接确认时才视为已确认"
+      "expected_output": "\"看起来不错\"是对计划的认可、不是执行指令——呈现执行摘要（计划路径、任务数与依赖拓扑、将创建的 worktree 分支名）并明确询问是否开始执行，获确认后才建 worktree 开工；仅当用户显式指示执行或经 writing-plans 交接确认时才视为已确认"
     },
     {
       "id": "ep-review-orchestration",
