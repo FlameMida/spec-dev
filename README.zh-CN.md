@@ -85,6 +85,8 @@ Codex 清单（`.codex-plugin/plugin.json`、`.agents/plugins/marketplace.json`�
 | Pi (pi.dev) | ✅ `package.json` 的 `pi.skills` | ⚠️ 需 `pi-subagents` 扩展 | ❌ 需 TS extension（未适配） | `package.json` |
 | Agent plugins 1.0.0 | ✅ 根级 `plugin.json` + `skills/` | —（不在标准便携范围） | —（同左） | `plugin.json` |
 
+插件级 `hooks/hooks.json` 在支持插件 hooks 的平台（Claude Code / Grok Build）上安装即自动注册 SessionStart 会话注入——注入不再依赖手动安装。`guardrail/install.mjs` 仍是获得 git 闸门（pre-commit / pre-push / CI）与 PreToolUse / Stop 漂移守卫的途径。
+
 ## 插件包维护
 
 仓库根即插件根（扁平结构）：`skills/`、`agents/`、`commands/`、`scripts/`、`.claude-plugin/plugin.json`（Claude Code 清单）、`.codex-plugin/plugin.json`（Codex 清单）都在仓库根直接修改，`README.md`、`CHANGELOG.md`、`.mcp.json` 只有一份，无需任何镜像同步。发版时需同步更新三处版本号（`.claude-plugin/marketplace.json` 的 `metadata.version` 与两份 `plugin.json` 的 `version`），`check-plugin.mjs` 会校验它们保持一致：
