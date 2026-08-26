@@ -1,4 +1,4 @@
-# Roadmap 模板（`.spec-dev/roadmaps/YYYY-MM-DD-<project>.md`）
+# Roadmap 模板（`.spec-dev/roadmaps/YYYY-MM-DD-NN-<project>.md`；NN 为当日两位序号，同一 NN 序列全 `.spec-dev/` 日期前缀产物共用，见 requirement-analysis 阶段 6 命名规则）
 
 > **Language / 语言**: Fill in the conversation language — all narrative content follows the conversation language at creation; keep structural labels (frontmatter keys, status enums) in English. / 以对话语言填写——叙述性内容跟随创建时对话语言；结构标签（frontmatter 键、状态枚举）保持英文。
 

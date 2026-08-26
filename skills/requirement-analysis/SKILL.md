@@ -30,7 +30,7 @@ description: >-
 3. **澄清问题** — 一次一个问题，不限轮数；视觉问题 JIT 提议 visual-preview
 4. **对抗验证 + 提出 2-3 方案** — sequential-thinking 校验信息后给方案与推荐，用户选定
 5. **展示完整设计** — 整篇展示不分章节，获得用户批准
-6. **写 spec 并提交** — 落盘 `.spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design.md` 并 git commit
+6. **写 spec 并提交** — 落盘 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md` 并 git commit
 7. **Spec self-review + 对抗验证** — inline 自检 + 审查子代理；有修改则请用户再 review
 8. **交接 writing-plans** — 唯一终态；经用户确认后调用 writing-plans 生成实施计划
 
@@ -106,9 +106,9 @@ Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
 - 理解核心功能、业务实体、约束与成功标准；描述模糊或多模块时用 sequential-thinking skill（插件内嵌）分解
 - **意图承诺检查**：用户仍在"要不要做"的犹豫期（探索性措辞、无交付承诺）→ 建议切换 exploring skill，不硬拉八阶段；存在相关的 `.spec-dev/explorations/` 探索笔记时作为本阶段输入，已探索过的部分阶段 2 不重做
 - **小修检查**：需求其实是"已决定要修、无设计空间"的小 bug 修复/小调整（单点 bug、单常量、单文案，无方案取舍、不跨模块、不引入新依赖）→ 建议切换 quick-fix skill，不硬拉八阶段；这是意图承诺检查的对偶——那边挡"还没决定要不要做"，这边挡"决定了但不值得走完整设计"。建议式（不自动切换），由用户裁决。大小/设计空间拿不准的已承诺开发请求，同样建议先走 quick-fix——其步骤 2.5 基于根因证据的升级门（含上下文交接）比入口猜测更准，升级便宜、降级浪费
-- **任务类型检查（报告通道权威定义）**：需求已承诺交付、但交付物不是代码变更（调研报告、方案对比、日志分析等非开发交付）→ 建议走报告通道，不硬拉八阶段：不建特性目录、不写 spec/plan；需要时按 clarifying 纪律澄清关注点；主线程产出结论后**问一次**「落盘为 `.spec-dev/reports/YYYY-MM-DD-<topic>.md` 吗」（结构从轻：问题、结论、依据来源；目录随首个报告创建），用户婉拒则只留对话、零落盘。建议式，由用户裁决。结论要落地成代码时回归正常分诊——报告通道不是实施后门
+- **任务类型检查（报告通道权威定义）**：需求已承诺交付、但交付物不是代码变更（调研报告、方案对比、日志分析等非开发交付）→ 建议走报告通道，不硬拉八阶段：不建特性目录、不写 spec/plan；需要时按 clarifying 纪律澄清关注点；主线程产出结论后**问一次**「落盘为 `.spec-dev/reports/YYYY-MM-DD-NN-<topic>.md` 吗」（结构从轻：问题、结论、依据来源；目录随首个报告创建；同一 NN 序列全 `.spec-dev/` 日期前缀产物共用），用户婉拒则只留对话、零落盘。建议式，由用户裁决。结论要落地成代码时回归正常分诊——报告通道不是实施后门
 - **范围分解检查**：需求的意图必须能用一句话说清——说不清就该拆。出现过大信号（范围读起来像不相关功能清单、审查一份 spec 要一下午、两人同时做会撞车、一半任务可独立交付）或描述了多个独立子系统（如"做一个带聊天、文件存储、计费、分析的平台"）时立即指出，先帮用户分解为子项目（各自独立的 spec → plan → 实施周期）——不要在一个需要分解的项目上浪费澄清轮次。分解说完不算完，两个配套动作：
-  - **分解登记（roadmap）**：拆分方案（子项目清单、一句话范围、依赖顺序）经用户确认后，按 [roadmap-template.md](assets/roadmap-template.md) 落盘 `.spec-dev/roadmaps/YYYY-MM-DD-<project>.md` 并 git commit，然后只对第一个（或用户指定的）子项目走本流程。roadmap 是分解决策唯一的持久化位置——不落盘，其余子项目就只活在本次对话里，会话一结束静默蒸发
+  - **分解登记（roadmap）**：拆分方案（子项目清单、一句话范围、依赖顺序）经用户确认后，按 [roadmap-template.md](assets/roadmap-template.md) 落盘 `.spec-dev/roadmaps/YYYY-MM-DD-NN-<project>.md`（同一 NN 序列全 `.spec-dev/` 日期前缀产物共用）并 git commit，然后只对第一个（或用户指定的）子项目走本流程。roadmap 是分解决策唯一的持久化位置——不落盘，其余子项目就只活在本次对话里，会话一结束静默蒸发
   - **续接检查**：需求命中某 active roadmap 的既有子项目时（用户点名"继续 <项目>"，或 `.spec-dev/roadmaps/` 下某 active roadmap 的 pending 子项目与本需求对得上）→ 载入该 roadmap 作上下文，直接按该子项目走本流程、不重新分解；其依赖的前置子项目未交付时先向用户指出。roadmap 目录不存在或无命中 → 本条零动作，正常走流程
 - 判定档位并声明（见"执行档位"）
 - 打标记，供后续阶段消费：
@@ -180,7 +180,7 @@ Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
 
 ## 阶段 6: 写 spec 并提交
 
-- 为本需求创建特性目录 `.spec-dev/YYYY-MM-DD-<feature>/`（所有 spec-dev 产物统一收纳在项目根目录 `.spec-dev/` 下；feature 取需求主题的短语义名，跟随项目语言；同日同名冲突时追加序号 `-2`、`-3`），将批准的设计写入其 `spec/<feature>-design.md`（用户对 spec 位置的偏好优先于此默认值）
+- 为本需求创建特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/`（所有 spec-dev 产物统一收纳在项目根目录 `.spec-dev/` 下；NN 为当日两位序号——扫描 `.spec-dev/` 下当日已有的日期前缀目录取最大加一、01 起步，**落盘前重扫一次防并发撞号**：发现同号已被占则顺延并同步修正自引路径；feature 取需求主题的短语义名，跟随项目语言；存量旧命名 `YYYY-MM-DD-<feature>` 目录不改名（grandfather）；同一 NN 序列由全部 `.spec-dev/` 日期前缀产物共用），将批准的设计写入其 `spec/<feature>-design.md`（用户对 spec 位置的偏好优先于此默认值）
 - spec 与后续 writing-plans 的计划（同目录 `plan/<feature>-plan.md`）共用这一个特性目录——一个需求的全部产物收纳在一处
 - **决策分流（ADR）**：检查"已确认的关键决策"中是否有同时满足三判据的决策——**难以逆转**（事后改主意成本高）、**缺上下文会费解**（未来读者会问"当初为什么这么做"）、**真实取舍**（存在真正的备选且因具体理由选定其一）——满足者每条沉淀为仓库级 `.spec-dev/adr/NNNN-<slug>.md`（全项目共用一个目录、统一编号：扫描现有最高编号递增，目录不存在时随首个 ADR 创建；**落盘前重扫一次目录防撞号**——并行会话可能已用掉同号，发现同号文件已存在则顺延取下一号并同步修正正文与链接中的自引编号；正文 1-3 句写清背景、决定与理由即可，值得记住的被否方案附一行），spec 决策节保留一行摘要并链接过去；三判据缺一即不建 ADR——ADR 泛滥和没有 ADR 一样没用。**ADR 状态纪律**：每条 ADR 标题下带状态行，封闭三态——`**Status**: Accepted (YYYY-MM-DD)` / `**Status**: Deprecated (YYYY-MM-DD) — <一句原因，强制>` / `**Status**: Superseded by [ADR-NNNN](NNNN-<slug>.md) (YYYY-MM-DD)`（同目录文件名相对链接，编号强制；缺状态行的历史 ADR 视同 Accepted）。判据一句话：有替代决策用 Superseded，无替代者且决策语境消失用 Deprecated。Accepted 后正文不可变（仅 status 行、错别字、坏链可改）；**不做部分推翻**——推翻既有 ADR 的任何部分时，新 ADR 完整重述仍有效的结论并整体取代，标题下声明 `**Supersedes**: ADR-NNNN` 行，且在本阶段同一提交把旧 ADR 状态行回写为 Superseded by（ADR 取代随裁决即时生效，不等实施交付）
 - **取代分流（supersede triage）**：对阶段 2 探索命中的每份行为相交 active spec 做三分类判定并写入 spec——**完全取代**（新 spec 整体替换旧特性）与**部分取代**（替换旧 spec 的部分 Requirement）登记进 frontmatter `supersedes`（仓库根相对路径）与正文「取代与共存」节（部分取代必须列出被取代的具体 Requirement 标题清单，每条附一句取代理由）；**分面共存**（同文件不同行为切面、无冲突）不登记 supersedes，记一行判定理由并各自声明 covers。节模板与标注形制见 [spec-template.md](assets/spec-template.md)。用户要求删除整个特性且无新行为承接时，产出仅含 REMOVED Requirements 的轻量 spec 作为后继（记录删除理由，交付时按完全取代回写旧 spec）。spec 的取代回写随交付生效（executing-plans 最终任务），与 ADR 的即时回写构成双轨

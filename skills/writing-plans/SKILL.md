@@ -19,7 +19,7 @@ description: >-
 
 **动笔前确认**：编写计划须持有用户的明确同意——用户本轮显式指示编写计划、或上游流程已代为确认（requirement-analysis 阶段 8 的前置确认）时视为已同意、不重复问；除此之外（如隐式触发、只收到一个 spec 路径）先确认「基于 <spec 路径> 开始编写实施计划？」再动笔。
 
-**计划保存至**：spec 所在特性目录的 `plan/<feature-name>-plan.md`（即 `.spec-dev/YYYY-MM-DD-<feature-name>/plan/<feature-name>-plan.md`，特性目录由 requirement-analysis 在写 spec 时创建）；无 spec 输入的独立触发则自建特性目录。用户对计划位置的偏好优先于此默认值。
+**计划保存至**：spec 所在特性目录的 `plan/<feature-name>-plan.md`（即 `.spec-dev/YYYY-MM-DD-NN-<feature-name>/plan/<feature-name>-plan.md`，特性目录由 requirement-analysis 在写 spec 时按同日序号命名规则创建）；无 spec 输入的独立触发则自建特性目录。用户对计划位置的偏好优先于此默认值。
 
 **Spec 状态检查**：载入 spec 时读其 frontmatter 的 `spec_dev.status`——仍为 `draft` 时说明漂移守卫尚未激活（requirement-analysis 阶段 8 的激活动作未执行，常见于跨会话独立触发）：与用户确认 spec 已定稿后，把 `status` 翻为 `active` 并单独 commit，再开始编写计划；不翻转则守卫对该特性静默失效。为 `superseded` 时停下告知用户该 spec 已被取代（附 `superseded_by` 指向，指针缺失或悬空时说明"无可达后继"；沿指针链跳转时记录已访问路径，链上出现环则列出环上文件并停止），经用户显式确认才可继续按旧 spec 编写计划；正文带 `Superseded-pending` 标注时向用户提示「该 spec 正被 <新 spec> 取代中（待交付）」后再继续。无 frontmatter 的旧版/外部 spec 跳过本检查。
 
@@ -30,7 +30,7 @@ description: >-
 spec 聚焦单一交付物（绝大多数情况）→ 本节零动作。若 spec 覆盖多个独立子系统、或含阶段化结构（"第一阶段/Phase 1/先做 X 再做 Y"），这本应在需求设计阶段拆成子项目并登记 roadmap（requirement-analysis 的范围分解检查）；发现没拆时：
 
 - **首选回炉**：建议回 requirement-analysis 补分解——spec 收缩到第一个子项目、其余登记 `.spec-dev/roadmaps/`，然后只为收缩后的 spec 编写本计划
-- **用户不回炉**：只为第一个子系统/阶段编写本计划，剩余范围当场登记 roadmap（`.spec-dev/roadmaps/YYYY-MM-DD-<project>.md`，无则新建：frontmatter `spec_dev_roadmap`（version/project/status: active）+ 子项目表（序号/名称/一句话范围/依赖/状态/特性目录），本子项目行记 `in-progress`、剩余行记 `pending`）并 git commit——**被延后的范围必须有落盘登记，不允许只活在对话里**
+- **用户不回炉**：只为第一个子系统/阶段编写本计划，剩余范围当场登记 roadmap（`.spec-dev/roadmaps/YYYY-MM-DD-NN-<project>.md`，无则新建：frontmatter `spec_dev_roadmap`（version/project/status: active）+ 子项目表（序号/名称/一句话范围/依赖/状态/特性目录），本子项目行记 `in-progress`、剩余行记 `pending`）并 git commit——**被延后的范围必须有落盘登记，不允许只活在对话里**
 
 **不变式：一次只写一份计划，不为未实施的后续阶段预写计划**。计划要求每步含完整代码与精确路径，后续阶段的代码建立在前一阶段尚不存在的产物上——现在写出来必然失效。后续子项目在前置交付后按 roadmap 续接（executing-plans 收尾会核对 roadmap 并提示下一个）。
 

@@ -1,4 +1,4 @@
-# Spec 模板（`.spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design.md`）
+# Spec 模板（`.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md`；NN 为当日两位序号，见 requirement-analysis 阶段 6 命名规则）
 
 > **Language / 语言**: Fill in the conversation language — all narrative content (background, requirements, scenarios, decisions) follows the conversation language at creation; keep structural labels (Requirement / Scenario / GIVEN / WHEN / THEN, frontmatter keys) in English. / 以对话语言填写——叙述性内容（背景、需求、场景、决策）跟随创建时对话语言；结构标签（Requirement/Scenario/GIVEN/WHEN/THEN、frontmatter 键）保持英文。
 
