@@ -168,13 +168,20 @@ function runOfficialCodexInstallCheck() {
   }
 }
 
+// pre-commit 钩子环境里 git 会注入 GIT_DIR/GIT_INDEX_FILE/GIT_WORK_TREE 等变量；
+// 透传给 Codex CLI 会劫持其内部 git 操作——linked worktree 下实测导致暂存区被重置、
+// 产出与父提交同树的空提交。子进程环境必须剥离全部 GIT_* 变量。
+function sanitizedEnv() {
+  return Object.fromEntries(Object.entries(process.env).filter(([k]) => !k.startsWith("GIT_")));
+}
+
 function runCodex(codexArgs, codexHome) {
   const result = spawnSync("codex", codexArgs, {
     cwd: repoRoot,
     encoding: "utf8",
     timeout: CODEX_TIMEOUT_MS,
     env: {
-      ...process.env,
+      ...sanitizedEnv(),
       CODEX_HOME: codexHome,
     },
   });
