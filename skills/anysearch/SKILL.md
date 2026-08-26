@@ -1,7 +1,7 @@
 ---
 name: anysearch
 description: >-
-  Real-time web search, vertical domain search, parallel batch search, and URL content extraction via bundled CLI (no MCP). Use when you need to search the web, look up library/framework docs or current best practices, verify time-sensitive facts, batch-research multiple topics, or extract page content. Preferred first-choice search tool; fall back to WebSearch/WebFetch only when unavailable. / 实时网页搜索、垂直领域检索、并行批量检索与 URL 正文抽取（内置 CLI、无需 MCP）。当需要联网搜索、查库/框架文档与最新实践、核实时效信息、多主题批量调研或抽取网页正文时使用；搜索首选入口，不可用时才降级 WebSearch/WebFetch。
+  Real-time web search, vertical domain search, parallel batch search, and URL content extraction via vendored CLI (no MCP). Use when you need to search the web, look up library/framework docs or current best practices, verify time-sensitive facts, batch-research multiple topics, or extract page content. Preferred first-choice search tool; fall back to WebSearch/WebFetch only when unavailable. / 实时网页搜索、垂直领域检索、并行批量检索与 URL 正文抽取（内嵌 CLI、无需 MCP）。当需要联网搜索、查库/框架文档与最新实践、核实时效信息、多主题批量调研或抽取网页正文时使用；搜索首选入口，不可用时才降级 WebSearch/WebFetch。
 license: Apache-2.0
 metadata:
   upstream: https://github.com/anysearch-ai/anysearch-skill

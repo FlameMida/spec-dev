@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, rmSync, mkdirSync, readFileSync } from "node:fs";
+import { mkdtempSync, rmSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -81,5 +81,21 @@ test("标记字面量双源同步：doctor.mjs 与 install.mjs 的 START/END 一
     const inInstall = extract(installSrc, legacy);
     assert.ok(inInstall, `install.mjs 缺 ${legacy} 常量`);
     assert.equal(inDoctor, inInstall, `${name} 与 install.mjs 的 ${legacy} 漂移——标记字面量需两文件联动改`);
+  }
+});
+
+test("Scenario: 标记顺序颠倒（END 先于 START）判 broken 而非 ok——与 install.mjs 拒改写判定对齐", () => {
+  const dir = mkdtempSync(path.join(tmpdir(), "doctor-rev-"));
+  try {
+    execFileSync("git", ["init", "-q"], { cwd: dir });
+    writeFileSync(
+      path.join(dir, "CLAUDE.md"),
+      "spec-dev:guardrail:end -->\n\n中间内容\n\n<!-- spec-dev:guardrail:start —— 本段由 spec-dev 安装器维护，勿手改；重装会覆盖"
+    );
+    const { out } = runIn(dir);
+    const r = JSON.parse(out);
+    assert.equal(r.markers["CLAUDE.md"], "broken", "END 先于 START 应判 broken");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
   }
 });

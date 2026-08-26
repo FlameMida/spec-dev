@@ -51,9 +51,12 @@ const markerState = (file) => {
   const p = path.join(gitRoot, file);
   if (!existsSync(p)) return "missing";
   const text = readFileSync(p, "utf8");
-  const begin = text.includes(MARKER_START);
-  const end = text.includes(MARKER_END);
-  return begin && end ? "ok" : begin || end ? "broken" : "absent";
+  const s = text.indexOf(MARKER_START);
+  const e = text.indexOf(MARKER_END);
+  // 与 install.mjs 同一判定：双侧齐且 START 在前才 ok；单侧缺或顺序颠倒都算 broken
+  if (s === -1 && e === -1) return "absent";
+  if (s === -1 || e === -1 || s > e) return "broken";
+  return "ok";
 };
 report.markers = { "CLAUDE.md": markerState("CLAUDE.md"), "AGENTS.md": markerState("AGENTS.md") };
 if (Object.values(report.markers).includes("broken")) needsFix = true;
