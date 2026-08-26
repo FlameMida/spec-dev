@@ -21,6 +21,8 @@ description: >-
 
 **计划保存至**：spec 所在特性目录的 `plan/<feature-name>-plan.md`（即 `.spec-dev/YYYY-MM-DD-NN-<feature-name>/plan/<feature-name>-plan.md`，特性目录由 requirement-analysis 在写 spec 时按同日序号命名规则创建）；无 spec 输入的独立触发则自建特性目录。用户对计划位置的偏好优先于此默认值。
 
+**形态分流（阈值门控）**：分解出任务清单后判定——预估任务数 >8 或正文预估 >25KB 时按 [progressive-plan-format.md](references/progressive-plan-format.md) 产出分文件形态（`plan/index.md` + `plan/tasks/TNN.md` + `plan/progress.yaml`，复选框停用、progress.yaml 是唯一状态源）；低于阈值维持本文默认的单文件形态。两形态的任务内部结构与质量门完全一致。
+
 **Spec 状态检查**：载入 spec 时读其 frontmatter 的 `spec_dev.status`——仍为 `draft` 时说明漂移守卫尚未激活（requirement-analysis 阶段 8 的激活动作未执行，常见于跨会话独立触发）：与用户确认 spec 已定稿后，把 `status` 翻为 `active` 并单独 commit，再开始编写计划；不翻转则守卫对该特性静默失效。为 `superseded` 时停下告知用户该 spec 已被取代（附 `superseded_by` 指向，指针缺失或悬空时说明"无可达后继"；沿指针链跳转时记录已访问路径，链上出现环则列出环上文件并停止），经用户显式确认才可继续按旧 spec 编写计划；正文带 `Superseded-pending` 标注时向用户提示「该 spec 正被 <新 spec> 取代中（待交付）」后再继续。无 frontmatter 的旧版/外部 spec 跳过本检查。
 
 **上下文**：编写计划阶段不建工作区——隔离以固定的「任务 0」写入每份计划，执行时才运行（见下方"任务 0"）。
