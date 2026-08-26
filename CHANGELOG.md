@@ -7,7 +7,9 @@
 
 ---
 
-## [8.1.0] - 2026-08-26
+## [8.1.0] - 2026-08-27
+
+**plan 单一形态收敛版（写收敛、读宽容）**：writing-plans 此后只产 `plan/` 分文件三件套（index.md + tasks/ + progress.yaml），阈值门控与单文件生成路径删除；executing-plans 保留格式嗅探——存量单文件计划按原样读取执行（冻结侧）。过程碎片（8.0.1-8.0.4 的 spec/plan 落盘记录）已并入本条目。
 
 ### ✨ 新增 (Added)
 
@@ -26,39 +28,12 @@
 ### 📝 文档 (Docs)
 
 - **spec**：取代回写——major-upgrade 三条 Requirement（plan 形态/渐进执行/资源登记）标 Superseded by plan-single-format，pending 预告回收；对账报告定稿
+- **spec/plan**：plan-single-format 全程落盘——设计 spec（写收敛读宽容，ADR-0005 整体取代 ADR-0004 并回写状态行）、对抗审查修订、漂移守卫激活与 major-upgrade 三条 Superseded-pending 预告、分文件形态实施计划（首个新形态计划）与 progress.yaml 执行档案归档
 
 ### 🧹 其他 (Misc)
 
 - **spec**：sync_commit 锚定 de66620（plan-single-format 交付合并点）
 - **plan**：progress.yaml 归档收口——T00-T08 全部 completed，交付完成
-
-
-## [8.0.4] - 2026-08-26
-
-### 📝 文档 (Docs)
-
-- **plan**：plan-single-format 分文件形态实施计划落盘（T00-T08：writing-plans/executing-plans 重组+reference 并入删除+外围指针+snippet/README/evals 随动+验收+合并；plan-index 校验通过）——首个新形态计划
-
-
-## [8.0.3] - 2026-08-26
-
-### 📝 文档 (Docs)
-
-- **spec**：plan-single-format 激活漂移守卫（draft→active）并给 major-upgrade 三条 Requirement 打 Superseded-pending 预告
-
-
-## [8.0.2] - 2026-08-26
-
-### 📝 文档 (Docs)
-
-- **spec**：采纳审查建议——rg 验收范围限定 living docs（防清理历史档案）、补 supersede-lifecycle 分面共存声明（8 文件重叠双声明预案）、指针核对对象补 executing-plans:61
-
-
-## [8.0.1] - 2026-08-26
-
-### 📝 文档 (Docs)
-
-- **spec**：plan-single-format 设计落盘（写收敛读宽容；ADR-0005 整体取代 0004 并回写状态行；部分取代 major-upgrade 三条 Requirement）
 
 
 ## [8.0.0] - 2026-08-27
