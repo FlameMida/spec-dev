@@ -55,8 +55,9 @@ function printUsage() {
        node scripts/validate-output.mjs plan-index <plan目录>
 
 Validates a JSON file against scripts/schemas/<schema-name>.json.
-Supported schema subset: type, required, properties, items, enum,
-minimum, maximum, minItems, maxItems, minLength, if/then/else.
+Supported schema subset: type, required, properties, items, enum, const,
+minimum, maximum, minItems, maxItems, minLength, maxLength, pattern,
+additionalProperties, if/then/else.
 plan-index mode validates a split-file plan directory (index.md nav table
 vs tasks/ files, dangling deps, cycles).
 
@@ -94,6 +95,14 @@ function validate(value, schema, pathLabel, errors) {
     }
   }
 
+  // const：字面量相等（官方 AP schema 用它锁 $schema 的规范标识）
+  if (schema.const !== undefined) {
+    if (JSON.stringify(value) !== JSON.stringify(schema.const)) {
+      errors.push({ path: pathLabel, expected: `const ${JSON.stringify(schema.const)}`, actual: JSON.stringify(value) });
+      return;
+    }
+  }
+
   if (schema.type === "number") {
     if (typeof schema.minimum === "number" && value < schema.minimum) {
       errors.push({ path: pathLabel, expected: `>= ${schema.minimum}`, actual: String(value) });
@@ -106,6 +115,12 @@ function validate(value, schema, pathLabel, errors) {
   if (schema.type === "string") {
     if (typeof schema.minLength === "number" && value.length < schema.minLength) {
       errors.push({ path: pathLabel, expected: `length >= ${schema.minLength}`, actual: `length ${value.length}` });
+    }
+    if (typeof schema.maxLength === "number" && value.length > schema.maxLength) {
+      errors.push({ path: pathLabel, expected: `length <= ${schema.maxLength}`, actual: `length ${value.length}` });
+    }
+    if (typeof schema.pattern === "string" && !new RegExp(schema.pattern).test(value)) {
+      errors.push({ path: pathLabel, expected: `match ${schema.pattern}`, actual: JSON.stringify(value) });
     }
   }
 
@@ -131,6 +146,18 @@ function validate(value, schema, pathLabel, errors) {
       for (const [key, childSchema] of Object.entries(schema.properties)) {
         if (key in value) {
           validate(value[key], childSchema, `${pathLabel}.${key}`, errors);
+        }
+      }
+    }
+    if (schema.additionalProperties !== undefined) {
+      const known = new Set(Object.keys(schema.properties ?? {}));
+      for (const key of Object.keys(value)) {
+        if (!known.has(key)) {
+          if (schema.additionalProperties === false) {
+            errors.push({ path: `${pathLabel}.${key}`, expected: "no extra properties (additionalProperties: false)", actual: "unexpected property" });
+          } else if (typeof schema.additionalProperties === "object") {
+            validate(value[key], schema.additionalProperties, `${pathLabel}.${key}`, errors);
+          }
         }
       }
     }

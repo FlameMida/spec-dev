@@ -26,9 +26,12 @@ node ${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs <schema-name> <json-file>
 | `properties` | object | 子字段 schema（递归） |
 | `items` | array | 数组元素 schema（递归） |
 | `enum` | 所有 | 枚举值数组 |
+| `const` | 所有 | 字面量相等（官方 AP schema 用它锁 `$schema` 规范标识） |
 | `minimum` / `maximum` | number | 数值范围 |
 | `minItems` / `maxItems` | array | 数组长度范围 |
-| `minLength` | string | 字符串最小长度（`minLength: 1` 即禁止空串） |
+| `minLength` / `maxLength` | string | 字符串长度范围（`minLength: 1` 即禁止空串） |
+| `pattern` | string | 正则匹配（ECMAScript 方言） |
+| `additionalProperties` | object | `false` 禁止 properties 外的键；schema 对象则对未知键递归校验 |
 | `if` / `then` / `else` | 所有 | 条件校验：`if` 子 schema 通过则应用 `then`，否则应用 `else`；子 schema 需显式写 `type` |
 
 ## 契约清单
@@ -38,6 +41,7 @@ node ${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs <schema-name> <json-file>
 | `exploration-report` | 探索报告 | code-explorer | requirement-analysis 阶段 2（deep 档 multi-modal sweep） |
 | `review-findings` | 审查发现 | code-reviewer | executing-plans 收尾审查编排 |
 | `acceptance-check-items` | 验收检查项 | acceptance-qa（Tier A 为主，D/X 结论并入） | 验收编排与复核、executing-plans 收尾审查 |
+| `agent-plugin-1.0.0` | Agent Plugins 1.0.0 官方 manifest schema（上游 https://agent-plugins.org/schemas/1.0.0/plugin.schema.json 的 vendored 快照） | —（校验目标） | `node scripts/validate-output.mjs agent-plugin-1.0.0 plugin.json`（验收矩阵官方 schema 校验点） |
 
 每个契约的 `coverage_note` 一律必填且非空——这是「no silent caps」纪律的落点：截断/未覆盖范围必须显式声明，不允许静默缩水。`acceptance-check-items` 另以 `if/then` 强制：`result` 为 `pass`/`fail` 的检查项，`evidence_ref` 不允许空串——没有证据就标 `unverified`，而不是通过。
 
