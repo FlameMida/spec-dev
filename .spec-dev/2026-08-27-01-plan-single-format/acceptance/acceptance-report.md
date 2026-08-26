@@ -29,4 +29,12 @@
 
 ## 收尾审查(4 路:维度 A/B/C + completeness critic)
 
-(进行中,结论待补)
+4 路并行审查(A 功能正确性/B 风格质量/C 规范遵循/completeness critic),独立复跑全绿(51/51、13/13、13/13)。
+
+**结论:方向正确、断言非恒真、reference 纪律并入无丢失、spec 4 条 Requirement 严格落地。** 合并发现 **8 中 + 10 低(0 高)**,critic 确认 Requirement/Scenario/covers 三面零缺口(验收矩阵行 5 的任务文件命令缺陷为唯一实质项)。
+
+用户裁决:全部修。修复提交 6e79aac——复选框动作语义清零(勾选/勾清→YAML 语义+测试补强)、「三查」→「四查」三处随动、「分组」→「依赖拓扑」、渐进描述去重、三连陈述与三处重复收敛、术语统一(中文"分文件形态"/英文 "split-file layout")、openai.yaml 中文段补形态+方位语消歧、README.zh 三件套补齐、quick-fix 语境限定、evals 存量标注、T07 验收正则收窄、progress.yaml 补 commit sha。info 级 2 项记录不修(语义已覆盖)。
+
+修复后全量:51/51 + sh 测试 + 四校验全绿。
+
+**Spec-Guard 区间放行记录**(C-F1):T01-T04 提交命中 supersede-lifecycle 等 5 份 active spec covers 未逐提交带 trailer;其中 major-upgrade 与本 spec 随 T08 自动解除,supersede-lifecycle/test-scoping/resource-ledger 三份为分面共存/零动作——本特性不改变其行为,放行理由=纯形态重构无行为交集,随取代回写提交的 Spec-Guard trailer 留痕。

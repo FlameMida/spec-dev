@@ -1,5 +1,5 @@
 format_version: 1
-current: T07
+current: T08
 tasks:
   T00: { status: completed, commit: 3e07f65, tests: pass }
   T01: { status: completed, commit: 220158e, tests: pass}
@@ -9,7 +9,7 @@ tasks:
   T05: { status: completed, commit: 9e43713, tests: pass}
   T06: { status: completed, commit: f50870e, tests: pass}
   T07: { status: completed, tests: pass }
-  T08: { status: pending }
+  T08: { status: in_progress }
 resources:
   - "worktree: .worktrees/plan-2026-08-27-01-plan-single-format —— git worktree remove .worktrees/plan-2026-08-27-01-plan-single-format && git branch -d plan/2026-08-27-01-plan-single-format"
 notes: []
