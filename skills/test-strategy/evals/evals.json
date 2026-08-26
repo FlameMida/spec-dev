@@ -1,0 +1,15 @@
+{
+  "skill_name": "test-strategy",
+  "evals": [
+    {
+      "id": "ts-lane-annotation",
+      "prompt": "spec 验收矩阵有一行 integration 维度的 DB 回归检查，项目用 PostgreSQL",
+      "expected_output": "该行标注 PR lane；writing-plans 翻译的测试步骤引用 db-testing 处方（job 级一容器 + 模板克隆/事务回滚），运行命令归入 PR lane；不出现每测试一容器"
+    },
+    {
+      "id": "ts-governance-order",
+      "prompt": "用户抱怨 CI 又慢又经常无关红，想先上测试选择系统",
+      "expected_output": "按治理顺序 flaky→时长→选择劝阻：先清 flaky 再治时长（拓扑/磁盘/并行），选择系统仅在人数/时长触发条件满足后引入"
+    }
+  ]
+}

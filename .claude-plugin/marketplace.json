@@ -27,7 +27,8 @@
         "./skills/acceptance-qa",
         "./skills/quick-fix",
         "./skills/anysearch",
-        "./skills/sequential-thinking"
+        "./skills/sequential-thinking",
+        "./skills/test-strategy"
       ]
     }
   ]

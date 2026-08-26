@@ -1,0 +1,18 @@
+{
+  "skill_name": "test-strategy",
+  "description_under_test": "见 SKILL.md frontmatter",
+  "should_trigger": [
+    { "id": "t1", "prompt": "帮我给这个 monorepo 设计一套测试分层，DB 测试太慢了" },
+    { "id": "t2", "prompt": "spec 的测试与验收策略这节怎么写测试 lane？" },
+    { "id": "t3", "prompt": "把我们项目的 CI 测试分成 fast/PR/nightly 三档怎么分？" },
+    { "id": "t4", "prompt": "给 AI agent 项目搭一套测试骨架，模型调用怎么测" },
+    { "id": "t5", "prompt": "design a test strategy for this repo, the integration suite is flaky and slow" }
+  ],
+  "should_not_trigger": [
+    { "id": "n1", "prompt": "跑一下现有测试看看红没红" },
+    { "id": "n2", "prompt": "帮我修这个失败的单测" },
+    { "id": "n3", "prompt": "给这个工具函数补个单测" },
+    { "id": "n4", "prompt": "run the tests and fix the failing one" }
+  ],
+  "notes": "t1-t5 是策略设计/分层/lane 划分/agent 骨架的正面样例；n1-n4 共享'测试'关键词但属日常执行/修复/补充场景（test-driven-development 与日常开发领地），无策略设计语义。"
+}

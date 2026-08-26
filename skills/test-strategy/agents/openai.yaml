@@ -1,0 +1,7 @@
+interface:
+  display_name: "Test Strategy"
+  short_description: "Three-lane test scheduling, flaky→duration→selection governance, AI-agent testing skeleton, acceptance-matrix integration. / 三 Lane 测试调度、flaky→时长→选择治理、AI Agent 测试骨架、验收矩阵对接。"
+  default_prompt: "Use $test-strategy to design test lanes, translate an acceptance matrix into plan tasks, or set up the AI-agent testing skeleton. / 用 $test-strategy 设计测试分层、把验收矩阵翻译为计划任务、或搭 AI Agent 测试骨架。"
+
+policy:
+  allow_implicit_invocation: true
