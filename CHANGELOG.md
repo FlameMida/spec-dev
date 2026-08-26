@@ -7,6 +7,13 @@
 
 ---
 
+## [8.0.1] - 2026-08-26
+
+### 📝 文档 (Docs)
+
+- **spec**：plan-single-format 设计落盘（写收敛读宽容；ADR-0005 整体取代 0004 并回写状态行；部分取代 major-upgrade 三条 Requirement）
+
+
 ## [8.0.0] - 2026-08-27
 
 **重大升级整合版：多平台适配 · MCP 清零 · 工作流增强。** 含破坏性变更——插件不再分发任何 MCP 配置（`.mcp.json` 移除、`/check-mcp` 命令退役），sequential-thinking 由 MCP server 改为 vendored skill 承接（bun/tsx → think.mjs Node 端口 → 回复内分点推演三级降级，行为语义不变）；从 7.x 升级前请阅读 README「Zero MCP Dependency」。
