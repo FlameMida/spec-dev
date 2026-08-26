@@ -32,10 +32,12 @@ description: >-
 
 ## 阶段 1：载入并批判性审阅计划
 
-1. 读取计划文件（`.spec-dev/YYYY-MM-DD-NN-<feature>/plan/<feature>-plan.md`）与同特性目录的 `spec/<feature>-design.md`（旧命名 `YYYY-MM-DD-<feature>` 目录按原样读取）；产物仍在历史位置 `docs/YYYY-MM-DD-<feature>/` 时，默认先自动迁移到 `.spec-dev/` 再执行（有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移并重写文件内路径引用），迁移单独提交
+1. 读取计划：`plan/tasks/` 存在 → 分文件形态，按 [progressive-execution.md](references/progressive-execution.md) 渐进加载（启动只读 index + progress + spec）；否则单文件形态，一次性读取计划文件（`.spec-dev/YYYY-MM-DD-NN-<feature>/plan/<feature>-plan.md`）与同特性目录的 `spec/<feature>-design.md`（旧命名 `YYYY-MM-DD-<feature>` 目录按原样读取）。产物仍在历史位置 `docs/YYYY-MM-DD-<feature>/` 时，默认先自动迁移到 `.spec-dev/` 再执行（有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移并重写文件内路径引用），迁移单独提交
 2. 批判性审阅：步骤有歧义？接口块互相矛盾？与代码库现状不符？——**有疑虑先向用户提出，别带着疑虑开工**
 3. **执行确认门**：向用户呈现执行摘要（计划路径、任务数与分组、将创建的 worktree 分支名）并确认开始——用户本轮已显式指示执行（如"执行这份计划"）或经 writing-plans 交接确认的，视为已确认、不重复问
 4. 把计划任务注册进任务管理（每任务一条，`T{n}: 任务名` 命名），进入阶段 2
+
+**恢复入口**：会话开始即发现未完成的 progress.yaml（或单文件计划有未勾选步骤）且用户要求继续 → 走 progressive-execution.md 的恢复流程（校验一致性 → ready 任务续跑），不从任务 0 重来。
 
 ## 阶段 2：隔离工作区
 
@@ -54,9 +56,9 @@ description: >-
    - **契约锚定**——本任务确立的契约（函数签名/数据结构/API 形态）与计划接口块一致？会不会被后续任务隐式重新解释？
 
    发现即就地修正并补提交（或 amend）。**禁止在此猎 bug、查风格、查规范**——那是阶段 4 的活，重复只造噪音与虚假安全感
-4. **勾选计划复选框、标记任务 completed**，进入下一任务
+4. **勾选计划复选框、标记任务 completed**，进入下一任务（分文件形态改为原子更新 progress.yaml 并随任务提交，不使用复选框）
 
-**资源登记**：执行中创建了计划未预登记的持久资源（容器、测试库/表、临时目录、后台服务）时，当场向计划最终任务的资源台账追加一行（就地编辑计划文件；行格式以 writing-plans 最终任务模板的资源台账定义为准），不延迟到收尾补记。
+**资源登记**：执行中创建了计划未预登记的持久资源（容器、测试库/表、临时目录、后台服务）时，当场向计划最终任务的资源台账追加一行（就地编辑计划文件；行格式以 writing-plans 最终任务模板的资源台账定义为准；分文件形态登记进 progress.yaml 的 resources 键，计划任务文件不编辑），不延迟到收尾补记。
 
 **连续执行**：任务之间不停下来向用户汇报或请示——用户已经确认过计划。仅三种情况停下：无法自行解除的 BLOCKED、真正阻断前进的歧义、全部任务完成。
 
