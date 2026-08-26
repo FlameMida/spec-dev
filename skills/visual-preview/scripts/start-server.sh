@@ -97,6 +97,16 @@ if [[ -z "$URL_HOST" ]]; then
   fi
 fi
 
+# Anchor relative path arguments to the caller's cwd before any later `cd` —
+# the server resolves BRAINSTORM_DIR against its own working directory, so a
+# relative --feature-dir/--project-dir would silently land inside the plugin.
+for var in FEATURE_DIR PROJECT_DIR; do
+  val="${!var:-}"
+  if [[ -n "$val" && "$val" != /* ]]; then
+    declare "$var=${PWD}/${val}"
+  fi
+done
+
 if [[ -n "$IDLE_TIMEOUT_MINUTES" ]]; then
   if ! [[ "$IDLE_TIMEOUT_MINUTES" =~ ^[0-9]+$ ]] || [[ "$IDLE_TIMEOUT_MINUTES" -lt 1 ]]; then
     echo "{\"error\": \"--idle-timeout-minutes must be a positive integer\"}"
@@ -142,9 +152,10 @@ SESSION_ID="$$-$(date +%s)"
 if [[ -n "${FEATURE_DIR:-}" ]]; then
   SESSION_DIR="${FEATURE_DIR}/visual/${SESSION_ID}"
   # Port/token memory files stay at the .spec-dev/visual/ root so the port is
-  # shared across features in the same project.
-  export BRAINSTORM_PORT_FILE="${PROJECT_DIR}/.spec-dev/visual/.last-port"
-  export BRAINSTORM_TOKEN_FILE="${PROJECT_DIR}/.spec-dev/visual/.last-token"
+  # shared across features in the same project. Derived from FEATURE_DIR so a
+  # bare --feature-dir (no --project-dir) still anchors correctly.
+  export BRAINSTORM_PORT_FILE="${FEATURE_DIR%/*}/visual/.last-port"
+  export BRAINSTORM_TOKEN_FILE="${FEATURE_DIR%/*}/visual/.last-token"
 elif [[ -n "$PROJECT_DIR" ]]; then
   SESSION_DIR="${PROJECT_DIR}/.spec-dev/visual/${SESSION_ID}"
   # Persist the bound port and key per project so a restart reuses them and an
@@ -157,6 +168,8 @@ fi
 
 if [[ "${DRY_RUN:-0}" == "1" ]]; then
   echo "SESSION_DIR=${SESSION_DIR}"
+  [[ -n "${BRAINSTORM_PORT_FILE:-}" ]] && echo "PORT_FILE=${BRAINSTORM_PORT_FILE}"
+  [[ -n "${BRAINSTORM_TOKEN_FILE:-}" ]] && echo "TOKEN_FILE=${BRAINSTORM_TOKEN_FILE}"
   exit 0
 fi
 
