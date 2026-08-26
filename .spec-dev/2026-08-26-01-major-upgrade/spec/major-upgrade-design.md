@@ -1,7 +1,6 @@
 ---
 # —— spec-dev 漂移守卫锚点（机器可校验，勿删）——
 
-> **Superseded-pending (2026-08-27)** — 本 spec 的「Requirement: plan 分文件形态（阈值门控）」「Requirement: 渐进执行与断点恢复」「Requirement: 资源登记纪律（按计划形态分流）（改了什么：登记与模板载体由"计划文件台账行"扩展为随计划形态分流，创建即登记语义不变）」三条将被 .spec-dev/2026-08-27-01-plan-single-format/spec/plan-single-format-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 spec_dev:
   version: 1
   feature: major-upgrade
@@ -239,6 +238,8 @@ roadmap 模板 SHALL 新增「原始需求」节（登记时保存用户原话�
 
 ### Requirement: plan 分文件形态（阈值门控）
 
+> **Superseded (2026-08-27)** — by .spec-dev/2026-08-27-01-plan-single-format/spec/plan-single-format-design.md#plan-单一形态；原文保留仅作历史参考。
+
 writing-plans SHALL 在预估任务数大于 8 或计划正文预估超过 25KB 时产出分文件形态——`plan/index.md`（头部含全局约束与「相关测试范围」声明 + 任务导航表，导航表含任务/依赖/消费接口/产出接口四列，不复制任务正文）、`plan/tasks/TNN.md`（每任务一文件，沿用既有任务模板）、`plan/progress.yaml`（唯一运行时状态：任务状态、当前指针、commit 映射、资源台账、偏差记录；writing-plans 预登记资源写入其初始 resources，最终任务清理步骤引用其清单）；低于阈值 SHALL 维持单文件形态。`validate-output.mjs` SHALL 提供 plan-index 校验：tasks/ 文件与导航表一一对应、依赖引用存在、依赖图无环。
 
 #### Scenario: 大计划自动分文件
@@ -254,6 +255,8 @@ writing-plans SHALL 在预估任务数大于 8 或计划正文预估超过 25KB 
 - **THEN** 校验失败并指出悬空引用
 
 ### Requirement: 渐进执行与断点恢复
+
+> **Superseded (2026-08-27)** — by .spec-dev/2026-08-27-01-plan-single-format/spec/plan-single-format-design.md#渐进执行与断点恢复；原文保留仅作历史参考。
 
 executing-plans 对分文件形态 SHALL：启动只读 index 与 progress；执行 TN 时只读 `tasks/TN.md` 与其依赖任务的产出接口行（不读其正文）；每任务完成原子更新 progress 并提交。检测到未完成的 progress.yaml 时 SHALL 校验 worktree/分支/最后 commit 可解析后从下一 ready 任务续跑；单文件形态 SHALL 补充复选框判读的轻量恢复规程。
 
@@ -340,6 +343,8 @@ visual-preview SHALL 在存在特性上下文时把会话产物写入 `.spec-dev
 - **THEN** 产物位于 `.spec-dev/visual/<session-id>/`（现状路径），服务正常可用
 
 ### Requirement: 资源登记纪律（按计划形态分流）（改了什么：登记与模板载体由"计划文件台账行"扩展为随计划形态分流，创建即登记语义不变）
+
+> **Superseded (2026-08-27)** — by .spec-dev/2026-08-27-01-plan-single-format/spec/plan-single-format-design.md#资源登记纪律；原文保留仅作历史参考。
 
 executing-plans 执行任务期间创建计划未预登记的持久资源时，执行者 SHALL 当场登记、不延迟到收尾补记——单文件形态写入计划最终任务的资源台账行（就地编辑计划文件，含预登记模板小节），分文件形态写入 progress.yaml 的 resources 键（计划任务文件不被编辑）；清理步骤只遍历所在载体的台账条目的既有语义不变。
 
