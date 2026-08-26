@@ -1,5 +1,5 @@
 {
-  "$comment": "spec-dev 插件级 hooks：安装插件即自动注册 SessionStart 会话上下文注入（无需先手动运行 guardrail 安装器）。guardrail/install.mjs 仍负责 git 闸门（pre-commit/pre-push/CI）与 PreToolUse/Stop 漂移守卫——两者互补。/ Plugin-level hooks: SessionStart context injection registers on plugin install; guardrail/install.mjs still provides the git gate and PreToolUse/Stop guards.",
+  "$comment": "spec-dev 插件级 hooks：安装插件即自动注册 SessionStart 会话上下文注入（无需先手动运行 guardrail 安装器）。guardrail/install.mjs 仍负责 git 闸门（pre-commit/pre-push/CI）与 PreToolUse/Stop 漂移守卫——两者互补。/ Plugin-level hooks: SessionStart context injection registers on plugin install — no manual guardrail install needed for injection; guardrail/install.mjs still provides the git gate and PreToolUse/Stop guards — the two are complementary.",
   "hooks": {
     "SessionStart": [
       {

@@ -18,7 +18,7 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 - **Lightweight fix** — `quick-fix`, a fast path for already-decided fixes with no design space (small bugs, minor adjustments): root cause with spec back-lookup, one-question-at-a-time confirmation, TDD fix, optional acceptance; splits on contract impact to avoid spec drift and escalates to requirement-analysis on contract-crossing / cross-module / new-dependency signals
 - **Shared clarification** — `clarifying`, the grill-style questioning discipline (one question at a time down the decision tree, facts self-researched, each decision put to the user with a recommendation); referenced by requirement-analysis and quick-fix, and usable standalone with three exits (hand off to the main workflow / stop / write notes to md)
 - **Contract-driven orchestration** — subagent output goes through JSON Schema contracts, deterministically validated by `validate-output.mjs`, with one retry on failure
-- **Zero MCP dependency** — structured reasoning ships as a bundled skill (`sequential-thinking`, vendored); browser automation MCPs (playwright / chrome-devtools) are opt-in per project, see `skills/acceptance-qa/references/mcp-setup.md`
+- **Zero MCP dependency** — structured reasoning ships as a vendored skill (`sequential-thinking`); browser automation MCPs (playwright / chrome-devtools) are opt-in per project, see `skills/acceptance-qa/references/mcp-setup.md`
 - **3 specialized agents** — code-explorer, external-resource-explorer, code-reviewer (analysis and verification re-runs only; implementation code is always written by the main thread)
 
 ## Skill Pipeline
@@ -26,7 +26,7 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 ```
 exploring (unsettled idea → optional .spec-dev/explorations/<topic>.md)
         ↓ crystallizes
-requirement-analysis (design → .spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design.md)
+requirement-analysis (design → .spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md)
         ↕ JIT
   visual-preview
         ↓
@@ -159,7 +159,7 @@ Phase 1 picks an execution tier and declares it to the user (overridable):
 - **standard** — the default: 3-5 code-explorers in parallel by layer/module + external-resource-explorer research + full option comparison
 - **deep** — cross-layer architecture changes / new tech stacks: multi-modal blind sweep (no cap on modality count) + contract JSON validation on merge
 
-The spec lands in the feature directory `.spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design.md` and is committed (the later plan lands in `plan/<feature>-plan.md` of the same directory), then goes through an adversarial review subagent and user review before handing off to writing-plans. Behavior requirements use the **Requirement + Scenario** (GIVEN/WHEN/THEN) structure, and test & acceptance strategy uses the **acceptance matrix** — Scenarios translate directly into TDD failing tests by writing-plans, and the matrix anchors wrap-up review and acceptance-qa; changes to existing behavior use the ADDED/MODIFIED/REMOVED delta sections.
+The spec lands in the feature directory `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md` and is committed (the later plan lands in `plan/<feature>-plan.md` of the same directory), then goes through an adversarial review subagent and user review before handing off to writing-plans. Behavior requirements use the **Requirement + Scenario** (GIVEN/WHEN/THEN) structure, and test & acceptance strategy uses the **acceptance matrix** — Scenarios translate directly into TDD failing tests by writing-plans, and the matrix anchors wrap-up review and acceptance-qa; changes to existing behavior use the ADDED/MODIFIED/REMOVED delta sections.
 
 ## Using writing-plans / executing-plans
 
@@ -210,7 +210,7 @@ It locates the root cause (with a spec back-lookup aligned to the drift guard's 
 
 ## Zero MCP Dependency
 
-The plugin ships no MCP configuration. Structured deep thinking is provided by the bundled `sequential-thinking` skill (falls back to explicit point-by-point reasoning in replies when no runtime is available). Browser automation for Tier A acceptance (playwright / chrome-devtools MCPs) is opt-in per project — see `skills/acceptance-qa/references/mcp-setup.md`; without them acceptance-qa degrades gracefully to the Tier D toolchain (native Playwright tests, traces, console logs).
+The plugin ships no MCP configuration. Structured deep thinking is provided by the vendored `sequential-thinking` skill (falls back to explicit point-by-point reasoning in replies when no runtime is available). Browser automation for Tier A acceptance (playwright / chrome-devtools MCPs) is opt-in per project — see `skills/acceptance-qa/references/mcp-setup.md`; without them acceptance-qa degrades gracefully to the Tier D toolchain (native Playwright tests, traces, console logs).
 
 
 Check plugin health across six domains (platform / guardrail / markers / injection replay / anysearch / reasoning runtime): `/doctor`
