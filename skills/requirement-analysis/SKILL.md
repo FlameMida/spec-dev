@@ -136,7 +136,7 @@ Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
 
 **目标**：解决所有模糊、歧义与多解取舍。
 
-**提问纪律遵循 clarifying skill 的核心纪律（被引用模式，纪律定义以 clarifying 为准）**：一次只问一个问题、选择题优先且推荐项放首位（Claude Code 用 `AskUserQuestion`）、事实自查决策交用户、按决策依赖排序、术语挑战、不编造问题——无疑点则明确记录"需求已清晰，无需澄清"后进入阶段 4。本阶段是引用方：澄清完成后直接进入阶段 4，不触发 clarifying 的共识摘要与三出口。Codex 逐题提问规范见 clarifying 内嵌的 Codex 规范节；三道门的对话呈现要求见 [codex-compat.md](references/codex-compat.md)。
+**提问纪律遵循 clarifying skill 的核心纪律（被引用模式，纪律定义以 clarifying 为准）**：提问前自我披露（假设/关键信息/易犯错三段先行）、一次只问一个问题、选择题优先且推荐项放首位（Claude Code 用 `AskUserQuestion`）、事实自查决策交用户、按决策依赖排序、术语挑战、不编造问题——无疑点则明确记录"需求已清晰，无需澄清"后进入阶段 4。本阶段是引用方：澄清完成后直接进入阶段 4，不触发 clarifying 的共识摘要与三出口。Codex 逐题提问规范见 clarifying 内嵌的 Codex 规范节；三道门的对话呈现要求见 [codex-compat.md](references/codex-compat.md)。
 
 - 优先覆盖：目的、约束、成功标准；阶段 1-2 暴露的歧义、约束冲突、隐含假设、边缘场景
 - 术语挑战裁决出的规范术语全程沿用，并在 spec 术语表中记录规范名、一句话定义与 Avoid 别名（挑战动作属 clarifying 纪律，术语表落盘是本阶段职责）

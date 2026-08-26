@@ -51,7 +51,7 @@ description: >-
 
 ### 步骤 3：逐题校对（一次一个问题）
 
-提问纪律遵循 clarifying skill 的核心纪律（被引用模式，纪律定义以 clarifying 为准）：一次一题、选择题优先且推荐项放首位（Claude Code 用 `AskUserQuestion`）、事实自查决策交用户。核心确认三类：
+提问纪律遵循 clarifying skill 的核心纪律（被引用模式，纪律定义以 clarifying 为准）：提问前自我披露、一次一题、选择题优先且推荐项放首位（Claude Code 用 `AskUserQuestion`）、事实自查决策交用户。核心确认三类：
 
 1. **根因认定**对不对；
 2. **修复方案**选哪个（有多个修法时）；
