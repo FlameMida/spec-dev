@@ -9,7 +9,7 @@
 
 | Scenario / 检查项 | 维度 | 结果 | 证据 |
 |---|---|---|---|
-| 既有平台装载不回归 | integration | ✅ | validate-skills 13/13(Claude Code 实装即本会话运行环境);Codex 校验链在 pre-commit `check-plugin --codex-validate` 每次通过(Plugin package checks passed / Official Codex CLI install check passed) |
+| 既有平台装载不回归 | integration | ✅(结构级;重装升级见已知限制) | validate-skills 13/13(skill 结构合法);Codex 校验链在 pre-commit `check-plugin --codex-validate` 每次通过(Plugin package checks passed / Official Codex CLI install check passed);**Claude Code 端的"升级后重装"未实测**——验收会话加载的是插件缓存版(非本仓库 HEAD),真实升级装载待 `/plugin` 更新后的下次会话确认(见已知限制) |
 | 官方 AP schema 校验 | integration | ✅(修复后) | T26 修复:官方 schema 落盘 `scripts/schemas/agent-plugin-1.0.0.json`、plugin.json 按 const 修正($schema 指向 plugin.schema.json、删 schema 外 skills 键);R2 补 const/pattern/maxLength/additionalProperties 后判别约束真实生效,`ok:true` 退出码 0;坏 manifest 四场景回归测试(validate-keywords.test.mjs 2/2) |
 | pi 装载发现 skills / grok 兼容清单走查 | integration | ✅(文档走查级) | pi.dev 官方文档(https://pi.dev/docs/latest/packages、badlogic-pi-mono docs)证实 `package.json` 的 `pi` manifest 与 `pi.skills` 字段格式一致;grok 按官方声明零配置复用 `.claude-plugin/`(README 平台矩阵标注 official claim)。**证据等级:文档走查,无实机环境** |
 | MCP 残留引用为零 | integration | ✅(修复后) | T26 修复 README 双语 4 处(/check-mcp 引用、.mcp.json 目录树行)后,验收 rg 命令零命中 |
@@ -22,6 +22,12 @@
 | 披露继承 / 分岔转漏斗 / near-miss | docs | ✅ | cl-disclosure/ex-fork-funnel/ex-no-fork-no-funnel 全承载(acc-evals 证据)|
 | 单文件/分文件登记纪律两场景 | docs | ✅ | acc-resume 演练全符合预期(plan-index 校验通过/拦截、恢复判读、doctor 未安装指引);R4 补齐计划侧资源预登记分流并配 docs 回归测试 |
 | 新会话恢复 + 不一致停下 | integration | ✅ | acc-resume 演练:构造 T01-T04 completed 的 progress.yaml → 从 T05 续跑;删 tasks/T03.md → 不一致被拦截 exit 1 |
+
+## Grok / 声明式 SessionStart hook 走查记录(README 平台矩阵 "see acceptance walkthrough" 指针的落点)
+
+- **声明式 hook 本体**(hooks/hooks.json):结构合法(`hooks.SessionStart[].hooks[].{type:command,command,timeout}`),`command` 使用 `${CLAUDE_PLUGIN_ROOT}` 平台变量;doctor `hooks.declarative=ok` 实跑判定;`session-context.mjs --explain` 有输出(doctor `injectionReplay` 实证)。
+- **打包通道**:check-plugin/pre-commit 的 skill-creator 与 Codex CLI 校验链均接受 hooks/hooks.json(插件包完整性);T9 提交时的验证手段即此二项,无 Grok 实机。
+- **Grok Build 字段级生效**(README:84 指针指向的本节):依据 Grok 官方"Claude Code 兼容"声明推断其消费 `.claude-plugin/` 同族清单与插件 hooks 字段;**无实机验证**,生效字段以用户实机反馈为准。证据等级:文档走查+结构校验,非实机。
 
 ## Requirement Reconciliation
 
@@ -57,7 +63,11 @@
 - **用户裁决**:中高 8 组全部修;think.mjs 重做 esbuild;低 16 条全部打包修(不动建议类);对账缺口补记录+关键测试
 - **修复提交 R1-R9**(10 个 fix/test 提交):R1 start-server 路径绝对化(高)、R2 校验器四关键字、R3 doctor 两域、R4 资源预登记分流、R5/R6 evals 键名+旧命名+降级原因、R7 think.mjs esbuild 重做、R8 低级 16 条、R9 --check 契约测试
 - **未修(用户裁决范围内显式排除)**:阈值三处陈述无同步守护、update-vendored localFiles 死配置(均为建议类)
-- **已知限制(记录在案)**:vendored 快照与上游 pinned SHA 的网络一致性未核对(本机网络间歇 SSL 超时;doctor --check 检测机制已就位);pi/grok 无实机环境,证据为文档走查级;胶囊回写与原则裁决行无独立 eval 用例(行为条款已承载,critic 声明)
+- **已知限制(2026-08-27 复核后修订)**:
+  - ~~vendored 快照与上游 pinned SHA 的网络一致性未核对~~ → **已核验通过**:sequential-thinking pinned SHA `d0fd5d4` 与上游 HEAD 一致(`--check` exit 0),且经 git 通道逐文件比对——think.ts / example-session.md / LICENSE 与上游 SHA **逐字节一致**,SKILL.md 仅 +4 行 frontmatter(NOTICE 登记的 local adaptation);anysearch 内嵌 v3.0.1 **滞后上游 v3.1.0**(`--check` exit 1),是否同步由用户决定(`node scripts/update-vendored-skill.mjs --skill anysearch`),doctor 已常态监测
+  - pi/grok 无实机环境,证据为文档走查级(不可升级,grok 走查记录见上方专节)
+  - **Claude Code 端升级后重装未实测**:验收会话加载的是插件缓存版而非本仓库 HEAD;13 skill 结构校验通过,但"装载不回归"在 Claude Code 侧属结构级证据,待 `/plugin` 更新后实机确认
+  - 胶囊回写与原则裁决行无独立 eval 用例(行为条款已承载,critic 声明)
 
 ## 受影响维度复审
 

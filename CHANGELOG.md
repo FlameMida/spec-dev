@@ -7,6 +7,13 @@
 
 ---
 
+## [7.22.1] - 2026-08-26
+
+### 📝 文档 (Docs)
+
+- **acceptance**：限制复核修订——vendored 快照一致性已核验(SHA 一致+三文件逐字节+frontmatter 预期差异)限制解除;anysearch 滞后 v3.0.1→v3.1.0 记录在案;补 Grok/声明式 hook 走查专节(README 指针落地);Claude Code 重装限制如实标注
+
+
 ## [7.22.0] - 2026-08-26
 
 ### ✨ 新增 (Added)
