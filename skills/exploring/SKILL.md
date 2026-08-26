@@ -71,7 +71,7 @@ executing-plans 执行中卡壳（契约级歧义、设计疑似有误）可切�
 
 ## 环境兼容
 
-Claude Code 与 Codex 通用：只依赖读代码与对话，无专属工具。Codex 下提问以对话消息进行；探索中的深度推演可用 `mcp__sequential-thinking__sequentialthinking`（不可用则直接在回复中分点推演）。
+Claude Code 与 Codex 通用：只依赖读代码与对话，无专属工具。Codex 下提问以对话消息进行；探索中的深度推演可用 sequential-thinking skill（插件内嵌；不可用则直接在回复中分点推演）。
 
 ## Red Flags
 

@@ -58,7 +58,7 @@ description: >-
 ## Codex 规范
 
 - 提问以普通对话消息进行：保持一次一题，每题 2-3 个互斥选项且推荐项在首位，等待用户明确回复
-- 深度推演无 `mcp__sequential-thinking__sequentialthinking` 时降级为回复内分点推演
+- 深度推演无 sequential-thinking skill（插件内嵌）可用时降级为回复内分点推演
 - 澄清前探索在沙箱禁网时以 `rg` + 文件阅读完成，不依赖 web_search
 - 落盘失败（沙箱 read-only）→ 向用户说明并请其自行保存内容
 - 独立会话模式轻量，不强制 `update_plan`

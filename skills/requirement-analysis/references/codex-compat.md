@@ -66,7 +66,7 @@
 
 ## 深度思考（阶段 1 分诊、阶段 4 对抗验证与方案设计）
 
-`mcp__sequential-thinking__sequentialthinking` 在 Codex 下同样通过插件 MCP 配置提供；不可用时降级为在回复中显式分点推演（信息质询 → 冲突消解 → 方案对比），不得因工具缺失跳过分析。
+sequential-thinking skill 在 Codex 下经插件 skill 发现提供（openai.yaml 已启用隐式调用）；skill 与运行时均不可用时降级为在回复中显式分点推演（信息质询 → 冲突消解 → 方案对比），不得因工具缺失跳过分析。
 
 ---
 
