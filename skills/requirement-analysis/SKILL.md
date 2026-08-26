@@ -93,7 +93,7 @@ deep     — 跨层架构变更、新技术栈、用户使用"彻底/全面/审�
 | 进度跟踪 | `TaskCreate` / `TaskUpdate` | `update_plan` |
 | 并行子任务 | `Agent`（单响应一次性发起） | `spawn_agent`（继承上下文，参数见 codex-compat）+ `wait_agent` |
 | 项目规范文件 | `CLAUDE.md` → `AGENTS.md` | `AGENTS.md` → `CLAUDE.md` |
-| 网页搜索 | `WebSearch` | 内置 web 搜索（托管 `web_search` 工具） |
+| 网页搜索 | anysearch skill（内嵌）→ `WebSearch` 降级 | anysearch skill（内嵌）→ 内置 web 搜索降级（托管 `web_search` 工具） |
 
 Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
 

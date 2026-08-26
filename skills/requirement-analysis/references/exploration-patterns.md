@@ -83,7 +83,7 @@ light/standard 档不要求契约 JSON，子代理按其自身定义的 markdown
 1. 清晰的主题或模态（一个子代理一个角度，允许在该范围内展开）
 2. 相关文件线索、目标层次（内部）或检索主题与关键词（外部）
 3. 期望输出格式
-4. **（外部探索）工具优先级提醒**：派发 prompt 中显式写明「AnySearch 第一优先（通用/时效/垂直/批量；CLI 在 `${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/`）→ `WebSearch`/`WebFetch` 兜底」——agent 定义文件虽已内置此优先级，但派发词重申才能保证在不加载 agent 定义的环境（如 Codex `spawn_agent`）同样生效
+4. **（外部探索）工具优先级提醒**：派发 prompt 中显式写明「AnySearch 第一优先（通用/时效/垂直/批量；CLI 在 `${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/`）→ `WebSearch`/`WebFetch` 兜底」——agent 定义文件虽已内置此优先级，但派发词重申才能保证在不加载 agent 定义的环境（如 Codex `spawn_agent`）同样生效；派发词固定携带一行模板「工具优先级：AnySearch 第一优先（CLI 路径见 agents/external-resource-explorer.md），WebSearch/WebFetch 兜底」，主线程复制使用、不现场重写
 5. **（涉及 `.spec-dev/` 产物时）文档时效规则**：按 frontmatter `spec_dev.status` 分类报告——active 为现行契约；superseded、以及正文带 `Superseded-pending` / `Superseded` 标注者点名标示且仅作历史参考，不得进入"现行契约"结论；命中的 active spec/ADR 与本需求的行为交集逐一列出（供阶段 6 取代分流消费）；被 `Superseded` 标注的单条 Requirement 同样排除出现行契约。ADR 按状态行过滤（`Superseded by` / `Deprecated` 仅作历史参考，缺状态行视同 Accepted）。plan / acceptance 报告 / exploration 笔记是执行时点记录——代码现状以仓库与 active spec 为准，不得从中照抄代码片段作为现状依据。派发词已声明契约姿态降格（用户授权破坏性重构）时，命中的旧契约按"仅现状输入"报告，不作为约束
 
 **失败隔离**：某子代理失败 → 缩小该主题范围重试 1 次 → 仍失败由主线程接管该主题，其余子代理不受影响。
