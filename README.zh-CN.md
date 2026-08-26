@@ -30,7 +30,7 @@ requirement-analysis（设计 → .spec-dev/YYYY-MM-DD-NN-<feature>/spec/<featur
         ↕ JIT
   visual-preview
         ↓
-writing-plans（计划 → 同特性目录 plan/<feature>-plan.md）
+writing-plans（计划 → 同特性目录 plan/ 分文件：index.md + tasks/ + progress.yaml）
         ↓
 executing-plans（隔离执行 + 审查 + 总结）
    ├── using-git-worktrees（隔离工作区）
@@ -159,13 +159,13 @@ git diff --cached --check
 - **standard** — 默认档：3-5 个 code-explorer 按层/模块并行 + external-resource-explorer 外部研究 + 完整方案对比
 - **deep** — 跨层架构变更/新技术栈：multi-modal sweep 盲扫（模态数不设上限）+ 契约 JSON 校验合并
 
-spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md` 并提交（后续计划落同目录 `plan/<feature>-plan.md`），经审查子代理对抗验证与用户 review 后交接 writing-plans。行为需求以 **Requirement + Scenario**（GIVEN/WHEN/THEN）结构表达，测试与验收策略以**验收矩阵**表达——Scenario 被 writing-plans 直译为 TDD 失败测试、矩阵被收尾审查与 acceptance-qa 用作验收锚点；修改既有功能时用 ADDED/MODIFIED/REMOVED 差量三节。
+spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md` 并提交（后续计划落同目录 `plan/` 分文件结构），经审查子代理对抗验证与用户 review 后交接 writing-plans。行为需求以 **Requirement + Scenario**（GIVEN/WHEN/THEN）结构表达，测试与验收策略以**验收矩阵**表达——Scenario 被 writing-plans 直译为 TDD 失败测试、矩阵被收尾审查与 acceptance-qa 用作验收锚点；修改既有功能时用 ADDED/MODIFIED/REMOVED 差量三节。
 
 ## writing-plans / executing-plans 使用方法
 
 ```bash
 /writing-plans 基于 .spec-dev/2026-07-04-auth/spec/auth-design.md 编写实施计划
-/executing-plans 执行 .spec-dev/2026-07-04-auth/plan/auth-plan.md
+/executing-plans 执行 .spec-dev/2026-07-04-auth/plan/index.md
 ```
 
 - **writing-plans**：假设执行者零上下文——每份计划固定以任务 0（建立隔离工作区，含已隔离检测与 git 降级命令）开头、以最终任务（合并与清理）收尾，spec 验收矩阵含「验收任务」行时在两者之间固定生成验收任务，worktree 生命周期在计划内闭合、脱离插件也能按序执行；头部随行偏差处理指引；每任务给精确文件路径、完整代码、TDD 五步（失败测试→确认失败→最小实现→确认通过→提交）、接口消费/产出块；写完跑三查（spec 覆盖/占位符/类型一致）再交接
