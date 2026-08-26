@@ -42,3 +42,4 @@ notes: []               # 偏差与备注，append-only
 2. index.md 头部 = 单文件形态的计划文档头部（含设计原则块）+「全局约束」+「相关测试范围」+ 导航表；任务 0 与最终任务同样是 tasks/ 下的文件（T00、以及最大号）。
 3. 生成后运行 `node scripts/validate-output.mjs plan-index <plan目录>`（结构校验：文件↔导航表一致、依赖存在、无环），失败不得交付执行。
 4. Self-Review 三查对本形态逐任务文件执行，另加第 4 查：导航表接口列与任务文件接口块逐条一致。
+5. 资源预登记：生成 progress.yaml 时把已知持久资源（worktree 必有行、以及任务步骤将创建的容器/测试库/临时目录/后台服务）写入初始 `resources` 键——最终任务模板内嵌的复选框台账在本形态不出现，清理步骤遍历 resources 清单；执行期新增资源由 executing-plans 当场追加（见 progressive-execution.md 渐进加载纪律）。
