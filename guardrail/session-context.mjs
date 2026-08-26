@@ -6,6 +6,14 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
+// --explain：去静默诊断模式（doctor 重放用）——输出一行注入决策与原因后退出，
+// 不注入完整上下文；默认模式的静默语义（不污染会话）保持不变。
+const EXPLAIN = process.argv.includes("--explain");
+const decide = (decision, reason) => {
+  if (EXPLAIN) console.log(`decision: ${decision} reason: ${reason}`);
+  process.exit(0);
+};
+
 let root = "";
 let specs = [];
 let legacySpecs = [];
@@ -25,11 +33,11 @@ try {
   ]);
   legacySpecs = lsSpecs(["docs/**/spec/*-design.md", "docs/**/*-design.md"]);
 } catch {
-  // 非 git 环境静默退出，不污染会话
-  process.exit(0);
+  // 非 git 环境静默退出，不污染会话（--explain 下给出原因）
+  decide("skip", "not a git repo / 非 git 仓库");
 }
 
-if (specs.length === 0) process.exit(0);
+if (specs.length === 0) decide("skip", "no tracked spec under .spec-dev|docs|.specs / 无已跟踪 spec");
 
 // 状态细分计数：active 参与守卫，superseded 是历史层——接手会话第一眼需要知道两者都存在。
 // 最小 frontmatter 读取（仅 status 一键），解析失败的文件不计入细分、仍在总数内。
@@ -93,6 +101,13 @@ if (unknownStatus.size > 0) {
   );
 }
 const health = issues.length ? `\n${issues.map((i) => `- ⚠ ${i}`).join("\n")}` : "";
+
+if (EXPLAIN) {
+  decide(
+    "inject",
+    `${specs.length} spec(s), ${statusCount.active} active, ${statusCount.superseded} superseded${issues.length ? `, ${issues.length} health issue(s)` : ""}`,
+  );
+}
 
 console.log(`[spec-dev workflow notice / spec-dev 流程提示] This repository uses spec-driven development / 本仓库采用 spec 驱动开发（spec-dev 工作流）:
 - Existing spec/plan artifacts live under .spec-dev/ (${specs.length} spec(s): ${statusCount.active} active, ${statusCount.superseded} superseded); legacy ones under docs/ are auto-migrated there. / 现有 spec/plan 产物位于 .spec-dev/<日期-特性>/ 目录（共 ${specs.length} 份 spec：${statusCount.active} active, ${statusCount.superseded} superseded）；docs/ 历史位置的产物会被自动迁移过去。

@@ -248,9 +248,15 @@ function guardLine(name) {
 // package.json prepare —— 仅当 .githooks 由本安装器启用时注入，
 // 让 npm/pnpm/yarn install 自动设置 core.hooksPath，新 clone 即带闸门。
 function installPrepareScript(repo, res) {
-  if (!res.own) return false; // 已有自定义 hooksPath（如 husky），交由原机制管理
+  if (!res.own) {
+    log("  · skip prepare injection: custom core.hooksPath already managed elsewhere (e.g. husky) / 跳过 prepare 注入：已有自定义 hooksPath，交由原机制管理");
+    return false;
+  }
   const pkgPath = path.join(repo, "package.json");
-  if (!existsSync(pkgPath)) return false;
+  if (!existsSync(pkgPath)) {
+    log("  · skip prepare injection: no package.json / 跳过 prepare 注入：无 package.json（新 clone 需手工 git config core.hooksPath .githooks）");
+    return false;
+  }
   let pkg;
   try {
     pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
