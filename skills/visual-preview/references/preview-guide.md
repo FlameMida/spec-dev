@@ -139,4 +139,4 @@ flowchart LR
 
 ## 连接信息查找
 
-服务器启动 JSON 同时写入 `$STATE_DIR/server-info`——后台启动没截到 stdout 时从该文件取 URL 与端口；使用 `--project-dir` 时会话目录在 `<project>/.spec-dev/visual/` 下。
+服务器启动 JSON 同时写入 `$STATE_DIR/server-info`——后台启动没截到 stdout 时从该文件取 URL 与端口；会话目录按两种路径查找：特性上下文传 `--feature-dir <path>` 时在 `<feature-dir>/visual/` 下，仅 `--project-dir` 时在 `<project>/.spec-dev/visual/` 下。

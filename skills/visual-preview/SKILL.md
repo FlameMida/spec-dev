@@ -38,7 +38,9 @@ description: >-
 bash <skill-base-directory>/scripts/start-server.sh --project-dir /path/to/project --open
 ```
 
-返回 JSON 含 `port`、`url`、`screen_dir`、`state_dir`——保存后两者。会话文件落在 `<project>/.spec-dev/visual/`；提醒用户将 `.spec-dev/visual/` 加入 `.gitignore`（如尚未加入）。**不要忽略整个 `.spec-dev/`**——spec/plan/roadmap 等产物需要提交入库，漂移守卫也依赖已提交的 spec。
+当前处于特性上下文（本次会话正在做某特性的需求设计/计划）时**必须**额外传 `--feature-dir .spec-dev/<当日特性目录>`——产物落 `<feature-dir>/visual/<session-id>/`（端口/密钥记忆文件仍固定在 `.spec-dev/visual/` 根，跨特性共享端口）；无特性上下文时不传，回退 `<project>/.spec-dev/visual/`。
+
+返回 JSON 含 `port`、`url`、`screen_dir`、`state_dir`——保存后两者。会话文件落在 `<feature-dir>/visual/`（特性上下文）或 `<project>/.spec-dev/visual/`（回退）；提醒用户把 `.spec-dev/visual/` 与 `.spec-dev/*/visual/` 加入 `.gitignore`（如尚未加入）。**不要忽略整个 `.spec-dev/`**——spec/plan/roadmap 等产物需要提交入库，漂移守卫也依赖已提交的 spec。
 
 **URL 含会话密钥（`?key=…`）**：始终把 `url` 字段的**完整 URL** 给用户，不得裁掉 query string——密钥同时守卫 HTTP 与 WebSocket 访问。
 
@@ -69,7 +71,9 @@ fragment 写法、可用 CSS 类、events 格式、命名细则见 [preview-guid
 bash <skill-base-directory>/scripts/stop-server.sh $SESSION_DIR
 ```
 
-使用 `--project-dir` 的会话，mockup 保留在 `.spec-dev/visual/` 供日后查看；仅 `/tmp` 会话在停止时删除。服务器空闲 4 小时自动退出（`--idle-timeout-minutes` 可调）。
+项目内会话同规则：特性目录下的 `visual/` 会话与 `.spec-dev/visual/` 会话的 mockup 均保留供日后查看（`stop-server.sh` 的删除逻辑只认 `/tmp` 前缀，特性目录会话自然保留）；仅 `/tmp` 会话在停止时删除。服务器空闲 4 小时自动退出（`--idle-timeout-minutes` 可调）。
+
+**归档约定**：被设计采纳的定稿 mockup 复制为特性目录 `spec/assets/<名称>.html` 入库——这是唯一入 git 的 visual 产物。
 
 ## Red Flags
 

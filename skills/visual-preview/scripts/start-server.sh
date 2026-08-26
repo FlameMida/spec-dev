@@ -8,6 +8,12 @@
 # Options:
 #   --project-dir <path>  Store session files under <path>/.spec-dev/visual/
 #                         instead of /tmp. Files persist after server stops.
+#   --feature-dir <path>  Store session files under <path>/visual/ — use the
+#                         current feature directory (.spec-dev/<YYYY-MM-DD-NN-feature>)
+#                         when in a feature context; falls back to --project-dir
+#                         behavior when omitted.
+#   --dry-run             Compute and print SESSION_DIR=<path>, then exit
+#                         without starting the server.
 #   --host <bind-host>    Host/interface to bind (default: 127.0.0.1).
 #                         Use 0.0.0.0 in remote/containerized environments.
 #   --url-host <host>     Hostname shown in returned URL JSON.
@@ -23,6 +29,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Parse arguments
 PROJECT_DIR=""
+FEATURE_DIR=""
+DRY_RUN="0"
 FOREGROUND="false"
 FORCE_BACKGROUND="false"
 BIND_HOST="127.0.0.1"
@@ -33,6 +41,14 @@ while [[ $# -gt 0 ]]; do
     --project-dir)
       PROJECT_DIR="$2"
       shift 2
+      ;;
+    --feature-dir)
+      FEATURE_DIR="$2"
+      shift 2
+      ;;
+    --dry-run)
+      DRY_RUN="1"
+      shift
       ;;
     --host)
       BIND_HOST="$2"
@@ -123,7 +139,13 @@ umask 077
 # Generate unique session directory
 SESSION_ID="$$-$(date +%s)"
 
-if [[ -n "$PROJECT_DIR" ]]; then
+if [[ -n "${FEATURE_DIR:-}" ]]; then
+  SESSION_DIR="${FEATURE_DIR}/visual/${SESSION_ID}"
+  # Port/token memory files stay at the .spec-dev/visual/ root so the port is
+  # shared across features in the same project.
+  export BRAINSTORM_PORT_FILE="${PROJECT_DIR}/.spec-dev/visual/.last-port"
+  export BRAINSTORM_TOKEN_FILE="${PROJECT_DIR}/.spec-dev/visual/.last-token"
+elif [[ -n "$PROJECT_DIR" ]]; then
   SESSION_DIR="${PROJECT_DIR}/.spec-dev/visual/${SESSION_ID}"
   # Persist the bound port and key per project so a restart reuses them and an
   # already-open browser tab reconnects to the same URL with a valid cookie.
@@ -131,6 +153,11 @@ if [[ -n "$PROJECT_DIR" ]]; then
   export BRAINSTORM_TOKEN_FILE="${PROJECT_DIR}/.spec-dev/visual/.last-token"
 else
   SESSION_DIR="/tmp/brainstorm-${SESSION_ID}"
+fi
+
+if [[ "${DRY_RUN:-0}" == "1" ]]; then
+  echo "SESSION_DIR=${SESSION_DIR}"
+  exit 0
 fi
 
 STATE_DIR="${SESSION_DIR}/state"
