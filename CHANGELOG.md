@@ -7,6 +7,13 @@
 
 ---
 
+## [8.0.4] - 2026-08-26
+
+### 📝 文档 (Docs)
+
+- **plan**：plan-single-format 分文件形态实施计划落盘（T00-T08：writing-plans/executing-plans 重组+reference 并入删除+外围指针+snippet/README/evals 随动+验收+合并；plan-index 校验通过）——首个新形态计划
+
+
 ## [8.0.3] - 2026-08-26
 
 ### 📝 文档 (Docs)
