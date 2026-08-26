@@ -7,82 +7,48 @@
 
 ---
 
-## [7.22.3] - 2026-08-26
+## [8.0.0] - 2026-08-27
 
-### 📝 文档 (Docs)
-
-- **acceptance**：实机验证环境变更已还原——grok 插件卸载清空、pi 恢复 git 版条目(副本经本地通道刷新为 main 最新,origin 指回 GitHub)
-
-
-## [7.22.2] - 2026-08-26
-
-### 📝 文档 (Docs)
-
-- **acceptance**：pi/grok 限制解除——本机实机验证(grok validate/install/inspect 全链 13 skills+hooks;pi 真实会话自报 13/13 skills 含 test-strategy),矩阵行升级,残留仅 grok hook 运行时触发未观察
-
-
-## [7.22.1] - 2026-08-26
-
-### 📝 文档 (Docs)
-
-- **acceptance**：限制复核修订——vendored 快照一致性已核验(SHA 一致+三文件逐字节+frontmatter 预期差异)限制解除;anysearch 滞后 v3.0.1→v3.1.0 记录在案;补 Grok/声明式 hook 走查专节(README 指针落地);Claude Code 重装限制如实标注
-
-
-## [7.22.0] - 2026-08-26
+**重大升级整合版：多平台适配 · MCP 清零 · 工作流增强。** 含破坏性变更——插件不再分发任何 MCP 配置（`.mcp.json` 移除、`/check-mcp` 命令退役），sequential-thinking 由 MCP server 改为 vendored skill 承接（bun/tsx → think.mjs Node 端口 → 回复内分点推演三级降级，行为语义不变）；从 7.x 升级前请阅读 README「Zero MCP Dependency」。
 
 ### ✨ 新增 (Added)
 
-- **T25**：validate-output 新增 plan-index 结构校验（一致性/悬空/环）
-- **T24**：executing-plans 渐进执行与断点恢复接线（分文件形态 + 单文件轻量恢复）
-- **T23**：plan 分文件形态规范（阈值门控 + index 导航表 + progress.yaml 单一状态源）
-- **T22**：test-strategy 挂载接线（writing-plans 翻译层 / acceptance-qa / 矩阵分工链 / spec 模板）
-- **T21**：test-strategy 栈特定处方三件（DB/前端/Agent eval）
-- **T20**：test-strategy skill 本体（三 Lane/治理顺序/Agent 骨架/矩阵对接）
-- **T19**：设计原则 reference 落盘并接线阶段4/5与计划头部声明块
-- **T18**：exploring 全套接入澄清——开场披露 + 关键分岔转漏斗，分界改嵌套
-- **T17**：引用方锚定语同步披露条（requirement-analysis 阶段3 / quick-fix 步骤3）
-- **T16**：clarifying 核心纪律第 0 条——提问前自我披露（假设/关键信息/易犯错）
-- **T15**：visual-preview 产物归位特性目录（--feature-dir + 回退不变 + 归档约定）
-- **T14**：roadmap 上下文胶囊（原始需求全文+裁决+指针+已扫范围）与续接免重扫（无触发描述变更）
-- **T13**：同日顺序编号 YYYY-MM-DD-NN 全套件落地（存量 grandfather；无触发描述变更，openai.yaml 无需同步）
-- **T12**：guardrail snippet 注入全局搜索优先级规则（AGENTS.md 家族跨平台生效）
-- **T11**：九 skill 统一搜索条款 + 环境映射表纳入 anysearch + 派发词模板固定化（条款不涉触发描述，openai.yaml 无需同步）
-- **T10**：code-explorer 白名单加 Bash（修 anysearch CLI 物理不可达），external-resource-explorer 排版修复
-- **T9**：插件声明式 SessionStart hook（打包校验通过；实装注入验证入验收走查）
-- **T8**：注入链去静默——session-context --explain 决策重放 + install prepare 跳过原因
-- **T7**：doctor 六域诊断命令（平台/guardrail/标记/注入回放/anysearch 双副本/推理运行时链）
-- **T6**：根级 AP 1.0.0 manifest 与 pi 分发清单，版本同步扩为五处，README 平台矩阵（官方 schema 校验挪验收）
-- **T5**：MCP 清零——删 .mcp.json/check-mcp，Codex manifest 与双语 README 同步，mcp-setup 转 opt-in
-- **T4**：结构化推理消费点改写为内嵌 sequential-thinking skill（降级语义不变；无触发描述变更，openai.yaml 无需同步）
-- **T3**：vendored skill 统一同步脚本（subtree/snapshot 双模式 + normalize 增强注入），删除旧入口
-- **T2**：think.mjs 零依赖 Node 端口（手工类型剥离 + reset/submit/status 契约测试）
-- **T1**：vendor sequential-thinking skill（SHA 快照 + 本地适配 + 注册）
+**多平台与诊断（M1/M2）**
+- 根级 Agent Plugins 1.0.0 manifest（官方 schema 校验通过）与 pi 平台分发清单（package.json `pi.skills`）；版本同步扩为五处，check-plugin 校验五清单一致；README 双语平台矩阵（Claude Code / Codex / Grok Build / Pi / AP 1.0.0）——grok 与 pi 经本机实机装载验证
+- `doctor` 六域诊断命令：平台 / guardrail 安装 / 注入标记块（含顺序颠倒判定）/ SessionStart hook 挂载（declarative 三态 + `--explain` 注入决策回放）/ anysearch（双副本歧义 + 上游版本滞后）/ sequential-thinking 运行时链
+- 插件级声明式 SessionStart hook（hooks/hooks.json）——支持插件 hooks 的平台安装即自动注册会话上下文注入，与 guardrail 安装器互补
+- 注入链去静默：`session-context.mjs --explain` 决策重放 + install prepare 跳过原因
+
+**vendored 基建（M8）**
+- vendor sequential-thinking skill（上游 SHA 快照 + NOTICE 本地适配声明 + 注册）；think.mjs 零依赖 Node 端口为 **esbuild 一次性转译生成物**（独立再生成逐字节一致），reset/submit/status 契约测试
+- `update-vendored-skill.mjs` 统一同步脚本：subtree/snapshot 双模式、`--check` 只读探测（退出码 0/1）、`--normalize` 增强 description 重放（上游同步后自动重放，含 CLI 契约测试）
+- **anysearch 同步上游 v3.0.1 → v3.1.0**（CLI 测试套件、generate.py、doc_spec 更新；增强 description 经 normalize 重放保留）
+
+**工作流增强（M4-M7）**
+- `test-strategy` skill：三 Lane 调度（fast/PR/nightly，按 IO 类型）、治理顺序铁律 flaky→时长→选择、AI Agent 模型边界测试骨架（L0-L5）、验收矩阵对接；栈特定处方三件（db-testing / frontend-testing / ai-agent-testing）；四个挂载点接线（writing-plans 翻译层 / acceptance-qa / 矩阵分工链 / spec 模板）
+- 设计原则载体：design-principles.md 八条（不留兼容垫片/最简实现/分层构建/模块化/优先成熟库/优先已有依赖/长期决策）+ spec-dev 语境注解，接线 requirement-analysis 阶段 4/5 与计划头部「设计原则」声明块
+- plan 双形态：阈值门控（任务数 >8 或正文 >25KB）分文件形态（index.md 导航表 + tasks/TNN.md + progress.yaml 单一状态源）；executing-plans 渐进执行与断点恢复；validate-output 新增 plan-index 结构校验（文件↔导航表一致/悬空依赖/环检测）；资源台账按计划形态分流（分文件预登记进 progress.yaml resources）
+- 同日顺序编号 `YYYY-MM-DD-NN-<名称>` 全套件落地（特性目录/reports/roadmaps 共用 NN 序列，落盘前重扫防撞，存量 grandfather）
+- roadmap 上下文胶囊（原始需求全文 + 关键裁决 + 探索指针 + 已扫范围 + 留给后继的注意事项）与续接免重扫、免重提原始需求
+- 澄清纪律：clarifying 核心纪律第 0 条「提问前自我披露」（默认假设/关键信息缺口/易犯错误三段，双角色适用）；exploring 开场披露 + 关键分岔转漏斗（三条件判定：互斥/不可同时探/不裁决则阻塞），与 clarifying 分界改嵌套；引用方锚定语同步
+- visual-preview 产物归位特性目录（`--feature-dir` + `--dry-run`，回退路径不变，定稿 mockup 归档 spec/assets/）
+- 全 skill 统一搜索条款（anysearch 第一优先 → WebSearch/WebFetch 降级）+ guardrail snippet 注入 AGENTS.md 家族全局搜索规则 + 子代理 Bash 白名单修复（修 anysearch CLI 物理不可达）
 
 ### 🔧 修复 (Fixed)
 
-- **review-R10**：复审追加修复——visual-path 测试去硬编码路径(合并后在 main 可跑)；anysearch description 链 bundled→vendored 三处联动(同步源+normalize 重放+openai.yaml 副本,中文升内嵌 CLI)；exploring 降级句补注明原因(第 5 表述点)；writing-plans 分支名举例升 NN；doctor 标记顺序颠倒判 broken(补 TDD 用例)
-- **review-R9**：--check 用例对齐实际 CLI 行为——latestTarget 在打印前求值、网络不可达只剩 stderr、超时被杀零输出，三路径均纳入断言并加 45s 超时保护
-- **review-R8**：低级 16 条打包修复——旧命名残留×5 升 NN（README 双语管线图/详述、acceptance-qa 定位行+兼容句）；英文 bundled→vendored×5 对齐术语表；spec-template/hooks.json 英文补齐丢句；exploring 不必做枚举辖域改写（分岔漏斗不产出文档）；exploration-patterns 派发模板内联实路径；db-testing 来源自包含；search-clause 补 test-strategy；NN 扫描口径目录→产物（含 reports/roadmaps 文件名）；doctor 标记常量提为模块级并以测试锁定与 install.mjs 双源同步
-- **review-R7**：think.mjs 重做为 esbuild 一次性转译生成物（对齐计划 T2 实现方式；头注释改生成声明与再生成指引；契约测试 2/2 保持绿）
-- **review-R5/R6**：sequential-thinking evals 键名统一全仓惯例（skill_name/evals/prompt）；ra evals 旧用例路径升 YYYY-MM-DD-NN；四降级文本补「注明工具降级原因」（eval st-degrade 子断言闭环）
-- **review-R4**：资源预登记按计划形态分流落地——writing-plans 分流条款/牢记节/最终任务模板与 progressive-plan-format 生成规则接 progress.yaml resources（含 docs 回归测试）
-- **review-R3**：doctor 补齐 spec 六域——SessionStart hook 挂载域（declarative 三态+注入回放并入 hooks 节）与 anysearch 版本滞后（复用 update-vendored --check，网络失败归 unknown 不阻塞）；commands/doctor.md 同步
-- **review-R2**：validate-output 补 const/pattern/maxLength/additionalProperties 四关键字——官方 AP schema 判别约束生效（含坏 manifest 四场景回归测试与 schemas/README 子集表同步）
-- **review-R1**：start-server.sh 路径参数绝对化（修相对 --feature-dir 在内部 cd 后失效）+ port/token 记忆文件从 FEATURE_DIR 推导（修无 --project-dir 时悬空）+ dry-run 暴露 PORT_FILE/TOKEN_FILE
-- **T26**：验收修复——官方 AP schema 落盘入库并按 const 修正 plugin.json（$schema 指向 plugin.schema.json、删 schema 外 skills 键，以 schema 为准）；README 双语清 MCP 残留（/check-mcp 与 .mcp.json 目录树行）、版本同步三处改五处并补 /doctor；check-plugin 注释同步五清单
+- **收尾审查（ultracode 编排：5 维度 fan-out + 对抗复核 + completeness critic，24 confirmed 全处置）**：
+  - start-server.sh 路径参数绝对化（修相对 `--feature-dir` 在内部 cd 后失效）+ port/token 记忆文件从 FEATURE_DIR 推导（修无 `--project-dir` 时悬空）
+  - validate-output 补 const/pattern/maxLength/additionalProperties 四关键字——官方 AP schema 判别约束真实生效（坏 manifest 四场景回归测试）
+  - doctor 补齐 spec 六域（anysearch 版本滞后 + SessionStart hook 挂载域）与标记顺序颠倒判定
+  - 资源预登记分流落地、sequential-thinking evals 键名统一全仓惯例、旧命名残留与 bundled→vendored 术语对齐（含 anysearch description 链三处联动）、双语丢句补齐、think.mjs 重做为 esbuild 生成物、visual-path 测试去硬编码路径等 16+ 项
+- 官方 AP schema 落盘入库并按 const 修正 plugin.json（$schema 指向 plugin.schema.json、删 schema 外 skills 键，以 schema 为准）；README 双语清 MCP 残留、版本同步三处改五处并补 `/doctor`
 - check-plugin 剥离子进程 GIT_* 环境变量（修 worktree 下 codex-validate 劫持 index 产出空提交）
 
 ### 📝 文档 (Docs)
 
-- **spec**：取代回写——resource-ledger 两条 Requirement 标 Superseded by major-upgrade#资源登记纪律按计划形态分流，Superseded-pending 预告回收（covers 四路径已由 major spec 接管，其余三条分面共存）
-- **acceptance**：验收报告定稿——矩阵 13 行全过、17 DELIVERED 对账表、复审结论与 R10 追加修复记录
-- **review**：ultracode 收尾审查报告落盘（24 confirmed + 验收演练 + critic 缺口）
-
-### 🧹 其他 (Misc)
-
-- **spec**：sync_commit 锚定 76eb9e2（major-upgrade 交付合并点）
-- **review-R9**：update-vendored --check 补 CLI 契约用例（只读、退出码 0/1 语义、网络不可达同归 1、工作区零改动）
-
+- major-upgrade 特性交付：28 任务（spec `.spec-dev/2026-08-26-01-major-upgrade/`），验收矩阵 13 行全过、17 Requirement 全 DELIVERED、验收报告与审查报告落盘
+- vendored 快照一致性核验（SHA 一致 + 三文件逐字节）；pi/grok 实机装载验证记录（grok 全链 + pi 真实会话自报 13/13 skills）及环境还原记录
+- 取代回写：resource-ledger 两条 Requirement 标 Superseded（登记纪律按计划形态分流），sync_commit 锚定交付合并点
 
 ## [7.21.6] - 2026-08-26
 
