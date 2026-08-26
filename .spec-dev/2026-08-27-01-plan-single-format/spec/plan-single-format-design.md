@@ -23,7 +23,7 @@ spec_dev:
     - "scripts/tests/resource-ledger-split.test.mjs"
   supersedes:
     - ".spec-dev/2026-08-26-01-major-upgrade/spec/major-upgrade-design.md"
-  sync_commit: null
+  sync_commit: de66620ca4acfbc5a5ab2432fe17e09d3e2fc9ea
 ---
 
 # plan 单一形态设计（写收敛、读宽容）
