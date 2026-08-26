@@ -149,7 +149,7 @@ Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
 
 **目标**：先证伪自己的信息，再给出可比较的方案。
 
-**零子代理**：本阶段全部在主线程完成，用 sequential-thinking skill（插件内嵌，bun/tsx → scripts/think.mjs Node 端口自动降级）结构化推进；该 skill 及其运行时均不可用时降级为在回复中显式分点推演，不得因工具缺失跳过分析。
+**零子代理**：本阶段全部在主线程完成，用 sequential-thinking skill（插件内嵌，bun/tsx → scripts/think.mjs Node 端口自动降级）结构化推进；该 skill 及其运行时均不可用时降级为在回复中显式分点推演并注明工具降级原因，不得因工具缺失跳过分析。
 
 **第一步——信息对抗验证**。对阶段 1-3 收集的每条承重结论（将直接决定方案取舍的事实）逐条质询：
 

@@ -102,7 +102,7 @@ skill 体系与守卫此前的唯一连接是 requirement-analysis 写 spec fron
 | 根因探索子代理 | `Agent`（subagent_type: code-explorer） | `spawn_agent`（`fork_turns: "none"`）+ `wait_agent` |
 | 复用 TDD/验收 | 引用 test-driven-development、触发 acceptance-qa | 同左（skill 通用） |
 
-sequential-thinking skill（插件内嵌）不可用时降级为回复中分点推演。Codex 沙箱下 `SPEC_DEV_GUARD=off git commit` 与守卫交互同 Claude；沙箱禁止 commit 时请用户在沙箱外执行。
+sequential-thinking skill（插件内嵌）不可用时降级为回复中分点推演并注明工具降级原因。Codex 沙箱下 `SPEC_DEV_GUARD=off git commit` 与守卫交互同 Claude；沙箱禁止 commit 时请用户在沙箱外执行。
 
 ## Red Flags
 
