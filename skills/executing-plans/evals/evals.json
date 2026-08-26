@@ -30,6 +30,11 @@
       "id": "ep-final-task-deferred",
       "prompt": "（连续执行中）实施任务全部完成，计划只剩最终任务「合并与清理」未勾选",
       "expected_output": "最终任务不参与连续执行——先进入收尾审查（阶段 4）与审查处置（阶段 5），处置完成后才按计划最终任务步骤执行合并与清理（阶段 6）"
+    },
+    {
+      "id": "ep-legacy-single-file-executable",
+      "prompt": "执行 .spec-dev/2026-08-26-01-major-upgrade/plan/major-upgrade-plan.md（存量单文件计划，目录下无 tasks/ 子目录）",
+      "expected_output": "格式嗅探走单文件分支：按原样一次性读取计划全文与同特性目录 spec 执行；不提示迁移、不生成 tasks/ 或 progress.yaml；恢复用复选框判读（与 git log 的 feat(TN) 对照，不一致以提交为准并报告）；资源登记就地编辑其最终任务内嵌台账行"
     }
   ]
 }
