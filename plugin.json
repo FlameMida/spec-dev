@@ -1,9 +1,8 @@
 {
-  "$schema": "https://agent-plugins.org/schema/1.0.0/plugin.json",
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "spec-dev",
   "version": "7.21.6",
   "description": "Bilingual design-plan-execute skill pipeline with all-round acceptance / 中英双语设计→计划→执行 skill 管线与全能验收",
   "license": "MIT",
-  "homepage": "https://github.com/FlameMida/spec-dev",
-  "skills": "./skills"
+  "homepage": "https://github.com/FlameMida/spec-dev"
 }

@@ -45,7 +45,7 @@ try {
 function printUsage() {
   console.log(`Usage: node scripts/check-plugin.mjs [--codex-validate]
 
-Verifies that the three plugin manifests share the same version and that the
+Verifies that the five plugin manifests share the same version and that the
 plugin package contains no symlinks.
 
 Options:

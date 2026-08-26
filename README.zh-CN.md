@@ -89,7 +89,7 @@ Codex 清单（`.codex-plugin/plugin.json`、`.agents/plugins/marketplace.json`�
 
 ## 插件包维护
 
-仓库根即插件根（扁平结构）：`skills/`、`agents/`、`commands/`、`scripts/`、`.claude-plugin/plugin.json`（Claude Code 清单）、`.codex-plugin/plugin.json`（Codex 清单）都在仓库根直接修改，`README.md`、`CHANGELOG.md`、`.mcp.json` 只有一份，无需任何镜像同步。发版时需同步更新三处版本号（`.claude-plugin/marketplace.json` 的 `metadata.version` 与两份 `plugin.json` 的 `version`），`check-plugin.mjs` 会校验它们保持一致：
+仓库根即插件根（扁平结构）：`skills/`、`agents/`、`commands/`、`scripts/`、`.claude-plugin/plugin.json`（Claude Code 清单）、`.codex-plugin/plugin.json`（Codex 清单）、根级 `plugin.json`（Agent Plugins 1.0.0）与 `package.json`（pi 分发清单）都在仓库根直接修改，`README.md`、`CHANGELOG.md` 只有一份，无需任何镜像同步。发版时需同步更新五处版本号（`.claude-plugin/marketplace.json` 的 `metadata.version`、`.claude-plugin/` 与 `.codex-plugin/` 两份 `plugin.json` 的 `version`、根级 `plugin.json`、`package.json`），`check-plugin.mjs` 会校验它们保持一致：
 
 ```bash
 node scripts/check-plugin.mjs
@@ -212,7 +212,7 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design
 
 插件不再分发任何 MCP 配置。结构化深度思考由内嵌的 `sequential-thinking` skill 提供（无可用运行时时降级为回复中显式分点推演）。Tier A 浏览器自动化验收所需的 playwright / chrome-devtools MCP 改为按项目自配——见 `skills/acceptance-qa/references/mcp-setup.md`；未配置时 acceptance-qa 自动降级到 Tier D 工具链（原生 Playwright 测试、trace、控制台日志）。
 
-检查 MCP 配置状态：`/check-mcp`
+检查插件健康状态（平台 / guardrail / 标记块 / 注入回放 / anysearch / 推理运行时六域）：`/doctor`
 
 把一个需求分诊到正确通道：`/triage <需求>`
 
@@ -242,9 +242,8 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 │   ├── pre-commit                   # 提交前校验插件包与 skills
 │   ├── post-commit                  # 提交后自动发版（升版本 + CHANGELOG + tag）
 │   └── pre-push                     # 发布兜底（校验 CHANGELOG 条目、补打版本 tag）
-├── .mcp.json                        # MCP 配置（开发与插件分发共用一份）
 ├── agents/                          # 3 个专门化 agents（分析与复跑验证，不写实现代码）
-├── commands/                        # /check-mcp、/triage 命令
+├── commands/                        # /doctor、/triage 命令
 ├── guardrail/                       # spec 漂移守护（可装入目标仓库）
 ├── skills/
 │   ├── exploring/                   # 探索模式（思考伙伴）

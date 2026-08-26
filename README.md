@@ -89,7 +89,7 @@ Plugin-level `hooks/hooks.json` auto-registers the SessionStart context injectio
 
 ## Plugin Package Maintenance
 
-The repo root is the plugin root (flat layout): `skills/`, `agents/`, `commands/`, `scripts/`, `.claude-plugin/plugin.json` (Claude Code manifest) and `.codex-plugin/plugin.json` (Codex manifest) are edited in place at the repo root; `README.md`, `CHANGELOG.md` and `.mcp.json` exist as single copies with no mirror syncing. A release must bump the version in three places (`metadata.version` in `.claude-plugin/marketplace.json` plus `version` in both `plugin.json` files), and `check-plugin.mjs` verifies they stay in sync:
+The repo root is the plugin root (flat layout): `skills/`, `agents/`, `commands/`, `scripts/`, `.claude-plugin/plugin.json` (Claude Code manifest), `.codex-plugin/plugin.json` (Codex manifest), root `plugin.json` (Agent Plugins 1.0.0) and `package.json` (pi distribution) are edited in place at the repo root; `README.md` and `CHANGELOG.md` exist as single copies with no mirror syncing. A release must bump the version in five places (`metadata.version` in `.claude-plugin/marketplace.json`, `version` in both `.claude-plugin/` and `.codex-plugin/` `plugin.json` files, root `plugin.json`, and `package.json`), and `check-plugin.mjs` verifies they stay in sync:
 
 ```bash
 node scripts/check-plugin.mjs
@@ -213,7 +213,7 @@ It locates the root cause (with a spec back-lookup aligned to the drift guard's 
 The plugin ships no MCP configuration. Structured deep thinking is provided by the bundled `sequential-thinking` skill (falls back to explicit point-by-point reasoning in replies when no runtime is available). Browser automation for Tier A acceptance (playwright / chrome-devtools MCPs) is opt-in per project — see `skills/acceptance-qa/references/mcp-setup.md`; without them acceptance-qa degrades gracefully to the Tier D toolchain (native Playwright tests, traces, console logs).
 
 
-Check MCP configuration status: `/check-mcp`
+Check plugin health across six domains (platform / guardrail / markers / injection replay / anysearch / reasoning runtime): `/doctor`
 
 Triage a request to the right lane: `/triage <request>`
 
@@ -243,9 +243,8 @@ spec-dev/                            # repo root is the plugin root (flat layout
 │   ├── pre-commit                   # validates the plugin package and skills before commit
 │   ├── post-commit                  # auto-release after commit (version bump + CHANGELOG + tag)
 │   └── pre-push                     # release backstop (checks CHANGELOG entry, backfills version tag)
-├── .mcp.json                        # MCP config (shared by development and plugin distribution)
 ├── agents/                          # 3 specialized agents (analysis and verification re-runs, no implementation code)
-├── commands/                        # /check-mcp, /triage commands
+├── commands/                        # /doctor, /triage commands
 ├── guardrail/                       # spec drift guard (installable into target repos)
 ├── skills/
 │   ├── exploring/                   # exploration mode (thinking partner)
