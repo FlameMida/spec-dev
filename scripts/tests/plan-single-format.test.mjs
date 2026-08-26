@@ -30,3 +30,23 @@ test("Scenario: 任务文件无复选框(步骤标题式)", () => {
 test("Scenario: 资源台账规范定义点在 progress.yaml 键结构节", () => {
   assert.match(wp, /resources[^\n]*键[^\n]*台账|资源台账[^\n]*progress\.yaml[^\n]*resources/, "台账定义点应锚定 progress.yaml resources");
 });
+
+const ep = readFileSync(path.join(repoRoot, "skills/executing-plans/SKILL.md"), "utf8");
+
+test("Scenario: 新计划走渐进分支(默认)且 reference 已并入", () => {
+  assert.ok(!existsSync(path.join(repoRoot, "skills/executing-plans/references/progressive-execution.md")), "reference 应已删除");
+  assert.doesNotMatch(ep, /progressive-execution/, "SKILL.md 不应再引用该 reference");
+  assert.match(ep, /渐进加载/, "渐进加载纪律应并入本体");
+  assert.match(ep, /ready 任务/, "resume 规程应并入本体");
+});
+
+test("Scenario: 旧单文件计划可执行(读宽容句在位)", () => {
+  assert.match(ep, /按原样读取|原样读取执行/, "读分支应在位");
+  assert.match(ep, /格式嗅探|tasks\/.*存在/, "格式嗅探分流应在位");
+  assert.match(ep, /冻结/, "单文件侧冻结语义应声明");
+});
+
+test("openai.yaml 与 SKILL description 同步含分文件入口", () => {
+  const yaml = readFileSync(path.join(repoRoot, "skills/executing-plans/agents/openai.yaml"), "utf8");
+  assert.match(yaml, /plan\/|tasks\//, "openai.yaml 应含分文件形态入口");
+});

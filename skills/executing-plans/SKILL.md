@@ -1,7 +1,7 @@
 ---
 name: executing-plans
 description: >-
-  Execute implementation plans - when a written plan from writing-plans exists (plan/*-plan.md under the feature directory in .spec-dev/): the main thread executes task-by-task in an isolated worktree (TDD + per-task commits + spec self-check), then orchestrates multi-dimension adversarial code review and matrix-driven acceptance. Not for improvised changes without a written plan. / 执行实施计划——当已有 writing-plans 产出的实施计划（`.spec-dev/` 特性目录下 plan/ 子目录的 *-plan.md）、准备动手实现时使用。主线程在隔离 worktree 中逐任务执行（TDD + 每任务提交 + spec 自检），全部完成后编排多维对抗代码审查（code-reviewer 子代理不写码、仅分析与复跑验证），并按验收矩阵触发 acceptance-qa 验收，最终合并总结。不适用于没有书面计划的即兴改动。
+  Execute implementation plans - when a written plan from writing-plans exists (plan/ split-file layout: index.md + tasks/ + progress.yaml; legacy single-file plans read as-is — under the feature directory in .spec-dev/): the main thread executes task-by-task in an isolated worktree (TDD + per-task commits + spec self-check), then orchestrates multi-dimension adversarial code review and matrix-driven acceptance. Not for improvised changes without a written plan. / 执行实施计划——当已有 writing-plans 产出的实施计划（`.spec-dev/` 特性目录下 plan/ 的分文件结构 index.md + tasks/ + progress.yaml；存量单文件计划按原样读取）、准备动手实现时使用。主线程在隔离 worktree 中逐任务执行（TDD + 每任务提交 + spec 自检），全部完成后编排多维对抗代码审查（code-reviewer 子代理不写码、仅分析与复跑验证），并按验收矩阵触发 acceptance-qa 验收，最终合并总结。不适用于没有书面计划的即兴改动。
 ---
 
 > **Language Protocol / 语言协议**: Respond in the user's conversation language — an explicit user instruction (including the platform `language` setting) takes precedence, then the language of the user's recent messages; default to English when neither indicates a language. All deliverables written to the repo (specs, plans, reports, notes) follow the conversation language at creation; incremental edits keep the artifact's existing language. Fixed-wording prompts in this skill are semantic templates — express their meaning in the conversation language, don't quote them verbatim.
@@ -32,18 +32,32 @@ description: >-
 
 ## 阶段 1：载入并批判性审阅计划
 
-1. 读取计划：`plan/tasks/` 存在 → 分文件形态，按 [progressive-execution.md](references/progressive-execution.md) 渐进加载（启动只读 index + progress + spec）；否则单文件形态，一次性读取计划文件（`.spec-dev/YYYY-MM-DD-NN-<feature>/plan/<feature>-plan.md`）与同特性目录的 `spec/<feature>-design.md`（旧命名 `YYYY-MM-DD-<feature>` 目录按原样读取）。产物仍在历史位置 `docs/YYYY-MM-DD-<feature>/` 时，默认先自动迁移到 `.spec-dev/` 再执行（有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移并重写文件内路径引用），迁移单独提交
+1. 读取计划（格式嗅探）：`plan/tasks/` 子目录存在 → 分文件形态（全部新生成计划的唯一形态），渐进加载——启动只读 index + progress + spec，执行 TN 时只读 `tasks/TN.md` 与导航表中依赖行的「产出接口」列，不提前读无关后继任务正文；不存在 → 存量单文件形态，按 `plan/*-plan.md` 原样一次性读取计划全文与同特性目录 `spec/<feature>-design.md`（旧命名 `YYYY-MM-DD-<feature>` 目录按原样读取）。**该读分支为冻结侧**——后续流程演进不再为其新增条款，仅维持既有语义。产物仍在历史位置 `docs/YYYY-MM-DD-<feature>/` 时，默认先自动迁移到 `.spec-dev/` 再执行（有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移并重写文件内路径引用），迁移单独提交
 2. 批判性审阅：步骤有歧义？接口块互相矛盾？与代码库现状不符？——**有疑虑先向用户提出，别带着疑虑开工**
 3. **执行确认门**：向用户呈现执行摘要（计划路径、任务数与分组、将创建的 worktree 分支名）并确认开始——用户本轮已显式指示执行（如"执行这份计划"）或经 writing-plans 交接确认的，视为已确认、不重复问
 4. 把计划任务注册进任务管理（每任务一条，`T{n}: 任务名` 命名），进入阶段 2
 
-**恢复入口**：会话开始即发现未完成的 progress.yaml（或单文件计划有未勾选步骤）且用户要求继续 → 走 progressive-execution.md 的恢复流程（校验一致性 → ready 任务续跑），不从任务 0 重来。
+**恢复入口**：会话开始即发现未完成的 progress.yaml（或单文件计划有未勾选步骤）且用户要求继续 → 走阶段 2「渐进加载与断点恢复」节的恢复流程（校验一致性 → ready 任务续跑），不从任务 0 重来。
 
 ## 阶段 2：隔离工作区
 
 执行计划的任务 0（建立隔离工作区）——完整纪律遵循 using-git-worktrees skill（已隔离检测、原生工具优先、git 降级、基线测试验证），分支名对齐计划（如 `plan/2026-07-03-export-report`）。计划缺任务 0（旧版计划）时，直接调用 using-git-worktrees 补齐同等效果。基线验证范围遵循计划头部「相关测试范围」声明（判据见 using-git-worktrees Step 3 与 writing-plans 任务 0 模板）；旧版计划无该节 → 按全量执行。
 
 **降级**：非 git 仓库、受保护分支未授权、沙箱无写权限 → 原地实施并向用户注明"未隔离"及原因。
+
+### 渐进加载与断点恢复（分文件形态＝全部新计划）
+
+- 启动只读：`index.md` + `progress.yaml`（+ 同特性目录 spec）。**不读任何 tasks/ 正文**。
+- 执行 TN 时只读：`tasks/TN.md` + 导航表中 TN 依赖行的「产出接口」列。不提前读无关后继任务正文。
+- 任务完成条件（全部满足才置 completed）：依赖全 completed、TDD 步骤完成、测试通过、commit 可解析、接口块与导航表一致、progress.yaml 已原子更新并随任务提交。
+- 偏差处理沿用主文件三级纪律；契约级偏差冻结受影响后继（导航表依赖闭包），修订 index 接口行与相关任务文件后再继续。
+
+**恢复执行（resume）**——检测到 `progress.yaml` 存在且有非 completed 任务时：
+1. 校验一致性：worktree/分支存在、`current`/completed 各任务的 commit 可 `git cat-file -e` 解析、progress 引用的任务文件都存在。任一不成立 → 停下向用户报告不一致，不猜测继续。
+2. 从下一 ready 任务（依赖全 completed 的最小编号 pending）续跑；同前只读该任务文件与依赖接口行。
+3. 恢复不重跑已 completed 任务的测试（最终任务的全量验证是安全网）。
+
+**存量单文件的轻量恢复（兼容分支）**：单文件计划无 progress.yaml——按复选框判读：首个含未勾选步骤的任务即续跑点；勾选状态与 git log 的 `feat(TN)` 提交对照，不一致时以提交为准并报告。
 
 ## 阶段 3：逐任务执行
 
@@ -56,9 +70,9 @@ description: >-
    - **契约锚定**——本任务确立的契约（函数签名/数据结构/API 形态）与计划接口块一致？会不会被后续任务隐式重新解释？
 
    发现即就地修正并补提交（或 amend）。**禁止在此猎 bug、查风格、查规范**——那是阶段 4 的活，重复只造噪音与虚假安全感
-4. **勾选计划复选框、标记任务 completed**，进入下一任务（分文件形态改为原子更新 progress.yaml 并随任务提交，不使用复选框）
+4. **标记任务 completed**，进入下一任务（分文件形态原子更新 progress.yaml 并随任务提交——progress.yaml 是唯一状态源；存量单文件计划沿用其复选框勾选）
 
-**资源登记**：执行中创建了计划未预登记的持久资源（容器、测试库/表、临时目录、后台服务）时，当场向计划最终任务的资源台账追加一行（就地编辑计划文件；行格式以 writing-plans 最终任务模板的资源台账定义为准；分文件形态登记进 progress.yaml 的 resources 键，计划任务文件不编辑），不延迟到收尾补记。
+**资源登记**：执行中创建了计划未预登记的持久资源（容器、测试库/表、临时目录、后台服务）时，当场登记进 progress.yaml 的 `resources` 键（writing-plans 的资源台账规范定义点；计划任务文件不被编辑）、不延迟到收尾补记；执行**存量单文件计划**时就地编辑其最终任务内嵌的台账行（该侧冻结）。
 
 **连续执行**：任务之间不停下来向用户汇报或请示——用户已经确认过计划。仅三种情况停下：无法自行解除的 BLOCKED、真正阻断前进的歧义、全部任务完成。
 
