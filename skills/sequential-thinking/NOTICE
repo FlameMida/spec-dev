@@ -1,0 +1,5 @@
+This directory vendors https://github.com/thedotmack/sequential-thinking-skill
+(MIT License, see LICENSE). Pinned to the commit recorded in SKILL.md
+frontmatter metadata.upstream-tag. Local adaptations: SKILL.md frontmatter
+normalization, agents/openai.yaml, scripts/think.mjs (Node port), NOTICE.
+Sync via: node scripts/update-vendored-skill.mjs --skill sequential-thinking

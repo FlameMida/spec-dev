@@ -1,0 +1,7 @@
+interface:
+  display_name: "Sequential Thinking"
+  short_description: "Structured reasoning with branching, revision and persistent state — no MCP required. / 结构化推理：分支、修订、持久状态，无需 MCP。"
+  default_prompt: "Use $sequential-thinking for structured multi-step reasoning with revision and branching. / 用 $sequential-thinking 做可修订、可分支的结构化多步推理。"
+
+policy:
+  allow_implicit_invocation: true

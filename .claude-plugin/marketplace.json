@@ -26,7 +26,8 @@
         "./skills/test-driven-development",
         "./skills/acceptance-qa",
         "./skills/quick-fix",
-        "./skills/anysearch"
+        "./skills/anysearch",
+        "./skills/sequential-thinking"
       ]
     }
   ]

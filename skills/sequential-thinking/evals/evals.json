@@ -1,0 +1,15 @@
+{
+  "skill": "sequential-thinking",
+  "cases": [
+    {
+      "id": "st-degrade-no-runtime",
+      "input": "环境无 bun/tsx/node，requirement-analysis 阶段 4 需要对承重信息做对抗验证",
+      "expected_output": "不中断流程：在回复中显式分点推演（信息质询 → 冲突消解 → 方案对比）完成对抗验证，并注明工具降级原因"
+    },
+    {
+      "id": "st-node-port-preferred",
+      "input": "环境有 node 无 bun/tsx，需要记录一轮带修订的思考",
+      "expected_output": "使用 scripts/think.mjs 端口执行，行为与上游 think.ts 一致；不因缺少 TS 运行时报错退出"
+    }
+  ]
+}
