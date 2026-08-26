@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 // 子代理输出的确定性契约校验器：失败退回补全，而不是靠主进程模型目测。
 // 用法: node scripts/validate-output.mjs <schema-name> <json-file>
+//       node scripts/validate-output.mjs plan-index <plan目录>
 // schema 来源: scripts/schemas/<schema-name>.json（JSON Schema 子集，见 schemas/README.md）
-import { existsSync, readFileSync } from "node:fs";
+// plan-index 模式：校验分文件计划形态（index.md 导航表 ↔ tasks/ 文件一致、依赖存在、无环）
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -14,6 +16,10 @@ const [schemaName, jsonFile] = process.argv.slice(2);
 if (!schemaName || !jsonFile) {
   printUsage();
   process.exit(2);
+}
+
+if (schemaName === "plan-index") {
+  validatePlanIndex(jsonFile); // jsonFile 参数位复用为 plan 目录
 }
 
 try {
@@ -46,10 +52,13 @@ try {
 
 function printUsage() {
   console.log(`Usage: node scripts/validate-output.mjs <schema-name> <json-file>
+       node scripts/validate-output.mjs plan-index <plan目录>
 
 Validates a JSON file against scripts/schemas/<schema-name>.json.
 Supported schema subset: type, required, properties, items, enum,
 minimum, maximum, minItems, maxItems, minLength, if/then/else.
+plan-index mode validates a split-file plan directory (index.md nav table
+vs tasks/ files, dangling deps, cycles).
 
 Output: {ok:true, schema, file} on success;
         {ok:false, schema, file, errors:[{path, expected, actual}]} and exit 1 on failure.`);
@@ -141,4 +150,54 @@ function validate(value, schema, pathLabel, errors) {
 function fail(schema, file, errors) {
   console.error(JSON.stringify({ ok: false, schema: schema ?? null, file: file ?? null, errors }, null, 2));
   process.exit(1);
+}
+
+// 分文件计划形态的结构校验：文件↔导航表一致、依赖存在、无环。
+function validatePlanIndex(planDir) {
+  const errors = [];
+  const failAndExit = () => {
+    console.error(JSON.stringify({ ok: false, schema: "plan-index", file: planDir, errors }, null, 2));
+    process.exit(1);
+  };
+
+  const indexPath = path.join(planDir, "index.md");
+  const tasksDir = path.join(planDir, "tasks");
+  if (!existsSync(indexPath)) errors.push({ path: "index.md", expected: "present", actual: "missing" });
+  if (!existsSync(tasksDir)) errors.push({ path: "tasks/", expected: "present", actual: "missing" });
+  if (errors.length) failAndExit();
+
+  const rows = readFileSync(indexPath, "utf8")
+    .split("\n")
+    .map((l) => l.match(/^\|\s*(T\d\d)\b[^|]*\|\s*([^|]*)\|/))
+    .filter(Boolean)
+    .map((m) => ({ id: m[1], deps: m[2].match(/T\d\d/g) ?? [] }));
+  const ids = rows.map((r) => r.id);
+  const files = readdirSync(tasksDir)
+    .filter((f) => /^T\d\d.*\.md$/.test(f))
+    .map((f) => f.match(/^T\d\d/)[0]);
+
+  if (new Set(ids).size !== ids.length) errors.push({ path: "index.md", expected: "unique task ids", actual: "duplicates" });
+  for (const id of ids) if (!files.includes(id)) errors.push({ path: `tasks/${id}.md`, expected: "file for table row", actual: "missing" });
+  for (const f of files) if (!ids.includes(f)) errors.push({ path: `index.md#${f}`, expected: "table row for file", actual: "missing" });
+  for (const r of rows) for (const d of r.deps) if (!ids.includes(d)) errors.push({ path: `${r.id}.deps`, expected: "existing task", actual: `dangling ${d}` });
+
+  // 环检测（DFS 三色）
+  const color = new Map(ids.map((id) => [id, 0]));
+  const adj = new Map(rows.map((r) => [r.id, r.deps.filter((d) => ids.includes(d))]));
+  const dfs = (u) => {
+    color.set(u, 1);
+    for (const v of adj.get(u) ?? []) {
+      if (color.get(v) === 1) {
+        errors.push({ path: u, expected: "acyclic deps", actual: `cycle via ${v}` });
+        return;
+      }
+      if (color.get(v) === 0) dfs(v);
+    }
+    color.set(u, 2);
+  };
+  for (const id of ids) if (color.get(id) === 0) dfs(id);
+
+  if (errors.length) failAndExit();
+  console.log(JSON.stringify({ ok: true, schema: "plan-index", file: planDir }, null, 2));
+  process.exit(0);
 }
