@@ -7,6 +7,32 @@
 
 ---
 
+## [8.1.0] - 2026-08-26
+
+### ✨ 新增 (Added)
+
+- **T06**：evals 随动——writing-plans 用例产物改分文件三件套与步骤标题式；executing-plans 补存量单文件可执行用例（读宽容行为锚）
+- **T05**：README 双语产物形态改分文件三件套（管线图/流程详述/命令示例改 plan/index.md 入口）
+- **T04**：guardrail snippet 双语产物位置改分文件形态（存量单文件按原样读取；index.md 承载导航表与全局约束）
+- **T03**：外围指针五处随动——台账定义点指向 progress.yaml resources(quick-fix/acceptance-qa/executing-plans 资源登记句)、requirement-analysis 上游路径改分文件、review-orchestration 计划入口措辞；resource-ledger-split 断言联动并补 NN 前缀回归
+- **T02**：executing-plans 渐进加载升默认+读宽容冻结侧——progressive-execution 并入本体后删除、description 与 openai.yaml 同步分文件入口（7/7 绿）
+- **T01**：writing-plans 唯一分文件形态——阈值门控删除、progressive-plan-format 并入本体后删除、任务模板去复选框（14 处）、台账定义点锚定 progress.yaml resources、Self-Review 补第 4 查（测试 API 笔误就地修正：isFalse→ok(!)）
+- **T00**：隔离工作区建立（分文件形态计划首任务，progress.yaml 初始化；基线 44/44+四校验绿）
+
+### 🔧 修复 (Fixed)
+
+- **review**：收尾审查 8中+9低 全部修复——复选框动作语义清零(勾选/勾清→YAML 语义);三查→四查三处;分组→依赖拓扑;渐进描述去重(:35 收敛指向);唯一形态三连陈述与预登记三处重复收敛;术语统一(中文分文件形态/英文 split-file layout);openai.yaml 中文段补形态+方位语消歧;README.zh:161 补三件套;quick-fix 语境限定;evals 存量标注+拓扑措辞;T07 验收正则收窄;progress.yaml 补 commit sha;测试补强 doesNotMatch 勾选+特征串
+
+### 📝 文档 (Docs)
+
+- **spec**：取代回写——major-upgrade 三条 Requirement（plan 形态/渐进执行/资源登记）标 Superseded by plan-single-format，pending 预告回收；对账报告定稿
+
+### 🧹 其他 (Misc)
+
+- **spec**：sync_commit 锚定 de66620（plan-single-format 交付合并点）
+- **plan**：progress.yaml 归档收口——T00-T08 全部 completed，交付完成
+
+
 ## [8.0.4] - 2026-08-26
 
 ### 📝 文档 (Docs)
