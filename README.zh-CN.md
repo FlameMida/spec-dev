@@ -18,7 +18,7 @@
 - **轻量修复** — `quick-fix`，已决定、无设计空间的小修复（小 bug、小调整）的快路径：定位根因（含 spec 反查）、逐题校对、TDD 修复、可选验收；按契约影响分流以规避 spec 漂移，涉及跨 spec 契约/跨模块/新依赖时升级 requirement-analysis
 - **共享澄清** — `clarifying`，grill 式提问纪律（沿决策树一次一题、事实自查、每个决策带推荐交用户裁决）；被 requirement-analysis 与 quick-fix 引用，也可独立调用，以三出口收束（转主流程/就此结束/写入 md）
 - **契约化编排** — 子代理输出走 JSON Schema 契约，`validate-output.mjs` 确定性校验，失败退回补全
-- **MCP 工具增强** — 集成 sequential-thinking、playwright、chrome-devtools（可选，智能降级）
+- **零 MCP 依赖** — 结构化推理以内嵌 skill 提供（`sequential-thinking`，vendored）；浏览器自动化 MCP（playwright / chrome-devtools）按项目自配，见 `skills/acceptance-qa/references/mcp-setup.md`
 - **3 个专门化 Agents** — code-explorer、external-resource-explorer、code-reviewer（分析与复跑验证，不写实现代码；实现始终由主线程编写）
 
 ## Skill 管线
@@ -73,7 +73,7 @@ codex plugin marketplace add https://github.com/FlameMida/spec-dev
 codex plugin add spec-dev@spec-agent-skills
 ```
 
-Codex 清单（`.codex-plugin/plugin.json`、`.agents/plugins/marketplace.json`）另外提供可选 MCP 配置（sequential-thinking、playwright、chrome-devtools）与插件 UI 元数据。新版本发布后执行 `codex plugin marketplace upgrade spec-agent-skills` 升级。
+Codex 清单（`.codex-plugin/plugin.json`、`.agents/plugins/marketplace.json`）另外提供插件 UI 元数据。新版本发布后执行 `codex plugin marketplace upgrade spec-agent-skills` 升级。
 
 ## 插件包维护
 
@@ -196,38 +196,9 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-<feature>/spec/<feature>-design
 
 它会定位根因（含与漂移守卫 `covers` 对齐的 spec 反查），逐题确认根因/修复方案/契约影响，在 TDD 下修复，并按契约影响分流——行为改变则同步对应 spec，不变则以 `Spec-Guard: off` trailer 提交——最后可选触发 acceptance-qa。若根因涉及跨 spec 的行为契约、跨多个模块或需要新依赖，quick-fix 会停下并提议升级到 requirement-analysis。
 
-## MCP 工具增强（推荐但可选）
+## 零 MCP 依赖
 
-所有功能在没有 MCP 的情况下也能正常工作，插件使用智能降级策略自动切换备用方案。
-
-| MCP 工具 | 主要功能 | 降级方案 |
-|---------|---------|---------|
-| **sequential-thinking** | 结构化深度思考 | 回复中显式分点推演 |
-| **playwright** | 浏览器自动化验收（含 verify 断言与 trace/video 取证） | 原生 Playwright 测试 |
-| **chrome-devtools** | 性能追踪（CWV/insight）、堆快照、调试诊断 | Playwright trace / 控制台日志 |
-
-### 推荐配置
-
-编辑 `~/.claude.json`：
-
-```json
-{
-  "mcpServers": {
-    "sequential-thinking": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-    },
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
-    },
-    "chrome-devtools": {
-      "command": "npx",
-      "args": ["-y", "chrome-devtools-mcp@latest"]
-    }
-  }
-}
-```
+插件不再分发任何 MCP 配置。结构化深度思考由内嵌的 `sequential-thinking` skill 提供（无可用运行时时降级为回复中显式分点推演）。Tier A 浏览器自动化验收所需的 playwright / chrome-devtools MCP 改为按项目自配——见 `skills/acceptance-qa/references/mcp-setup.md`；未配置时 acceptance-qa 自动降级到 Tier D 工具链（原生 Playwright 测试、trace、控制台日志）。
 
 检查 MCP 配置状态：`/check-mcp`
 

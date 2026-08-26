@@ -1,6 +1,10 @@
 # MCP 配置指南
 
-验收工作流所需的 MCP Server 配置参考。插件 `.mcp.json` 已预配置 `playwright` 与 `chrome-devtools`；本文件同时给出按需接入与不推荐清单。
+> **Opt-in since MCP-zero / MCP 清零后的按需自配**：spec-dev 插件自身不再分发任何 MCP 配置。
+> 需要 Tier A 浏览器自动化（playwright / chrome-devtools）时按本文在项目级自行配置；
+> 未配置时 acceptance-qa 自动降级到 Tier D 工具链（Playwright CLI 等），语义不变。
+
+验收工作流所需的 MCP Server 按需自配参考。本文件给出按需接入与不推荐清单。
 
 > 工具名以实际连接的 MCP server 输出为准，版本升级可能更名；发现不一致时以 `/mcp` 面板或会话内工具列表为准。
 

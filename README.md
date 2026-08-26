@@ -18,7 +18,7 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 - **Lightweight fix** — `quick-fix`, a fast path for already-decided fixes with no design space (small bugs, minor adjustments): root cause with spec back-lookup, one-question-at-a-time confirmation, TDD fix, optional acceptance; splits on contract impact to avoid spec drift and escalates to requirement-analysis on contract-crossing / cross-module / new-dependency signals
 - **Shared clarification** — `clarifying`, the grill-style questioning discipline (one question at a time down the decision tree, facts self-researched, each decision put to the user with a recommendation); referenced by requirement-analysis and quick-fix, and usable standalone with three exits (hand off to the main workflow / stop / write notes to md)
 - **Contract-driven orchestration** — subagent output goes through JSON Schema contracts, deterministically validated by `validate-output.mjs`, with one retry on failure
-- **MCP enhancements** — integrates sequential-thinking, playwright, chrome-devtools (optional, graceful degradation)
+- **Zero MCP dependency** — structured reasoning ships as a bundled skill (`sequential-thinking`, vendored); browser automation MCPs (playwright / chrome-devtools) are opt-in per project, see `skills/acceptance-qa/references/mcp-setup.md`
 - **3 specialized agents** — code-explorer, external-resource-explorer, code-reviewer (analysis and verification re-runs only; implementation code is always written by the main thread)
 
 ## Skill Pipeline
@@ -73,7 +73,7 @@ codex plugin marketplace add https://github.com/FlameMida/spec-dev
 codex plugin add spec-dev@spec-agent-skills
 ```
 
-The Codex manifests (`.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`) also expose optional MCP config (sequential-thinking, playwright, chrome-devtools) and plugin UI metadata. After a new release, run `codex plugin marketplace upgrade spec-agent-skills`.
+The Codex manifests (`.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`) also expose plugin UI metadata. After a new release, run `codex plugin marketplace upgrade spec-agent-skills`.
 
 ## Plugin Package Maintenance
 
@@ -196,38 +196,9 @@ For a bug or small adjustment you've already decided to make and that has no des
 
 It locates the root cause (with a spec back-lookup aligned to the drift guard's `covers`), confirms root cause / fix / contract impact one question at a time, fixes under TDD, and splits on contract impact — syncing the owning spec when behavior changes, or committing with a `Spec-Guard: off` trailer when it does not — then optionally runs acceptance-qa. If the root cause turns out to cross a behavior contract across specs, span multiple modules, or need a new dependency, quick-fix stops and offers to escalate to requirement-analysis.
 
-## MCP Enhancements (recommended, optional)
+## Zero MCP Dependency
 
-Everything works without MCP; the plugin degrades gracefully to fallbacks.
-
-| MCP tool | Main capability | Fallback |
-|---------|---------|---------|
-| **sequential-thinking** | Structured deep thinking | Explicit point-by-point reasoning in replies |
-| **playwright** | Browser automation acceptance (verify assertions plus trace/video evidence) | Native Playwright tests |
-| **chrome-devtools** | Performance tracing (CWV/insights), heap snapshots, debugging | Playwright trace / console logs |
-
-### Recommended configuration
-
-Edit `~/.claude.json`:
-
-```json
-{
-  "mcpServers": {
-    "sequential-thinking": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-    },
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
-    },
-    "chrome-devtools": {
-      "command": "npx",
-      "args": ["-y", "chrome-devtools-mcp@latest"]
-    }
-  }
-}
-```
+The plugin ships no MCP configuration. Structured deep thinking is provided by the bundled `sequential-thinking` skill (falls back to explicit point-by-point reasoning in replies when no runtime is available). Browser automation for Tier A acceptance (playwright / chrome-devtools MCPs) is opt-in per project — see `skills/acceptance-qa/references/mcp-setup.md`; without them acceptance-qa degrades gracefully to the Tier D toolchain (native Playwright tests, traces, console logs).
 
 
 Check MCP configuration status: `/check-mcp`
