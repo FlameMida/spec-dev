@@ -60,6 +60,7 @@ v8.0.0 交付的 plan 双形态（阈值门控）暴露两类实证问题：**�
   - Requirement「渐进执行与断点恢复」——部分取代：渐进加载从"分文件形态的行为"升为"新计划的默认行为"，单文件复选框判读降格为存量兼容子句。理由：主从关系翻转
   - Requirement「资源登记纪律（按计划形态分流）」——部分取代：登记载体收敛为 progress.yaml resources（生成侧唯一形态），存量单文件台账行保留为读侧兼容。理由：分流语义消失
   - 其余 Requirement（manifest/doctor/test-strategy/编号/胶囊/澄清纪律等）无行为交集，零动作
+- [分面共存] `.spec-dev/2026-08-10-supersede-lifecycle/spec/supersede-lifecycle-design.md`：本 spec 编辑其 covers 中 8 个文件（requirement-analysis/writing-plans/executing-plans/quick-fix/acceptance-qa 的 SKILL.md、review-orchestration.md、guardrail 两 snippet）但不触碰取代生命周期行为；提交命中其 covers 时按双声明规则同步或 `Spec-Guard: off` trailer 放行
 - [分面共存] `.spec-dev/2026-08-09-test-scoping/spec/test-scoping-design.md`：「相关测试范围」声明继续随计划头部走（现物理位置 = index.md 头部），判定语义零变化
 - [零动作] resource-ledger spec：其被取代标注（Superseded by major-upgrade）不受本次再演进影响
 
@@ -133,7 +134,7 @@ executing-plans 执行任务期间创建计划未预登记的持久资源时，�
 
 #### Scenario: 外部指针不悬空
 
-- **GIVEN** quick-fix 与 acceptance-qa 的收尾清理条款
+- **GIVEN** quick-fix、acceptance-qa 与 executing-plans 自身的台账定义指针条款
 - **WHEN** 按"资源台账定义"检索 writing-plans
 - **THEN** 命中 progress.yaml 键结构节的台账规范，无指向已让位小节的悬空定位
 
@@ -163,6 +164,6 @@ executing-plans 载入计划时 SHALL 按格式嗅探分流：`plan/tasks/` 子�
 | 存量单文件计划可执行（eval 断言） | docs | 任务内 TDD（executing-plans evals 补录） | fast | eval 承载核对 |
 | resource-ledger-split 断言随动 | unit | 任务内 TDD | fast | 测试通过 |
 | plan-index 校验对新结构通过 | unit | 任务内 TDD（沿用既有测试） | fast | 测试通过 |
-| 全仓无"阈值门控/形态分流"残留 | integration | 验收任务 (D)（rg 扫描） | fast | rg 零命中 |
-| reference 删除后无悬空引用 | integration | 验收任务 (D)（rg 两文件名） | fast | rg 零命中 |
+| living docs 无"阈值门控/形态分流"残留 | integration | 验收任务 (D)（rg 扫描 skills/ + guardrail/templates/ + README 双语，排除 CHANGELOG 与 .spec-dev/——历史档案不清理） | fast | rg 零命中 |
+| reference 删除后无悬空引用 | integration | 验收任务 (D)（rg 两文件名，同上范围） | fast | rg 零命中 |
 | validate-skills / check-openai-sync / check-plugin / node --test 全绿 | integration | 验收任务 (D) | fast | 命令退出码 0 |
