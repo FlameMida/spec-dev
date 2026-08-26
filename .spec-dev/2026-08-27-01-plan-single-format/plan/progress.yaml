@@ -1,8 +1,8 @@
 format_version: 1
-current: T00
+current: T01
 tasks:
   T00: { status: completed, commit: T00-local, tests: pass }
-  T01: { status: pending }
+  T01: { status: completed, tests: pass }
   T02: { status: pending }
   T03: { status: pending }
   T04: { status: pending }

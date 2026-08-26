@@ -19,9 +19,9 @@ description: >-
 
 **动笔前确认**：编写计划须持有用户的明确同意——用户本轮显式指示编写计划、或上游流程已代为确认（requirement-analysis 阶段 8 的前置确认）时视为已同意、不重复问；除此之外（如隐式触发、只收到一个 spec 路径）先确认「基于 <spec 路径> 开始编写实施计划？」再动笔。
 
-**计划保存至**：spec 所在特性目录的 `plan/<feature-name>-plan.md`（即 `.spec-dev/YYYY-MM-DD-NN-<feature-name>/plan/<feature-name>-plan.md`，特性目录由 requirement-analysis 在写 spec 时按同日序号命名规则创建）；无 spec 输入的独立触发则自建特性目录。用户对计划位置的偏好优先于此默认值。
+**计划保存至**：spec 所在特性目录的 `plan/` 目录——`plan/index.md` + `plan/tasks/TNN.md` + `plan/progress.yaml` 三件套（唯一生成形态，结构见下文「plan 目录结构」节）；特性目录由 requirement-analysis 在写 spec 时按同日序号命名规则创建；无 spec 输入的独立触发则自建特性目录。用户对计划位置的偏好优先于此默认值。
 
-**形态分流（阈值门控）**：分解出任务清单后判定——预估任务数 >8 或正文预估 >25KB 时按 [progressive-plan-format.md](references/progressive-plan-format.md) 产出分文件形态（`plan/index.md` + `plan/tasks/TNN.md` + `plan/progress.yaml`，复选框停用、progress.yaml 是唯一状态源；**资源台账同理分流**——已知资源预登记进 progress.yaml 的初始 `resources` 键，最终任务清理步骤遍历该清单而非任务文件内的复选框台账）；低于阈值维持本文默认的单文件形态。两形态的任务内部结构与质量门完全一致。
+**唯一分文件形态**：每份计划（不论任务数多少）都产出 `plan/` 三件套；progress.yaml 是唯一状态源，任务文件与 index 内不使用复选框跟踪。存量单文件计划（`plan/*-plan.md`）由 executing-plans 按原样读取执行（读宽容），本 skill 不再生成该形态。
 
 **Spec 状态检查**：载入 spec 时读其 frontmatter 的 `spec_dev.status`——仍为 `draft` 时说明漂移守卫尚未激活（requirement-analysis 阶段 8 的激活动作未执行，常见于跨会话独立触发）：与用户确认 spec 已定稿后，把 `status` 翻为 `active` 并单独 commit，再开始编写计划；不翻转则守卫对该特性静默失效。为 `superseded` 时停下告知用户该 spec 已被取代（附 `superseded_by` 指向，指针缺失或悬空时说明"无可达后继"；沿指针链跳转时记录已访问路径，链上出现环则列出环上文件并停止），经用户显式确认才可继续按旧 spec 编写计划；正文带 `Superseded-pending` 标注时向用户提示「该 spec 正被 <新 spec> 取代中（待交付）」后再继续。无 frontmatter 的旧版/外部 spec 跳过本检查。
 
@@ -65,7 +65,16 @@ TDD 循环的完整纪律遵循 test-driven-development skill——计划里的�
 
 **Scenario 直译为测试**：spec 行为规范里的每个 `#### Scenario:` 至少翻译成一个失败测试，映射固定：GIVEN→arrange（构造前置状态）、WHEN→act（触发动作）、THEN→assert（断言可观察结果）；测试名沿用 Scenario 名。规范到测试零翻译损耗——不要自己另编测试场景后把 Scenario 丢在一边。测试步骤的 Lane 归属与 DB/前端/Agent 处方遵循 test-strategy skill（矩阵行标注的 lane 直接继承；DB 类步骤对照其 references/db-testing.md，不得出现每测试一容器）。
 
-**大型计划的分组导航**：任务数超过 6 个时，按工作域插入分组标题（如 `## 数据层`、`## 接口层`、`## 测试与验收`）组织任务顺序；任务编号保持全局连续（任务 0..N）不受分组影响——commit 前缀 `feat(TN)`、勾选与接口块引用都以全局编号为准。分组同时暴露并行边界：不同组且无接口依赖的任务天然可并行。
+## plan 目录结构
+
+每份计划固定产出以下三件套（唯一生成形态）：
+
+```
+.spec-dev/<特性目录>/plan/
+├── index.md        # 头部 + 全局约束 + 相关测试范围 + 设计原则块 + 任务导航表；不复制任务正文
+├── tasks/T00.md …  # 每任务一文件，正文结构与下文任务模板逐字一致（文件块/接口块/TDD 五步）
+└── progress.yaml   # 唯一运行时状态
+```
 
 ## 计划文档头部
 
@@ -74,7 +83,7 @@ TDD 循环的完整纪律遵循 test-driven-development skill——计划里的�
 ```markdown
 # [功能名] 实施计划
 
-> **执行方式**：使用 spec-dev 的 executing-plans skill 逐任务执行本计划；无该 skill 的环境直接从任务 0 起按序执行至最终任务。步骤用复选框（`- [ ]`）语法跟踪；脱离项目携带时连同特性目录（含 spec）整体带走。
+> **执行方式**：使用 spec-dev 的 executing-plans skill 逐任务执行本计划；无该 skill 的环境直接从任务 0 起按序执行至最终任务。任务状态由 `plan/progress.yaml` 跟踪（唯一状态源；任务文件步骤用「**步骤 N:**」标题式、不含复选框）；脱离项目携带时连同特性目录（含 spec）整体带走。
 >
 > **偏差处理**：执行中发现计划与现实不符——小偏差（路径笔误、明显遗漏但意图清楚）就地修正并在提交信息中注明；接口、数据结构等契约级偏差停下向计划作者确认，不猜着改。
 
@@ -106,6 +115,8 @@ TDD 循环的完整纪律遵循 test-driven-development skill——计划里的�
 ---
 ```
 
+index.md 头部之后是**任务导航表**——四列：`任务 | 依赖 | 消费接口 | 产出接口`。规则：任务 ID 形如 `T\d\d` 全局唯一且与 tasks/ 文件名一一对应；依赖只引用表内 ID；禁止环；接口列写精确签名（执行者只读自己的任务文件 + 依赖行的产出接口，不读其它任务正文）。生成后运行 `node scripts/validate-output.mjs plan-index <plan目录>`（结构校验：文件↔导航表一致、依赖存在、无环），失败不得交付执行。
+
 ## 任务 0：建立隔离工作区（每份计划固定生成）
 
 头部之后、任务 1 之前，固定写入以下任务 0——与结尾的最终任务（合并与清理）首尾对称，隔离工作区的生命周期在计划文档内闭合、脱离本插件也能按序执行；有 using-git-worktrees skill 或原生工具的环境按其完整纪律执行（已隔离检测、目录选择、沙箱降级都定义在该 skill）：
@@ -113,19 +124,19 @@ TDD 循环的完整纪律遵循 test-driven-development skill——计划里的�
 ````markdown
 ### 任务 0：建立隔离工作区
 
-- [ ] **步骤 1：检测已有隔离**
+**步骤 1：检测已有隔离**
 
 运行：`git rev-parse --git-dir` 与 `git rev-parse --git-common-dir`
 两者不同、且 `git rev-parse --show-superproject-working-tree` 无输出（排除 submodule）
 → 已在隔离工作区，跳过本任务。
 
-- [ ] **步骤 2：建立 worktree**
+**步骤 2：建立 worktree**
 
 有原生 worktree 工具（如 EnterWorktree）或 using-git-worktrees skill 时优先使用（Codex 无原生 worktree 工具，直接走下面的手工路径）；否则手工降级：
 确认 `.worktrees/` 已被忽略（`git check-ignore -q .worktrees`，未忽略先加入 `.gitignore` 并提交），然后
 `git worktree add .worktrees/<分支名> -b <分支名>` 并切换到该目录（分支名对齐计划，如 `plan/YYYY-MM-DD-NN-<feature>`）。
 
-- [ ] **步骤 3：安装依赖并验证基线**
+**步骤 3：安装依赖并验证基线**
 
 按项目类型安装依赖（npm install / cargo build / pip install -r requirements.txt / go mod download），
 然后按计划头部「相关测试范围」运行基线验证：有声明 → 只跑声明范围（声明为空 → 跳过测试并注明，
@@ -151,7 +162,7 @@ TDD 循环的完整纪律遵循 test-driven-development skill——计划里的�
 - 产出：[后续任务将依赖的——精确函数名、参数与返回类型。
   任务执行者只看得到自己的任务；此块是他们了解相邻任务所用名称与类型的唯一途径。]
 
-- [ ] **步骤 1：写失败测试**
+**步骤 1：写失败测试**
 
 ```python
 def test_specific_behavior():
@@ -159,30 +170,46 @@ def test_specific_behavior():
     assert result == expected
 ```
 
-- [ ] **步骤 2：运行测试确认失败**
+**步骤 2：运行测试确认失败**
 
 运行：`pytest tests/path/test.py::test_name -v`
 预期：FAIL，报 "function not defined"
 
-- [ ] **步骤 3：写最小实现**
+**步骤 3：写最小实现**
 
 ```python
 def function(input):
     return expected
 ```
 
-- [ ] **步骤 4：运行测试确认通过**
+**步骤 4：运行测试确认通过**
 
 运行：`pytest tests/path/test.py::test_name -v`
 预期：PASS
 
-- [ ] **步骤 5：提交**
+**步骤 5：提交**
 
 ```bash
 git add tests/path/test.py src/path/file.py
 git commit -m "feat(TN): add specific feature"
 ```
 ````
+
+## progress.yaml 键结构
+
+```yaml
+format_version: 1
+current: T03            # 当前指针（null=未开始）
+tasks:
+  T01: { status: completed, commit: <sha>, tests: pass }
+  T02: { status: completed, commit: <sha>, tests: pass, deviations: ["路径笔误就地修正"] }
+  T03: { status: in_progress }
+resources:              # 资源台账（唯一登记处；最终任务清理步骤遍历此清单）
+  - "worktree: .worktrees/<分支> —— git worktree remove …"
+notes: []               # 偏差与备注，append-only
+```
+
+状态枚举：pending | in_progress | completed | blocked。写入纪律：每任务完成后原子更新（整文件重写）并随任务提交；worktree 合并不携带本文件冲突——它是执行档案，最终任务把它随特性目录归档。`resources` 键即**资源台账规范定义点**（生成时预登记 worktree 行、执行中创建即追加；最终任务清理遍历此清单）。
 
 ## 验收任务（矩阵含「验收任务」行时固定生成）
 
@@ -208,13 +235,13 @@ spec 验收矩阵（「测试与验收策略」节）中执行方式为「任务
 ````markdown
 ### 任务 N+2：合并与清理
 
-**资源台账**（清理依据；写计划时预登记已知资源，执行中创建即追加；行格式 `- [ ] <类型>: <标识> —— <清理命令>`；**分文件形态本小节整体让位**——台账承载于 `progress.yaml` 的 `resources` 键（生成时预登记 worktree 行，执行中追加），下方清理步骤遍历该清单，任务文件内不再嵌复选框台账）：
+**资源台账**（承载于 `plan/progress.yaml` 的 `resources` 键：生成时预登记 worktree 行，执行中创建即追加；行格式 `<类型>: <标识> —— <清理命令>`）；下方清理步骤遍历该清单。
 
-- [ ] worktree: .worktrees/<分支名> —— `git worktree remove .worktrees/<分支名> && git branch -d <分支名>`
+已预登记：`worktree: .worktrees/<分支名> —— git worktree remove .worktrees/<分支名> && git branch -d <分支名>`
 
 台账总则：**清理只遍历本台账、台账外一律不动**（可疑残留只报告不删）；共享缓存（~/.cargo、pnpm store、npm cache 等）默认保留，仅用户显式要求清理时才登记入账；台账限定持久资源（容器、测试库/表、临时目录、后台服务），worktree 内构建产物随 worktree 删除自然回收、不入账。
 
-- [ ] **步骤 1：全量验证（安全网）与归属裁决**
+**步骤 1：全量验证（安全网）与归属裁决**
 
 在 worktree 内运行完整测试套件（不受「相关测试范围」约束）。
 - 全绿 → 进入步骤 2。
@@ -224,7 +251,7 @@ spec 验收矩阵（「测试与验收策略」节）中执行方式为「任务
   请用户裁决是否阻塞合并，不自行静默忽略；源分支通过 → 判定为本次引入的回归，
   修复并复跑全绿后进入步骤 2。
 
-- [ ] **步骤 2：测试退役检查**
+**步骤 2：测试退役检查**
 
 扫描路径落在本计划「相关测试范围」内的测试，找孤儿测试：测试名对不上任何 active spec
 的**现行** Scenario（现行=所在 Requirement 未被 `Superseded` 标注；判定基础是本 skill
@@ -233,7 +260,7 @@ Requirement 已 REMOVED、**或其标题下带 `Superseded` 标注**、或所属
 双条件缺一不可。候选清单非空 → 列清单征询用户，同意后删除并计入本任务提交；用户未确认则不删除
 任何测试。无候选 → 声明"无孤儿测试"后跳过。计划无「相关测试范围」节 → 跳过本步骤。
 
-- [ ] **步骤 3：取代回写（spec 的 `supersedes` 为空——字段缺失或空数组——时声明"无取代回写"后跳过）**
+**步骤 3：取代回写（spec 的 `supersedes` 为空——字段缺失或空数组——时声明"无取代回写"后跳过）**
 
 按 spec「取代与共存」节逐项执行（形制见 spec-template「取代标注形制」节；实施任务中已完成的回写在此逐项核对后勾选）：
 - 完全取代：旧 spec frontmatter `status` 翻 `superseded`、`superseded_by` 填本 spec 仓库根路径；H1 下 `Superseded-pending` 行替换为 `Superseded` 行；此后该 spec 的 sync_commit 冻结。
@@ -241,7 +268,7 @@ Requirement 已 REMOVED、**或其标题下带 `Superseded` 标注**、或所属
 - covers 接管核对（仅完全取代）：列出旧 spec covers 中不被本 spec covers 覆盖且仍存在的路径差集；差集非空 → 停下征询用户（补进本 spec covers / 确认放弃保护并记录），不静默翻转。
 - 回写随本分支合并进主线生效，与步骤 6 的 sync_commit 锚定构成取代提交组（revert 该组即原子恢复）。
 
-- [ ] **步骤 4：合并回来源分支**
+**步骤 4：合并回来源分支**
 
 ```bash
 cd "$(dirname "$(git rev-parse --git-common-dir)")"   # 回到主工作区
@@ -250,11 +277,11 @@ git merge <分支名>                                     # 任务 0 创建的�
 
 合并冲突、或主工作区有未提交改动 → 停下向计划作者确认，不强行合并。
 
-- [ ] **步骤 5：清理（按资源台账逐条执行）**
+**步骤 5：清理（按资源台账逐条执行）**
 
 逐条执行资源台账各行的清理命令并勾选（worktree 行即台账首行命令）。命令执行失败 → 该行保留未勾选并报告用户，不静默跳过；资源已不存在 → 勾选并注明"已不存在"。台账外的文件、容器、数据一律不动。
 
-- [ ] **步骤 6：sync_commit 锚定**
+**步骤 6：sync_commit 锚定**
 
 ```bash
 SYNC=$(git rev-parse HEAD)   # 合并完成后的主工作区 HEAD
@@ -284,7 +311,7 @@ git add <spec 路径> && git commit -m "chore(spec): sync_commit 锚定 ${SYNC:0
 - 每步给完整代码——改代码的步骤必须展示代码
 - 精确命令 + 预期输出
 - DRY、YAGNI、TDD、频繁提交
-- 任务步骤会创建持久资源（容器、测试库/表、临时目录、后台服务）时，写计划时就在最终任务的资源台账预登记对应行（单文件形态）；分文件形态则预登记进 `progress.yaml` 的初始 `resources` 键——两形态都不允许资源只活在对话里
+- 任务步骤会创建持久资源（容器、测试库/表、临时目录、后台服务）时，写计划时就在 progress.yaml 的初始 `resources` 键预登记对应行——资源不允许只活在对话里
 
 ## Self-Review
 
@@ -293,6 +320,7 @@ git add <spec 路径> && git commit -m "chore(spec): sync_commit 锚定 ${SYNC:0
 1. **Spec 覆盖**：逐条 Requirement 过——能指到实现它的任务吗？每个 Scenario 都有对应的失败测试步骤吗（GIVEN/WHEN/THEN → arrange/act/assert）？验收矩阵的「验收任务」行都进入验收任务表了吗？差量三节的 MODIFIED/REMOVED 有对应的改造/清理任务吗？列出缺口
 2. **占位符扫描**：按"禁止占位符"清单搜索计划全文，发现即修
 3. **类型一致性**：后续任务用到的类型、方法签名、属性名与前序任务定义一致吗？任务 3 叫 `clearLayers()`、任务 7 叫 `clearFullLayers()` 就是 bug
+4. **导航表与任务文件一致**：导航表接口列与各任务文件的接口块逐条一致吗？tasks/ 文件名与表内任务 ID 一一对应吗（plan-index 校验过再交付）？
 
 发现问题就地修复，无需复审；发现 spec 需求没有对应任务就补任务。
 
@@ -300,7 +328,7 @@ git add <spec 路径> && git commit -m "chore(spec): sync_commit 锚定 ${SYNC:0
 
 保存计划后向用户交接：
 
-> 「计划已完成并保存至 `.spec-dev/<特性目录>/plan/<feature>-plan.md`。执行时我会用 executing-plans 从任务 0（隔离工作区）开始逐任务执行（TDD + 每任务提交 + 收尾多维审查）。
+> 「计划已完成并保存至 `.spec-dev/<特性目录>/plan/`（index.md + tasks/ + progress.yaml）。执行时我会用 executing-plans 从任务 0（隔离工作区）开始逐任务执行（TDD + 每任务提交 + 收尾多维审查）。
 >
 > 现在开始执行，还是先 review 计划？」
 
