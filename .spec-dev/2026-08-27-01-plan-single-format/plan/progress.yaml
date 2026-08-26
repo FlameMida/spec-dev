@@ -1,12 +1,12 @@
 format_version: 1
-current: T04
+current: T05
 tasks:
   T00: { status: completed, commit: T00-local, tests: pass }
   T01: { status: completed, tests: pass }
   T02: { status: completed, tests: pass }
   T03: { status: completed, tests: pass, deviations: ["断言正则适配实际措辞(反引号/跨行);executing-plans 读取句补回 NN 前缀"] }
   T04: { status: completed, tests: pass }
-  T05: { status: pending }
+  T05: { status: completed, tests: pass }
   T06: { status: pending }
   T07: { status: pending }
   T08: { status: pending }

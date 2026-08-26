@@ -30,7 +30,7 @@ requirement-analysis (design → .spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature
         ↕ JIT
   visual-preview
         ↓
-writing-plans (plan → plan/<feature>-plan.md in the same feature dir)
+writing-plans (plan → plan/ split files: index.md + tasks/ + progress.yaml)
         ↓
 executing-plans (isolated execution + review + summary)
    ├── using-git-worktrees (isolated workspace)
@@ -159,13 +159,13 @@ Phase 1 picks an execution tier and declares it to the user (overridable):
 - **standard** — the default: 3-5 code-explorers in parallel by layer/module + external-resource-explorer research + full option comparison
 - **deep** — cross-layer architecture changes / new tech stacks: multi-modal blind sweep (no cap on modality count) + contract JSON validation on merge
 
-The spec lands in the feature directory `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md` and is committed (the later plan lands in `plan/<feature>-plan.md` of the same directory), then goes through an adversarial review subagent and user review before handing off to writing-plans. Behavior requirements use the **Requirement + Scenario** (GIVEN/WHEN/THEN) structure, and test & acceptance strategy uses the **acceptance matrix** — Scenarios translate directly into TDD failing tests by writing-plans, and the matrix anchors wrap-up review and acceptance-qa; changes to existing behavior use the ADDED/MODIFIED/REMOVED delta sections.
+The spec lands in the feature directory `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md` and is committed (the later plan lands in the same directory's `plan/` as index.md + tasks/ + progress.yaml), then goes through an adversarial review subagent and user review before handing off to writing-plans. Behavior requirements use the **Requirement + Scenario** (GIVEN/WHEN/THEN) structure, and test & acceptance strategy uses the **acceptance matrix** — Scenarios translate directly into TDD failing tests by writing-plans, and the matrix anchors wrap-up review and acceptance-qa; changes to existing behavior use the ADDED/MODIFIED/REMOVED delta sections.
 
 ## Using writing-plans / executing-plans
 
 ```bash
 /writing-plans write an implementation plan from .spec-dev/2026-07-04-auth/spec/auth-design.md
-/executing-plans execute .spec-dev/2026-07-04-auth/plan/auth-plan.md
+/executing-plans execute .spec-dev/2026-07-04-auth/plan/index.md
 ```
 
 - **writing-plans**: assumes a zero-context executor — every plan starts with a fixed Task 0 (set up an isolated workspace, with already-isolated detection and git fallback commands) and ends with a final task (merge & cleanup); when the spec's acceptance matrix has "acceptance task" rows, an acceptance task is generated between them. The worktree lifecycle closes within the plan, so it executes in order even outside this plugin. The header carries deviation-handling guidance; every task gets exact file paths, complete code, the 5 TDD steps (failing test → confirm fail → minimal implementation → confirm pass → commit) and consume/produce interface blocks; a three-way self-review (spec coverage / placeholders / type consistency) runs before handoff
