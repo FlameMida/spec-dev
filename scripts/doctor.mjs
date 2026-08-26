@@ -42,14 +42,17 @@ report.guardrail = {
 };
 if (gitRoot && !installed) needsFix = true;
 
-// 3. 注入标记块完整性（与 guardrail/install.mjs 的 START/END 字面量对齐）
+// 3. 注入标记块完整性（MARKER_START/MARKER_END 与 guardrail/install.mjs 的 START/END 字面量
+//    双源维护——doctor.test.mjs 的标记同步测试锁定两处一致，改标记时两文件联动改）
+const MARKER_START = "<!-- spec-dev:guardrail:start";
+const MARKER_END = "spec-dev:guardrail:end -->";
 const markerState = (file) => {
   if (!gitRoot) return "n/a";
   const p = path.join(gitRoot, file);
   if (!existsSync(p)) return "missing";
   const text = readFileSync(p, "utf8");
-  const begin = text.includes("<!-- spec-dev:guardrail:start");
-  const end = text.includes("spec-dev:guardrail:end -->");
+  const begin = text.includes(MARKER_START);
+  const end = text.includes(MARKER_END);
   return begin && end ? "ok" : begin || end ? "broken" : "absent";
 };
 report.markers = { "CLAUDE.md": markerState("CLAUDE.md"), "AGENTS.md": markerState("AGENTS.md") };

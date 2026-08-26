@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, rmSync, mkdirSync } from "node:fs";
+import { mkdtempSync, rmSync, mkdirSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -67,5 +67,19 @@ test("Scenario: anysearch 版本滞后检测——三态且默认可判定", () 
   );
   if (r.anysearch.lag === "lagging") {
     assert.match(r.anysearch.hint, /滞后|lagging|update-vendored/);
+  }
+});
+
+test("标记字面量双源同步：doctor.mjs 与 install.mjs 的 START/END 一致", () => {
+  const doctorSrc = readFileSync(path.join(repoRoot, "scripts/doctor.mjs"), "utf8");
+  const installSrc = readFileSync(path.join(repoRoot, "guardrail/install.mjs"), "utf8");
+  const extract = (src, name) => src.match(new RegExp(`(?:const|let)\\s+${name}\\s*=\\s*"([^"]+)"`))?.[1];
+  for (const name of ["MARKER_START", "MARKER_END"]) {
+    const inDoctor = extract(doctorSrc, name);
+    assert.ok(inDoctor, `doctor.mjs 缺 ${name} 常量`);
+    const legacy = name === "MARKER_START" ? "START" : "END";
+    const inInstall = extract(installSrc, legacy);
+    assert.ok(inInstall, `install.mjs 缺 ${legacy} 常量`);
+    assert.equal(inDoctor, inInstall, `${name} 与 install.mjs 的 ${legacy} 漂移——标记字面量需两文件联动改`);
   }
 });

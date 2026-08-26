@@ -18,4 +18,4 @@
 
 每测试/每文件一容器；每测试重放迁移；TRUNCATE 当唯一隔离；未串行化并发克隆；CI 开容器 reuse；克隆时模板库仍有连接。
 
-来源证据：Storj 基准、pgtestdb、maragu（33s→9.9s）、miry（60→10min）、gajus（克隆 23x）——详见特性 spec 引用的原始探索文档证据索引。
+来源证据：Storj CI 基准、pgtestdb、maragu（33s→9.9s 实测）、miry（60→10min 案例）、gajus（模板克隆 23x 测量）——均为公开发布的基准与工程案例，按项目名检索可得。
