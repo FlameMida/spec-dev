@@ -37,7 +37,7 @@ python3 "$CLI" extract "https://example.com/page"  # 全文抽取,输出已是 M
 - 垂直领域查询先 `get_sub_domains --domain <domain>` 发现子域与必填参数,再带 `--sub_domain` 搜索;命令形态不确定时用 `python3 "$CLI" doc` 查离线完整参考
 - python3 缺依赖(requests)→ 换零依赖 Node 版:`node "${CLI%.py}.js" ...`(同参数)
 
-**第三方库/框架 API 文档:优先 AnySearch。
+**第三方库/框架 API 文档**：优先 AnySearch。
 
 **智能降级(单向判定,不反复试探)**:出现下列任一情况,即判定 AnySearch 本次任务不可用,后续查询全部改走 `WebSearch` / `WebFetch`,不再回头重试:
 

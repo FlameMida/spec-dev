@@ -1,7 +1,7 @@
 ---
 name: code-explorer
 description: Deep codebase analysis - trace execution paths, map architecture layers, understand design patterns and abstractions / 深度分析代码库，追踪执行路径，映射架构层次，理解设计模式和抽象
-tools: LSP, Glob, Grep, LS, Read, NotebookRead, WebFetch, WebSearch
+tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, WebFetch, WebSearch
 model: inherit
 color: yellow
 ---
