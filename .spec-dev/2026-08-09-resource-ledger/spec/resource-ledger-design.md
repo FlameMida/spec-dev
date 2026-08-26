@@ -14,6 +14,8 @@ spec_dev:
 
 # resource-ledger 设计
 
+> **Superseded-pending (2026-08-26)** — 本 spec 的「Requirement: 执行中创建即登记」与「Requirement: writing-plans 最终任务模板含资源台账（改了什么：清理步骤由固定 worktree 命令扩为台账遍历，新增台账小节）」将被 .spec-dev/2026-08-26-01-major-upgrade/spec/major-upgrade-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
+
 ## 背景与目标
 
 套件的收尾清理只覆盖 worktree/分支与 visual-preview 服务器，执行与验收过程创建的容器、测试库表、临时目录没有登记与清理机制；acceptance-qa 环境检测也没有"复用已有服务实例"的策略——要么盲目新建、要么冒险共用。本特性建立**资源台账**纪律（创建即登记、清理只遍历台账）与 acceptance-qa 的**隔离复用判定**，quick-fix 等无计划流程以对话记账兜底。

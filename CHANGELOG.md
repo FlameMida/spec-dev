@@ -7,6 +7,13 @@
 
 ---
 
+## [7.21.5] - 2026-08-26
+
+### 📝 文档 (Docs)
+
+- **spec**：major-upgrade 激活漂移守卫（draft→active）并给 resource-ledger 打 Superseded-pending 预告
+
+
 ## [7.21.4] - 2026-08-26
 
 ### 📝 文档 (Docs)

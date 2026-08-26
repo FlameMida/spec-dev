@@ -3,7 +3,7 @@
 spec_dev:
   version: 1
   feature: major-upgrade
-  status: draft
+  status: active
   covers:
     - "plugin.json"
     - "package.json"
