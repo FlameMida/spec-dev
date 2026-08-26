@@ -45,6 +45,16 @@
       "id": "ra-non-dev-report-lane",
       "prompt": "调研一下 Kafka 和 RabbitMQ 哪个更适合我们的场景，给我结论就行",
       "expected_output": "阶段 1 任务类型检查命中非开发交付：建议走报告通道——不建特性目录、不写 spec/plan、不硬拉八阶段；需要时按 clarifying 纪律澄清关注点；产出结论后问一次是否落盘 .spec-dev/reports/YYYY-MM-DD-<topic>.md，婉拒则零落盘；结论要落地成代码时回归正常分诊"
+    },
+    {
+      "id": "ra-roadmap-capsule-continuation",
+      "prompt": "用户说：继续 roadmap 里的第二个子项目。该 roadmap 含原始需求全文节与 #2 的上下文胶囊（关键裁决、探索指针、已扫范围）",
+      "expected_output": "不要求用户重新提供原始需求；读取胶囊指针指向的前置 spec 与验收报告作为输入；阶段 2 只对胶囊未登记的探索缺口派发子代理，已扫范围不重扫"
+    },
+    {
+      "id": "ra-same-day-numbering",
+      "prompt": ".spec-dev/ 下已存在 2026-08-26-01-foo，同日再创建一个特性目录；另一并行会话可能也在建目录",
+      "expected_output": "新目录命名 2026-08-26-02-<语义名>（扫描当日已有取最大加一）；落盘前重扫一次，发现 02 已被占则顺延 03 并同步修正自引路径；存量旧命名目录不改名"
     }
   ]
 }
