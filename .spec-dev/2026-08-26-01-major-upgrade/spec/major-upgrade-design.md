@@ -85,9 +85,9 @@ spec-dev 现为 Claude Code + Codex 双平台 skill 插件（v7.21.1）。本次
 
 ## 取代与共存
 
-- [部分取代] `.spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md`：Requirement「执行中创建即登记」——分文件形态下登记目标由"就地编辑计划文件的台账行"改为 progress.yaml 的 resources 键（同一前置下登记位置结论相反，冲突型变更）；Requirement「writing-plans 最终任务模板含资源台账（改了什么：清理步骤由固定 worktree 命令扩为台账遍历，新增台账小节）」——分文件形态下台账小节由 progress.yaml 承接，最终任务改为引用其清单。单文件形态下两条原文继续成立；其余三条 Requirement（清理只遍历台账、acceptance-qa 隔离复用判定、quick-fix 收尾清单式清理）语义不变，仅载体细节随形态分流。
+- [部分取代] `.spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md`：Requirement「执行中创建即登记」与 Requirement「writing-plans 最终任务模板含资源台账（改了什么：清理步骤由固定 worktree 命令扩为台账遍历，新增台账小节）」——两条整条取代，替换行为由本 spec MODIFIED「资源登记纪律（按计划形态分流）」完整重述（含单文件形态原语义）并由 ADDED「plan 分文件形态」承接 progress.yaml 的台账结构。取代理由：登记与模板载体自本 spec 起随计划形态分流，旧条文"就地编辑计划文件"不再是唯一现行契约。其余三条 Requirement（清理只遍历台账、acceptance-qa 隔离复用判定、quick-fix 收尾清单式清理）语义不变，分面共存。
 - [分面共存] `.spec-dev/2026-08-05-clarifying-skill/spec/clarifying-skill-design.md`：本 spec 仅新增自我披露纪律与嵌套式 exploring 分界（新增切面）；其全部既有 Requirement（逐题澄清、事实自查、三出口、被引用模式不触发出口、Codex 降级、两处引用方声明）在改造后语句保持为真，无冲突型变更；covers 重叠按双声明规则处理。
-- [分面共存] `.spec-dev/2026-08-09-test-scoping/spec/test-scoping-design.md`：本 spec 仅移动「相关测试范围」声明在分文件形态下的物理位置（index.md 头部），判定语义零变化；MODIFIED 差量已在本 spec 行为节声明。
+- [分面共存] `.spec-dev/2026-08-09-test-scoping/spec/test-scoping-design.md`：本 spec 仅移动「相关测试范围」声明在分文件形态下的物理位置（承载于 ADDED「plan 分文件形态」的 index.md 头部描述），判定语义零变化。
 - [分面共存] `.spec-dev/2026-08-10-supersede-lifecycle/spec/supersede-lifecycle-design.md`：本 spec 大量编辑其 covers 文件但不触碰取代生命周期行为；提交命中其 covers 时按双声明规则同步或 `Spec-Guard: off` trailer 放行。
 - [零动作] `.spec-dev/2026-08-08-triage-routing/spec/triage-routing-design.md`：不改 `commands/triage.md`，doctor 为新增命令无行为交集。
 
@@ -197,6 +197,12 @@ session-context 注入链 SHALL 在每个跳过分支留下可事后查询的一
 - **WHEN** 呈现方案对比
 - **THEN** 对比含"是否引入投机抽象"的裁决行并影响推荐
 
+#### Scenario: 计划头部携带原则块
+
+- **GIVEN** writing-plans 为任意 spec 产出计划
+- **WHEN** 检查计划头部（单文件）或 index.md 头部（分文件）
+- **THEN** 存在「设计原则」声明块
+
 ### Requirement: 同日顺序编号
 
 新建的日期前缀产物（特性目录、roadmap、reports）SHALL 命名为 `YYYY-MM-DD-NN-<语义名>`，NN 为当日两位序号（扫描当日已有取最大加一，落盘前重扫防并发撞号）；存量目录不改名。
@@ -223,9 +229,15 @@ roadmap 模板 SHALL 新增「原始需求」节（登记时保存用户原话�
 - **WHEN** 用户说"继续 #2"进入 requirement-analysis
 - **THEN** 流程不要求用户重新提供原始需求，且不对胶囊已登记的探索范围重新派发扫描
 
+#### Scenario: 交付回写追加后继注意事项
+
+- **GIVEN** 子项目 #1 经 executing-plans 完成交付
+- **WHEN** 执行交付回写 roadmap
+- **THEN** #1 的胶囊新增「留给后继的注意事项」行
+
 ### Requirement: plan 分文件形态（阈值门控）
 
-writing-plans SHALL 在预估任务数大于 8 或计划正文预估超过 25KB 时产出分文件形态——`plan/index.md`（头部+全局约束+任务导航表，导航表含任务/依赖/消费接口/产出接口四列，不复制任务正文）、`plan/tasks/TNN.md`（每任务一文件，沿用既有任务模板）、`plan/progress.yaml`（唯一运行时状态：任务状态、当前指针、commit 映射、资源台账、偏差记录）；低于阈值 SHALL 维持单文件形态。`validate-output.mjs` SHALL 提供 plan-index 校验：tasks/ 文件与导航表一一对应、依赖引用存在、依赖图无环。
+writing-plans SHALL 在预估任务数大于 8 或计划正文预估超过 25KB 时产出分文件形态——`plan/index.md`（头部含全局约束与「相关测试范围」声明 + 任务导航表，导航表含任务/依赖/消费接口/产出接口四列，不复制任务正文）、`plan/tasks/TNN.md`（每任务一文件，沿用既有任务模板）、`plan/progress.yaml`（唯一运行时状态：任务状态、当前指针、commit 映射、资源台账、偏差记录；writing-plans 预登记资源写入其初始 resources，最终任务清理步骤引用其清单）；低于阈值 SHALL 维持单文件形态。`validate-output.mjs` SHALL 提供 plan-index 校验：tasks/ 文件与导航表一一对应、依赖引用存在、依赖图无环。
 
 #### Scenario: 大计划自动分文件
 
@@ -319,6 +331,28 @@ visual-preview SHALL 在存在特性上下文时把会话产物写入 `.spec-dev
 - **WHEN** 启动 visual-preview 并生成 mockup
 - **THEN** 产物位于该特性目录 `visual/<session-id>/` 下
 
+#### Scenario: 无特性上下文回退
+
+- **GIVEN** 会话不处于任何特性目录上下文（如独立头脑风暴）
+- **WHEN** 启动 visual-preview 生成产物
+- **THEN** 产物位于 `.spec-dev/visual/<session-id>/`（现状路径），服务正常可用
+
+### Requirement: 资源登记纪律（按计划形态分流）（改了什么：登记与模板载体由"计划文件台账行"扩展为随计划形态分流，创建即登记语义不变）
+
+executing-plans 执行任务期间创建计划未预登记的持久资源时，执行者 SHALL 当场登记、不延迟到收尾补记——单文件形态写入计划最终任务的资源台账行（就地编辑计划文件，含预登记模板小节），分文件形态写入 progress.yaml 的 resources 键（计划任务文件不被编辑）；清理步骤只遍历所在载体的台账条目的既有语义不变。
+
+#### Scenario: 单文件形态创建即登记
+
+- **GIVEN** 单文件形态计划执行中需临时启动一个数据库容器
+- **WHEN** 执行者创建该容器
+- **THEN** 计划最终任务的资源台账即刻多出一行（含清理命令）
+
+#### Scenario: 分文件形态登记进 progress
+
+- **GIVEN** 分文件形态计划执行中创建了未预登记的持久资源
+- **WHEN** 执行者完成创建动作
+- **THEN** progress.yaml 的 resources 键即刻新增条目（含清理命令），任何计划任务文件无 diff
+
 ### Requirement: 结构化推理消费点改写
 
 requirement-analysis（阶段 1/阶段 4/Checklist）、exploring、quick-fix、clarifying、codex-compat 与相关 evals 中对 `mcp__sequential-thinking__sequentialthinking` 的引用 SHALL 全部改写为指向内嵌 sequential-thinking skill；"不可用降级为回复内分点推演"的降级语义 SHALL 保持不变。
@@ -337,7 +371,7 @@ requirement-analysis（阶段 1/阶段 4/Checklist）、exploring、quick-fix、
 
 ### Requirement: 插件分发 MCP 配置
 
-移除 `.mcp.json` 及 `.codex-plugin/plugin.json`、`.agents/plugins/marketplace.json` 中的 mcpServers 配置。原因：零 MCP 依赖策略——sequential-thinking 由 vendored skill 承接；playwright/chrome-devtools 转为 acceptance-qa `references/mcp-setup.md` 指引下的用户按需自配（Tier A 浏览器自动化的智能降级语义不变，Tier D 的 Playwright CLI 不受影响）。
+移除 `.mcp.json` 及 `.codex-plugin/plugin.json` 中的 mcpServers 配置（`.agents/plugins/marketplace.json` 经核实无 mcpServers 键，交付时仅核实无残留引用）。原因：零 MCP 依赖策略——sequential-thinking 由 vendored skill 承接；playwright/chrome-devtools 转为 acceptance-qa `references/mcp-setup.md` 指引下的用户按需自配（Tier A 浏览器自动化的智能降级语义不变，Tier D 的 Playwright CLI 不受影响）。
 
 ## 方案设计
 
@@ -371,7 +405,10 @@ requirement-analysis（阶段 1/阶段 4/Checklist）、exploring、quick-fix、
 | normalize 幂等 / --check 退出码 | unit | 任务内 TDD | node 测试通过 |
 | Lane 归属翻译 / 原则裁决行 | docs | 验收任务 (A) | eval 断言 |
 | 同日编号两场景 | docs | 任务内 TDD | 规则文本+eval |
-| 胶囊续接不重扫 | docs | 验收任务 (A) | eval 断言 |
+| 胶囊续接不重扫 / 交付回写追加注意事项 | docs | 验收任务 (A) | eval 断言 |
+| 无 MCP 环境的对抗验证（消费点改写） | docs | 验收任务 (A) | eval 断言 |
+| 单文件/分文件登记纪律两场景 | docs | 验收任务 (A) | eval + 演练记录 |
+| 计划头部携带原则块 | docs | 任务内 TDD | rg 断言 |
 | 大计划分文件+悬空依赖拦截 | unit | 任务内 TDD | plan-index 校验测试 |
 | 新会话恢复+不一致停下 | integration | 验收任务 (A) | 恢复走查记录 |
 | 披露继承 / 分岔转漏斗 / near-miss | docs | 验收任务 (A) | evals 全绿 |
