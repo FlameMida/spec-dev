@@ -37,7 +37,7 @@
 - **真实会话自报**(`pi -p --no-session`,禁工具):spec-dev 的 **13 个 skills 全部出现在模型可用清单**(acceptance-qa/anysearch/clarifying/executing-plans/exploring/quick-fix/requirement-analysis/sequential-thinking/test-driven-development/**test-strategy**/using-git-worktrees/visual-preview/writing-plans)——`package.json` 的 `pi.skills` 发现机制端到端生效 ✓
 - 附注:README 平台矩阵 Pi 行的"Agents 需 pi-subagents 扩展"与本机一致(该扩展已装);hooks 列 ❌(需 TS extension,未适配)维持原判
 
-**环境变更记录**(验证产生,用户可自行取舍):grok 新装本地插件 `feature-dev-22fe79b4`(卸载:`grok plugin uninstall spec-dev`);pi 的旧 git 版被移除、现注册为本地路径版(还原:`pi remove ../../feature-dev && pi install https://github.com/FlameMida/spec-dev`)。
+**环境变更记录**(验证产生,**2026-08-27 已按用户要求全部还原**):grok 验证插件已卸载(`plugin list` 回到空,与验证前一致);pi 已移除本地路径注册、恢复 `https://github.com/FlameMida/spec-dev` 条目于 packages 首位(与原状同形态)。唯一差异:pi 副本内容为本地 main 最新(还原时 GitHub 直连超时,经本地 clone 填充、origin 已设回 GitHub)——较原 8/24 旧版为新,`pi update` 在 main 推送远端后即可正常走 GitHub 通道。
 
 ## Requirement Reconciliation
 
