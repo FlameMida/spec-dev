@@ -18,4 +18,12 @@ echo "$out" | grep -q "SESSION_DIR=/tmp/vp-rel/.spec-dev/2026-08-26-01-demo/visu
 # Scenario: 只传 --feature-dir（无 --project-dir）时端口/密钥记忆文件锚定在 .spec-dev/visual 根，而非文件系统根
 echo "$out" | grep -q "PORT_FILE=/tmp/vp-rel/.spec-dev/visual/.last-port" || { echo "FAIL: port 记忆文件路径悬空, got: $out"; exit 1; }
 rm -rf /tmp/vp-rel
+# Scenario: dry-run 打印 GITIGNORE 且不落盘（特性上下文两根、回退一根）
+rm -rf /tmp/vp-proj
+out=$(bash "$SCRIPT" --project-dir /tmp/vp-proj --feature-dir /tmp/vp-proj/.spec-dev/2026-08-26-01-demo --dry-run 2>&1)
+echo "$out" | grep -q "GITIGNORE=/tmp/vp-proj/.spec-dev/2026-08-26-01-demo/visual/.gitignore" || { echo "FAIL: 特性 visual 根 .gitignore 未打印, got: $out"; exit 1; }
+echo "$out" | grep -q "GITIGNORE=/tmp/vp-proj/.spec-dev/visual/.gitignore" || { echo "FAIL: 项目 visual 根 .gitignore 未打印, got: $out"; exit 1; }
+[ ! -e /tmp/vp-proj/.spec-dev/visual/.gitignore ] || { echo "FAIL: dry-run 不应落盘"; exit 1; }
+out=$(bash "$SCRIPT" --project-dir /tmp/vp-proj --dry-run 2>&1)
+[ "$(echo "$out" | grep -c '^GITIGNORE=')" = "1" ] || { echo "FAIL: 回退分支应只打印一个 visual 根, got: $out"; exit 1; }
 echo PASS

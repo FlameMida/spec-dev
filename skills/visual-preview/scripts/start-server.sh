@@ -166,10 +166,31 @@ else
   SESSION_DIR="/tmp/brainstorm-${SESSION_ID}"
 fi
 
+# visual 根（会话目录的父目录）自建 .gitignore（内容 *）：项目内会话文件不入 git，
+# 不要求用户改仓库 .gitignore；/tmp 会话无需处理。
+GITIGNORE_ROOTS=()
+if [[ -n "${FEATURE_DIR:-}" ]]; then
+  GITIGNORE_ROOTS+=("${FEATURE_DIR}/visual" "${FEATURE_DIR%/*}/visual")
+elif [[ -n "$PROJECT_DIR" ]]; then
+  GITIGNORE_ROOTS+=("${PROJECT_DIR}/.spec-dev/visual")
+fi
+
+ensure_visual_gitignore() {
+  local root="$1"
+  if ! mkdir -p "$root" 2>/dev/null; then
+    echo "warn: cannot create ${root}; skip .gitignore" >&2
+    return 0
+  fi
+  [[ -e "${root}/.gitignore" ]] && return 0
+  printf '*\n' > "${root}/.gitignore" 2>/dev/null || echo "warn: cannot write ${root}/.gitignore" >&2
+  return 0
+}
+
 if [[ "${DRY_RUN:-0}" == "1" ]]; then
   echo "SESSION_DIR=${SESSION_DIR}"
   [[ -n "${BRAINSTORM_PORT_FILE:-}" ]] && echo "PORT_FILE=${BRAINSTORM_PORT_FILE}"
   [[ -n "${BRAINSTORM_TOKEN_FILE:-}" ]] && echo "TOKEN_FILE=${BRAINSTORM_TOKEN_FILE}"
+  for root in ${GITIGNORE_ROOTS[@]+"${GITIGNORE_ROOTS[@]}"}; do echo "GITIGNORE=${root}/.gitignore"; done
   exit 0
 fi
 
@@ -180,6 +201,7 @@ SERVER_ID_FILE="${STATE_DIR}/server-instance-id"
 
 # Create fresh session directory with content and state peers
 mkdir -p "${SESSION_DIR}/content" "$STATE_DIR"
+for root in ${GITIGNORE_ROOTS[@]+"${GITIGNORE_ROOTS[@]}"}; do ensure_visual_gitignore "$root"; done
 
 SERVER_ID=""
 if [[ -r /dev/urandom ]]; then

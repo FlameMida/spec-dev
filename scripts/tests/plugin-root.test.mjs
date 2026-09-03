@@ -68,4 +68,15 @@ test("Scenario: 变量未替换时按序列推导——SKILL 内命令为双引�
   }
 });
 
+test("Scenario: 提醒句更新", () => {
+  const vp = read("skills/visual-preview/SKILL.md");
+  assert.doesNotMatch(vp, /加入 `\.gitignore`/, "不应再要求用户手动加 gitignore");
+  assert.ok(vp.includes("脚本自建"), "应说明脚本自建 .gitignore");
+  assert.ok(vp.includes("不要忽略整个 `.spec-dev/`"), "应保留不要忽略整个 .spec-dev 提醒");
+  assert.ok(!vp.includes("<skill-base-directory>"), "自造占位符应消失");
+  assert.ok(vp.includes('bash "${CLAUDE_SKILL_DIR}/scripts/start-server.sh"'), "启动命令应用官方 CLAUDE_SKILL_DIR");
+  assert.ok(vp.includes('bash "${CLAUDE_SKILL_DIR}/scripts/stop-server.sh"'), "停止命令应用官方 CLAUDE_SKILL_DIR");
+  assert.ok(vp.includes("保留供日后查看"), "回看设计应保留");
+});
+
 export { repoRoot, read, count, VENDORED, walk, mdFiles, EP, existsSync };
