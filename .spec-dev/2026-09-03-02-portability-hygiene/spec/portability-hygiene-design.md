@@ -3,7 +3,7 @@
 spec_dev:
   version: 1
   feature: portability-hygiene
-  status: draft
+  status: active
   covers:
     - "skills/requirement-analysis/SKILL.md"
     - "skills/requirement-analysis/references/exploration-patterns.md"
