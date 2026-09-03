@@ -19,7 +19,7 @@ spec_dev_roadmap:
 
 | # | 子项目 | 范围（一句话） | 依赖 | 状态 | 特性目录 |
 |---|--------|--------------|------|------|---------|
-| 1 | portability-hygiene | 修 writing-plans:118 裸路径 bug，插件根解析序列单点定义、9 处调用统一写法；失败隔离与 TDD 例外清单等复述收敛为单点引用；README 补 hard/soft 依赖分级表、成熟度分区与纯壳委托约定并修正核验发现的文档漂移；Codex 适配映射表去重；visual 会话目录隔离结构化；导航表依赖范围写法定义并由校验器展开（AB-38/36/37/39/40/42） | — | pending | — |
+| 1 | portability-hygiene | 修 writing-plans:118 裸路径 bug，插件根解析序列单点定义、9 处调用统一写法；失败隔离与 TDD 例外清单等复述收敛为单点引用；README 补 hard/soft 依赖分级表、成熟度分区与纯壳委托约定并修正核验发现的文档漂移；Codex 适配映射表去重；visual 会话目录隔离结构化；导航表依赖范围写法定义并由校验器展开（AB-38/36/37/39/40/42） | — | in-progress | .spec-dev/2026-09-03-02-portability-hygiene/ |
 | 2 | concurrent-execution | 新建正式 skill `executing-plans-parallel`（进插件清单），executing-plans 在执行确认门满足条件时提议并分支调用：主线程编排与合并、implementer 子代理各占 worktree、每票 TDD 五步 + 契约自检、主线程唯一写 progress.yaml；含 PR 制交付通道、执行期探索分工与指针派发、认领键（AB-44/10/11/33） | #1 | pending | — |
 | 3 | tdd-seam | seam 声明上游权威 + TDD 门兜底；测试反模式 6/7（同义反复、实现耦合）；mock 分层；重构移出红绿循环；typecheck 最便宜验证档（AB-01/02/03/04/05） | — | pending | — |
 | 4 | review-conformance | 收尾审查增加 Spec 符合性维度 S 三向核对；设计判据包单点定义；可选架构深化维度；审查微纪律；子代理派发词纪律（AB-12/09/14/13/32） | — | pending | — |
@@ -40,7 +40,8 @@ spec_dev_roadmap:
 ### #1 portability-hygiene
 
 - **关键裁决**：AB-38 采用"单点定义解析序列 + 统一 9 处写法"，不随守卫安装器分发校验器副本；文档提交带 `SKIP_RELEASE_HOOK=1`，实施阶段代码提交走自动发版；核验发现的 README 漂移（trigger-evals "四个"实为 6、目录结构只列 9/13 skill、scripts 缺 doctor/update-vendored、Self-Review "四查"列三、"3 output contract schemas"）与 quick-fix:66 TDD 例外清单复述并入本子项目；导航表依赖范围写法 `T01-T06` 由校验器展开而非禁止（保存量 index.md 有效）；AB-40 按修正事实改为结构化隔离（脚本自建 .gitignore），不搬临时目录。
-- **探索指针**：报告 §5.2 AB-38/36/37/39/40、§5.3 AB-42；报告 §8.5 A2/A3/B 项修正；本文备注「核验事实速查」。
+- **探索指针**：报告 §5.2 AB-38/36/37/39/40、§5.3 AB-42；报告 §8.5 A2/A3/B 项修正；本文备注「核验事实速查」；spec `.spec-dev/2026-09-03-02-portability-hygiene/spec/portability-hygiene-design.md`；ADR-0006（载入即声明 + 单点解析序列）。
+- **设计期新发现**：官方文档证实 `${CLAUDE_PLUGIN_ROOT}` 只在 skill/agent 正文替换、不导出到模型 Bash、references 不替换——统一写法之上必须加"载入即声明"机制（详见 spec 决策节）。
 - **已扫范围**：全仓 grep 空白核实（skills/ agents/ commands/ guardrail/ scripts/ README 双语）；7 份 active spec covers 反向索引；pre-commit/post-commit/pre-push 与 check-openai-sync 约束；11 个测试文件的断言正则；CLAUDE_PLUGIN_ROOT 全部 12 处引用与三种写法；validate-output 全部调用点；install.mjs 拷贝清单；start-server.sh 三分支；codex-compat.md 与 7 处专节 + 8 处单句适配分布；release.mjs --auto 规则；各纪律"单点定义 vs 复述"位置表。
 - **留给后继的注意事项**：（交付回写时由 executing-plans 追加）
 
