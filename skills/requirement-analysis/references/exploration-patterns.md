@@ -61,15 +61,30 @@
 
 ---
 
-## 输出契约与校验（deep 档）
+## 插件根解析
 
-deep 档每个 code-explorer 输出 exploration-report 契约 JSON 落盘，逐份校验：
+插件内文件（契约校验器 `scripts/validate-output.mjs`、`skills/acceptance-qa/scripts/detect-env.mjs`、anysearch CLI 等）的路径一律写作 `"${CLAUDE_PLUGIN_ROOT}/<相对插件根路径>"`（变量双引号包裹）；**插件根**即插件安装目录的绝对路径（`skills/`、`agents/`、`scripts/` 的父目录）。cwd 是用户项目、插件文件不在其中，因此禁止相对路径。含此类命令的 skill 在语言协议块之后固定一行「**插件根**：`${CLAUDE_PLUGIN_ROOT}`」声明（载入即声明）：平台加载 skill 正文时把它替换为绝对路径，该行即本会话的插件根事实来源。
+
+references 与派发词中出现的 `${CLAUDE_PLUGIN_ROOT}` 是**占位符**——平台不替换、也不导出到模型的 Bash 环境——执行者按下列序列解析后代入：
+
+1. skill 正文中被平台替换后的绝对路径（声明行已显示为 `/` 起始的路径即直接取用）
+2. skill base directory 上两级：skill 固定位于插件根下的 `skills/<name>/`，平台加载 skill 时给出的 base directory 向上两级即插件根
+3. 已安装插件目录：Claude Code 的 plugins cache（`~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/`）或 Codex 的插件安装目录
+
+三级均失败 → 向用户报告"无法定位插件根"并停下，不得静默跳过、不得改用相对路径。skill 自身目录用官方变量 `${CLAUDE_SKILL_DIR}`（同样只在 skill 正文替换），未替换时取 skill base directory。
+
+---
+
+## 输出契约与校验
+
+本节是全部子代理输出契约（exploration-report / review-findings / acceptance-check-items）失败处置与降级规则的定义点，其他 skill 以 gist + 指针引用。deep 档每个 code-explorer 输出 exploration-report 契约 JSON 落盘，逐份校验：
 
 ```bash
-node ${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs exploration-report <file>
+node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" exploration-report <file>
 ```
 
 - 校验失败 → 把 errors 清单发回该子代理补全一次 → 再失败由主线程接管该模态
+- 校验器不可用（node 缺失或插件根无法定位）→ 主线程按对应 schema（`scripts/schemas/<name>.json`）人工核对必填键与 `coverage_note` 非空，并在报告注明"契约校验降级"
 - 主线程合并去重：同一文件被多模态命中是信号而非冗余——标记为高置信关键文件
 
 light/standard 档不要求契约 JSON，子代理按其自身定义的 markdown 报告格式返回即可。
@@ -83,9 +98,11 @@ light/standard 档不要求契约 JSON，子代理按其自身定义的 markdown
 1. 清晰的主题或模态（一个子代理一个角度，允许在该范围内展开）
 2. 相关文件线索、目标层次（内部）或检索主题与关键词（外部）
 3. 期望输出格式
-4. **（外部探索）工具优先级提醒**：派发 prompt 中显式写明「AnySearch 第一优先（通用/时效/垂直/批量；CLI 在 `${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/`）→ `WebSearch`/`WebFetch` 兜底」——agent 定义文件虽已内置此优先级，但派发词重申才能保证在不加载 agent 定义的环境（如 Codex `spawn_agent`）同样生效；派发词固定携带一行模板「工具优先级：AnySearch 第一优先（CLI 在 `${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/`），WebSearch/WebFetch 兜底」——与前半句同源内联实路径，不换成指向 agent 定义文件的相对指针（模板所针对的恰是不加载该文件的环境），主线程复制使用、不现场重写
+4. **（外部探索）工具优先级提醒**：派发 prompt 中显式写明「AnySearch 第一优先（通用/时效/垂直/批量；CLI 在 `${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/`）→ `WebSearch`/`WebFetch` 兜底」——agent 定义文件虽已内置此优先级，但派发词重申才能保证在不加载 agent 定义的环境（如 Codex `spawn_agent`）同样生效；派发词固定携带一行模板「工具优先级：AnySearch 第一优先（CLI 在 `${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/`），WebSearch/WebFetch 兜底」——与前半句同源内联实路径，不换成指向 agent 定义文件的相对指针（模板所针对的恰是不加载该文件的环境），主线程复制使用、不现场重写（唯一例外：模板中的 `${CLAUDE_PLUGIN_ROOT}` 按「插件根解析」序列代入已解析的绝对路径）
 5. **（涉及 `.spec-dev/` 产物时）文档时效规则**：按 frontmatter `spec_dev.status` 分类报告——active 为现行契约；superseded、以及正文带 `Superseded-pending` / `Superseded` 标注者点名标示且仅作历史参考，不得进入"现行契约"结论；命中的 active spec/ADR 与本需求的行为交集逐一列出（供阶段 6 取代分流消费）；被 `Superseded` 标注的单条 Requirement 同样排除出现行契约。ADR 按状态行过滤（`Superseded by` / `Deprecated` 仅作历史参考，缺状态行视同 Accepted）。plan / acceptance 报告 / exploration 笔记是执行时点记录——代码现状以仓库与 active spec 为准，不得从中照抄代码片段作为现状依据。派发词已声明契约姿态降格（用户授权破坏性重构）时，命中的旧契约按"仅现状输入"报告，不作为约束
 
 **失败隔离**：某子代理失败 → 缩小该主题范围重试 1 次 → 仍失败由主线程接管该主题，其余子代理不受影响。
+
+**主线程止损**：主线程明显降质（重复遗忘既定结论、同一错误反复出现、上下文告急）时，在最近的阶段边界把产物落盘并提交后再继续或重开会话，不硬撑。
 
 **结果汇总**：等待全部完成 → 整合发现并去重 → 组织成结构化探索摘要（关键文件清单、现有模式、外部结论与来源），供阶段 3-5 引用。
