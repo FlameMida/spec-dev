@@ -193,11 +193,25 @@ function validatePlanIndex(planDir) {
   if (!existsSync(tasksDir)) errors.push({ path: "tasks/", expected: "present", actual: "missing" });
   if (errors.length) failAndExit();
 
+  // 依赖列写法：单个 ID（T03）或闭区间（T01-T06 → T01…T06 全部）；倒序入 errors，区间内缺号由下方悬空检测报出
+  const expandDeps = (cell, taskId) => {
+    const deps = [];
+    const re = /T(\d\d)(?:\s*-\s*T(\d\d))?/g;
+    let m;
+    while ((m = re.exec(cell)) !== null) {
+      if (m[2] === undefined) { deps.push(`T${m[1]}`); continue; }
+      const lo = Number(m[1]);
+      const hi = Number(m[2]);
+      if (lo > hi) { errors.push({ path: `${taskId}.deps`, expected: "ascending range", actual: m[0] }); continue; }
+      for (let n = lo; n <= hi; n += 1) deps.push(`T${String(n).padStart(2, "0")}`);
+    }
+    return deps;
+  };
   const rows = readFileSync(indexPath, "utf8")
     .split("\n")
     .map((l) => l.match(/^\|\s*(T\d\d)\b[^|]*\|\s*([^|]*)\|/))
     .filter(Boolean)
-    .map((m) => ({ id: m[1], deps: m[2].match(/T\d\d/g) ?? [] }));
+    .map((m) => ({ id: m[1], deps: expandDeps(m[2], m[1]) }));
   const ids = rows.map((r) => r.id);
   const files = readdirSync(tasksDir)
     .filter((f) => /^T\d\d.*\.md$/.test(f))
