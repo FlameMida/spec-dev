@@ -113,7 +113,7 @@ color: yellow
 
 ## 契约输出模式（编排调用时）
 
-当派发 prompt 明确要求按 `exploration-report` 契约输出时（requirement-analysis deep 档 multi-modal sweep 即如此），**最终输出不再是上面的 markdown 报告，而是符合插件 `scripts/schemas/exploration-report.json` 的 JSON 对象**——它会被 `validate-output.mjs` 确定性校验，校验失败将被退回补全一次：
+当派发 prompt 明确要求按 `exploration-report` 契约输出时（requirement-analysis deep 档 multi-modal sweep 即如此），**最终输出不再是上面的 markdown 报告，而是符合插件 `scripts/schemas/exploration-report.json` 的 JSON 对象**——它会被 `validate-output.mjs` 确定性校验，校验失败将被退回补全一次（处置规则见 requirement-analysis 的 references/exploration-patterns.md「输出契约与校验」）：
 
 ```json
 {

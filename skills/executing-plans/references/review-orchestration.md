@@ -18,7 +18,7 @@ repeat (最多 2 轮):
             输出=review-findings 契约 JSON，落盘到临时目录)
   # 契约校验：每份报告落盘后运行
   #   node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" review-findings <file>
-  #   失败 → 把 errors 清单发回该子代理补全一次；再失败 → 主线程接管该维度
+  #   校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「输出契约与校验」）；接管以维度为单位
   # pipeline 优先：单维度报告校验通过即可进入复核，无需等齐所有维度——
   #   仅当去重需要跨维度信息时才等待
   fresh = dedupe(所有 findings, against=seen)
@@ -55,7 +55,7 @@ repeat (最多 2 轮):
 
 ## 失败隔离
 
-某维度子代理失败 → 缩小该维度范围重试 1 次 → 仍失败则主线程接管该维度，其余维度流水线不受影响。
+失败先缩小范围重试 1 次，再失败主线程接管（定义见 exploration-patterns「派发要求与失败隔离」）；接管以维度为单位，其余维度流水线不受影响。
 
 ## acceptance-qa 联动
 

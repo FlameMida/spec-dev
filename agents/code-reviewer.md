@@ -144,7 +144,7 @@ color: red
 
 ## 契约输出模式（编排调用时）
 
-当派发 prompt 明确要求按 `review-findings` 契约输出时（executing-plans 收尾审查编排即如此），**最终输出不再是上面的 markdown 报告，而是符合插件 `scripts/schemas/review-findings.json` 的 JSON 对象**——它会被 `validate-output.mjs` 确定性校验，校验失败将被退回补全一次：
+当派发 prompt 明确要求按 `review-findings` 契约输出时（executing-plans 收尾审查编排即如此），**最终输出不再是上面的 markdown 报告，而是符合插件 `scripts/schemas/review-findings.json` 的 JSON 对象**——它会被 `validate-output.mjs` 确定性校验，校验失败将被退回补全一次（处置规则见 requirement-analysis 的 references/exploration-patterns.md「输出契约与校验」）：
 
 ```json
 {

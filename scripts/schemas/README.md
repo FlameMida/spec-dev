@@ -11,7 +11,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" <schema-name> <json-fil
 - `<schema-name>`：本目录下的文件名（不含 `.json`），如 `review-findings`
 - `<json-file>`：子代理输出落盘的 JSON 文件路径
 - 成功：stdout 输出 `{ok:true, schema, file}`，退出码 0
-- 失败：stderr 输出 `{ok:false, schema, file, errors:[{path, expected, actual}]}`，退出码 1——把 `errors` 清单发回子代理补全一次；再失败由主进程接管
+- 失败：stderr 输出 `{ok:false, schema, file, errors:[{path, expected, actual}]}`，退出码 1——校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「输出契约与校验」）
 
 > `${CLAUDE_PLUGIN_ROOT}` 指向插件安装根目录（插件根）；写法约定与未替换时的解析序列见 `skills/requirement-analysis/references/exploration-patterns.md`「插件根解析」节（唯一定义点）。
 

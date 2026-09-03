@@ -1,13 +1,13 @@
 format_version: 1
-current: T05
+current: T06
 tasks:
   T00: { status: completed, commit: d4e39df, tests: pass }
   T01: { status: completed, commit: dad2cd3, tests: pass }
   T02: { status: completed, commit: c45b996, tests: pass }
   T03: { status: completed, commit: f341cd1, tests: pass }
   T04: { status: completed, commit: 4f105d1, tests: pass }
-  T05: { status: completed, tests: pass }
-  T06: { status: pending }
+  T05: { status: completed, commit: 2602cf6, tests: pass }
+  T06: { status: completed, tests: pass }
   T07: { status: pending }
   T08: { status: pending }
   T09: { status: pending }

@@ -109,4 +109,32 @@ test("Scenario: 降级说明不再各处复述", () => {
   }
 });
 
+const GIST_FI = "失败先缩小范围重试 1 次，再失败主线程接管（定义见 exploration-patterns「派发要求与失败隔离」）";
+const GIST_CV = "校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「输出契约与校验」）";
+
+test("Scenario: 四处 gist 与 canonical 字面一致", () => {
+  for (const f of ["skills/requirement-analysis/SKILL.md", "skills/quick-fix/SKILL.md", "skills/requirement-analysis/references/codex-compat.md", "skills/executing-plans/references/review-orchestration.md"]) {
+    assert.ok(read(f).includes(GIST_FI), `${f} 缺失败隔离 gist 或措辞不一致`);
+  }
+  assert.equal(count(read(EP), "缩小该主题范围重试 1 次"), 1, "canonical 只在 exploration-patterns 出现一次");
+  for (const f of [...mdFiles(), "scripts/schemas/README.md"]) assert.ok(!read(f).includes("主进程接管"), `${f} 仍有措辞分化"主进程接管"`);
+});
+
+test("Scenario: 契约校验完整陈述唯一（引用侧）", () => {
+  for (const f of ["skills/executing-plans/SKILL.md", "skills/executing-plans/references/review-orchestration.md", "scripts/schemas/README.md"]) {
+    assert.ok(read(f).includes(GIST_CV), `${f} 缺契约校验 gist 或措辞不一致`);
+  }
+  for (const f of [...mdFiles(), "scripts/schemas/README.md"]) {
+    if (f === EP) continue;
+    for (const line of read(f).split("\n")) {
+      if (line.includes("补全一次")) assert.ok(line.includes("exploration-patterns"), `${f}: "补全一次"同行缺指针 → ${line.trim().slice(0, 100)}`);
+    }
+  }
+});
+
+test("Scenario: 有意变体被标注", () => {
+  const ai = read("skills/acceptance-qa/references/ai-acceptance.md");
+  assert.match(ai, /再失败将缺失项标记 unverified[^\n]*acceptance-qa 有意变体[^\n]*exploration-patterns/, "ai-acceptance 应保留 unverified 结局并标注为变体、指向定义点");
+});
+
 export { repoRoot, read, count, VENDORED, walk, mdFiles, EP, existsSync };

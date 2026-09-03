@@ -35,7 +35,7 @@ for item in checklist:                       # 串行逐项
 
 落盘 acceptance-check-items 契约 JSON
 → node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" acceptance-check-items <file>
-→ 校验失败：按 errors 清单补全一次；再失败将缺失项标记 unverified 并在报告说明
+→ 校验失败：按 errors 清单补全一次；再失败将缺失项标记 unverified 并在报告说明（acceptance-qa 有意变体——不由主线程接管；通用规则见 requirement-analysis 的 references/exploration-patterns.md「输出契约与校验」）
 
 # 对抗复核（仍串行，同一浏览器）：仅 result ∈ {fail, warn} 的项
 for item in results where item.result in {fail, warn}:
