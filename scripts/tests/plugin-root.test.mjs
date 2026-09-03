@@ -137,4 +137,26 @@ test("Scenario: 有意变体被标注", () => {
   assert.match(ai, /再失败将缺失项标记 unverified[^\n]*acceptance-qa 有意变体[^\n]*exploration-patterns/, "ai-acceptance 应保留 unverified 结局并标注为变体、指向定义点");
 });
 
+test("Scenario: 通用映射行只在一处", () => {
+  const row = "| 进度跟踪 | `TaskCreate` / `TaskUpdate` | `update_plan` |";
+  const hits = [...mdFiles(), "scripts/schemas/README.md"].filter((f) => read(f).includes(row));
+  assert.deepEqual(hits, ["skills/requirement-analysis/references/codex-compat.md"], "通用映射表只能在 codex-compat");
+  assert.ok(read("skills/requirement-analysis/SKILL.md").includes("codex-compat.md"), "RA 应保留指针");
+  assert.ok(read("skills/requirement-analysis/references/codex-compat.md").includes("全 skill 共用"), "codex-compat 前言应声明全 skill 共用");
+});
+
+test("Scenario: quick-fix 自有行保留", () => {
+  const qf = read("skills/quick-fix/SKILL.md");
+  assert.ok(qf.includes('`spawn_agent`（`fork_turns: "none"`）+ `wait_agent`'), "自有行应保留");
+  assert.ok(qf.includes("codex-compat.md"), "应有指向总表的指针");
+  assert.ok(!qf.includes("| 用户澄清/确认 |"), "通用行不应复述");
+});
+
+test("Scenario: 清单不再复述", () => {
+  const qf = read("skills/quick-fix/SKILL.md");
+  assert.doesNotMatch(qf, /配置文件\/纯文案\/一次性原型/, "不应并列复述 TDD 例外清单");
+  assert.ok(qf.includes("例外清单以 test-driven-development skill 为准"), "应改为引用 TDD 清单");
+  assert.ok(qf.includes("纯文案"), "quick-fix 自有例外应显式保留");
+});
+
 export { repoRoot, read, count, VENDORED, walk, mdFiles, EP, existsSync };

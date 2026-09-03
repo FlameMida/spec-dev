@@ -63,7 +63,7 @@ description: >-
 
 ### 步骤 5a：TDD 修复 + 同步 spec 小节（契约改变，单 spec 内）
 
-- **强制 TDD**：先写复现 bug 的失败测试 → 确认红（失败原因是功能缺陷而非拼写）→ 最小实现转绿 → 重构。遵循 test-driven-development skill 铁律；仅配置文件/纯文案/一次性原型等 TDD 既有例外适用（需用户同意）。
+- **强制 TDD**：先写复现 bug 的失败测试 → 确认红（失败原因是功能缺陷而非拼写）→ 最小实现转绿 → 重构。遵循 test-driven-development skill 铁律；例外清单以 test-driven-development skill 为准，quick-fix 另视纯文案改动为例外（均需用户同意）。
 - **同步 spec**：修改命中 spec 的对应 Requirement/Scenario 小节，使其与新行为一致（不重写设计，只改被影响的那几行）。
 - **spec 增量提交前给用户过目**：把 spec 小节改动展示给用户确认。
 - **提交**：spec + 代码 + 测试同一 commit，天然通过 `--staged`/`--push`/CI 守卫（spec 与代码同步）。
@@ -96,11 +96,11 @@ skill 体系与守卫此前的唯一连接是 requirement-analysis 写 spec fron
 
 ## 执行环境兼容性
 
+通用工具映射（澄清/进度/并行子任务/规范文件/搜索）以 requirement-analysis 的 [codex-compat.md](../requirement-analysis/references/codex-compat.md) 工具映射总表为准（单一定义点，此处不复述）；逐题提问的 Codex 形态见 clarifying 内嵌 Codex 规范节。本 skill 自有映射：
+
 | 用途 | Claude Code | Codex |
 |------|-------------|-------|
-| 用户澄清/确认 | `AskUserQuestion`（单题带选项） | 对话消息提问（逐题规范见 clarifying 内嵌 Codex 规范节） |
 | 根因探索子代理 | `Agent`（subagent_type: code-explorer） | `spawn_agent`（`fork_turns: "none"`）+ `wait_agent` |
-| 复用 TDD/验收 | 引用 test-driven-development、触发 acceptance-qa | 同左（skill 通用） |
 
 sequential-thinking skill（插件内嵌）不可用时降级为回复中分点推演并注明工具降级原因。Codex 沙箱下 `SPEC_DEV_GUARD=off git commit` 与守卫交互同 Claude；沙箱禁止 commit 时请用户在沙箱外执行。
 

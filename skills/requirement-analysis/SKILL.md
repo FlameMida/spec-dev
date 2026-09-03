@@ -87,17 +87,7 @@ deep     — 跨层架构变更、新技术栈、用户使用"彻底/全面/审�
 
 ## 执行环境兼容性
 
-本 skill 同时兼容 Claude Code 和 Codex。核心工具映射：
-
-| 用途 | Claude Code | Codex |
-|------|-------------|-------|
-| 用户澄清/确认 | `AskUserQuestion`（单题带选项） | 对话消息提问并等待回复 |
-| 进度跟踪 | `TaskCreate` / `TaskUpdate` | `update_plan` |
-| 并行子任务 | `Agent`（单响应一次性发起） | `spawn_agent`（继承上下文，参数见 codex-compat）+ `wait_agent` |
-| 项目规范文件 | `CLAUDE.md` → `AGENTS.md` | `AGENTS.md` → `CLAUDE.md` |
-| 网页搜索 | anysearch skill（内嵌）→ `WebSearch` 降级 | anysearch skill（内嵌）→ 内置 web 搜索降级（托管 `web_search` 工具） |
-
-Codex 环境的完整规则见 [codex-compat.md](references/codex-compat.md)。
+本 skill 同时兼容 Claude Code 和 Codex。工具映射（澄清 AskUserQuestion↔对话消息、进度 TaskCreate↔update_plan、并行 Agent↔spawn_agent+wait_agent、规范文件 CLAUDE.md↔AGENTS.md 优先序、搜索 anysearch 降级链）以 [codex-compat.md](references/codex-compat.md) 的工具映射总表为准——全 skill 共用的单一定义点，此处不复述整表；Codex 环境的完整规则同见该文件。
 
 ---
 
