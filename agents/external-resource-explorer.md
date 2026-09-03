@@ -28,7 +28,7 @@ color: cyan
 **通用外部研究、时效信息、垂直领域(金融/学术/安全等)、多主题批量检索:优先 AnySearch**(插件内嵌 skill 自带 CLI,无 MCP 依赖):
 
 ```bash
-CLI="${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py"  # 变量不可用时,先定位插件安装目录再以其为根解析路径
+CLI="${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py"  # 未替换时按插件根解析序列推导（定义见 requirement-analysis 的 references/exploration-patterns.md）
 python3 "$CLI" search "查询词" --max_results 5
 python3 "$CLI" batch_search --queries '[{"query":"主题1","max_results":5},{"query":"主题2","max_results":5}]'  # 多主题一次并行
 python3 "$CLI" extract "https://example.com/page"  # 全文抽取,输出已是 Markdown

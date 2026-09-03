@@ -5,7 +5,7 @@
 ## 用法
 
 ```bash
-node ${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs <schema-name> <json-file>
+node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" <schema-name> <json-file>
 ```
 
 - `<schema-name>`：本目录下的文件名（不含 `.json`），如 `review-findings`
@@ -13,7 +13,7 @@ node ${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs <schema-name> <json-file>
 - 成功：stdout 输出 `{ok:true, schema, file}`，退出码 0
 - 失败：stderr 输出 `{ok:false, schema, file, errors:[{path, expected, actual}]}`，退出码 1——把 `errors` 清单发回子代理补全一次；再失败由主进程接管
 
-> `${CLAUDE_PLUGIN_ROOT}` 指向插件安装根目录；该变量不可用时，先定位插件安装目录再以其为根解析路径（Codex 端同理，skill 加载时以 skill base directory 推导插件根）。
+> `${CLAUDE_PLUGIN_ROOT}` 指向插件安装根目录（插件根）；写法约定与未替换时的解析序列见 `skills/requirement-analysis/references/exploration-patterns.md`「插件根解析」节（唯一定义点）。
 
 ## Schema 子集范围
 

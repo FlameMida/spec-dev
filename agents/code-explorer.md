@@ -145,7 +145,7 @@ color: yellow
 ### 工具增强
 
 当需要了解外部库/框架时，使用以下工具：
-AnySearch（插件内嵌 skill 自带 CLI：`python3 ${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py search "查询词"`，python 缺依赖换同目录 `anysearch_cli.js`），再降级 `WebSearch`。
+AnySearch（插件内嵌 skill 自带 CLI：`python3 "${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py" search "查询词"`，python 缺依赖换同目录 `anysearch_cli.js`；`${CLAUDE_PLUGIN_ROOT}` 未替换时按插件根解析序列推导（定义见 requirement-analysis 的 references/exploration-patterns.md）），再降级 `WebSearch`。
 
 ## 探索策略
 

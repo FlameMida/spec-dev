@@ -34,7 +34,7 @@ for item in checklist:                       # 串行逐项
     # 无证据 → result 只能是 unverified（不允许无证据的 pass）
 
 落盘 acceptance-check-items 契约 JSON
-→ node ${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs acceptance-check-items <file>
+→ node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" acceptance-check-items <file>
 → 校验失败：按 errors 清单补全一次；再失败将缺失项标记 unverified 并在报告说明
 
 # 对抗复核（仍串行，同一浏览器）：仅 result ∈ {fail, warn} 的项

@@ -79,4 +79,34 @@ test("Scenario: 提醒句更新", () => {
   assert.ok(vp.includes("保留供日后查看"), "回看设计应保留");
 });
 
+const BARE = /(^|[\s`(])(node|bash|python3?|bun)\s+(scripts|skills|agents|guardrail)\//;
+const UNQUOTED = /(node|bash|python3?|bun)\s+\$\{CLAUDE_(PLUGIN_ROOT|SKILL_DIR)\}/;
+const PLACEHOLDER = /<插件根>|<plugin-root>|<skill-base-directory>/;
+
+test("Scenario: 零裸路径与零自造占位符", () => {
+  // 裸路径规则的范围是 skills/ agents/ commands/（spec 原文）；scripts/schemas/README.md 是插件仓库内的开发文档，
+  // 其 `node scripts/validate-output.mjs agent-plugin-1.0.0 plugin.json` 在插件根运行属合法，只查双引号与占位符
+  for (const f of [...mdFiles(), "scripts/schemas/README.md"]) {
+    const text = read(f);
+    const bareScope = !f.startsWith("scripts/");
+    for (const line of text.split("\n")) {
+      if (line.includes("scripts/spec-dev/") || line.includes("update-vendored-skill")) continue; // 目标仓库路径 / 仓库开发期维护提示
+      if (bareScope) assert.ok(!BARE.test(line), `${f}: 裸路径命令 → ${line.trim().slice(0, 100)}`);
+      assert.ok(!UNQUOTED.test(line), `${f}: 变量未加双引号 → ${line.trim().slice(0, 100)}`);
+    }
+    assert.ok(!PLACEHOLDER.test(text), `${f}: 自造占位符`);
+  }
+});
+
+test("Scenario: 降级说明不再各处复述", () => {
+  for (const f of [...mdFiles(), "scripts/schemas/README.md"]) {
+    const t = read(f);
+    assert.ok(!t.includes("先定位插件安装目录再以其为根解析路径"), `${f} 仍有降级复述`);
+    assert.ok(!t.includes("先找插件安装目录"), `${f} 仍有降级复述`);
+  }
+  for (const f of ["agents/code-explorer.md", "agents/external-resource-explorer.md", "commands/doctor.md"]) {
+    assert.ok(read(f).includes("未替换时按插件根解析序列推导"), `${f} 缺固定回退句`);
+  }
+});
+
 export { repoRoot, read, count, VENDORED, walk, mdFiles, EP, existsSync };
