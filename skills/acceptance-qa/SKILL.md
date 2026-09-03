@@ -7,6 +7,8 @@ description: >-
 > **Language Protocol / 语言协议**: Respond in the user's conversation language — an explicit user instruction (including the platform `language` setting) takes precedence, then the language of the user's recent messages; default to English when neither indicates a language. All deliverables written to the repo (specs, plans, reports, notes) follow the conversation language at creation; incremental edits keep the artifact's existing language. Fixed-wording prompts in this skill are semantic templates — express their meaning in the conversation language, don't quote them verbatim.
 > 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
 
+> **插件根**：`${CLAUDE_PLUGIN_ROOT}`——本 skill 正文与其 references 中的插件根命令以此为准；若上式仍为变量字面量（平台未替换），按 requirement-analysis 的 references/exploration-patterns.md「插件根解析」序列推导。
+
 > **外部搜索统一入口**：需要联网检索（资料、库/框架文档、时效信息）时一律先用 anysearch skill（插件内嵌），不可用再降级 WebSearch/WebFetch；降级链与派发词要求见 requirement-analysis 的 references/exploration-patterns.md。
 
 # 全能验收工作流（acceptance-qa）
@@ -75,10 +77,8 @@ description: >-
 **脚本优先**（一次输出全部文件系统可判定项）：
 
 ```bash
-node ${CLAUDE_PLUGIN_ROOT}/skills/acceptance-qa/scripts/detect-env.mjs [--cwd <project>]
+node "${CLAUDE_PLUGIN_ROOT}/skills/acceptance-qa/scripts/detect-env.mjs" [--cwd <project>]
 ```
-
-（`${CLAUDE_PLUGIN_ROOT}` 不可用时，先定位插件安装目录再以其为根解析路径。）
 
 输出 JSON 含 `stacks`（node/python/go/rust/java）、`test_frameworks`、`e2e_framework`、`coverage_config`、`perf_tools`、`visual_baseline`、`suggestions`，按 `suggestions` 逐条处置后进入执行。脚本不可用时手工检测同等项。
 
@@ -114,7 +114,7 @@ for item in checklist:   # 串行
     取证：verify 结果 + browser_snapshot 关键片段 或 截图文件名
     无证据 → 只能记 unverified
 
-落盘 acceptance-check-items 契约 JSON → validate-output.mjs 校验 → 失败按 errors 补全一次
+落盘 acceptance-check-items 契约 JSON → validate-output.mjs 校验 → 校验失败发回补全一次，再失败标记 unverified（acceptance-qa 变体；通用规则见 exploration-patterns「输出契约与校验」）
 fail/warn 项 → 以"不信任原结论"视角重执行复核（第二份证据）
 pass 项   → 独立子代理证据审计（只读证据不占浏览器，试图反驳每个 pass）
 复核/审计结论回写 items[].recheck 并重新校验
