@@ -27,7 +27,8 @@ spec_dev:
     - "README.md"
     - "README.zh-CN.md"
   sync_commit: null
-  supersedes: []
+  supersedes:
+    - ".spec-dev/2026-08-26-01-major-upgrade/spec/major-upgrade-design.md"
   superseded_by: null
 ---
 
@@ -63,7 +64,7 @@ writing-plans 指令中的 `node scripts/validate-output.mjs plan-index …` 是
 
 ## 影响面
 
-- **skills**：requirement-analysis（SKILL.md 载入即声明 + 映射表改指针 + 失败隔离 gist；references/exploration-patterns.md 新增「插件根解析与契约校验降级」节与止损句；references/codex-compat.md 前言与 :54）、writing-plans（SKILL.md 载入即声明 + :118 写法与范围定义）、executing-plans（SKILL.md 载入即声明 + :93；references/review-orchestration.md :20-21/:58）、acceptance-qa（SKILL.md 载入即声明 + :78-81；references/ai-acceptance.md :37-38）、quick-fix（:38 gist、:66 例外清单引用、:99-103 映射表收敛）、visual-preview（SKILL.md :38/:43/:71；scripts/start-server.sh 自建 .gitignore）
+- **skills**：requirement-analysis（SKILL.md 载入即声明 + 映射表改指针 + 失败隔离 gist；references/exploration-patterns.md 新增「插件根解析」节、「输出契约与校验」节补校验器不可用降级句并成为契约校验 canonical、止损句；references/codex-compat.md 前言、:54 gist、:61 占位符与命令写法）、writing-plans（SKILL.md 载入即声明 + :118 写法与范围定义）、executing-plans（SKILL.md 载入即声明 + :93；references/review-orchestration.md :20-21/:58）、acceptance-qa（SKILL.md 载入即声明 + :78-81 + :117 gist 指针；references/ai-acceptance.md :37-38）、quick-fix（:38 gist、:66 例外清单引用、:99-103 映射表收敛）、visual-preview（SKILL.md :38/:43/:71；scripts/start-server.sh 自建 .gitignore）
 - **agents**：code-explorer.md :148、external-resource-explorer.md :31 的回退句统一
 - **commands**：doctor.md :5 写法统一
 - **scripts**：validate-output.mjs 依赖列范围展开；schemas/README.md :8/:14/:16 指针化；tests/plan-index.test.mjs 新用例；tests/visual-path.test.sh 新断言；tests/plugin-root.test.mjs 新建
@@ -75,7 +76,7 @@ writing-plans 指令中的 `node scripts/validate-output.mjs plan-index …` 是
 - 插件根修法取"单点定义解析序列 + 统一写法"，不随守卫分发校验器副本——用户裁决；分发副本要随插件升级同步、牵动 install.mjs/两份 guardrail README/doctor 健康项（详见 [ADR-0006](../../adr/0006-plugin-root-resolution.md)）
 - 统一写法之上必须加"载入即声明"机制——对抗验证发现官方替换只覆盖 skill/agent 正文、不导出到模型 Bash、references 不替换；没有这一机制，统一写法只是把裸路径 bug 换成变量字面量 bug（ADR-0006）
 - 复述收敛用 gist + 指针而非裸指针——agent 一次只加载一个 SKILL.md，裸指针逼迫额外读取；仓库既有模式（requirement-analysis 阶段 3 引用 clarifying）即 gist + 指针
-- 失败隔离 canonical 留在 exploration-patterns.md:89（已是最完整陈述，被 10 个搜索块与 RA 指向）；不新建"运行时约定"reference（exploration-patterns 已承担该角色，第二个文件是投机抽象，且要改 10 个搜索块与 search-clause 测试特征串）
+- 失败隔离 canonical 留在 exploration-patterns.md:89（已是最完整陈述，被 10 个搜索块与 RA 指向）；契约校验的"失败 → 补全一次 → 主线程接管"canonical 留在其「输出契约与校验」节 :72（天然归属），新增的"校验器不可用 → 人工核对"句也放该节，新「插件根解析」节只管路径——同一文件不出现两份完整陈述；不新建"运行时约定"reference（exploration-patterns 已承担该角色，第二个文件是投机抽象，且要改 10 个搜索块与 search-clause 测试特征串）
 - Codex 映射表 canonical 留 codex-compat.md，前言从"requirement-analysis 专属"改为"全 skill 共用"；acceptance-qa 与 review-orchestration 的 skill 专属降级节保留（非重复）
 - visual 会话隔离改为结构化——脚本在 visual 根自建 `.gitignore`（内容 `*`），不搬临时目录：核验证实脚本裸默认已是 `/tmp`，落项目内是 SKILL 标准调用所致且"回看"是有意设计
 - 导航表依赖范围写法 `T01-T06` 由校验器展开为闭区间而非禁止——保存量 index.md 有效（plan-single-format 计划已用该写法）
@@ -84,25 +85,31 @@ writing-plans 指令中的 `node scripts/validate-output.mjs plan-index …` 是
 
 ## 取代与共存
 
-- [分面共存] `.spec-dev/2026-08-26-01-major-upgrade/spec/major-upgrade-design.md`：本 spec 编辑其 covers 中的 RA/writing-plans/executing-plans/quick-fix/exploring 相邻 SKILL.md、两份 references、两个 agent、doctor.md、scripts/**、visual-preview、README 双语，但不触碰其任何 Requirement 的行为语义（编号规则、设计原则块、澄清纪律、manifest 均不变）；提交命中其 covers 时按双声明规则同步或 `Spec-Guard: off` trailer 放行
-- [分面共存] `.spec-dev/2026-08-27-01-plan-single-format/spec/plan-single-format-design.md`：本 spec 只扩展 plan-index 校验器接受的依赖写法（闭区间展开）并统一 writing-plans:118 命令写法，不改三件套结构、导航表四列契约、progress.yaml 键结构与读宽容语义；其「plan 单一形态」Requirement 的"生成后 SHALL 运行 plan-index 校验"陈述不变
+- [部分取代] `.spec-dev/2026-08-26-01-major-upgrade/spec/major-upgrade-design.md`：Requirement「visual-preview 产物归位特性目录」——其"gitignore 建议 SHALL 同步覆盖两种 visual 路径"条款被本 spec MODIFIED「visual-preview 产物归位特性目录」替换为脚本自建 `.gitignore`（冲突型替换，新版完整重述，产物落位/定稿归档/port-token 条款原样继承）。理由：手动 gitignore 提醒是靠用户动作的隔离，改为结构化隔离后该建议不应再存在。其余 Requirement（编号规则、设计原则块、澄清纪律、manifest、test-strategy 等）无行为交集，零动作；本 spec 编辑其 covers 中的 RA/writing-plans/executing-plans/quick-fix SKILL.md、两份 references、两个 agent、doctor.md、scripts/**、visual-preview、README 双语属分面共存，提交命中其 covers 时按双声明规则同步或 `Spec-Guard: off` trailer 放行
+- [分面共存] `.spec-dev/2026-08-27-01-plan-single-format/spec/plan-single-format-design.md`：本 spec 编辑其 covers 中的 writing-plans/executing-plans/RA/quick-fix/acceptance-qa SKILL.md、review-orchestration.md 与 README 双语，只扩展 plan-index 校验器接受的依赖写法（闭区间展开）并统一命令写法，不改三件套结构、导航表四列契约、progress.yaml 键结构与读宽容语义；其「plan 单一形态」Requirement 的"生成后 SHALL 运行 plan-index 校验"陈述不变
 - [分面共存] `.spec-dev/2026-08-10-supersede-lifecycle/spec/supersede-lifecycle-design.md`：本 spec 编辑其 covers 中的 RA/writing-plans/executing-plans/quick-fix/acceptance-qa SKILL.md、exploration-patterns.md、review-orchestration.md，不触碰取代生命周期行为（文档时效规则、pending 标注、covers 接管核对均原样保留）
 - [分面共存] `.spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md`：本 spec 编辑其 covers 四个 SKILL.md，不触碰资源台账语义（progress.yaml resources 定义句与 quick-fix 收尾清理原样保留）
 - [分面共存] `.spec-dev/2026-08-09-test-scoping/spec/test-scoping-design.md`：本 spec 编辑 writing-plans/executing-plans SKILL.md，不触碰「相关测试范围」声明与归属裁决语义
 - [零动作] clarifying-skill、triage-routing：covers 无交集
-- 本 spec 接管保护的未覆盖路径：`skills/acceptance-qa/references/ai-acceptance.md`、`scripts/schemas/README.md`（原不在任何 active spec covers 内）
+- 本 spec 接管保护的未覆盖路径：`skills/acceptance-qa/references/ai-acceptance.md`（原不在任何 active spec covers 内；`scripts/schemas/README.md` 已由 major-upgrade `scripts/**` 覆盖）
 
 ## ADDED Requirements
 
 ### Requirement: 插件根解析序列单点定义
 
-exploration-patterns.md SHALL 含唯一的「插件根解析」节，定义三级解析序列——① skill 正文中被平台替换后的绝对路径；② skill base directory 上两级（skill 固定位于 `<插件根>/skills/<name>/`）；③ 已安装插件目录（Claude Code 的 plugins cache、Codex 的插件安装目录）——并声明：references 与派发词中出现的 `${CLAUDE_PLUGIN_ROOT}` 是占位符（平台不替换），执行者按序列解析后代入；三级均失败 SHALL 向用户报告"无法定位插件根"，不得静默跳过或改用相对路径。该节 SHALL 同时收纳契约校验降级的唯一定义：校验器不可用时主线程按 schema 人工核对必填键与 `coverage_note` 并在报告注明"契约校验降级"；"校验失败 → 把 errors 清单发回补全一次 → 再失败主线程接管"只在此完整陈述一次。
+exploration-patterns.md SHALL 含唯一的「插件根解析」节，定义三级解析序列——① skill 正文中被平台替换后的绝对路径；② skill base directory 上两级（skill 固定位于 `<插件根>/skills/<name>/`）；③ 已安装插件目录（Claude Code 的 plugins cache、Codex 的插件安装目录）——并声明：references 与派发词中出现的 `${CLAUDE_PLUGIN_ROOT}` 是占位符（平台不替换），执行者按序列解析后代入；三级均失败 SHALL 向用户报告"无法定位插件根"，不得静默跳过或改用相对路径。契约校验的完整陈述 SHALL 只存在于同文件「输出契约与校验」节：既有"校验失败 → 把 errors 清单发回补全一次 → 再失败由主线程接管"保持原位，并新增"校验器不可用（node 缺失或插件根无法定位）时主线程按 schema 人工核对必填键与 `coverage_note` 并在报告注明'契约校验降级'"一句；「插件根解析」节只管路径，SHALL NOT 复述契约校验规则。
 
 #### Scenario: 解析序列只有一个定义点
 
 - **GIVEN** 仓库当前文本
-- **WHEN** 在 skills/ agents/ commands/ scripts/ 中检索"插件根解析"与"三级/上两级/已安装插件目录"的完整陈述
+- **WHEN** 在 skills/ agents/ commands/ scripts/ 中检索"上两级"与"已安装插件目录"的完整序列陈述
 - **THEN** 只命中 exploration-patterns.md 的「插件根解析」节，其余位置均为 gist + 指针
+
+#### Scenario: 契约校验完整陈述唯一
+
+- **GIVEN** 仓库当前文本
+- **WHEN** 检索"补全一次"
+- **THEN** exploration-patterns.md 只在「输出契约与校验」节命中一次；其余每处命中（review-orchestration、executing-plans、acceptance-qa、schemas/README）同行都带指向 exploration-patterns 的指针
 
 #### Scenario: 三级全失败不静默
 
@@ -118,7 +125,7 @@ requirement-analysis、writing-plans、executing-plans、acceptance-qa 四个 SK
 
 - **GIVEN** 插件已安装于 Claude Code
 - **WHEN** 加载 writing-plans skill
-- **THEN** 加载文本中的插件根声明行显示为以 `/` 起始的绝对路径且以 `spec-dev/<版本>` 结尾，而非 `${CLAUDE_PLUGIN_ROOT}` 字面量
+- **THEN** 加载文本中的插件根声明行显示为以 `/` 起始的绝对路径而非 `${CLAUDE_PLUGIN_ROOT}` 字面量，且该路径下存在 `scripts/validate-output.mjs`
 
 #### Scenario: 变量未替换时按序列推导
 
@@ -134,7 +141,7 @@ requirement-analysis、writing-plans、executing-plans、acceptance-qa 四个 SK
 
 ### Requirement: 插件根引用统一写法
 
-skills/、agents/、commands/ 中所有指向插件内文件的命令 SHALL 使用 `"${CLAUDE_PLUGIN_ROOT}/<相对插件根路径>"` 形态（变量双引号包裹），SHALL NOT 出现相对于 cwd 的裸路径；各处 SHALL NOT 再各自复述降级说明——SKILL.md 与其 references 依赖载入即声明，两个 agent 各保留一句固定回退句「未替换时按插件根解析序列推导（定义见 exploration-patterns）」。visual-preview 自造的 `<skill-base-directory>` SHALL 改为官方 `${CLAUDE_SKILL_DIR}` 并附"未替换时取 skill base directory"半句。vendored anysearch 的 `<skill_dir>` 不在本条范围。
+skills/、agents/、commands/ 中所有指向**插件内文件**的命令 SHALL 使用 `"${CLAUDE_PLUGIN_ROOT}/<相对插件根路径>"` 形态（变量双引号包裹），SHALL NOT 出现相对于 cwd 的裸路径，也 SHALL NOT 出现自造占位符（`<插件根>`、`<plugin-root>`、`<skill-base-directory>`）；各处 SHALL NOT 再各自复述降级说明——SKILL.md 与其 references 依赖载入即声明，两个 agent 与 commands/doctor.md（agent 与命令正文均由平台直接替换，无需声明行）各保留一句固定回退句「未替换时按插件根解析序列推导（定义见 exploration-patterns）」。codex-compat.md:61 的 anysearch CLI 命令 SHALL 同样改为变量写法（Codex 下该变量为占位符，按序列代入）。visual-preview 自造的 `<skill-base-directory>` SHALL 改为官方 `${CLAUDE_SKILL_DIR}` 并附"未替换时取 skill base directory"半句。本条不涉及：指向**目标仓库**的路径（守卫安装位置 `scripts/spec-dev/**`、迁移脚本，如 quick-fix:40、executing-plans:35，必须保持相对）；vendored skill（anysearch 的 `<skill_dir>`、sequential-thinking 的 `bun scripts/think.ts`）；commands/doctor.md:11 转述 doctor.mjs 输出的仓库开发期维护提示（`node scripts/update-vendored-skill.mjs`，仅对插件仓库开发者有意义，保持原样）。
 
 #### Scenario: 用户项目 cwd 下校验命令可执行（bug 修复实证）
 
@@ -142,17 +149,17 @@ skills/、agents/、commands/ 中所有指向插件内文件的命令 SHALL 使�
 - **WHEN** 按 writing-plans 指令解析插件根后执行校验命令
 - **THEN** 命令 exit 0 并输出 `{ok:true, schema:"plan-index"}`；HEAD 095eb40 的裸路径写法在同一 cwd 下 exit 1 且报 `Cannot find module`
 
-#### Scenario: 零裸路径
+#### Scenario: 零裸路径与零自造占位符
 
 - **GIVEN** 仓库当前文本
-- **WHEN** 在 skills/ agents/ commands/ 中检索 `node scripts/`、`bash scripts/`、`python3 scripts/` 形态的命令（排除 vendored anysearch）
-- **THEN** 零命中；`${CLAUDE_PLUGIN_ROOT}` 的每次命令出现都带双引号包裹
+- **WHEN** 在 skills/ agents/ commands/ 中检索指向插件内文件的裸路径命令（`node|bash|python3 scripts/…`、`skills/…/scripts/…` 无变量前缀）与自造占位符（`<插件根>`、`<plugin-root>`、`<skill-base-directory>`），排除 `scripts/spec-dev/` 目标仓库路径、vendored 的 anysearch 与 sequential-thinking 目录、以及 commands/doctor.md:11 的维护提示
+- **THEN** 零命中；`${CLAUDE_PLUGIN_ROOT}` 与 `${CLAUDE_SKILL_DIR}` 的每次命令出现都带双引号包裹
 
 #### Scenario: 降级说明不再各处复述
 
 - **GIVEN** 仓库当前文本
-- **WHEN** 检索"先定位插件安装目录再以其为根解析路径"
-- **THEN** 零命中；agent 回退句与 schemas/README 只以指针指向 exploration-patterns
+- **WHEN** 检索"先定位插件安装目录再以其为根解析路径"与"先找插件安装目录"
+- **THEN** 零命中；agent、doctor.md 与 schemas/README 只以固定回退句或指针指向 exploration-patterns
 
 ### Requirement: 导航表依赖闭区间
 
@@ -236,11 +243,11 @@ start-server.sh 在非 `/tmp` 会话创建目录后 SHALL 在两个 visual 根�
 
 ## MODIFIED Requirements
 
-### Requirement: 失败隔离单点化（改了什么：canonical 不变，四处全文复述与三处姊妹句改为 gist + 指针）
+### Requirement: 失败隔离单点化（改了什么：canonical 不变，四处全文复述与四处姊妹句改为 gist + 指针）
 
-失败隔离纪律的完整陈述 SHALL 只存在于 exploration-patterns.md「派发要求与失败隔离」节（"某子代理失败 → 缩小该主题范围重试 1 次 → 仍失败由主线程接管该主题，其余子代理不受影响"）；requirement-analysis 阶段 2、quick-fix 步骤 2、codex-compat 并行子任务节、review-orchestration 失败隔离节 SHALL 各保留一句同措辞 gist（"失败先缩小范围重试 1 次，再失败主线程接管"）并指向定义点，SHALL NOT 出现措辞分化（如"主进程"）；契约校验的"失败 → 补全一次 → 主线程接管"姊妹句在 review-orchestration、executing-plans、schemas/README 处 SHALL 同样为 gist + 指针；ai-acceptance 的"再失败标记 unverified"结局 SHALL 保留并标注为 acceptance-qa 有意变体。规则本身（重试次数、接管主体、隔离范围）不变。
+失败隔离纪律的完整陈述 SHALL 只存在于 exploration-patterns.md「派发要求与失败隔离」节（"某子代理失败 → 缩小该主题范围重试 1 次 → 仍失败由主线程接管该主题，其余子代理不受影响"）；requirement-analysis 阶段 2、quick-fix 步骤 2、codex-compat 并行子任务节、review-orchestration 失败隔离节 SHALL 各保留一句同措辞 gist（"失败先缩小范围重试 1 次，再失败主线程接管"）并指向定义点，SHALL NOT 出现措辞分化（如"主进程"）；契约校验的"失败 → 补全一次 → 主线程接管"姊妹句在 review-orchestration:21、executing-plans:93、acceptance-qa:117、schemas/README:14 处 SHALL 同样为 gist + 指针（canonical 为 exploration-patterns「输出契约与校验」节）；ai-acceptance 的"再失败标记 unverified"结局 SHALL 保留并标注为 acceptance-qa 有意变体。规则本身（重试次数、接管主体、隔离范围）不变。
 
-#### Scenario: 五处 gist 字面一致
+#### Scenario: 四处 gist 与 canonical 字面一致
 
 - **GIVEN** 仓库当前文本
 - **WHEN** 提取 RA、quick-fix、codex-compat、review-orchestration 四处 gist 与 canonical 的核心句
@@ -278,15 +285,21 @@ quick-fix 步骤 5a 的 TDD 例外陈述 SHALL 改为"例外清单以 test-drive
 - **WHEN** 读取 TDD 例外句
 - **THEN** 不出现"一次性原型""生成代码""配置文件"三项并列，含指向 test-driven-development 的引用与"纯文案"自有例外
 
-### Requirement: visual 会话隔离提醒改为脚本自建（改了什么：SKILL.md 不再要求用户手动加 gitignore）
+### Requirement: visual-preview 产物归位特性目录（改了什么：gitignore 建议条款替换为脚本自建 .gitignore，其余条款自 major-upgrade 完整继承）
 
-visual-preview SKILL.md 启动会话节 SHALL 陈述"visual 根的 `.gitignore` 由脚本自建，无需修改仓库 `.gitignore`"，SHALL 保留"不要忽略整个 `.spec-dev/`"提醒；清理节的"项目内会话保留供回看"与归档约定 SHALL 不变。
+visual-preview SHALL 在存在特性上下文时把会话产物写入 `.spec-dev/<特性目录>/visual/<session-id>/`，无特性上下文时回退 `.spec-dev/visual/<session-id>/`；被设计采纳的定稿 mockup SHALL 复制为特性目录 `spec/assets/` 下的入库文件；两种 visual 根的 `.gitignore` SHALL 由 start-server.sh 自建（行为定义见 ADDED「visual 根自建 .gitignore」），SKILL.md SHALL NOT 再要求用户手动把 visual 路径加入仓库 `.gitignore`，但 SHALL 保留"不要忽略整个 `.spec-dev/`"提醒；port/token 记忆文件保持 `.spec-dev/visual/` 根不变；清理节的"项目内会话保留供回看"与归档约定 SHALL 不变。
 
 #### Scenario: 提醒句更新
 
 - **GIVEN** visual-preview SKILL.md
 - **WHEN** 检索"加入 `.gitignore`"
 - **THEN** 零命中；含"脚本自建"表述与"不要忽略整个 `.spec-dev/`"
+
+#### Scenario: 落位与归档条款继承（继承）
+
+- **GIVEN** 当前正在某特性目录上下文中做需求设计
+- **WHEN** 启动 visual-preview 并生成 mockup
+- **THEN** 产物位于该特性目录 `visual/<session-id>/` 下，port/token 记忆文件仍在 `.spec-dev/visual/` 根
 
 ### Requirement: README 漂移修正（改了什么：四处与仓库事实不符的陈述对齐）
 
@@ -302,12 +315,12 @@ README 双语 SHALL：trigger-evals 覆盖描述列出六个 skill（acceptance-
 
 ### 架构与组件
 
-- **定义点**（exploration-patterns.md）：新增「插件根解析」节（解析序列 + 占位符语义 + 契约校验降级 canonical），放在「输出契约与校验（deep 档）」之前；「派发要求与失败隔离」节末尾加止损句。它继续作为 10 个搜索块与 RA 已指向的共享 reference，不新建文件。
+- **定义点**（exploration-patterns.md）：新增「插件根解析」节（解析序列 + 占位符语义，只管路径），放在「输出契约与校验（deep 档）」之前；「输出契约与校验」节保留既有"失败 → 补全一次 → 主线程接管"canonical 并新增"校验器不可用 → 人工核对"一句；「派发要求与失败隔离」节末尾加止损句。它继续作为 10 个搜索块与 RA 已指向的共享 reference，不新建文件。
 - **声明行**（4 个 SKILL.md）：紧随语言协议块、位于"外部搜索统一入口"块之前（RA 无搜索块则紧随语言协议）。形制为独立 blockquote，保证 Claude Code 替换后一眼可见。
-- **引用点**（12 处）：命令统一 `node "${CLAUDE_PLUGIN_ROOT}/…"`；agent 回退句、schemas/README、acceptance-qa:81 指针化；visual-preview 用 `${CLAUDE_SKILL_DIR}`。
-- **收敛点**：失败隔离 4 处 gist、契约校验 3 处 gist、Codex 映射 2 处指针、quick-fix 例外清单 1 处引用。
+- **引用点**（13 处）：命令统一 `node "${CLAUDE_PLUGIN_ROOT}/…"`；agent 与 doctor.md 回退句、schemas/README、acceptance-qa:81 指针化；codex-compat:61 去自造占位符；visual-preview 用 `${CLAUDE_SKILL_DIR}`。
+- **收敛点**：失败隔离 4 处 gist、契约校验 4 处 gist（含 acceptance-qa:117）、Codex 映射 2 处指针、quick-fix 例外清单 1 处引用、codex-compat:61 占位符 1 处。
 - **校验器**：validate-output.mjs `validatePlanIndex` 的 deps 抽取从 `match(/T\d\d/g)` 改为先展开 `T\d\d-T\d\d` 区间再抽取；倒序与缺号入 errors。
-- **脚本**：start-server.sh 在 `mkdir -p "${SESSION_DIR}/content"` 之后、DRY_RUN 判定之前计算 visual 根清单；dry-run 打印后退出；非 dry-run 逐个 `[ -e "$root/.gitignore" ] || printf '*\n' > "$root/.gitignore"`，失败 `echo "warn: …" >&2`。
+- **脚本**：start-server.sh 在 SESSION_DIR 分支判定之后、DRY_RUN 块（:168-173，打印后 `exit 0`）之前计算本次涉及的 visual 根清单（FEATURE_DIR 分支为 `${FEATURE_DIR}/visual` 与 `${FEATURE_DIR%/*}/visual`，PROJECT_DIR 分支为 `${PROJECT_DIR}/.spec-dev/visual`，`/tmp` 分支为空）；dry-run 每根打印一行 `GITIGNORE=` 后退出；非 dry-run 在既有 `mkdir -p "${SESSION_DIR}/content" "$STATE_DIR"`（:182）之后逐根 `mkdir -p "$root"` 再 `[ -e "$root/.gitignore" ] || printf '*\n' > "$root/.gitignore"`，失败 `echo "warn: …" >&2` 继续。
 - **README**：两个新节 + 四处修正，双语逐节对应。
 
 ### 数据流
@@ -319,7 +332,7 @@ Claude Code：加载 SKILL.md → 平台替换声明行 → 会话持有插件�
 - 声明行字面量：`> **插件根**：\`${CLAUDE_PLUGIN_ROOT}\`——本 skill 正文与其 references 中的插件根命令以此为准；若上式仍为变量字面量（平台未替换），按 requirement-analysis 的 references/exploration-patterns.md「插件根解析」序列推导。`
 - 命令形态：`node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" <schema> <file>`；`node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" plan-index <plan目录>`；`bash "${CLAUDE_SKILL_DIR}/scripts/start-server.sh" …`
 - gist 句（失败隔离）：`失败先缩小范围重试 1 次，再失败主线程接管（定义见 exploration-patterns「派发要求与失败隔离」）`
-- gist 句（契约校验）：`校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「插件根解析」节的契约校验降级）`
+- gist 句（契约校验）：`校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「输出契约与校验」）`
 - 校验器 deps 展开：`expandRange("T01-T06") → ["T01",…,"T06"]`；`"T06-T01"` → errors `{path:"T07.deps", expected:"ascending range", actual:"T06-T01"}`
 - dry-run 输出新增行：`GITIGNORE=<visual 根>/.gitignore`（每个涉及的根一行）
 
@@ -334,7 +347,7 @@ Claude Code：加载 SKILL.md → 平台替换声明行 → 会话持有插件�
 
 | Scenario / 检查项 | 维度 | 执行方式 | Lane | 验收证据 |
 |-------------------|------|---------|------|---------|
-| 零裸路径 + 双引号包裹 + 四个 skill 声明行 + 降级说明不复述 + 五处 gist 字面一致 + 止损句单点 + 映射行单点 + 例外清单不复述 + 提醒句更新 + README 双表/双节/计数一致 | docs | 任务内 TDD（新建 scripts/tests/plugin-root.test.mjs） | fast | node --test 通过 |
+| 零裸路径与零自造占位符 + 双引号包裹 + 四个 skill 声明行 + 降级说明不复述 + 解析序列与契约校验完整陈述唯一 + 四处 gist 与 canonical 字面一致 + 止损句单点 + 映射行单点 + 例外清单不复述 + 提醒句更新 + README 双表/双节/计数一致 | docs | 任务内 TDD（新建 scripts/tests/plugin-root.test.mjs） | fast | node --test 通过 |
 | 区间展开 / 倒序拦截 / 缺号拦截 / 存量计划仍通过 | unit | 任务内 TDD（plan-index.test.mjs 新用例） | fast | node --test 通过 |
 | dry-run 打印 GITIGNORE 且不落盘 | unit | 任务内 TDD（visual-path.test.sh 新断言） | fast | bash 测试 PASS |
 | 用户项目 cwd 下校验命令可执行（bug 修复实证） | integration | 验收任务 (D)：临时目录 + 已知合法计划 fixture，按 skill 指令解析插件根后执行，对照 HEAD 095eb40 写法 | fast | 两次 exit code（0 vs 1）记录 |
@@ -346,7 +359,7 @@ Claude Code：加载 SKILL.md → 平台替换声明行 → 会话持有插件�
 ## 风险与边缘情况
 
 - **R1** 官方文档称 skill 正文"出现处即替换"，声明行放在普通 blockquote 是否被替换以验收 Scenario 实测；若不替换则改为 frontmatter 相邻的首行段落再测（机制不变、位置可调）。
-- **R2** Codex 端 skill base directory 是否注入未实测；第三级"已安装插件目录"兜底，且 codex-compat:16 既有条款已依赖 base directory，风险不新增。
+- **R2** Codex 端 skill base directory 是否注入未实测；第三级"已安装插件目录"兜底，且 scripts/schemas/README.md:16 既有条款已依赖 base directory 推导，风险不新增。
 - **R3** 本 spec covers 20 文件与五份 active spec 重叠，后续子项目 #2-#7 每次都要再做分面共存声明（roadmap 备注已记）。
 - **R4** Node ≥ 18 下限依据是 `node --test` 与 ESM 顶层 await；若后续脚本使用更高 API 需同步表。
 - **R5** 区间展开后存量 index.md 的 T07 依赖闭包变大（新增 T03-T05），语义更正确，不影响已完成执行。
