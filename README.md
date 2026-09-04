@@ -87,6 +87,19 @@ The Codex manifests (`.codex-plugin/plugin.json`, `.agents/plugins/marketplace.j
 
 Plugin-level `hooks/hooks.json` auto-registers the SessionStart context injection on platforms that honor plugin hooks (Claude Code / Grok Build) — no manual install needed for injection. `guardrail/install.mjs` remains the way to get the git gate (pre-commit / pre-push / CI) and the PreToolUse / Stop drift guards.
 
+### Runtime dependencies
+
+| Tier | Dependency | Used by | When missing |
+|---|---|---|---|
+| hard | `git` | drift guard, worktrees, per-task commits, `sync_commit` anchoring | main workflows unavailable |
+| hard | Node.js ≥ 18 | `validate-output.mjs`, guardrail scripts, `doctor.mjs`, `think.mjs`, the visual-preview server, `node --test` | contract validation, guard, doctor and visual preview unavailable |
+| soft | `bun` / `tsx` | sequential-thinking `think.ts` | falls back to `think.mjs` (Node), then to point-by-point reasoning in replies |
+| soft | `python3` | anysearch CLI (`anysearch_cli.py`) | falls back to the zero-dependency Node CLI (`anysearch_cli.js`), then to WebSearch / WebFetch |
+| soft | Playwright / k6 / Lighthouse / browser MCPs | acceptance-qa Tier A and performance rows | Tier D toolchain, or the row is marked `unverified` |
+| soft | `codex` CLI, `skill-creator` | repository development only (pre-commit checks) | skipped softly |
+
+If the contract validator cannot run (Node missing, or the plugin root cannot be resolved), the main thread checks the required keys and `coverage_note` against the schema by hand and notes "contract validation degraded" in the report — the single definition point is `skills/requirement-analysis/references/exploration-patterns.md` (Output contracts & validation; plugin-root resolution).
+
 ## Plugin Package Maintenance
 
 The repo root is the plugin root (flat layout): `skills/`, `agents/`, `commands/`, `scripts/`, `.claude-plugin/plugin.json` (Claude Code manifest), `.codex-plugin/plugin.json` (Codex manifest), root `plugin.json` (Agent Plugins 1.0.0) and `package.json` (pi distribution) are edited in place at the repo root; `README.md` and `CHANGELOG.md` exist as single copies with no mirror syncing. A release must bump the version in five places (`metadata.version` in `.claude-plugin/marketplace.json`, `version` in both `.claude-plugin/` and `.codex-plugin/` `plugin.json` files, root `plugin.json`, and `package.json`), and `check-plugin.mjs` verifies they stay in sync:
@@ -116,7 +129,7 @@ The script looks for the Codex built-in `skill-creator` first, and also supports
 `skills/*/evals/` holds two kinds of files with different roles:
 
 - `evals.json` — **design-intent documents**: they record the expected key behaviors of each skill (HARD-GATE refusals, handoff gates, degradation paths, etc.) for human review and a future evaluation harness. There is no runner in the repo, and most cases carry conversational preconditions with prose assertions — they are **not** an automated regression line; treat them as a checklist to walk through manually when changing skill behavior
-- `trigger-evals.json` — **cold-startable, decidable trigger-surface cases** (should-trigger / should-not-trigger single-shot prompts + near-miss negatives): currently covering the four skills with the trickiest trigger boundaries — acceptance-qa, requirement-analysis, exploring, quick-fix; plug into any evaluation harness and run the verdicts directly
+- `trigger-evals.json` — **cold-startable, decidable trigger-surface cases** (should-trigger / should-not-trigger single-shot prompts + near-miss negatives): currently covering six skills — acceptance-qa, clarifying, exploring, quick-fix, requirement-analysis, test-strategy; plug into any evaluation harness and run the verdicts directly
 
 ### Pre-commit hooks
 
@@ -136,6 +149,14 @@ git diff --cached --check
 ```
 
 The hook aborts the commit on validation failure; fix per the error and commit again. Set `SKIP_CODEX_PACKAGE_HOOK=1` to skip the hook temporarily; set `SKIP_OPENAI_SYNC_CHECK=1` when a SKILL change is confirmed not to need openai.yaml syncing.
+
+### Maturity tiers and release discipline
+
+Skill discovery has four paths and all of them point at `skills/` only: Claude Code reads the explicit `skills[]` list in `.claude-plugin/marketplace.json` (`check-plugin.mjs` verifies it two-way against the directories on disk — a skill directory missing from the list, or a listed directory that does not exist, fails pre-commit); Codex auto-discovers `skills/`; Pi reads `pi.skills` in `package.json`; Agent Plugins 1.0.0 reads the root `plugin.json` plus `skills/`.
+
+- **Experimental skills** live under a top-level `skills-in-progress/<name>/` directory: nothing there enters any plugin manifest, no stability is promised, and users install one by pointing their tool at the path.
+- **Graduation checklist**: move the directory into `skills/` → add it to `skills[]` in `.claude-plugin/marketplace.json` → add `agents/openai.yaml` → add `evals/evals.json` (plus `trigger-evals.json` when the trigger boundary is tricky) → mention it in the README three times (Features, Skill Pipeline, Directory Layout) → CHANGELOG entry.
+- **Thin-shell convention**: orchestration skills only describe flow; discipline is referenced ("follow skill X; X is the definition"), never restated. Shared definition points: the clarifying core discipline, `writing-plans/references/design-principles.md`, `requirement-analysis/references/exploration-patterns.md` (dispatch, failure isolation, plugin-root resolution, contract validation), `requirement-analysis/references/codex-compat.md`, the writing-plans resource ledger (`progress.yaml` `resources`), `acceptance-qa/references/acceptance-matrix.md`, and the test-strategy lanes.
 
 ## Using exploring
 
@@ -168,7 +189,7 @@ The spec lands in the feature directory `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/
 /executing-plans execute .spec-dev/2026-07-04-auth/plan/index.md
 ```
 
-- **writing-plans**: assumes a zero-context executor — every plan starts with a fixed Task 0 (set up an isolated workspace, with already-isolated detection and git fallback commands) and ends with a final task (merge & cleanup); when the spec's acceptance matrix has "acceptance task" rows, an acceptance task is generated between them. The worktree lifecycle closes within the plan, so it executes in order even outside this plugin. The header carries deviation-handling guidance; every task gets exact file paths, complete code, the 5 TDD steps (failing test → confirm fail → minimal implementation → confirm pass → commit) and consume/produce interface blocks; a four-way self-review (spec coverage / placeholders / type consistency) runs before handoff
+- **writing-plans**: assumes a zero-context executor — every plan starts with a fixed Task 0 (set up an isolated workspace, with already-isolated detection and git fallback commands) and ends with a final task (merge & cleanup); when the spec's acceptance matrix has "acceptance task" rows, an acceptance task is generated between them. The worktree lifecycle closes within the plan, so it executes in order even outside this plugin. The header carries deviation-handling guidance; every task gets exact file paths, complete code, the 5 TDD steps (failing test → confirm fail → minimal implementation → confirm pass → commit) and consume/produce interface blocks; a four-way self-review (spec coverage / placeholders / type consistency / navigation table ↔ task files) runs before handoff
 - **executing-plans**: after execution confirmation, starts from Task 0 (isolated workspace, discipline per using-git-worktrees) and executes tasks continuously on the main thread (per-task commit `feat(TN): xxx` + spec self-check); when all tasks complete it fans out code-reviewer for multi-dimension adversarial review (review-findings contract validation + adversarial recheck of high/medium findings + completeness critic), triggers acceptance-qa per the acceptance matrix, consults the user on finding disposition, then runs the final task (merge & cleanup) and summarizes
 
 ## Using visual-preview
@@ -248,20 +269,26 @@ spec-dev/                            # repo root is the plugin root (flat layout
 ├── guardrail/                       # spec drift guard (installable into target repos)
 ├── skills/
 │   ├── exploring/                   # exploration mode (thinking partner)
+│   ├── clarifying/                  # shared clarification discipline (grill-style)
 │   ├── requirement-analysis/        # 8-phase requirement design workflow
 │   ├── visual-preview/              # browser visual preview
 │   ├── writing-plans/               # implementation plan writing
 │   ├── executing-plans/             # plan execution + wrap-up review
 │   ├── using-git-worktrees/         # isolated workspace discipline
 │   ├── test-driven-development/     # TDD discipline
+│   ├── test-strategy/               # test strategy discipline (lanes / governance / acceptance-matrix link)
 │   ├── acceptance-qa/               # all-round acceptance workflow
-│   └── quick-fix/                   # lightweight bug-fix workflow
+│   ├── quick-fix/                   # lightweight bug-fix workflow
+│   ├── anysearch/                   # vendored real-time search CLI (upstream snapshot)
+│   └── sequential-thinking/         # vendored structured reasoning (upstream snapshot + Node port)
 ├── scripts/
 │   ├── check-plugin.mjs             # manifest version sync + symlink + Codex CLI install checks
-│   ├── validate-output.mjs          # subagent output contract validator
-│   ├── schemas/                     # 3 output contract schemas + usage notes
+│   ├── validate-output.mjs          # subagent output contract validator + plan-index structure check
+│   ├── schemas/                     # 3 output contract schemas + 1 vendored manifest schema + usage notes
 │   ├── validate-skills.mjs          # validates skills via skill-creator
 │   ├── check-openai-sync.mjs        # openai.yaml structure & SKILL sync tripwire
+│   ├── doctor.mjs                   # /doctor health checks (platform / guardrail / markers / injection / anysearch / reasoning runtime)
+│   ├── update-vendored-skill.mjs    # syncs vendored skills from upstream (tag / SHA pinned)
 │   ├── release.mjs                  # release script (manual release / post-commit auto-release)
 │   └── install-git-hooks.mjs        # enables the versioned Git hooks
 ├── CHANGELOG.md

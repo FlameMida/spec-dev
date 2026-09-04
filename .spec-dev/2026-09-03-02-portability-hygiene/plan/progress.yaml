@@ -1,5 +1,5 @@
 format_version: 1
-current: T07
+current: T08
 tasks:
   T00: { status: completed, commit: d4e39df, tests: pass }
   T01: { status: completed, commit: dad2cd3, tests: pass }
@@ -8,8 +8,8 @@ tasks:
   T04: { status: completed, commit: 4f105d1, tests: pass }
   T05: { status: completed, commit: 2602cf6, tests: pass }
   T06: { status: completed, commit: 0096bb8, tests: pass }
-  T07: { status: completed, tests: pass }
-  T08: { status: pending }
+  T07: { status: completed, commit: df2a4e3, tests: pass }
+  T08: { status: completed, tests: pass }
   T09: { status: pending }
   T10: { status: pending }
 resources:

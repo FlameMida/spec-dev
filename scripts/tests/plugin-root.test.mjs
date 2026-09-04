@@ -159,4 +159,60 @@ test("Scenario: 清单不再复述", () => {
   assert.ok(qf.includes("纯文案"), "quick-fix 自有例外应显式保留");
 });
 
+test("Scenario: 双语表存在且分级一致", () => {
+  const en = read("README.md");
+  const zh = read("README.zh-CN.md");
+  assert.ok(en.includes("### Runtime dependencies"));
+  assert.ok(zh.includes("### 运行时依赖"));
+  const rows = (t) => t.split("\n").filter((l) => /^\| (hard|soft) \|/.test(l));
+  const er = rows(en);
+  const zr = rows(zh);
+  assert.equal(er.length, zr.length, "双语表行数应相同");
+  assert.equal(er.filter((l) => l.startsWith("| hard |")).length, 2, "hard 行应为 git 与 Node.js");
+  for (const t of [en, zh]) {
+    assert.match(t, /\| hard \| `git` \|/);
+    assert.match(t, /\| hard \| Node\.js ≥ 18 \|/);
+    assert.ok(t.includes("exploration-patterns.md"), "校验器降级应指向定义点");
+  }
+  for (const l of [...er, ...zr].filter((l) => l.startsWith("| soft |"))) assert.ok(l.split("|")[4].trim().length > 0, `soft 行缺降级链: ${l}`);
+});
+
+test("Scenario: 分区约定可读且不误导", () => {
+  const en = read("README.md");
+  const zh = read("README.zh-CN.md");
+  assert.ok(en.includes("### Maturity tiers and release discipline"));
+  assert.ok(zh.includes("### 成熟度分区与发布纪律"));
+  for (const t of [en, zh]) {
+    assert.ok(t.includes("skills-in-progress/"), "应说明实验 skill 位置");
+    assert.ok(t.includes("check-plugin"), "应说明双向校验");
+    assert.match(t, /marketplace\.json/);
+  }
+  assert.match(en, /explicit `skills\[\]`/);
+  assert.match(zh, /显式/);
+});
+
+test("Scenario: 计数与磁盘一致", () => {
+  const en = read("README.md");
+  const zh = read("README.zh-CN.md");
+  const skillsDir = path.join(repoRoot, "skills");
+  const skills = readdirSync(skillsDir).filter((s) => existsSync(path.join(skillsDir, s, "SKILL.md")));
+  const layout = (t) => t.slice(Math.max(t.indexOf("## Directory Layout"), t.indexOf("## 目录结构")));
+  for (const t of [en, zh]) {
+    for (const s of skills) assert.ok(layout(t).includes(`${s}/`), `目录结构缺 ${s}/`);
+    for (const f of ["doctor.mjs", "update-vendored-skill.mjs"]) assert.ok(layout(t).includes(f), `目录结构缺 ${f}`);
+  }
+  const triggers = skills.filter((s) => existsSync(path.join(skillsDir, s, "evals/trigger-evals.json")));
+  assert.equal(triggers.length, 6);
+  for (const t of [en, zh]) {
+    const line = t.split("\n").find((l) => l.includes("`trigger-evals.json`"));
+    for (const s of triggers) assert.ok(line.includes(s), `trigger-evals 行缺 ${s}`);
+  }
+  assert.ok(!en.includes("four skills") && !zh.includes("四个 skill"));
+  assert.equal(readdirSync(path.join(repoRoot, "scripts/schemas")).filter((f) => f.endsWith(".json")).length, 4);
+  assert.ok(en.includes("3 output contract schemas + 1 vendored manifest schema"));
+  assert.ok(zh.includes("3 类输出契约 schema + 1 个 vendored manifest schema"));
+  assert.match(en, /four-way self-review \(spec coverage \/ placeholders \/ type consistency \/ navigation table/);
+  assert.match(zh, /四查（spec 覆盖\/占位符\/类型一致\/导航表与任务文件一致）/);
+});
+
 export { repoRoot, read, count, VENDORED, walk, mdFiles, EP, existsSync };

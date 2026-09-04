@@ -87,6 +87,19 @@ Codex 清单（`.codex-plugin/plugin.json`、`.agents/plugins/marketplace.json`�
 
 插件级 `hooks/hooks.json` 在支持插件 hooks 的平台（Claude Code / Grok Build）上安装即自动注册 SessionStart 会话注入——注入不再依赖手动安装。`guardrail/install.mjs` 仍是获得 git 闸门（pre-commit / pre-push / CI）与 PreToolUse / Stop 漂移守卫的途径。
 
+### 运行时依赖
+
+| 分级 | 依赖 | 用途 | 缺失时 |
+|---|---|---|---|
+| hard | `git` | 漂移守卫、worktree、每任务提交、`sync_commit` 锚定 | 主流程不可用 |
+| hard | Node.js ≥ 18 | `validate-output.mjs`、guardrail 脚本、`doctor.mjs`、`think.mjs`、visual-preview 服务器、`node --test` | 契约校验、守卫、doctor 与可视化预览不可用 |
+| soft | `bun` / `tsx` | sequential-thinking 的 `think.ts` | 降级 `think.mjs`（Node），再降级回复内分点推演 |
+| soft | `python3` | anysearch CLI（`anysearch_cli.py`） | 降级零依赖 Node 版 `anysearch_cli.js`，再降级 WebSearch / WebFetch |
+| soft | Playwright / k6 / Lighthouse / 浏览器 MCP | acceptance-qa Tier A 与性能行 | Tier D 工具链，或该行标记 `unverified` |
+| soft | `codex` CLI、`skill-creator` | 仅仓库开发期（pre-commit 校验） | 软跳过 |
+
+契约校验器无法运行（缺 Node 或插件根无法定位）时，主线程按 schema 人工核对必填键与 `coverage_note`，并在报告注明"契约校验降级"——唯一定义点是 `skills/requirement-analysis/references/exploration-patterns.md`（「输出契约与校验」与「插件根解析」节）。
+
 ## 插件包维护
 
 仓库根即插件根（扁平结构）：`skills/`、`agents/`、`commands/`、`scripts/`、`.claude-plugin/plugin.json`（Claude Code 清单）、`.codex-plugin/plugin.json`（Codex 清单）、根级 `plugin.json`（Agent Plugins 1.0.0）与 `package.json`（pi 分发清单）都在仓库根直接修改，`README.md`、`CHANGELOG.md` 只有一份，无需任何镜像同步。发版时需同步更新五处版本号（`.claude-plugin/marketplace.json` 的 `metadata.version`、`.claude-plugin/` 与 `.codex-plugin/` 两份 `plugin.json` 的 `version`、根级 `plugin.json`、`package.json`），`check-plugin.mjs` 会校验它们保持一致：
@@ -116,7 +129,7 @@ node scripts/validate-skills.mjs
 `skills/*/evals/` 下有两类文件，定位不同：
 
 - `evals.json` — **设计意图文档**：记录各 skill 关键行为的预期（HARD-GATE 拒绝、交接门、降级路径等），供人工 review 与未来评测 harness 使用。仓库内没有运行器，且多数用例带对话前置状态、断言为散文——它们**不构成自动化回归防线**，改动 skill 行为时应把它们当 checklist 人工过一遍
-- `trigger-evals.json` — **可冷启动、可判定的触发面用例**（should-trigger / should-not-trigger 单发 prompt + near-miss 负例）：目前覆盖触发边界最复杂的 acceptance-qa、requirement-analysis、exploring、quick-fix 四个 skill，接入任意评测 harness 即可直接运行判定
+- `trigger-evals.json` — **可冷启动、可判定的触发面用例**（should-trigger / should-not-trigger 单发 prompt + near-miss 负例）：目前覆盖 acceptance-qa、clarifying、exploring、quick-fix、requirement-analysis、test-strategy 六个 skill，接入任意评测 harness 即可直接运行判定
 
 ### 提交前 hook
 
@@ -136,6 +149,14 @@ git diff --cached --check
 ```
 
 校验失败时 hook 会中止提交，按报错修复后重新提交。临时跳过 hook 可设置 `SKIP_CODEX_PACKAGE_HOOK=1`；确认 SKILL 改动无需同步 openai.yaml 时可设置 `SKIP_OPENAI_SYNC_CHECK=1`。
+
+### 成熟度分区与发布纪律
+
+skill 的发现路径有四条，全部只指向 `skills/`：Claude Code 读 `.claude-plugin/marketplace.json` 的显式 `skills[]` 清单（`check-plugin.mjs` 与磁盘目录双向校验——磁盘有而清单无、清单有而磁盘无都会让 pre-commit 失败）；Codex 对 `skills/` 目录自动发现；Pi 读 `package.json` 的 `pi.skills`；Agent Plugins 1.0.0 读根级 `plugin.json` + `skills/`。
+
+- **实验 skill** 放在仓库顶层 `skills-in-progress/<name>/`：不进任何插件清单、不承诺稳定，用户按路径手装。
+- **毕业清单**：目录移入 `skills/` → 登记 `.claude-plugin/marketplace.json` 的 `skills[]` → 加 `agents/openai.yaml` → 加 `evals/evals.json`（触发边界复杂时另加 `trigger-evals.json`）→ README 三处提及（特性、Skill 管线、目录结构）→ CHANGELOG 条目。
+- **纯壳委托约定**：编排类 skill 只写流程，纪律以「遵循 X skill、定义以 X 为准」引用、不复述。共享定义点：clarifying 核心纪律、`writing-plans/references/design-principles.md`、`requirement-analysis/references/exploration-patterns.md`（派发、失败隔离、插件根解析、契约校验）、`requirement-analysis/references/codex-compat.md`、writing-plans 资源台账（`progress.yaml` 的 `resources`）、`acceptance-qa/references/acceptance-matrix.md`、test-strategy 的 Lane 语义。
 
 ## exploring 使用方法
 
@@ -168,7 +189,7 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-des
 /executing-plans 执行 .spec-dev/2026-07-04-auth/plan/index.md
 ```
 
-- **writing-plans**：假设执行者零上下文——每份计划固定以任务 0（建立隔离工作区，含已隔离检测与 git 降级命令）开头、以最终任务（合并与清理）收尾，spec 验收矩阵含「验收任务」行时在两者之间固定生成验收任务，worktree 生命周期在计划内闭合、脱离插件也能按序执行；头部随行偏差处理指引；每任务给精确文件路径、完整代码、TDD 五步（失败测试→确认失败→最小实现→确认通过→提交）、接口消费/产出块；写完跑四查（spec 覆盖/占位符/类型一致）再交接
+- **writing-plans**：假设执行者零上下文——每份计划固定以任务 0（建立隔离工作区，含已隔离检测与 git 降级命令）开头、以最终任务（合并与清理）收尾，spec 验收矩阵含「验收任务」行时在两者之间固定生成验收任务，worktree 生命周期在计划内闭合、脱离插件也能按序执行；头部随行偏差处理指引；每任务给精确文件路径、完整代码、TDD 五步（失败测试→确认失败→最小实现→确认通过→提交）、接口消费/产出块；写完跑四查（spec 覆盖/占位符/类型一致/导航表与任务文件一致）再交接
 - **executing-plans**：执行确认后从任务 0（隔离工作区，纪律遵循 using-git-worktrees）开始，主线程逐任务连续执行（每任务 commit `feat(TN): xxx` + spec 自检），全部完成后 fan-out code-reviewer 多维对抗审查（review-findings 契约校验 + 高/中发现对抗复核 + completeness critic），按验收矩阵触发 acceptance-qa 验收，审查处置征询用户后执行最终任务（合并与清理）并总结
 
 ## visual-preview 使用方法
@@ -247,20 +268,26 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 ├── guardrail/                       # spec 漂移守护（可装入目标仓库）
 ├── skills/
 │   ├── exploring/                   # 探索模式（思考伙伴）
+│   ├── clarifying/                  # 共享澄清纪律（grill 式）
 │   ├── requirement-analysis/        # 8 阶段需求设计工作流
 │   ├── visual-preview/              # 浏览器可视化预览
 │   ├── writing-plans/               # 实施计划编写
 │   ├── executing-plans/             # 计划执行 + 收尾审查
 │   ├── using-git-worktrees/         # 隔离工作区纪律
 │   ├── test-driven-development/     # TDD 纪律
+│   ├── test-strategy/               # 测试策略纪律（Lane / 治理 / 验收矩阵对接）
 │   ├── acceptance-qa/               # 全能验收工作流
-│   └── quick-fix/                   # 轻量 bug 修复工作流
+│   ├── quick-fix/                   # 轻量 bug 修复工作流
+│   ├── anysearch/                   # vendored 实时搜索 CLI（上游快照）
+│   └── sequential-thinking/         # vendored 结构化推理（上游快照 + Node 端口）
 ├── scripts/
 │   ├── check-plugin.mjs             # 清单版本一致性 + 符号链接 + Codex CLI 安装校验
-│   ├── validate-output.mjs          # 子代理输出契约校验器
-│   ├── schemas/                     # 3 类输出契约 schema + 使用说明
+│   ├── validate-output.mjs          # 子代理输出契约校验器 + plan-index 结构校验
+│   ├── schemas/                     # 3 类输出契约 schema + 1 个 vendored manifest schema + 使用说明
 │   ├── validate-skills.mjs          # 复用 skill-creator 校验 skills
 │   ├── check-openai-sync.mjs        # openai.yaml 结构与 SKILL 同步 tripwire
+│   ├── doctor.mjs                   # /doctor 健康检查（平台 / 守卫 / 标记 / 注入 / anysearch / 推理运行时）
+│   ├── update-vendored-skill.mjs    # 从上游同步 vendored skill（tag / SHA 锁定）
 │   ├── release.mjs                  # 发布脚本（手动发布 / post-commit 自动发版）
 │   └── install-git-hooks.mjs        # 启用版本化 Git hooks
 ├── CHANGELOG.md
