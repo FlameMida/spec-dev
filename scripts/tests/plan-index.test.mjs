@@ -18,10 +18,13 @@ const makePlan = (rows, files) => {
   writeFileSync(path.join(dir, "progress.yaml"), "format_version: 1\ncurrent: null\ntasks: {}\nresources: []\nnotes: []\n");
   return dir;
 };
-const run = (dir) => {
-  try { execFileSync("node", [script, "plan-index", dir], { encoding: "utf8" }); return 0; }
-  catch (e) { return e.status ?? 1; }
+const runCapture = (dir) => {
+  try {
+    execFileSync("node", [script, "plan-index", dir], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+    return { status: 0, stderr: "" };
+  } catch (e) { return { status: e.status ?? 1, stderr: String(e.stderr ?? "") }; }
 };
+const run = (dir) => runCapture(dir).status;
 
 test("Scenario: 大计划分文件且校验通过", () => {
   const dir = makePlan(["| T01 a | — | — | f() |", "| T02 b | T01 | f | g() |"], ["T01.md", "T02.md"]);
@@ -42,13 +45,6 @@ test("导航表与 tasks/ 文件不一致被拦截", () => {
   const dir = makePlan(["| T01 a | — | — | f() |"], ["T01.md", "T02.md"]);
   try { assert.equal(run(dir), 1); } finally { rmSync(dir, { recursive: true, force: true }); }
 });
-
-const runCapture = (dir) => {
-  try {
-    execFileSync("node", [script, "plan-index", dir], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
-    return { status: 0, stderr: "" };
-  } catch (e) { return { status: e.status ?? 1, stderr: String(e.stderr ?? "") }; }
-};
 
 test("Scenario: 区间展开参与闭包", () => {
   const rows = ["| T01 a | — | — | a() |", "| T02 b | T01 | a | b() |", "| T03 c | T02 | b | c() |", "| T04 d | T03 | c | d() |", "| T05 e | T01-T04 | d | e() |"];
@@ -84,4 +80,15 @@ test("Scenario: writing-plans 导航表规则定义闭区间写法且校验命�
   assert.ok(wp.includes("`T01-T06` 表示 T01 至 T06 闭区间"), "应定义闭区间写法");
   assert.ok(wp.includes('node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" plan-index <plan目录>'), "校验命令应为插件根写法");
   assert.ok(!wp.includes("node scripts/validate-output.mjs"), "不应残留裸相对路径");
+});
+
+test("Scenario: 区间写法变体被拦截（en/em dash、链式）", () => {
+  for (const cell of ["T01–T03", "T01—T03", "T01-T02-T03"]) {
+    const dir = makePlan(["| T01 a | — | — | a() |", "| T02 b | — | — | b() |", "| T03 c | — | — | c() |", `| T04 d | ${cell} | — | d() |`], ["T01.md", "T02.md", "T03.md", "T04.md"]);
+    try {
+      const r = runCapture(dir);
+      assert.equal(r.status, 1, `${cell} 应被拦截`);
+      assert.match(r.stderr, /ASCII hyphen range/);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  }
 });

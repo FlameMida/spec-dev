@@ -1,7 +1,7 @@
 # Codex 兼容指南
 
 > **阅读时机**：仅当运行环境为 Codex 时阅读本文件；Claude Code 环境无需加载。
-> 本文件是全 skill 共用的 Codex 适配定义点：工具映射总表、任务管理、并行子任务、外部探索、深度思考与 git 提交的 Codex 规则只在此完整陈述，各 skill 以 gist + 指针引用、不复述整表；「提问规范」「spec 审查子代理」两节为 requirement-analysis 专属。pi / Grok Build 等其他平台的差异见 README「Platform matrix / 平台矩阵」。各 skill 定义"做什么"，本文件定义 Codex 下"用什么工具做"。
+> 本文件是全 skill 共用的 Codex 适配定义点：工具映射总表只在此完整陈述，各 skill 以 gist + 指针引用、不复述整表；其余各节是 Codex 下的详细规则（任务管理、并行子任务、外部探索、深度思考、git 提交），skill 专属的 Codex 降级节可保留在各自文件；「提问规范」「spec 审查子代理」两节为 requirement-analysis 专属。pi / Grok Build 等其他平台的差异见 README「Platform matrix / 平台矩阵」。各 skill 定义"做什么"，本文件定义 Codex 下"用什么工具做"。
 
 ---
 

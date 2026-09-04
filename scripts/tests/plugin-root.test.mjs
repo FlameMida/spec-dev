@@ -19,9 +19,11 @@ const walk = (rel, out = []) => {
 };
 const mdFiles = () => ["skills", "agents", "commands"].flatMap((d) => walk(d)).filter((f) => f.endsWith(".md"));
 const EP = "skills/requirement-analysis/references/exploration-patterns.md";
+// 受检文档全集：skills/agents/commands 的 .md + schemas 说明（单点定义，新增受检文件只改这里）
+const docFiles = () => [...mdFiles(), "scripts/schemas/README.md"];
 
 test("Scenario: 解析序列只有一个定义点", () => {
-  const hits = [...mdFiles(), "scripts/schemas/README.md", "scripts/validate-output.mjs"]
+  const hits = [...docFiles(), "scripts/validate-output.mjs"]
     .filter((f) => { const t = read(f); return t.includes("上两级") && t.includes("已安装插件目录"); });
   assert.deepEqual(hits, [EP], "解析序列完整陈述只能在 exploration-patterns");
   assert.ok(read(EP).includes("## 插件根解析"), "应有「插件根解析」节");
@@ -36,7 +38,7 @@ test("Scenario: 契约校验完整陈述唯一（定义点侧）", () => {
 });
 
 test("Scenario: 止损句单点存在", () => {
-  const hits = [...mdFiles(), "scripts/schemas/README.md"].filter((f) => read(f).includes("不硬撑"));
+  const hits = docFiles().filter((f) => read(f).includes("不硬撑"));
   assert.deepEqual(hits, [EP]);
 });
 
@@ -57,15 +59,12 @@ test("Scenario: 四个 skill 都有声明行", () => {
   }
 });
 
-test("Scenario: 变量未替换时按序列推导——SKILL 内命令为双引号写法且契约 gist 带指针", () => {
+test("Scenario: 变量未替换时按序列推导——SKILL 内命令为双引号写法", () => {
   const ep = read("skills/executing-plans/SKILL.md");
   const aq = read("skills/acceptance-qa/SKILL.md");
   assert.ok(ep.includes('node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" review-findings <file>'));
   assert.ok(aq.includes('node "${CLAUDE_PLUGIN_ROOT}/skills/acceptance-qa/scripts/detect-env.mjs"'));
   assert.ok(!aq.includes("先定位插件安装目录"), "acceptance-qa 不应再自带降级说明");
-  for (const [f, t] of [["executing-plans", ep], ["acceptance-qa", aq]]) {
-    for (const line of t.split("\n")) if (line.includes("补全一次")) assert.ok(line.includes("exploration-patterns"), `${f}: 契约校验句缺指针 → ${line.trim().slice(0, 80)}`);
-  }
 });
 
 test("Scenario: 提醒句更新", () => {
@@ -86,7 +85,7 @@ const PLACEHOLDER = /<插件根>|<plugin-root>|<skill-base-directory>/;
 test("Scenario: 零裸路径与零自造占位符", () => {
   // 裸路径规则的范围是 skills/ agents/ commands/（spec 原文）；scripts/schemas/README.md 是插件仓库内的开发文档，
   // 其 `node scripts/validate-output.mjs agent-plugin-1.0.0 plugin.json` 在插件根运行属合法，只查双引号与占位符
-  for (const f of [...mdFiles(), "scripts/schemas/README.md"]) {
+  for (const f of docFiles()) {
     const text = read(f);
     const bareScope = !f.startsWith("scripts/");
     for (const line of text.split("\n")) {
@@ -99,7 +98,7 @@ test("Scenario: 零裸路径与零自造占位符", () => {
 });
 
 test("Scenario: 降级说明不再各处复述", () => {
-  for (const f of [...mdFiles(), "scripts/schemas/README.md"]) {
+  for (const f of docFiles()) {
     const t = read(f);
     assert.ok(!t.includes("先定位插件安装目录再以其为根解析路径"), `${f} 仍有降级复述`);
     assert.ok(!t.includes("先找插件安装目录"), `${f} 仍有降级复述`);
@@ -117,14 +116,14 @@ test("Scenario: 四处 gist 与 canonical 字面一致", () => {
     assert.ok(read(f).includes(GIST_FI), `${f} 缺失败隔离 gist 或措辞不一致`);
   }
   assert.equal(count(read(EP), "缩小该主题范围重试 1 次"), 1, "canonical 只在 exploration-patterns 出现一次");
-  for (const f of [...mdFiles(), "scripts/schemas/README.md"]) assert.ok(!read(f).includes("主进程接管"), `${f} 仍有措辞分化"主进程接管"`);
+  for (const f of docFiles()) assert.ok(!read(f).includes("主进程接管"), `${f} 仍有措辞分化"主进程接管"`);
 });
 
 test("Scenario: 契约校验完整陈述唯一（引用侧）", () => {
   for (const f of ["skills/executing-plans/SKILL.md", "skills/executing-plans/references/review-orchestration.md", "scripts/schemas/README.md"]) {
     assert.ok(read(f).includes(GIST_CV), `${f} 缺契约校验 gist 或措辞不一致`);
   }
-  for (const f of [...mdFiles(), "scripts/schemas/README.md"]) {
+  for (const f of docFiles()) {
     if (f === EP) continue;
     for (const line of read(f).split("\n")) {
       if (line.includes("补全一次")) assert.ok(line.includes("exploration-patterns"), `${f}: "补全一次"同行缺指针 → ${line.trim().slice(0, 100)}`);
@@ -134,12 +133,12 @@ test("Scenario: 契约校验完整陈述唯一（引用侧）", () => {
 
 test("Scenario: 有意变体被标注", () => {
   const ai = read("skills/acceptance-qa/references/ai-acceptance.md");
-  assert.match(ai, /再失败将缺失项标记 unverified[^\n]*acceptance-qa 有意变体[^\n]*exploration-patterns/, "ai-acceptance 应保留 unverified 结局并标注为变体、指向定义点");
+  assert.match(ai, /再失败将缺失项标记 unverified[^\n]*（acceptance-qa 变体；通用规则见 exploration-patterns「输出契约与校验」）/, "ai-acceptance 应保留 unverified 结局并以与 SKILL.md:117 相同的字面量标注变体");
 });
 
 test("Scenario: 通用映射行只在一处", () => {
   const row = "| 进度跟踪 | `TaskCreate` / `TaskUpdate` | `update_plan` |";
-  const hits = [...mdFiles(), "scripts/schemas/README.md"].filter((f) => read(f).includes(row));
+  const hits = docFiles().filter((f) => read(f).includes(row));
   assert.deepEqual(hits, ["skills/requirement-analysis/references/codex-compat.md"], "通用映射表只能在 codex-compat");
   assert.ok(read("skills/requirement-analysis/SKILL.md").includes("codex-compat.md"), "RA 应保留指针");
   assert.ok(read("skills/requirement-analysis/references/codex-compat.md").includes("全 skill 共用"), "codex-compat 前言应声明全 skill 共用");
@@ -223,5 +222,3 @@ test("Scenario: 变量未替换时按序列推导——skill base directory 上�
     assert.ok(existsSync(path.join(root, "skills/acceptance-qa/scripts/detect-env.mjs")), "插件根下应有 detect-env.mjs");
   }
 });
-
-export { repoRoot, read, count, VENDORED, walk, mdFiles, EP, existsSync };

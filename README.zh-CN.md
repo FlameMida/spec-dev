@@ -279,7 +279,7 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 │   ├── acceptance-qa/               # 全能验收工作流
 │   ├── quick-fix/                   # 轻量 bug 修复工作流
 │   ├── anysearch/                   # vendored 实时搜索 CLI（上游快照）
-│   └── sequential-thinking/         # vendored 结构化推理（上游快照 + Node 端口）
+│   └── sequential-thinking/         # vendored 结构化推理（上游快照 + Node 移植版）
 ├── scripts/
 │   ├── check-plugin.mjs             # 清单版本一致性 + 符号链接 + Codex CLI 安装校验
 │   ├── validate-output.mjs          # 子代理输出契约校验器 + plan-index 结构校验

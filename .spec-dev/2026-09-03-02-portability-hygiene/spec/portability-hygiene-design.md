@@ -164,13 +164,13 @@ skills/、agents/、commands/ 中所有指向**插件内文件**的命令 SHALL 
 
 ### Requirement: 导航表依赖闭区间
 
-plan-index 校验器（validate-output.mjs）SHALL 把依赖列中的 `TNN-TMM` 写法展开为闭区间内的全部任务 ID 参与悬空与环检测；倒序区间（起点大于终点）或区间内存在不对应任务文件的编号 SHALL 报错（errors path 为 `<任务>.deps`）。writing-plans SHALL 在导航表规则处定义该写法（"`T01-T06` 表示 T01 至 T06 闭区间，区间内每个编号都必须是表内任务"）。
+plan-index 校验器（validate-output.mjs）SHALL 把依赖列中的 `TNN-TMM` 写法展开为闭区间内的全部任务 ID 参与悬空与环检测；倒序区间（起点大于终点）SHALL 报错（errors path 为 `<任务>.deps`，expected `ascending range`）；区间内存在表内不存在的编号 SHALL 由悬空检测报错（`dangling TNN`）；en/em dash 或链式区间等变体写法 SHALL 报错而非静默降级为端点。writing-plans SHALL 在导航表规则处定义该写法（"`T01-T06` 表示 T01 至 T06 闭区间，区间内每个编号都必须是表内任务"）。
 
 #### Scenario: 区间展开参与闭包
 
 - **GIVEN** 导航表 T07 依赖列写 `T01-T06`，T01-T06 均存在
 - **WHEN** 运行 plan-index 校验
-- **THEN** 校验通过，且 T07 的依赖集合为 {T01,T02,T03,T04,T05,T06}（删除 tasks/T03.md 后再校验即报 T07 悬空）
+- **THEN** 校验通过，且 T07 的依赖集合为 {T01,T02,T03,T04,T05,T06}（移除 T03 行与 tasks/T03.md 后再校验即报 T07 悬空 `dangling T03`）
 
 #### Scenario: 倒序区间被拦截
 

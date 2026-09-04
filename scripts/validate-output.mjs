@@ -196,6 +196,9 @@ function validatePlanIndex(planDir) {
   // 依赖列写法：单个 ID（T03）或闭区间（T01-T06 → T01…T06 全部）；倒序入 errors，区间内缺号由下方悬空检测报出
   const expandDeps = (cell, taskId) => {
     const deps = [];
+    // 变体写法（en/em dash、链式区间）不降级为端点——直接报错，避免静默丢依赖
+    const variant = cell.match(/T\d\d\s*[—–]\s*T\d\d|T\d\d\s*-\s*T\d\d\s*-\s*T\d\d/);
+    if (variant) errors.push({ path: `${taskId}.deps`, expected: "ASCII hyphen range TNN-TMM", actual: variant[0] });
     const re = /T(\d\d)(?:\s*-\s*T(\d\d))?/g;
     let m;
     while ((m = re.exec(cell)) !== null) {
