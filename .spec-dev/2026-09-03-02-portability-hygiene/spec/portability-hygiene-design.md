@@ -258,7 +258,7 @@ start-server.sh 在非 `/tmp` 会话创建目录后 SHALL 在两个 visual 根�
 
 ### Requirement: 失败隔离单点化（改了什么：canonical 不变，四处全文复述与四处姊妹句改为 gist + 指针）
 
-失败隔离纪律的完整陈述 SHALL 只存在于 exploration-patterns.md「派发要求与失败隔离」节（"某子代理失败 → 缩小该主题范围重试 1 次 → 仍失败由主线程接管该主题，其余子代理不受影响"）；requirement-analysis 阶段 2、quick-fix 步骤 2、codex-compat 并行子任务节、review-orchestration 失败隔离节 SHALL 各保留一句同措辞 gist（"失败先缩小范围重试 1 次，再失败主线程接管"）并指向定义点，SHALL NOT 出现措辞分化（如"主进程"）；契约校验的"失败 → 补全一次 → 主线程接管"姊妹句在 review-orchestration:21、executing-plans:93、acceptance-qa:117、schemas/README:14 处 SHALL 同样为 gist + 指针（canonical 为 exploration-patterns「输出契约与校验」节）；agents/code-explorer.md 与 agents/code-reviewer.md 契约输出段提及"补全一次"的句子 SHALL 带指向该定义点的指针；ai-acceptance 的"再失败标记 unverified"结局 SHALL 保留并标注为 acceptance-qa 有意变体。规则本身（重试次数、接管主体、隔离范围）不变。
+失败隔离纪律的完整陈述 SHALL 只存在于 exploration-patterns.md「派发要求与失败隔离」节（"某子代理失败 → 缩小该主题范围重试 1 次 → 仍失败由主线程接管该主题，其余子代理不受影响"）；requirement-analysis 阶段 2、quick-fix 步骤 2、codex-compat 并行子任务节、review-orchestration 失败隔离节 SHALL 各保留一句同措辞 gist（"失败先缩小范围重试 1 次，再失败主线程接管"）并指向定义点，SHALL NOT 出现措辞分化（如"主进程"）；契约校验的"失败 → 补全一次 → 主线程接管"姊妹句在 review-orchestration:21、executing-plans:93、schemas/README:14 处 SHALL 同样为 gist + 指针（canonical 为 exploration-patterns「输出契约与校验」节）；acceptance-qa:117 SHALL 用变体 gist（"校验失败发回补全一次，再失败标记 unverified（acceptance-qa ���体；通用规则见 exploration-patterns「输出契约与校验」）"），与 ai-acceptance 的结局一致；agents/code-explorer.md 与 agents/code-reviewer.md 契约输出段提及"补全一次"的句子 SHALL 带指向该定义点的指针；ai-acceptance 的"再失败标记 unverified"结局 SHALL 保留并标注为 acceptance-qa 有意变体。规则本身（重试次数、接管主体、隔离范围）不变。
 
 #### Scenario: 四处 gist 与 canonical 字面一致
 
@@ -345,7 +345,7 @@ Claude Code：加载 SKILL.md → 平台替换声明行 → 会话持有插件�
 - 声明行字面量：`> **插件根**：\`${CLAUDE_PLUGIN_ROOT}\`——本 skill 正文与其 references 中的插件根命令以此为准；若上式仍为变量字面量（平台未替换），按 requirement-analysis 的 references/exploration-patterns.md「插件根解析」序列推导。`
 - 命令形态：`node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" <schema> <file>`；`node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" plan-index <plan目录>`；`bash "${CLAUDE_SKILL_DIR}/scripts/start-server.sh" …`
 - gist 句（失败隔离）：`失败先缩小范围重试 1 次，再失败主线程接管（定义见 exploration-patterns「派发要求与失败隔离」）`
-- gist 句（契约校验）：`校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「输出契约与校验」）`
+- gist 句（契约校验）：`校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「输出契约与校验」）`；acceptance-qa 变体：`校验失败发回补全一次，再失败标记 unverified（acceptance-qa 变体；通用规则见 exploration-patterns「输出契约与校验」）`
 - 校验器 deps 展开：`expandRange("T01-T06") → ["T01",…,"T06"]`；`"T06-T01"` → errors `{path:"T07.deps", expected:"ascending range", actual:"T06-T01"}`
 - dry-run 输出新增行：`GITIGNORE=<visual 根>/.gitignore`（每个涉及的根一行）
 

@@ -78,14 +78,17 @@ test("Scenario: 提醒句更新", () => {
   assert.ok(vp.includes("保留供日后查看"), "回看设计应保留");
 });
 
-const BARE = /(^|[\s`(])(node|bash|python3?|bun)\s+(scripts|skills|agents|guardrail)\//;
-const UNQUOTED = /(node|bash|python3?|bun)\s+\$\{CLAUDE_(PLUGIN_ROOT|SKILL_DIR)\}/;
+// 裸路径：可选 ./ 前缀与引号包裹都算；变量：无引号或单引号（单引号会阻止 shell 展开）都算未正确包裹
+const BARE = /(^|[\s`(])(node|bash|python3?|bun)\s+["']?(\.\/)?(scripts|skills|agents|guardrail)\//;
+const UNQUOTED = /(node|bash|python3?|bun)\s+'?\$\{CLAUDE_(PLUGIN_ROOT|SKILL_DIR)\}/;
+// 受检文本全集（含各 skill 的 Codex 接口文件 openai.yaml，防止命令形态从 description 漂进去）
+const textFiles = () => ["skills", "agents", "commands"].flatMap((d) => walk(d)).filter((f) => /\.(md|yaml)$/.test(f)).concat(["scripts/schemas/README.md"]);
 const PLACEHOLDER = /<插件根>|<plugin-root>|<skill-base-directory>/;
 
 test("Scenario: 零裸路径与零自造占位符", () => {
   // 裸路径规则的范围是 skills/ agents/ commands/（spec 原文）；scripts/schemas/README.md 是插件仓库内的开发文档，
   // 其 `node scripts/validate-output.mjs agent-plugin-1.0.0 plugin.json` 在插件根运行属合法，只查双引号与占位符
-  for (const f of docFiles()) {
+  for (const f of textFiles()) {
     const text = read(f);
     const bareScope = !f.startsWith("scripts/");
     for (const line of text.split("\n")) {
