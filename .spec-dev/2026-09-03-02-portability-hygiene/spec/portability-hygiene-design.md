@@ -17,6 +17,7 @@ spec_dev:
     - "skills/visual-preview/SKILL.md"
     - "skills/visual-preview/scripts/start-server.sh"
     - "agents/code-explorer.md"
+    - "agents/code-reviewer.md"
     - "agents/external-resource-explorer.md"
     - "commands/doctor.md"
     - "scripts/validate-output.mjs"
@@ -65,7 +66,7 @@ writing-plans 指令中的 `node scripts/validate-output.mjs plan-index …` 是
 ## 影响面
 
 - **skills**：requirement-analysis（SKILL.md 载入即声明 + 映射表改指针 + 失败隔离 gist；references/exploration-patterns.md 新增「插件根解析」节、「输出契约与校验」节补校验器不可用降级句并成为契约校验 canonical、止损句；references/codex-compat.md 前言、:54 gist、:61 占位符与命令写法）、writing-plans（SKILL.md 载入即声明 + :118 写法与范围定义）、executing-plans（SKILL.md 载入即声明 + :93；references/review-orchestration.md :20-21/:58）、acceptance-qa（SKILL.md 载入即声明 + :78-81 + :117 gist 指针；references/ai-acceptance.md :37-38）、quick-fix（:38 gist、:66 例外清单引用、:99-103 映射表收敛）、visual-preview（SKILL.md :38/:43/:71；scripts/start-server.sh 自建 .gitignore）
-- **agents**：code-explorer.md :148、external-resource-explorer.md :31 的回退句统一
+- **agents**：code-explorer.md :148、external-resource-explorer.md :31 的回退句统一；code-explorer.md :116 与 code-reviewer.md :147 契约输出段的"补全一次"句补指向定义点的指针
 - **commands**：doctor.md :5 写法统一
 - **scripts**：validate-output.mjs 依赖列范围展开；schemas/README.md :8/:14/:16 指针化；tests/plan-index.test.mjs 新用例；tests/visual-path.test.sh 新断言；tests/plugin-root.test.mjs 新建
 - **README 双语**：新增「运行时依赖」「成熟度分区与发布纪律」两节；修正 trigger-evals 计数、目录结构、"四查"、schema 计数
@@ -241,11 +242,23 @@ start-server.sh 在非 `/tmp` 会话创建目录后 SHALL 在两个 visual 根�
 - **WHEN** 启动
 - **THEN** 输出含 `GITIGNORE=` 行，文件系统无新建 `.gitignore`
 
+#### Scenario: 写入失败只警告
+
+- **GIVEN** 项目内 `.spec-dev/` 为只读目录（无法新建 `.spec-dev/visual/`），但特性目录已存在且可写
+- **WHEN** 以 `--project-dir` + `--feature-dir` 启动会话
+- **THEN** stderr 出现 `warn: cannot create <project>/.spec-dev/visual; skip .gitignore`，服务器仍正常启动（返回 `server-started`），特性目录 visual 根的 `.gitignore` 照常生成
+
+#### Scenario: /tmp 会话无 visual 根
+
+- **GIVEN** 不传 `--project-dir` 与 `--feature-dir`（回退 `/tmp` 会话）
+- **WHEN** `--dry-run`
+- **THEN** 输出不含任何 `GITIGNORE=` 行
+
 ## MODIFIED Requirements
 
 ### Requirement: 失败隔离单点化（改了什么：canonical 不变，四处全文复述与四处姊妹句改为 gist + 指针）
 
-失败隔离纪律的完整陈述 SHALL 只存在于 exploration-patterns.md「派发要求与失败隔离」节（"某子代理失败 → 缩小该主题范围重试 1 次 → 仍失败由主线程接管该主题，其余子代理不受影响"）；requirement-analysis 阶段 2、quick-fix 步骤 2、codex-compat 并行子任务节、review-orchestration 失败隔离节 SHALL 各保留一句同措辞 gist（"失败先缩小范围重试 1 次，再失败主线程接管"）并指向定义点，SHALL NOT 出现措辞分化（如"主进程"）；契约校验的"失败 → 补全一次 → 主线程接管"姊妹句在 review-orchestration:21、executing-plans:93、acceptance-qa:117、schemas/README:14 处 SHALL 同样为 gist + 指针（canonical 为 exploration-patterns「输出契约与校验」节）；ai-acceptance 的"再失败标记 unverified"结局 SHALL 保留并标注为 acceptance-qa 有意变体。规则本身（重试次数、接管主体、隔离范围）不变。
+失败隔离纪律的完整陈述 SHALL 只存在于 exploration-patterns.md「派发要求与失败隔离」节（"某子代理失败 → 缩小该主题范围重试 1 次 → 仍失败由主线程接管该主题，其余子代理不受影响"）；requirement-analysis 阶段 2、quick-fix 步骤 2、codex-compat 并行子任务节、review-orchestration 失败隔离节 SHALL 各保留一句同措辞 gist（"失败先缩小范围重试 1 次，再失败主线程接管"）并指向定义点，SHALL NOT 出现措辞分化（如"主进程"）；契约校验的"失败 → 补全一次 → 主线程接管"姊妹句在 review-orchestration:21、executing-plans:93、acceptance-qa:117、schemas/README:14 处 SHALL 同样为 gist + 指针（canonical 为 exploration-patterns「输出契约与校验」节）；agents/code-explorer.md 与 agents/code-reviewer.md 契约输出段提及"补全一次"的句子 SHALL 带指向该定义点的指针；ai-acceptance 的"再失败标记 unverified"结局 SHALL 保留并标注为 acceptance-qa 有意变体。规则本身（重试次数、接管主体、隔离范围）不变。
 
 #### Scenario: 四处 gist 与 canonical 字面一致
 

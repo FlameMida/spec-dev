@@ -215,4 +215,13 @@ test("Scenario: 计数与磁盘一致", () => {
   assert.match(zh, /四查（spec 覆盖\/占位符\/类型一致\/导航表与任务文件一致）/);
 });
 
+test("Scenario: 变量未替换时按序列推导——skill base directory 上两级即插件根（布局不变量）", () => {
+  for (const s of ["requirement-analysis", "writing-plans", "executing-plans", "acceptance-qa"]) {
+    const root = path.resolve(repoRoot, "skills", s, "..", "..");
+    assert.equal(root, repoRoot, `${s} 的 base directory 上两级应为插件根`);
+    assert.ok(existsSync(path.join(root, "scripts/validate-output.mjs")), "插件根下应有校验器");
+    assert.ok(existsSync(path.join(root, "skills/acceptance-qa/scripts/detect-env.mjs")), "插件根下应有 detect-env.mjs");
+  }
+});
+
 export { repoRoot, read, count, VENDORED, walk, mdFiles, EP, existsSync };

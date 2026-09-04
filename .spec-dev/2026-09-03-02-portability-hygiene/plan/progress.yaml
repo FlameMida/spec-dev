@@ -9,9 +9,11 @@ tasks:
   T05: { status: completed, commit: 2602cf6, tests: pass }
   T06: { status: completed, commit: 0096bb8, tests: pass }
   T07: { status: completed, commit: df2a4e3, tests: pass }
-  T08: { status: completed, tests: pass }
+  T08: { status: completed, commit: 6a9deed, tests: pass }
   T09: { status: pending }
   T10: { status: pending }
 resources:
   - "worktree: .worktrees/plan-2026-09-03-02-portability-hygiene —— git worktree remove .worktrees/plan-2026-09-03-02-portability-hygiene && git branch -d plan/2026-09-03-02-portability-hygiene"
-notes: []
+notes:
+  - "critic 处置：covers 补 agents/code-reviewer.md（T06 已改该文件）；R8 补『写入失败只警告』『/tmp 会话无 visual 根』两条 Scenario 并实测通过；T09 行 5 rg 口径按 spec 范围拆为两条；补 Codex 布局不变量与 /tmp 分支 GITIGNORE 计数两条 fast 测试"
+  - "T05 首次提交时全局断言仍红（schemas/README:44 开发期命令被误判），提交后发现并修正测试范围后 amend；此后各任务提交前加测试红即中止保护"

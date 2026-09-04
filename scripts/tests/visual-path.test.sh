@@ -26,4 +26,7 @@ echo "$out" | grep -q "GITIGNORE=/tmp/vp-proj/.spec-dev/visual/.gitignore" || { 
 [ ! -e /tmp/vp-proj/.spec-dev/visual/.gitignore ] || { echo "FAIL: dry-run 不应落盘"; exit 1; }
 out=$(bash "$SCRIPT" --project-dir /tmp/vp-proj --dry-run 2>&1)
 [ "$(echo "$out" | grep -c '^GITIGNORE=')" = "1" ] || { echo "FAIL: 回退分支应只打印一个 visual 根, got: $out"; exit 1; }
+# Scenario: /tmp 会话无 visual 根
+out=$(bash "$SCRIPT" --dry-run 2>&1)
+[ "$(echo "$out" | grep -c '^GITIGNORE=')" = "0" ] || { echo "FAIL: /tmp 会话不应有 GITIGNORE 行, got: $out"; exit 1; }
 echo PASS
