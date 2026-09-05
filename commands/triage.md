@@ -1,5 +1,5 @@
 ---
-description: Explicit triage entry - judge commitment / task type / design space and route to the right lane (quick-fix / requirement-analysis / exploring / report lane); advisory only, zero files written / 显式分诊入口——判定承诺状态/任务类型/设计空间，把需求路由到正确通道（quick-fix / requirement-analysis / exploring / 报告通道）；判定仅为建议、全程零落盘
+description: 显式分诊入口——判定承诺状态/任务类型/设计空间，把需求路由到正确通道（quick-fix / requirement-analysis / exploring / 报告通道）；判定仅为建议、全程零落盘
 ---
 
 # 需求分诊（Triage）

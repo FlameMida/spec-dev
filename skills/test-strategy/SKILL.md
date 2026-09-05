@@ -1,10 +1,10 @@
 ---
 name: test-strategy
 description: >-
-  Test strategy discipline - three-lane scheduling by IO type (fast/PR/nightly), governance order flaky→duration→selection, AI-agent model-boundary testing skeleton, and acceptance-matrix integration. Use when designing a spec's test & acceptance strategy, translating an acceptance matrix into plan tasks, or setting up test lanes for a project. / 测试策略纪律——按 IO 类型的三 Lane 调度（fast/PR/nightly）、治理顺序 flaky→时长→选择、AI Agent 模型边界测试骨架、验收矩阵对接。为 spec 设计测试与验收策略、把验收矩阵翻译为计划任务、或为项目搭测试分层时使用。
+  测试策略纪律——按 IO 类型的三 Lane 调度（fast/PR/nightly）、治理顺序 flaky→时长→选择、AI Agent 模型边界测试骨架、验收矩阵对接。为 spec 设计测试与验收策略、把验收矩阵翻译为计划任务、或为项目搭测试分层时使用。
 ---
 
-> **Language Protocol / 语言协议**: Respond in the user's conversation language — an explicit user instruction takes precedence, then recent messages; default to English. Deliverables follow the conversation language at creation. / 以对话语言输出；落盘产物以创建时对话语言为准。
+> 语言协议：以对话语言输出——用户显式指定优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准。
 
 > **外部搜索统一入口**：需要联网检索（资料、库/框架文档、时效信息）时一律先用 anysearch skill（插件内嵌），不可用再降级 WebSearch/WebFetch；降级链与派发词要求见 requirement-analysis 的 references/exploration-patterns.md。
 

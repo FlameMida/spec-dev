@@ -36,7 +36,7 @@ const CONFIGS = {
     localFiles: ["agents/openai.yaml"],
     // normalize 每次重建 description 为增强版：上游同步覆盖后自动重放
     enhancedDescription:
-      "Real-time web search, vertical domain search, parallel batch search, and URL content extraction via vendored CLI (no MCP). Use when you need to search the web, look up library/framework docs or current best practices, verify time-sensitive facts, batch-research multiple topics, or extract page content. Preferred first-choice search tool; fall back to WebSearch/WebFetch only when unavailable. / 实时网页搜索、垂直领域检索、并行批量检索与 URL 正文抽取（内嵌 CLI、无需 MCP）。当需要联网搜索、查库/框架文档与最新实践、核实时效信息、多主题批量调研或抽取网页正文时使用；搜索首选入口，不可用时才降级 WebSearch/WebFetch。",
+      "实时网页搜索、垂直领域检索、并行批量检索与 URL 正文抽取（内嵌 CLI、无需 MCP）。当需要联网搜索、查库/框架文档与最新实践、核实时效信息、多主题批量调研或抽取网页正文时使用；搜索首选入口，不可用时才降级 WebSearch/WebFetch。",
   },
   "sequential-thinking": {
     mode: "snapshot",
@@ -47,7 +47,8 @@ const CONFIGS = {
     refRe: /^[0-9a-f]{7,40}$/,
     refHint: "commit SHA（7-40 位十六进制）",
     localFiles: ["agents/openai.yaml", "scripts/think.mjs", "NOTICE", "evals/evals.json"],
-    enhancedDescription: null, // 上游 description 保留原文
+    enhancedDescription:
+      "通过结构化的逐步思考解决复杂问题，支持分支探索、修订和自适应深度。适用于复杂问题拆解、需要调整的规划与设计、可能修正方向的分析、初始范围不明的任务、需要保持上下文的多步骤工作，以及需要筛选无关信息、提出假设并反复验证的问题。当用户要求逐步分析、拆解问题、推敲思路、仔细思考，或问题明显需要结构化多步推理时使用。",
   },
 };
 

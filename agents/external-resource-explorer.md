@@ -1,6 +1,6 @@
 ---
 name: external-resource-explorer
-description: External resource exploration - find best practices, standards, official docs and cases for requirement-analysis parallel and follow-up exploration; reports conclusions, evidence and sources / 外部资源探索 agent，负责查找外部最佳实践、标准、官方文档与案例，服务 requirement-analysis 的并行探索与回补探索，输出结论、证据和来源
+description: 外部资源探索 agent，负责查找外部最佳实践、标准、官方文档与案例，服务 requirement-analysis 的并行探索与回补探索，输出结论、证据和来源
 tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, WebFetch, WebSearch
 model: inherit
 color: cyan

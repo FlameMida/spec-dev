@@ -1,5 +1,5 @@
 ---
-description: Diagnose spec-dev health — platform, guardrail install, injection markers, SessionStart hook mount (incl. injection decision replay), anysearch (duplicates + upstream lag), sequential-thinking runtime / 诊断 spec-dev 健康态：平台、guardrail 安装、注入标记、SessionStart hook 挂载（含注入决策回放）、anysearch（双副本歧义与版本滞后）、sequential-thinking 运行时
+description: 诊断 spec-dev 健康态：平台、guardrail 安装、注入标记、SessionStart hook 挂载（含注入决策回放）、anysearch（双副本歧义与版本滞后）、sequential-thinking 运行时
 ---
 
 运行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/doctor.mjs` 并把输出原样呈现给用户，对每个 ✗/hint 项逐条解释修复指引；用户要求机器可读输出时加 `--json`。

@@ -1,10 +1,9 @@
 ---
 name: quick-fix
 description: >-
-  Lightweight bug-fix workflow - for fixes already decided on with no design space (small bugs, minor adjustments, post-plan tweaks): locate root cause with spec back-lookup, confirm one question at a time, fix under TDD, optional acceptance. Splits on contract impact to avoid spec drift; escalates to requirement-analysis on contract-crossing / cross-module / new-dependency signals. Not for new features or anything with design space (use requirement-analysis), nor for undecided ideas (use exploring). / 轻量 bug 修复工作流——已决定要修、无设计空间的小修复（小 bug、小调整、计划执行后的小问题）时使用：定位根因（含 spec 反查）、逐题校对、TDD 修复、可选验收。按契约影响分流以规避 spec 漂移；根因涉及跨 spec 契约/跨模块/新依赖时建议升级 requirement-analysis。不适用于新功能或任何有设计空间的需求（用 requirement-analysis），也不适用于尚未决定要不要做的想法（用 exploring）。
+  轻量 bug 修复工作流——已决定要修、无设计空间的小修复（小 bug、小调整、计划执行后的小问题）时使用：定位根因（含 spec 反查）、逐题校对、TDD 修复、可选验收。按契约影响分流以规避 spec 漂移；根因涉及跨 spec 契约/跨模块/新依赖时建议升级 requirement-analysis。不适用于新功能或任何有设计空间的需求（用 requirement-analysis），也不适用于尚未决定要不要做的想法（用 exploring）。
 ---
 
-> **Language Protocol / 语言协议**: Respond in the user's conversation language — an explicit user instruction (including the platform `language` setting) takes precedence, then the language of the user's recent messages; default to English when neither indicates a language. All deliverables written to the repo (specs, plans, reports, notes) follow the conversation language at creation; incremental edits keep the artifact's existing language. Fixed-wording prompts in this skill are semantic templates — express their meaning in the conversation language, don't quote them verbatim.
 > 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
 
 > **外部搜索统一入口**：需要联网检索（资料、库/框架文档、时效信息）时一律先用 anysearch skill（插件内嵌），不可用再降级 WebSearch/WebFetch；降级链与派发词要求见 requirement-analysis 的 references/exploration-patterns.md。

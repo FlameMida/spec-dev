@@ -1,6 +1,7 @@
 ---
 name: sequential-thinking
-description: "Dynamic, reflective problem-solving through structured sequential thoughts with support for branching, revision, and adaptive depth. Use this skill when: (1) Breaking down complex problems into steps, (2) Planning and design with room for revision, (3) Analysis that might need course correction, (4) Problems where the full scope is not clear initially, (5) Multi-step solutions requiring maintained context, (6) Situations where irrelevant information must be filtered out, (7) Any task benefiting from hypothesis generation, verification, and iterative refinement. Triggers: think through, step by step, break this down, sequential thinking, reason through, analyze step by step, think carefully, or when a problem clearly benefits from structured multi-step reasoning."
+description: >-
+  通过结构化的逐步思考解决复杂问题，支持分支探索、修订和自适应深度。适用于复杂问题拆解、需要调整的规划与设计、可能修正方向的分析、初始范围不明的任务、需要保持上下文的多步骤工作，以及需要筛选无关信息、提出假设并反复验证的问题。当用户要求逐步分析、拆解问题、推敲思路、仔细思考，或问题明显需要结构化多步推理时使用。
 license: MIT
 metadata:
   upstream: https://github.com/thedotmack/sequential-thinking-skill
