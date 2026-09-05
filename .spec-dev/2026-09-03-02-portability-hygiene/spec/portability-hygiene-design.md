@@ -258,7 +258,7 @@ start-server.sh 在非 `/tmp` 会话创建目录后 SHALL 在两个 visual 根�
 
 ### Requirement: 失败隔离单点化（改了什么：canonical 不变，四处全文复述与四处姊妹句改为 gist + 指针）
 
-失败隔离纪律的完整陈述 SHALL 只存在于 exploration-patterns.md「派发要求与失败隔离」节（"某子代理失败 → 缩小该主题范围重试 1 次 → 仍失败由主线程接管该主题，其余子代理不受影响"）；requirement-analysis 阶段 2、quick-fix 步骤 2、codex-compat 并行子任务节、review-orchestration 失败隔离节 SHALL 各保留一句同措辞 gist（"失败先缩小范围重试 1 次，再失败主线程接管"）并指向定义点，SHALL NOT 出现措辞分化（如"主进程"）；契约校验的"失败 → 补全一次 → 主线程接管"姊妹句在 review-orchestration:21、executing-plans:93、schemas/README:14 处 SHALL 同样为 gist + 指针（canonical 为 exploration-patterns「输出契约与校验」节）；acceptance-qa:117 SHALL 用变体 gist（"校验失败发回补全一次，再失败标记 unverified（acceptance-qa ���体；通用规则见 exploration-patterns「输出契约与校验」）"），与 ai-acceptance 的结局一致；agents/code-explorer.md 与 agents/code-reviewer.md 契约输出段提及"补全一次"的句子 SHALL 带指向该定义点的指针；ai-acceptance 的"再失败标记 unverified"结局 SHALL 保留并标注为 acceptance-qa 有意变体。规则本身（重试次数、接管主体、隔离范围）不变。
+失败隔离纪律的完整陈述 SHALL 只存在于 exploration-patterns.md「派发要求与失败隔离」节（"某子代理失败 → 缩小该主题范围重试 1 次 → 仍失败由主线程接管该主题，其余子代理不受影响"）；requirement-analysis 阶段 2、quick-fix 步骤 2、codex-compat 并行子任务节、review-orchestration 失败隔离节 SHALL 各保留一句同措辞 gist（"失败先缩小范围重试 1 次，再失败主线程接管"）并指向定义点，SHALL NOT 出现措辞分化（如"主进程"）；契约校验的"失败 → 补全一次 → 主线程接管"姊妹句在 review-orchestration:21、executing-plans:93、schemas/README:14 处 SHALL 同样为 gist + 指针（canonical 为 exploration-patterns「输出契约与校验」节）；acceptance-qa:117 SHALL 用变体 gist（"校验失败发回补全一次，再失败标记 unverified（acceptance-qa 变体；通用规则见 exploration-patterns「输出契约与校验」）"），与 ai-acceptance 的结局一致；agents/code-explorer.md 与 agents/code-reviewer.md 契约输出段提及"补全一次"的句子 SHALL 带指向该定义点的指针；ai-acceptance 的"再失败标记 unverified"结局 SHALL 保留并标注为 acceptance-qa 有意变体。规则本身（重试次数、接管主体、隔离范围）不变。
 
 #### Scenario: 四处 gist 与 canonical 字面一致
 
@@ -270,7 +270,7 @@ start-server.sh 在非 `/tmp` 会话创建目录后 SHALL 在两个 visual 根�
 
 - **GIVEN** ai-acceptance.md 契约校验段
 - **WHEN** 读取其失败结局
-- **THEN** 保留"再失败将缺失项标记 unverified"并注明"acceptance-qa 变体，通用规则见 exploration-patterns"
+- **THEN** 保留"再失败将缺失项标记 unverified"并紧接与 acceptance-qa/SKILL.md:117 相同的字面量"（acceptance-qa 变体；通用规则见 exploration-patterns「输出契约与校验」）"
 
 ### Requirement: Codex 映射表单点化（改了什么：canonical 前言改为全 skill 共用，两处复述表改指针，skill 专属行保留）
 
@@ -362,10 +362,10 @@ Claude Code：加载 SKILL.md → 平台替换声明行 → 会话持有插件�
 |-------------------|------|---------|------|---------|
 | 零裸路径与零自造占位符 + 双引号包裹 + 四个 skill 声明行 + 降级说明不复述 + 解析序列与契约校验完整陈述唯一 + 四处 gist 与 canonical 字面一致 + 止损句单点 + 映射行单点 + 例外清单不复述 + 提醒句更新 + README 双表/双节/计数一致 | docs | 任务内 TDD（新建 scripts/tests/plugin-root.test.mjs） | fast | node --test 通过 |
 | 区间展开 / 倒序拦截 / 缺号拦截 / 存量计划仍通过 | unit | 任务内 TDD（plan-index.test.mjs 新用例） | fast | node --test 通过 |
-| dry-run 打印 GITIGNORE 且不落盘 | unit | 任务内 TDD（visual-path.test.sh 新断言） | fast | bash 测试 PASS |
+| dry-run 打印 GITIGNORE 且不落盘 / /tmp 会话无 visual 根 | unit | 任务内 TDD（visual-path.test.sh 新断言） | fast | bash 测试 PASS |
 | 用户项目 cwd 下校验命令可执行（bug 修复实证） | integration | 验收任务 (D)：临时目录 + 已知合法计划 fixture，按 skill 指令解析插件根后执行，对照 HEAD 095eb40 写法 | fast | 两次 exit code（0 vs 1）记录 |
 | Claude Code 加载后声明行为绝对路径 | integration | 验收任务 (X)：AI 自主验收——加载 writing-plans 并截取声明行 | PR | 加载文本片段 |
-| 会话文件被忽略 / 已有 .gitignore 不覆盖 | integration | 验收任务 (D)：临时 git 仓库真实 start + stop | PR | git check-ignore 输出 |
+| 会话文件被忽略 / 已有 .gitignore 不覆盖 / 写入失败只警告 | integration | 验收任务 (D)：临时 git 仓库真实 start + stop（第三次以 `.spec-dev` 只读、特性目录可写形态启动） | PR | git check-ignore 输出、stderr 单行 warn |
 | validate-skills / check-openai-sync / check-plugin / node --test 全绿 | integration | 验收任务 (D) | fast | 命令退出码 0 |
 | RA / writing-plans / executing-plans / acceptance-qa / quick-fix 的 evals.json 人工走查 | docs | 验收任务 (D)：逐条核对未被本次改动破坏 | fast | 走查清单 |
 
