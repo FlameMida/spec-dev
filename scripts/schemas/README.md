@@ -53,3 +53,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" <schema-name> <json-fil
 3. 若输出可能被截断或缩小范围，加入必填的 `coverage_note: {"type": "string"}`；
 4. 构造 1 个合法 + 若干非法样例，用 validate-output.mjs 跑通后再在 skill 文档中引用；
 5. 在上方契约清单表中登记用途与消费方。
+
+## 审查符合性类别
+
+review-findings 的 category 增加 `Spec符合性`，用于 S 原始发现；D 沿用质量/规范/建议。必填字段不变。契约原文/路径:行、实现证据与偏差写入 description；覆盖范围、Scenario、测试证据指针及缺口写入 coverage_note。机器校验只检查结构与类别，不保证引用真实或行为成立，语义由主线程复核和 completeness critic 核查。空 findings 搭配非空 coverage_note 是合法报告，不自动代表全部覆盖或交付。

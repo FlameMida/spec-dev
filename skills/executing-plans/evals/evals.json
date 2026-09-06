@@ -85,6 +85,51 @@
       "id": "tdd-seam-s17",
       "prompt": "S17 绿后发现重复代码：\nGIVEN 目标测试已绿，执行者发现与本票相关的重复辅助逻辑\nWHEN 结束本次红绿循环",
       "expected_output": "记录重构候选，按任务流程提交和自检；收尾接收候选，而不是在每个循环里自动去重或新增功能。"
+    },
+    {
+      "id": "review-conformance-s01",
+      "prompt": "S01 任务完成但缺少承诺的错误处理\nGIVEN 任务已标 completed，Scenario 要求无效输入返回校验错误，但 diff 仅实现正常路径\nWHEN S 审查整个特性",
+      "expected_output": "报告缺失行为并引用 Scenario 和当前入口，不用任务完成状态证明交付。"
+    },
+    {
+      "id": "review-conformance-s02",
+      "prompt": "S02 增加了未获批准的对外行为\nGIVEN 获批范围只有读取接口，diff 新增可对外调用的删除接口，计划及批准变更均无依据\nWHEN S 核对行为与授权范围",
+      "expected_output": "报告越界，引用获批范围原文及新增接口位置，说明已核对的任务与变更来源。"
+    },
+    {
+      "id": "review-conformance-s03",
+      "prompt": "S03 看似实现但语义相反\nGIVEN Scenario 要求空集合返回零，而实现返回空值，实施者声称通过\nWHEN S 对照入口和测试证据",
+      "expected_output": "报告语义偏差并给出契约与实现证据，自报告不抵销发现。"
+    },
+    {
+      "id": "review-conformance-s04",
+      "prompt": "S04 内部辅助实现不构成额外交付\nGIVEN diff 增加为获批排序行为服务的内部辅助函数，未增加可观察行为或违背其他约束\nWHEN S 追溯其用途",
+      "expected_output": "不因任务未逐项列出该函数而报越界；同样承认有可恢复批准记录且已按偏差流程修订契约的新增行为。"
+    },
+    {
+      "id": "review-conformance-s05",
+      "prompt": "S05 已取代条款与缺失实现位置\nGIVEN active spec 含一条已标 Superseded 的旧 Scenario 和一条现行缺失功能\nWHEN reviewer 产生 S 发现",
+      "expected_output": "旧条款不产生缺失发现；现行缺失项引用现行原文，file/line 锚定应承载行为的现有入口，若完全没有代码锚则锚定契约行并说明不存在实现，不编造源码位置。"
+    },
+    {
+      "id": "review-conformance-s13",
+      "prompt": "S13 只有问题标签的候选\nGIVEN 候选只写「违反最佳实践、过度设计」，没有位置、规则或实际影响\nWHEN reviewer 筛选报告",
+      "expected_output": "该候选不能作为已确认问题输出；证据充分的高置信发现仍按现有严重性分类报告。"
+    },
+    {
+      "id": "review-conformance-s19",
+      "prompt": "S19 新旧类别均有效\nGIVEN 字段完整的旧六类报告和新增 `Spec符合性` 报告\nWHEN 经现有 validate-output CLI 校验",
+      "expected_output": "均通过；机器校验仅证明 schema 合法，S 引用是否真实及结论是否成立仍需语义复核。"
+    },
+    {
+      "id": "review-conformance-s20",
+      "prompt": "S20 未知类别或缺字段\nGIVEN 报告类别为未定义值，或缺 description，或 coverage_note 为空\nWHEN 经 CLI 校验",
+      "expected_output": "退出码为 1，错误指出对应字段；按原输出契约单点规则补全一次，再失败由主线程接管，不能忽略报告。"
+    },
+    {
+      "id": "review-conformance-s21",
+      "prompt": "S21 没有发现的合法报告\nGIVEN findings 为空而 coverage_note 非空，说明实际覆盖与证据\nWHEN 校验并消费",
+      "expected_output": "schema 接受，critic 按所列证据核查；不会为满足格式而制造 findings。"
     }
   ]
 }
