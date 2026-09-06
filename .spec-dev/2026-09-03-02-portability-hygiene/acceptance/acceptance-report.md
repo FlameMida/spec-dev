@@ -2,7 +2,7 @@
 
 > Time: 2026-09-06 | Triggered by: executing-plans 接手收尾 | Tier: standard
 > Spec: ../spec/portability-hygiene-design.md（active）
-> Source: `b37c3b6d8dd3bcc8d47441348641e624d2c82e95`；主线基点 `05067de`。
+> Source: `b37c3b6d8dd3bcc8d47441348641e624d2c82e95`；初次对照主线 `05067de`，共同祖先 `ba954e6`；合并后验收提交 `6af9004`。
 > Evidence dir: `evidence/`。本轮未修改实现代码；下列结论来自本次命令和独立复核。
 
 ## Overview
@@ -61,14 +61,17 @@ T09 验收通过（附既有文档预期与运行环境警告）。Node 测试 *
 
 ## Diagnosis Details
 
+合并后首次全量 Node 测试为 75/76：主线程在测试运行时新建夹具文件，触发 update-vendored 用例的工作区 before/after 比较，与被测命令本身无关。停止全部并行文件写入后复跑，76/76 通过，验证了该诊断；失败原始输出保留于 `merged-validation-first.json`。
+
 Claude 远端尝试识别到当前 worktree 插件，但连续 429，120 秒后终止（`claude-load.json`），未取得加载正文，因此该尝试不计通过。
 
 随后以本地 HTTP 接收端接收真实 Claude 客户端请求。首次进程环境变量被用户 `settings.env` 服务地址覆盖：本地收到 0 个请求且 CLI 401；只检查了配置键名，没有读取或记录凭据值。隔离 setting sources 并显式设置进程内本地地址和 dummy key 后，接收端收到 `/v1/messages?beta=true`，CLI exit 0。未修改任何用户配置。
 
-通过依据是请求内已经展开的 writing-plans 完整正文：声明值为当前 worktree 绝对路径，base directory 位于其 `skills/writing-plans`，校验器文件存在。独立审计逐字比对正文；本地模型响应不参与声明断言。夹具继承 stdin 导致 ARGUMENTS 附带夹具源码；审计明确分离正文和 ARGUMENTS，正文比对未受影响。后续复用夹具应传 `input=""`。
+通过依据是请求内已经展开的 writing-plans 完整正文：声明值为当前 worktree 绝对路径，base directory 位于其 `skills/writing-plans`，校验器文件存在。独立审计逐字比对正文；本地模型响应不参与声明断言。首次夹具继承 stdin 导致 ARGUMENTS 附带源码；审计确认未影响正文比对。随后将夹具保存为 `evidence/capture-claude-loader.py`、设置 `input=""`，在合并后的 `6af9004` 重新执行；当前证据为无附带源码的成功请求。
 
 ## Evidence Index
 
+- `evidence/merged-validation.json`：T10 合入主线后的全量安全网；`evidence/capture-claude-loader.py`：可复跑的真实客户端加载夹具。
 - `evidence/node-tests.json`、`validate-skills.json`、`openai-sync.json`、`check-plugin.json`、`plan-index.json`：命令、退出码、耗时、完整输出。
 - `evidence/environment.json`：环境检测；未配置的浏览器/性能工具不在本 spec 适用维度内，无需安装。
 - `evidence/integration.json`：跨 cwd、Codex、visual、扫描、资源清理证据。临时服务均停止，自建 `/tmp/ph-accept-*` 目录已清理。
@@ -83,4 +86,4 @@ Claude 远端尝试识别到当前 worktree 插件，但连续 429，120 秒后�
 
 T09 原计划通过旧 8.1.0 缓存中的 acceptance-qa 命令间接验证替换，本轮改为直接加载当前 worktree 的 writing-plans 并捕获完整已展开正文，符合 spec 原 Scenario；执行性质从模型判读改为客户端确定性证据加独立审计。B/C 合并为一路独立文档审查，A 与 completeness 分别独立，职责均覆盖。
 
-全量测试已在当前实现提交执行，后续只变更验收/进度/spec 状态记录；T10 安全网复用该次全量结果，提交前继续验证文档、契约及 Git diff，不重复相同代码测试。
+T10 发现 main 独有 `05067de`（描述/语言协议中文化），快进不可用；worktree 临时移除后已原分支恢复，所有提交保留。随后无冲突合入 main（`6af9004`），保留中文化。因合并引入新的代码树，重新运行完整 Node 测试、visual-path、技能/openai/plugin（含官方 Codex CLI）校验，并重跑 Claude 加载夹具；结果见 `evidence/merged-validation.json`，全部通过。
