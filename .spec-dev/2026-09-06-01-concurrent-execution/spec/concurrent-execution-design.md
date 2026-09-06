@@ -140,7 +140,7 @@ README 双语 SHALL 与磁盘正式 skill、trigger-evals 和 schema 集合一�
 
 ### Requirement: 并发入口三条件
 
-executing-plans SHALL 仅在用户明确选择、存在至少两个无相互依赖的 ready 实施任务、写集合及资源隔离检查通过时委托 executing-plans-parallel；满足资格但用户未选择时只提议。共享 T00 或更早已完成依赖不妨碍独立；T00、验收和最终任务永不派给 implementer。只剩一票时可继续已选择模式，但同时在途票之间始终无写/资源冲突；能力不可用或声明缺失时说明原因走串行。
+executing-plans SHALL 仅在用户明确选择、导航拓扑存在至少两个无相互依赖路径的可并发实施任务、写集合及资源隔离检查通过时委托 executing-plans-parallel；满足资格但用户未选择时只提议。入口判断拓扑潜力，不要求 T00 已完成；实际派发必须等依赖全 completed、任务成为 ready。共享 T00 或共同前置不妨碍独立；T00、验收和最终任务永不派给 implementer。只剩一票时可继续已选择模式，但同时在途票之间始终无写/资源冲突；能力不可用或声明缺失时说明原因走串行。
 
 #### Scenario: S07 普通继续不自动并发
 - **GIVEN** 导航表有两条独立链、声明有效，用户只说“继续计划”。
@@ -148,9 +148,9 @@ executing-plans SHALL 仅在用户明确选择、存在至少两个无相互依�
 - **THEN** 不把该话语视作并发选择；沿用已记录的模式，首次模式未定时默认串行并可提议。
 
 #### Scenario: S08 显式选择后的真实并发
-- **GIVEN** 用户已选并发、T01/T02 均依赖已完成 T00、写集合不相交且资源可隔离。
+- **GIVEN** 用户已选并发、T01/T02 均依赖尚未执行的 T00、写集合不相交且资源可隔离。
 - **WHEN** 运行编排。
-- **THEN** 两票在不同 worktree 有重叠的执行时间，最终由主线程逐个核验并集成；最终任务不被提前派发。
+- **THEN** 入口接受并发选择，先由主线程完成 T00 再派两票；两票在不同 worktree 有重叠的执行时间，最终由主线程逐个核验并集成；最终任务不被提前派发。
 
 ### Requirement: 写集合与资源冲突准入
 
@@ -172,7 +172,7 @@ executing-plans SHALL 仅在用户明确选择、存在至少两个无相互依�
 
 #### Scenario: S11 两主线程重复启动
 - **GIVEN** 主线程 A 持有同一特性锁且 T01 已认领。
-- **WHEN** B 从另一个 worktree 尝试启动。
+- **WHEN** B 从另一个 worktree 的不同绝对计划路径启动相同仓库根相对特性。
 - **THEN** B 无法取得锁，不写 progress、不派发 T01；报告现有 owner。
 
 #### Scenario: S12 旧结果重复回报
@@ -182,7 +182,7 @@ executing-plans SHALL 仅在用户明确选择、存在至少两个无相互依�
 
 ### Requirement: implementer 独占执行契约
 
-implementer SHALL 在给定绝对 worktree 内核对仓库、分支和基线，读取指针输入并完成 TDD 五步及两项自检，返回 implementation-result；仅修改获准业务/测试文件，不编辑 spec/plan/progress、不合并或推送、不操作共享 stash、不创建 PR、不自行派生写码代理。测试例外仅继承现行 TDD 的已授权例外，不能由本 skill 新增；spec 自检只查 over/under-building 与契约锚定。
+implementer SHALL 在给定绝对 worktree 内核对仓库、分支和基线，读取指针输入并完成 TDD 五步及两项自检，返回 implementation-result；仅修改获准业务/测试文件，不编辑 spec/plan/progress、不合并或推送、不操作共享 stash、不创建 PR、不自行派生写码代理。现行 TDD 的已授权例外仍然有效，但例外票与相关基线测试范围显式为空的票由主线程串行执行，不派给 implementer；不撤销已有例外、不强制补造测试。spec 自检只查 over/under-building 与契约锚定。
 
 #### Scenario: S13 基线错误先停
 - **GIVEN** 工具继承了主线程 cwd，或 worktree HEAD 不是派发基线。
@@ -193,6 +193,11 @@ implementer SHALL 在给定绝对 worktree 内核对仓库、分支和基线，�
 - **GIVEN** 一票有可复现的失败测试。
 - **WHEN** implementer 报成功。
 - **THEN** 报告含红测试的预期失败证据、绿测试通过证据、实现提交及两项自检结果；编译/环境故障不能冒充有效红测试。
+
+#### Scenario: S22 已授权免测或空基线范围保留串行语义
+- **GIVEN** 某票已获用户授权 TDD 例外，或适用的计划基线测试范围显式为空。
+- **WHEN** 生成并发声明或准备派工。
+- **THEN** 该票不进入 implementer 并发集合，由主线程排空在途票后串行执行，分别记录授权例外或空基线原因，不伪造 tests: pass；其他具备完整测试条件的票仍可并发。空基线只豁免基线测试，本身不构成票内 TDD 例外。
 
 ### Requirement: 集成验证后才完成
 
@@ -249,7 +254,7 @@ implementer SHALL 在给定绝对 worktree 内核对仓库、分支和基线，�
 
 ### index 并发声明
 
-index 头部增加至多一个标记为 `yaml spec-dev-parallel` 的 fenced block；不存在表示无并发声明。其结构为 `parallel: { tasks: { TNN: { writes: [路径], resources: [排他资源键] } } }`。只声明可派给 implementer 的票，未声明票由主线程串行执行且执行时排空 implementer。writing-plans 从任务文件块产生声明并在 Self-Review 核对同义一致；入口校验不预读 tasks 正文，implementer 读取自己任务后再核对文件块，任何差异阻塞该票。
+index 头部增加至多一个标记为 `yaml spec-dev-parallel` 的 fenced block；不存在表示无并发声明。其结构为 `parallel: { tasks: { TNN: { writes: [路径], resources: [排他资源键] } } }`。只声明可派给 implementer 且写集合非空的票，已知 TDD 例外或显式空基线范围的票不列入；未声明票由主线程串行执行且执行时排空 implementer。writing-plans 从任务文件块产生声明并在 Self-Review 核对同义一致；入口校验不预读 tasks 正文，implementer 读取自己任务后再核对文件块，任何差异阻塞该票。执行中才发现已授权例外时，子代理先回报 blocked，由主线程按 S22 接管，不能伪造 ready 的测试证据。
 
 写路径为精确文件名，不支持 glob/目录授权；使用 `/`、仓库根相对，拒绝空值、绝对路径、`..`、重复规范路径、大小写/Unicode 规范化碰撞；不存在的新文件按最近存在祖先解析符号链接。`.git`、`.spec-dev`（含所有计划/状态/证据）及其符号链接别名禁止进入 implementer 写集合。不同票的同一路径或祖先文件路径冲突不能同批；“不同文件读写形成语义依赖”必须在导航表声明依赖，路径不相交不证明接口独立。
 
@@ -265,11 +270,11 @@ resources 是该票使用的排他外部资源键（如数据库、端口、输�
 
 `tasks.TNN` 继承 status/commit/tests/deviations，增加 `claim: { key, owner, agent_id, worktree, branch, base_commit }`、`implementation_commit`、`result_path`。agent_id 在工具返回后补写；派发前 claim 已持久化，若在派发与补写之间崩溃则核对运行中 agent 与 worktree，不盲重派。completed 的 `commit` 是通过集成验证的提交，不能填包含该 SHA 字段的状态提交；实现提交和进度 checkpoint 分开，后者随特性分支保存。每次新尝试以新 key 替换 claim，旧 key 与处置原因追加 notes，历史结果文件保留。progress 使用临时文件+rename 原子更新，不允许子代理副本合并回来。
 
-特性锁落在解析后的 git common dir 的 `spec-dev-locks/<规范化特性路径的哈希>/`，用原子创建取得；锁非第二份任务状态源。挂起前停止/回收在途代理、写进度 checkpoint 后可释放自己的锁。崩溃恢复需要核实原 owner/agent 已停止并对照磁盘；无法核实则报告占用，不按时间自动接管。不同主线程对同一特性不得各自宣称 progress 的写权限。
+特性锁落在解析后的共享 git common dir 的 `spec-dev-locks/<feature_key 的哈希>/`，用原子创建取得；`feature_key` 是计划所属 worktree 根下、采用 `/` 的仓库根相对特性目录（例如 `.spec-dev/2026-09-06-01-concurrent-execution`），禁止把 worktree 绝对前缀纳入哈希。同一仓库的不同 worktree 因共享 common dir 且 feature_key 相同而竞争同一锁；不能从另一个 worktree 的 cwd 直接对绝对计划路径求相对值。锁载荷中的绝对路径仅用于定位原编排者档案，锁非第二份任务状态源。挂起前停止/回收在途代理、写进度 checkpoint 后可释放自己的锁。崩溃恢复需要核实原 owner/agent 已停止并对照磁盘；无法核实则报告占用，不按时间自动接管。不同主线程对同一特性不得各自宣称 progress 的写权限。
 
 ### 派发、结果与集成
 
-主线程先完成 T00 和相关基线，再从当前 validated_commit 建每票独立分支/worktree，准备依赖与被忽略夹具，实际跑基线；缺工具/夹具、零测试或 skip 不能算基线通过。每轮按 ready 编号稳定选取互不冲突的集合，数量受当前平台工具实际可用并发能力约束，不写死平台限额、不递归派生 implementer。源分支未提交改动不拷入子工作区。
+主线程先完成 T00 和相关基线（显式空范围按原 test-scoping 跳过并注明），再从当前 validated_commit 建具备测试条件的每票独立分支/worktree，准备依赖与被忽略夹具，实际跑该票基线；应当执行的测试若缺工具/夹具、实际零测试或 skip，不能算基线通过。TDD 例外/空基线票按 S22 主线程串行处理，不要求 implementation-result ready；原测试范围和例外授权不因并发 skill 被撤销。每轮按 ready 编号稳定选取互不冲突的集合，数量受当前平台工具实际可用并发能力约束，不写死平台限额、不递归派生 implementer。源分支未提交改动不拷入子工作区。
 
 输入含 task_id/claim_key、worktree、branch、base_commit、计划与 spec 绝对路径、依赖接口定位、writes/resources、测试命令、研究指针和证据位置。平台原生 isolation 可用时也核对实际基线；无 cwd 参数时要求 agent 每条命令显式指定工作目录。不能建立隔离则说明原因按串行降级；后台交互由主线程承接。
 
@@ -300,6 +305,7 @@ awaiting_merge 可以结束当前执行会话，但不是“全部任务完成�
 | S09 同写锁文件/共享库；S10 越界路径 | unit/integration | 任务内 TDD + 验收任务 (D) | fast/PR | 冲突集合断言；真实 rename/symlink/diff 拒收证据 |
 | S11 重复启动；S12 旧结果 | integration/unit | 任务内 TDD + 验收任务 (D) | fast/PR | 两进程竞争锁只一成功；claim 重复/过期幂等断言 |
 | S13 基线错误；S14 红绿与自检 | integration | 验收任务 (D) | PR | 错误 cwd 不写主线；schema 正反例及红绿命令证据 |
+| S22 已授权免测/空基线 | unit/docs | 任务内 TDD + 验收任务静态走查 | fast | 准入排除与主线程接管用例；空基线不隐式豁免 TDD |
 | S15 不提前解锁；S16 冲突/集成失败 | integration | 任务内 TDD + 验收任务 (D) | PR | 提交图、依赖状态、冲突未自动解决、失败未标通过 |
 | S17 探索偏差 | docs/agent | 任务内评估用例编写；验收任务静态走查 | fast | 指针派发与偏差阻塞用例 |
 | S18 无差异/授权；S19 ready；S20 已合并 | integration | 验收任务 (D) | PR | 受控 PR 适配回放：远端动作记录与各节点状态；不得计为真实托管 PR 已验证 |
