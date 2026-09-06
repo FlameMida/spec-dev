@@ -83,7 +83,7 @@ T00、验收、最终任务只由主线程执行；已授权 TDD 例外、相关
 1. 主线程完成 T00 和集成基线，再从 ready 的最小任务号起选择互不冲突集合；ready 只看 completed 依赖，implementer ready 回报不算完成。保留最初 base_commit 为全特性审查基线，validated_commit 为新分支的唯一派发基线。
 2. 读取所选任务正文核对声明。将 writes 逐个用 `resolveWrite(root,value)` 解析真实路径，拒绝保留路径、目录授权、逃逸、新文件祖先逃逸、票内大小写/Unicode/别名碰撞；用 `conflicting(a,b)` 检查真实写集合及排他资源。不同文件间的语义依赖仍须在导航表表达。
 3. 主线程生成 claim_key，原子更新 progress.tasks 的 claim、status=in_progress、model_declaration_id，并预登记分支/worktree/专属证据目录和外部资源；提交后才创建。worktree 从 validated_commit 建立，核对实际路径、分支、HEAD，安装依赖并跑票的基线。不能把源工作区未提交改动拷进去；锁文件和 bootstrap 生成物也须获准，发版钩子越界且不能按仓库授权安全配置时串行。
-4. 派发受当前平台实际可用名额约束，不写死限额。输入含 task_id/claim_key、绝对 worktree、branch/base_commit、任务/spec/index/依赖接口/研究指针、writes/resources、测试命令、预登记证据目录。要求 implementer 读取 agents/implementer.md 并遵守绑定、TDD、自检、回报协议；Codex 无 cwd 参数时每条命令显式指定工作目录。工具返回 agent_id 后立刻保存回执，缺回执不等于没启动。平台不能可靠隔离则停止派发，说明原因串行接管。
+4. 派发前从 spec、本票及依赖接口行核对 seam 来源：显式批准直接使用，存量只唯一提取已有决定；不能唯一确定或互相冲突时由主线程处理，停止受影响票。派发受当前平台实际可用名额约束，不写死限额。输入含 task_id/claim_key、绝对 worktree、branch/base_commit、任务/spec/index/依赖接口/研究指针、writes/resources、测试命令、预登记证据目录。输入同时携带获批 seam、Scenario、依赖替换边界及来源指针，要求 implementer 读取 agents/implementer.md 并遵守绑定、TDD、自检、回报协议；Codex 无 cwd 参数时每条命令显式指定工作目录。工具返回 agent_id 后立刻保存回执，缺回执不等于没启动。平台不能可靠隔离则停止派发，说明原因串行接管。
 5. 外部事实调查交只读 explorer；主线程将来源笔记写入 research，再传指针，不复制全部任务正文或重复已有调查。契约偏差冻结相关票和依赖闭包，按 executing-plans 三级纪律处理；修订后重新校验声明，不自行扩大已派写集合。
 
 ## 接收与集成

@@ -50,6 +50,11 @@
       "id": "tdd-seam-s24",
       "prompt": "S24 单点迁移及旧断言处置：\nGIVEN quick-fix 当前含自有纯文案例外，plugin-root 测试要求保留它\nWHEN 完成本次迁移",
       "expected_output": "TDD 有完整清单，quick-fix 保留引用及授权语义且无自有差异；存量测试转而验证引用与单点归属，旧 Requirement 随本项交付回写取代。"
+    },
+    {
+      "id": "tdd-seam-s05",
+      "prompt": "S05 即兴修复并入原确认环节：\nGIVEN quick-fix 无批准落点，API 与内部服务都是候选\nWHEN 形成修复方案",
+      "expected_output": "主线程在原修复确认环节说明公共接口和推荐落点，一次一题确认；不先写任一候选的测试。"
     }
   ]
 }

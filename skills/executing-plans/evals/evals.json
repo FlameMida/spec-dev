@@ -55,6 +55,36 @@
       "id": "ep-parallel-global-review",
       "prompt": "串行完成两票后转并发，后续已全部集成。",
       "expected_output": "S21/S23 使用最初 base 到集成 tip 完整审查，保留矩阵验收与最终任务，不只审并发后半段。"
+    },
+    {
+      "id": "tdd-seam-s03",
+      "prompt": "S03 显式声明直接开工：\nGIVEN spec 和本票明确指定同一 seam，用户已经批准\nWHEN 开始写失败测试",
+      "expected_output": "使用该 seam，不再次询问测试落点。"
+    },
+    {
+      "id": "tdd-seam-s04",
+      "prompt": "S04 存量接口唯一提取：\nGIVEN 旧计划没有 seam 标签，但批准的精确接口与 Scenario 唯一指向 CLI 的退出码和标准输出\nWHEN 恢复执行",
+      "expected_output": "在本次工作记录中记下来源及提取结果，沿该 CLI 测试；不重写旧计划形态或选择私有函数作为新落点。"
+    },
+    {
+      "id": "tdd-seam-s06",
+      "prompt": "S06 spec 与计划冲突：\nGIVEN spec 指定 HTTP seam，计划却要求私有方法断言\nWHEN 串行执行者检查本票输入",
+      "expected_output": "报告冲突并走偏差处理，不默默选择其中一个继续。"
+    },
+    {
+      "id": "tdd-seam-s13",
+      "prompt": "S13 编译失败不充当红证据：\nGIVEN 新测试因拼写、编译或环境缺件而报错\nWHEN 收集红证据",
+      "expected_output": "记录该故障并修复/阻塞相应验证，直到观察到预期行为失败；不把非零退出码直接当作有效红，也不将 SKIP 记作 PASS。"
+    },
+    {
+      "id": "tdd-seam-s16",
+      "prompt": "S16 三个私有函数不制造三份测试：\nGIVEN 两个获批行为由三个内部函数实现且均已有公共边界测试\nWHEN 完成自检和代码审查",
+      "expected_output": "不因三个函数缺少直接单测判失败；如果错误路径 Scenario 漏测，仍明确报告该覆盖缺口。"
+    },
+    {
+      "id": "tdd-seam-s17",
+      "prompt": "S17 绿后发现重复代码：\nGIVEN 目标测试已绿，执行者发现与本票相关的重复辅助逻辑\nWHEN 结束本次红绿循环",
+      "expected_output": "记录重构候选，按任务流程提交和自检；收尾接收候选，而不是在每个循环里自动去重或新增功能。"
     }
   ]
 }

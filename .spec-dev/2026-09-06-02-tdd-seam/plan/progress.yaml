@@ -17,3 +17,4 @@ notes:
   - "Claude CLI 2.1.263 的 plugin-dir、stream-json、tools 参数已从本机 help 查证；远端模型可用性未验证。"
   - "base_commit: 1fd4981a7fd2e99ecd47c92ac869469028abd234；T00 已建立登记 worktree，基线检查全部通过，见 execution/serial/T00-checks.json。"
   - "T01 小偏差：计划 eval 生成遗漏 WHEN/expected_output；已从已批准 spec 逐条恢复，后续各票加载时同样校验，不改变行为期望。"
+  - "T04 小偏差：计划替换的 openai short_description 遗漏既有分文件入口，存量回归真实失败；补回 index.md/tasks/progress 与历史读取说明，保留测试。初次提交未成功，任务保持 in_progress。"
