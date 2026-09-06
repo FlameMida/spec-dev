@@ -247,7 +247,7 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-des
 |-------|------|---------|
 | **code-explorer** | 深度分析代码库 | requirement-analysis 阶段 2 并行探索 |
 | **external-resource-explorer** | 外部资源探索，可引用证据 | requirement-analysis 阶段 2 外部波次与回补探索 |
-| **code-reviewer** | 代码审查（置信度 + 严重性） | executing-plans 收尾多维审查 |
+| **code-reviewer** | 代码审查、Spec 符合性及可选架构深化 | 统一收尾编排；完整性 critic 独立核对覆盖证据 |
 | **implementer** | 单票 TDD 与自检 | executing-plans-parallel 独立 worktree |
 
 ## 目录结构

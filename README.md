@@ -248,7 +248,7 @@ The main thread implements by default. With explicit executing-plans-parallel se
 |-------|------|---------|
 | **code-explorer** | Deep codebase analysis | requirement-analysis phase 2 parallel exploration |
 | **external-resource-explorer** | External resource research with citable evidence | requirement-analysis phase 2 external wave and follow-up exploration |
-| **code-reviewer** | Code review (confidence + severity) | executing-plans wrap-up multi-dimension review |
+| **code-reviewer** | Code review, spec conformance and optional architecture deepening | Shared wrap-up review; coverage checking remains a separate critic |
 | **implementer** | Single-task TDD and self-check | executing-plans-parallel isolated worktrees |
 
 ## Directory Layout

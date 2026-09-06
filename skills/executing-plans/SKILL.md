@@ -98,10 +98,10 @@ description: >-
 全部任务完成后，编排独立代码审查。完整编排（维度定义、伪代码、契约校验、Codex 降级）见 [review-orchestration.md](references/review-orchestration.md)，要点：
 
 - **审查范围**：worktree 分支上本计划的全部变更（`git diff <base>...HEAD`）
-- **维度派发**（按变更规模）：小 diff（<100 行）1 路；常规 A/B/C 3 路；大变更/用户要求"彻底"时 5 路——单条消息一次性 fan-out `code-reviewer` 子代理
+- **维度派发**：路数、各档 S 覆盖、D 的证据触发及容量不足分批均以 review-orchestration「维度与路数」为唯一规则；预检基线/diff/契约来源后派发全部选定维度，不在此复制路数表。
 - **契约校验**：每份报告落盘后 `node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" review-findings <file>`；校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「输出契约与校验」）
 - **loop-until-dry**：去重后无新发现即停（最多 2 轮）；高/中严重性发现逐条派独立子代理对抗复核（指令=试图反驳）
-- **completeness critic**：1 个子代理对照变更文件清单与 spec 的现行 Requirement/Scenario（被 `Superseded` 标注者除外）查覆盖缺口，输出并入报告
+- **completeness critic**：一个子代理检查现行文件/Scenario 的审查与测试覆盖，已取代项排除；S 判实现偏差，critic 查证据缺口，已审零发现不等于未审。未完成补查不能因零 confirmed 而当全交付，具体收口沿共用编排。
 - **acceptance-qa**：计划含验收任务、或 spec 验收矩阵含「验收任务」行时，触发 acceptance-qa skill 按矩阵执行（输入=spec 路径+计划验收任务+本次变更文件清单+证据目录 `acceptance/`）；旧版计划无矩阵时，变更涉及 UI 即按其验收点触发。验收结论并入审查报告
 
 ## 阶段 5：审查处置与交付对账

@@ -14,7 +14,7 @@
     {
       "id": "ep-review-orchestration",
       "prompt": "（4 个任务全部完成，变更约 600 行，涉及 3 个模块）进入收尾审查",
-      "expected_output": "单条消息 fan-out 3 路 code-reviewer（维度 A/B/C），报告走 review-findings 契约校验；高/中发现逐条派独立子代理对抗复核；completeness critic 查覆盖缺口；结果按严重性分组后征询用户处理方式，不自动修复"
+      "expected_output": "预检基线、完整 diff 与契约来源；按常规四路 A/B/C/S 审查，容量不足分批而不丢维度；D 仅按明确要求或结构证据追加。报告经契约校验，高/中独立反驳，critic 核查证据覆盖，结果沿既有授权处置。"
     },
     {
       "id": "ep-spec-selfcheck-scope",
@@ -54,7 +54,7 @@
     {
       "id": "ep-parallel-global-review",
       "prompt": "串行完成两票后转并发，后续已全部集成。",
-      "expected_output": "S21/S23 使用最初 base 到集成 tip 完整审查，保留矩阵验收与最终任务，不只审并发后半段。"
+      "expected_output": "以最初 base 到集成 tip 的完整 diff，包含切换前票；共用含 S 的编排及独立 critic，保留矩阵验收与最终任务。"
     },
     {
       "id": "tdd-seam-s03",
@@ -130,6 +130,66 @@
       "id": "review-conformance-s21",
       "prompt": "S21 没有发现的合法报告\nGIVEN findings 为空而 coverage_note 非空，说明实际覆盖与证据\nWHEN 校验并消费",
       "expected_output": "schema 接受，critic 按所列证据核查；不会为满足格式而制造 findings。"
+    },
+    {
+      "id": "review-conformance-s06",
+      "prompt": "S06 存在耦合泄漏时启用\nGIVEN diff 使三个调用方必须了解同一模块的内部表示，主线程能给出实际调用位置\nWHEN 选择审查维度",
+      "expected_output": "追加 D，派发触发证据与本次受影响边界，复用共享判据，不扩为全仓巡检。"
+    },
+    {
+      "id": "review-conformance-s07",
+      "prompt": "S07 大 diff 不自动增加 D\nGIVEN 大 diff 属有界机械更新，无具体结构摩擦证据且用户未要求架构深化\nWHEN 安排五路审查",
+      "expected_output": "不自动追加 D；仅有优化设想不构成阻塞性架构缺陷，也不授权 reviewer 写码。"
+    },
+    {
+      "id": "review-conformance-s11",
+      "prompt": "S11 错误基线或丢失契约指针\nGIVEN base ref 无效，或计划显式关联的 spec 路径不存在\nWHEN 准备扇出",
+      "expected_output": "先查现有记录恢复；仍无法确认则不按未知范围派发并标明阻塞，不把 HEAD 或某个猜测文件用作替代。"
+    },
+    {
+      "id": "review-conformance-s12",
+      "prompt": "S12 空 diff 仍需交付对账\nGIVEN base/HEAD 均已核实且 diff 为空，计划仍有一项承诺行为\nWHEN 准备收尾",
+      "expected_output": "如实报告无代码变更，跳过无效代码扇出，但按已有实现和证据继续必要覆盖核对及对账，不自动宣称全部 DELIVERED。"
+    },
+    {
+      "id": "review-conformance-s14",
+      "prompt": "S14 小变更也检查越界\nGIVEN 本次 diff 为 40 行且引入未批准的对外行为\nWHEN 选择小变更一路审查",
+      "expected_output": "同一路明确执行 A 与 S，兼查 B/C 显著问题，并能报告越界，不能因不足 100 行省略 S。"
+    },
+    {
+      "id": "review-conformance-s15",
+      "prompt": "S15 常规与大变更的路数\nGIVEN 一份常规改动和另一份明确要求彻底审查的改动，均未触发 D\nWHEN 分别生成派发安排",
+      "expected_output": "前者四路 A/B/C/S，后者五路 A/B质量/B简洁性/C/S；D 被触发时在相应安排之外追加一路。"
+    },
+    {
+      "id": "review-conformance-s16",
+      "prompt": "S16 容量只够两路同时运行\nGIVEN 已选定四路，平台同时只能运行两个 reviewer\nWHEN 派发与回收",
+      "expected_output": "说明容量限制并分批完成四路，已返回报告可先复核，不把未启动维度报为完成；资源允许时仍同波扇出，不无故串行。"
+    },
+    {
+      "id": "review-conformance-s17",
+      "prompt": "S17 零发现且确有覆盖证据\nGIVEN reviewer 无 findings，但 coverage_note 列明已审文件、Scenario 和实际测试结果指针\nWHEN critic 核查",
+      "expected_output": "不因 findings 为空报未审查；若测试证据缺失则单独记录测试覆盖缺口，不以审查覆盖代替测试覆盖。"
+    },
+    {
+      "id": "review-conformance-s18",
+      "prompt": "S18 S 漏查文件或场景\nGIVEN S 报告无发现但漏掉一个本次变更文件及其现行 Scenario\nWHEN critic 对照输入清单",
+      "expected_output": "报告明确的覆盖缺口并交主线程补查；若补查形成实现偏差发现，按正常高/中独立反驳及处置路径处理，不能直接当 confirmed。"
+    },
+    {
+      "id": "review-conformance-s22",
+      "prompt": "S22 A 与 S 指向同一缺陷\nGIVEN A 报空值 bug，S 引用空集合 Scenario 报同一处语义偏差\nWHEN 主线程复核合并",
+      "expected_output": "保留一条处置项及两份来源、契约依据；不因 category 不同重复要求修复，也不将不同根因仅因同一行而误合并。"
+    },
+    {
+      "id": "review-conformance-s23",
+      "prompt": "S23 覆盖补查发现新问题\nGIVEN 常规维度最多两轮已结束，critic 补查确认先前未扫的范围存在中严重性候选\nWHEN 主线程收口",
+      "expected_output": "对候选进行独立反驳并按既有授权处置，不绕过复核直接记 confirmed；不重新无限循环整套扇出，未完成的覆盖或复核显式保留为未完成。"
+    },
+    {
+      "id": "review-conformance-s28",
+      "prompt": "S28 架构建议不破坏测试纪律\nGIVEN D 建议调整内部结构，公共 seam 与行为契约仍成立，最终全量属于原计划收尾\nWHEN 主线程决定后续处置",
+      "expected_output": "按现有授权和 TDD 收尾纯重构规则记录保护证据，不增加逐私有函数测试，不把最终全量变为每票解锁门。"
     }
   ]
 }
