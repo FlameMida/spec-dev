@@ -27,7 +27,7 @@ spec_dev:
     - "scripts/tests/visual-path.test.sh"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: null
+  sync_commit: 3d05186dfa3e3e0013ad0f5267c35653c1404f7e
   supersedes:
     - ".spec-dev/2026-08-26-01-major-upgrade/spec/major-upgrade-design.md"
   superseded_by: null

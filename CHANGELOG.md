@@ -7,6 +7,48 @@
 
 ---
 
+## [8.2.0] - 2026-09-06
+
+### ✨ 新增 (Added)
+
+- **T04**：visual 根由脚本自建 .gitignore（dry-run 打印 GITIGNORE= 不落盘）；visual-preview 命令改官方 CLAUDE_SKILL_DIR、隔离提醒改脚本自建
+- **T02**：exploration-patterns 成为插件根解析与契约校验降级的定义点（三级解析序列、载入即声明、占位符语义、校验器不可用降级、主线程止损）
+- **T01**：plan-index 依赖闭区间展开（倒序/缺号入 errors）；writing-plans 导航表规则补闭区间写法、校验命令改插件根写法
+
+### 🔧 修复 (Fixed)
+
+- **review**：C2 处置——修 spec R9 变体字面量乱码字节；Scenario「有意变体被标注」引文对齐字面量；验收矩阵补 R8 两条新 Scenario；T09 用例计数更新为 76
+- **review**：A4/C1 处置——plugin-root 裸路径/变量正则覆盖 ./ 前缀、引号包裹与单引号变量并扫入 openai.yaml；spec 登记 acceptance-qa:117 的 unverified 变体 gist 字面量
+- **review**：收尾审查 A/B 14 低 全部处置——校验器拦截 dash/链式区间变体；start-server 写失败只出一行 warn、英文注释、去冗余数组写法；测试 docFiles 单点/删重复断言与 export/runCapture 复用/新增变体用例；exploration-patterns 输出契约节通用规则与 RA 实例分层；codex-compat 前言收窄为映射表单点；acceptance-qa 变体标注统一字面量；code-explorer 去嵌套括号；README.zh "Node 端口"→"Node 移植版"；spec 区间 Scenario/Requirement 措辞对齐实现
+- **review**：critic 处置——spec covers 补 agents/code-reviewer.md 并在影响面/失败隔离 Requirement 补注；R8 新增「写入失败只警告」「/tmp 会话无 visual 根」Scenario；T09 行 3/5 口径修正；补 Codex 布局不变量与 /tmp 分支 GITIGNORE 计数两条 fast 测试
+- **T05**：references/agents/commands/schemas 插件根引用统一为双引号变量写法，去自造占位符与各处降级复述，agent/命令改固定回退句
+- **T03**：四个 skill 载入即声明插件根；executing-plans/acceptance-qa 插件根命令改双引号写法、契约校验句改 gist + 指针、删各处降级复述
+
+### ♻️ 重构 (Changed)
+
+- **T07**：Codex 工具映射表单点化（codex-compat 全 skill 共用，RA/quick-fix 改 gist + 指针）；quick-fix TDD 例外清单改引用并显式化纯文案自有例外
+- **T06**：失败隔离与契约校验复述收敛为同措辞 gist + 指针（canonical 留 exploration-patterns），ai-acceptance 变体标注，消除"主进程"措辞分化
+
+### 📝 文档 (Docs)
+
+- **T10**：记录合入中文化主线后的全量验收与干净加载证据
+- **T10**：回写 visual-preview 部分取代并登记 T09 验收完成
+- **T09**：完成 portability-hygiene 验收与独立复核，记录真实客户端加载证据
+- 描述与语言协议仅保留中文
+- **T08**：README 双语新增运行时依赖分级表与成熟度分区/发布纪律节；修正 trigger-evals 计数、目录结构 13 skill + 2 脚本、四查四项、schema 计数
+- **plan**：portability-hygiene 实施计划落盘（T00-T10：闭区间校验器、exploration-patterns 定义点、四 skill 载入即声明、visual 自建 .gitignore、引用写法统一、gist 收敛、Codex 映射表单点化、README 双语、验收、合并；plugin-root.test.mjs 18 项 docs 断言）
+- **spec**：修正 major-upgrade Superseded-pending 标注位置——移出 frontmatter、置于正文 H1 之下
+- **spec**：portability-hygiene 激活漂移守卫（draft→active）并给 major-upgrade「visual-preview 产物归位特性目录」打 Superseded-pending 预告
+- **spec**：portability-hygiene 采纳审查——major-upgrade「visual-preview 产物归位特性目录」登记部分取代并完整重述；契约校验 canonical 归位「输出契约与校验」节；codex-compat:61 自造占位符入影响面；零裸路径 Scenario 收窄并列明目标仓库路径/vendored/doctor:11 豁免；start-server 插入顺序按 DRY_RUN 先退出修正；schemas/README 覆盖归属、声明行断言、R2 引用位置、acceptance-qa:117 指针纠正
+- **spec**：portability-hygiene 设计落盘（roadmap 子项目 #1）+ ADR-0006 插件根解析 + roadmap 回填 in-progress
+- **roadmap**：生态对比报告吸收分解为 8 子项目并登记 roadmap；报告追加 §8.5 第四轮核验纠偏并首次入库
+
+### 🧹 其他 (Misc)
+
+- **spec**：sync_commit 锚定 3d05186
+- **T00**：隔离工作区建立（portability-hygiene，基线 51/51 + visual-path + 三校验绿）
+
+
 ## [8.1.0] - 2026-08-27
 
 **plan 单一形态收敛版（写收敛、读宽容）**：writing-plans 此后只产 `plan/` 分文件三件套（index.md + tasks/ + progress.yaml），阈值门控与单文件生成路径删除；executing-plans 保留格式嗅探——存量单文件计划按原样读取执行（冻结侧）。过程碎片（8.0.1-8.0.4 的 spec/plan 落盘记录）已并入本条目。
