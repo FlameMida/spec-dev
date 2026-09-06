@@ -1,5 +1,5 @@
 format_version: 1
-current: T07
+current: T08
 tasks:
   T00: { status: completed, commit: eac136eeed060c24c7f4d94b3b753a51f46a25f9, tests: pass }
   T01: { status: completed, commit: f699fc843c7216be896ea1cfcc780ddf28c867f4, tests: pass }
@@ -8,8 +8,8 @@ tasks:
   T04: { status: completed, commit: 927dd592e91e8594089b4ffdc080bf85c9fc802b, tests: static_pass }
   T05: { status: completed, commit: 996f3419a28759300ab62ac8534e978b1c5430f3, tests: static_pass }
   T06: { status: completed, commit: eeb8f1de8365e68b57881f1c07ad3e35a7cde8de, tests: static_pass }
-  T07: { status: in_progress }
-  T08: { status: pending }
+  T07: { status: completed, commit: d4734063deaa6b899ca8f2b831d39fd8a86139ac, tests: controlled_pass }
+  T08: { status: in_progress }
 resources:
   - "worktree: .worktrees/plan-2026-09-06-01-concurrent-execution —— 在来源工作区核验合并和干净状态后 git worktree remove .worktrees/plan-2026-09-06-01-concurrent-execution；随后 git branch -d plan/2026-09-06-01-concurrent-execution"
   - "temp-dir: 实施 worktree/.parallel-qa —— 核验本任务归属、停止受控进程且归档证据后移除该目录；未集成工作保留"
@@ -29,3 +29,4 @@ notes:
   - "更正：T06 初次回归实际为 38/39，简介丢失三件套字样；此前完成记录提前写入，现恢复 in_progress，保留原失败日志并修复后复跑。"
   - "T06: 修复简介后三件套回归 39/39、0 skip；旧失败日志保留，更正提前完成记录。"
   - "T07: 审查确认并修复精确路径绕过、validated_commit 推进与新入口搜索条款；追加真实 Git 红绿回归与每提交链接重绑定核验，验收仍进行中。"
+  - "T07: 全量91/91、0 skip；48条静态eval、14项Requirement覆盖；第四轮10组真实Git/进程受控演练及补充检查通过，独立复核findings=[]。真实模型nightly未验证、PR仅受控适配；历史失败归档。"
