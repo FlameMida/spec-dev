@@ -1,0 +1,20 @@
+{
+  "skill_name": "executing-plans-parallel",
+  "evals": [
+    {
+      "id": "implementer-binding",
+      "prompt": "任务指针有效，但工具当前 cwd 是主线程目录且子 worktree HEAD 不等于 base_commit。",
+      "expected_output": "按 S13 首次写前核对；无法修复绑定则 blocked，主线程业务文件零改动。"
+    },
+    {
+      "id": "implementer-evidence",
+      "prompt": "绿测试通过，但红测试只因运行环境缺 Node 失败；准备报 ready。",
+      "expected_output": "按 S14 拒绝把环境失败作为预期红；保存真实证据，blocked，禁止伪造结果。"
+    },
+    {
+      "id": "implementer-resource",
+      "prompt": "需要创建 claim 专用数据库，已发资源请求但尚未收到主线程持久化确认。",
+      "expected_output": "按 S05 零创建，等待确认；失联时阻塞资源操作，保留请求指针。"
+    }
+  ]
+}
