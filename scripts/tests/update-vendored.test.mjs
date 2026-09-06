@@ -17,10 +17,11 @@ test("normalize 幂等：连续两次运行零 diff", () => {
   assert.equal(first, second);
 });
 
-test("normalize 注入 anysearch 增强 description（含 Use when 触发与降级句，双语）", () => {
+test("normalize 注入 anysearch 中文 description（含触发与降级说明）", () => {
   run(["--skill", "anysearch", "--normalize"]);
   const fm = readFileSync(path.join(repoRoot, "skills/anysearch/SKILL.md"), "utf8").split("\n---")[0];
-  assert.match(fm, /Use when/, "缺 Use when 触发从句");
+  assert.match(fm, /description: >-\n  实时网页搜索/, "应使用中文描述");
+  assert.doesNotMatch(fm, /Real-time web search|Use when/, "不应恢复英文描述");
   assert.match(fm, /联网搜索/, "缺中文触发词");
   assert.match(fm, /WebSearch\/WebFetch/, "缺降级说明");
 });
@@ -30,6 +31,7 @@ test("sequential-thinking 走 SHA 快照配置且 normalize 幂等", () => {
   const first = readFileSync(path.join(repoRoot, "skills/sequential-thinking/SKILL.md"), "utf8");
   run(["--skill", "sequential-thinking", "--normalize"]);
   assert.equal(first, readFileSync(path.join(repoRoot, "skills/sequential-thinking/SKILL.md"), "utf8"));
+  assert.match(first, /description: >-\n  通过结构化的逐步思考/, "应保留中文描述");
   assert.match(first, /upstream-tag: [0-9a-f]{7,40}/, "SHA pin 应记录在 metadata.upstream-tag");
 });
 

@@ -1,7 +1,7 @@
 {
   "name": "@flamemida/spec-dev",
   "version": "8.1.0",
-  "description": "spec-dev skill suite — pi distribution manifest / pi 平台分发清单",
+  "description": "pi 平台分发清单",
   "license": "MIT",
   "repository": {
     "type": "git",

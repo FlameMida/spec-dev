@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Code review - identify bugs, security vulnerabilities, code quality issues and convention violations / 代码审查，识别 bug、安全漏洞、代码质量问题和规范违反
+description: 代码审查，识别 bug、安全漏洞、代码质量问题和规范违反
 tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, WebFetch, WebSearch
 model: inherit
 color: red
