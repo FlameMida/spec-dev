@@ -6,7 +6,7 @@ tasks:
   T02: { status: completed, commit: "ddb09320d97a6d6d16e918a2894c677a488c5c19", tests: "CLI red 1 fail to green 3 pass; related regression 40 passed; S02 strict-isolation decision partial fail to pass; skills/plugin passed", evidence: "execution/serial/T02" }
   T03: { status: completed, commit: "736dd1967e01510a7be408fc52fb67d35c5d9508", tests: "40 passed; skills/plugin passed; S24 decision fail to pass, green tools empty", evidence: "execution/serial/T03" }
   T04: { status: completed, commit: "2c662893ece18349a3c409fc8098562146241191", tests: "40 passed; skills/plugin passed; S14 existing pass to pass; S15 fail to pass; strict tools empty", evidence: "execution/serial/T04" }
-  T05: { status: in_progress, tests: "94 passed; 0 skipped; static validators passed; harness regression 9 passed; targeted S05 anchors and S18 passed; S05 test provenance failed; S23 latest unverified with prior fail retained; other required model evidence pending", evidence: "acceptance" }
+  T05: { status: in_progress, tests: "94 passed/0 skipped; harness 13 passed; PR scenario targets 24/24, full run closure and evidence integrity incomplete; see run-gates.json", evidence: "acceptance" }
   T06: { status: pending }
 resources:
   - "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance —— rtk git worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance；rtk git branch -d plan/2026-09-06-03-review-conformance"
@@ -27,3 +27,5 @@ notes:
   - "T05 checkpoint: 修复提交 945467ea9fc386f9bdc8c8597dadb3471408bd7d；修复后全量94 passed/0 skipped，独立静态复审通过。S04/S14取得有效红绿，S05/S18/S23同输入CLI仍失败；其他必需补证未完，T05仍in_progress。"
   - "T05 checkpoint: 28目标行为15 pass/6 fail/7 unverified，后者含4项已批准nightly。原生gpt-6-astra对照有测试日志副本遗漏并超时中止，不算干净PASS；已询问后续执行器，300秒时限变更尚未获授权。T06未开始，worktree/fixture保留以便续作。"
   - "T05 harness repair: 用户修吧授权修验收工具并仅复跑S05/S18/S23；继承本机设置，300秒不变。9项工具回归通过，完整回归94/0skip；36份CLI记录，目标17pass/4fail/7unverified；S23本轮未触发且历史失败未消除。T05保持in_progress，T06未执行。"
+  - "T05 continuation: 用户做吧授权补S05完整测试证据、真实缺陷触发S23、复验S06/S22/S26与S07/S15/S16，必要最小修复后独立复审和全量，再进入T06；继承本机设置，每例300秒，nightly四项非阻塞。"
+  - "T05 continuation checkpoint: 产品修复d5d852036beef95841356f116a07004a7ca5fae8；14次有界复验（4 exit0/10 timeout124），目标24pass/0fail/4nightly unverified。收口、采集一致性及执行者声明三门未通过；T05in_progress/T06pending，不自动DEFERRED。"
