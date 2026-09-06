@@ -6,6 +6,7 @@
 // plan-index 模式：校验分文件计划形态（index.md 导航表 ↔ tasks/ 文件一致、依赖存在、无环）
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
+import { parseParallelBlock } from "./lib/parallel-plan.mjs";
 import { fileURLToPath } from "node:url";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -240,6 +241,12 @@ function validatePlanIndex(planDir) {
     color.set(u, 2);
   };
   for (const id of ids) if (color.get(id) === 0) dfs(id);
+
+  try {
+    parseParallelBlock(readFileSync(indexPath, "utf8"), ids);
+  } catch (error) {
+    errors.push({ path: "index.md#parallel", expected: "valid optional parallel declaration", actual: error.message });
+  }
 
   if (errors.length) failAndExit();
   console.log(JSON.stringify({ ok: true, schema: "plan-index", file: planDir }, null, 2));

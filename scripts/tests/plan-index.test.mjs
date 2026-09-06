@@ -92,3 +92,18 @@ test("Scenario: 区间写法变体被拦截（en/em dash、链式）", () => {
     } finally { rmSync(dir, { recursive: true, force: true }); }
   }
 });
+
+test("S02 并发声明损坏不可交付：CLI", () => {
+  const dir=makePlan(["| T01 a | — | — | a() |", "| T02 b | — | — | b() |"],["T01.md","T02.md"]);
+  const file=path.join(dir,"index.md");
+  const original=readFileSync(file,"utf8");
+  const declaration=['```yaml spec-dev-parallel','parallel:','  tasks:','    T01:','      writes:','        - "src/a.mjs"','      resources: []','```'].join("\n");
+  try {
+    writeFileSync(file,original+"\n"+declaration);
+    assert.equal(run(dir),0);
+    writeFileSync(file,original+"\n"+declaration.replace("T01:","T99:"));
+    const result=runCapture(dir);
+    assert.equal(result.status,1);
+    assert.match(result.stderr,/index.md#parallel/);
+  } finally { rmSync(dir,{recursive:true,force:true}); }
+});
