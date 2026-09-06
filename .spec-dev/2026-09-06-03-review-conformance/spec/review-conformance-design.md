@@ -405,3 +405,11 @@ PR 五组的分组用于组织夹具，不将组数宣称为只有五次模型�
 - T04：收尾编排统一预检、一路 A+S/常规四路/大变更五路、D 证据触发、容量分批、同根因合并及 critic 证据收口；串行入口只消费单点，并发入口继承。README 双语与 openai 同步；40 项相关回归、技能与插件检查通过，S15 旧三路/缺 S 有效红，S14 为已有行为，候选模型结果见 `../execution/serial/T04/`。
 
 - T05（未完成）：真实模型验收发现证据锚定、覆盖误判、独立回执、D触发、规模与去重偏差；修复两份规则提交 `945467ea9fc386f9bdc8c8597dadb3471408bd7d`，未改变本spec验收判据。修复后94测试通过、0跳过，S04/S14有效红绿；S05/S18/S23仍失败，复杂调用仍有300秒超时，其他补证尚未完成。完整28场景、12Requirement对账和原始证据见 `../acceptance/acceptance-report.md`。原生执行器对照有输入副本缺口且超时，未拿它覆盖CLI失败；T05/T06均不标完成，未作DEFERRED。
+
+## T05 证据核对修复记录（2026-09-06）
+
+用户授权继续剩余验收后，真实模型暴露两项偏差：C把纯注释且无可观察行为的新增文件未列任务当成必须另批seam；初审和独立反驳将total/removeAll主锚错引为3/4行，当前真实为2/3行。依据现有S04/S05/S13及reviewer输出分面，补强C适用约束，将主锚与所声称测试证据的核对提升为所有维度及反驳共用要求。不增加schema字段、批准门、每路全量或产品调度器。
+
+原始红及严格输入重放见acceptance/model-smoke/evidence-repair-red.json、g3-switch-evidence-repair-r1.replay-integrity.json、g3-regular-evidence-repair-r1.replay-integrity.json；仅替换候选原文及证据目录，逆替换一致。独立复验确认两个语义修复点转绿；switch完成实际收口，regular仍在300秒时限截断，不算整例通过。最终交付状态以plan/progress.yaml及验收报告为准，T05尚未结束。
+
+本次实际守卫交集为portability-hygiene/tdd-seam/review-conformance：前者插件根/失败隔离/校验单点未变；tdd-seam的公共行为测试与纯重构保护未变；本特性仅落实既有证据与授权边界。其余共存分面保持本节既有声明，无取代回写。
