@@ -1,5 +1,5 @@
 format_version: 1
-current: T06
+current: null
 tasks:
   T00: { status: completed, commit: 1fd4981a7fd2e99ecd47c92ac869469028abd234, tests: pass }
   T01: { status: completed, commit: 431b283, tests: "39/39 pass; 7 static cases matched; model pending T05" }
@@ -7,11 +7,11 @@ tasks:
   T03: { status: completed, commit: ff804e4f165a79a4d798da91e37cb87dafad8a52, tests: "39/39 pass; 4 static cases matched; model pending T05" }
   T04: { status: completed, commit: 3ca43246926585438e49b65cc1fcbcf639bb8393, tests: "39/39 pass after metadata fix; 8 static cases matched; model pending T05" }
   T05: { status: completed, commit: f36412117cbd5f2b89f0561a867cd250be03dc31, tests: "91/91 full; 24 STATIC_MATCH; 5 required model checks and S07 action pass; 2 review findings fixed; nightly unverified nonblocking" }
-  T06: { status: in_progress }
+  T06: { status: completed, commit: 7833c8b39c5925a0aa256b0e6d2b3cb1594410a4, tests: "accepted tree and 27 product hashes match; cleanup complete; no push" }
 resources:
-  - "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam —— rtk git worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam && rtk git branch -d plan/2026-09-06-02-tdd-seam"
-  - "S07 QA fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture —— rtk proxy git -C /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture/source worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture/work；证据归档后随本特性 worktree 清理 source/branch 与 claim 目录"
-  - "S07 QA fixture r2: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture-r2 —— rtk proxy git -C /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture-r2/source worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture-r2/work；归档后随特性 worktree 清理 source 与 claim"
+  - "[已清理] worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam —— rtk git worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam && rtk git branch -d plan/2026-09-06-02-tdd-seam"
+  - "[已清理] S07 QA fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture —— rtk proxy git -C /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture/source worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture/work；证据归档后随本特性 worktree 清理 source/branch 与 claim 目录"
+  - "[已清理] S07 QA fixture r2: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture-r2 —— rtk proxy git -C /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture-r2/source worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture-r2/work；归档后随特性 worktree 清理 source 与 claim"
 notes:
   - "2026-09-06: 用户批准 spec 并同意写计划；spec 激活提交 ad3140d，portability 例外条款已 pending。"
   - "source: /Users/maverick/feature-dev；branch=main；执行模式默认串行，本计划不生成并发声明。"
@@ -23,3 +23,9 @@ notes:
   - "T05 验收装配修正：本机 haiku 实际映射 glm-5.3-flash，继承 ultracode 两次超时；仅本次调用覆盖低强度，并显式注入候选规则及哈希、隔离 stdin 防止 Python 脚本混入输入。前轮不计 PASS；五例重新执行，不更改预期/验收等级。"
   - "S07 动作首轮不计通过：模型将公开 claim_key 误读为脱敏占位，且夹具未输出 TAP、附加 echo 遭拒。r2 提供明文公开认领 ID 文件、真实 node:test 基线和精确命令，不更改 seam 缺失及 writes 测试条件。"
   - "T05 模型偏差：S11 在明确计划时序后仍把收尾全量前置到解锁；独立确认后澄清 test-strategy 既有判据，保留原失败并按原输入重跑，不改期望。"
+  - "T06 已完成：main 快进到 7833c8b39c5925a0aa256b0e6d2b3cb1594410a4，合并树与验收树一致；两份 QA 子 worktree、特性 worktree/分支均已清理，原始证据留 main；sync_commit 指向实际合并提交，不自引用。"
+delivery:
+  channel: local
+  state: completed
+  source_branch: main
+  merge_commit: 7833c8b39c5925a0aa256b0e6d2b3cb1594410a4

@@ -48,7 +48,7 @@ Spec：`../spec/tdd-seam-design.md`，active；原 portability 条款已按 Requ
 
 ## Requirement Reconciliation
 
-13 DELIVERED / 0 DEFERRED / 0 DROPPED / 0 SUPERSEDED / 0 ADDED-IN-FLIGHT。行为及必需验收均已完成；本地合并与资源清理由 T06 记录实际证据。
+13 DELIVERED / 0 DEFERRED / 0 DROPPED / 0 SUPERSEDED / 0 ADDED-IN-FLIGHT。行为及必需验收均已完成；已快进到本地 main（7833c8b39c5925a0aa256b0e6d2b3cb1594410a4），合并树/产品哈希一致、资源清理完成，证据见 delivery.json；未 push。
 
 - 上游测试落点声明
 - 计划中的落点传递

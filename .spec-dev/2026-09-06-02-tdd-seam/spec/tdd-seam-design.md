@@ -28,7 +28,7 @@ spec_dev:
     - "agents/implementer.md"
     - "agents/code-reviewer.md"
     - "scripts/tests/plugin-root.test.mjs"
-  sync_commit: null
+  sync_commit: 7833c8b39c5925a0aa256b0e6d2b3cb1594410a4
   supersedes:
     - ".spec-dev/2026-09-03-02-portability-hygiene/spec/portability-hygiene-design.md"
   superseded_by: null
@@ -36,7 +36,7 @@ spec_dev:
 
 # 公共测试落点与红绿纪律（tdd-seam）设计
 
-> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #3；吸收报告 AB-01～05，并处理 #1 明确留给本项的纯文案例外归属。用户于 2026-09-06 批准推荐方案、完整设计及审查后的 spec，并同意编写实施计划；本 spec 已激活，尚未实施。
+> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #3；吸收报告 AB-01～05，并处理 #1 明确留给本项的纯文案例外归属。用户于 2026-09-06 批准推荐方案、完整设计及审查后的 spec，并同意编写实施计划；本 spec 已激活并完成本地交付；必需验收、取代回写与清理证据见 ../acceptance/acceptance-report.md。
 
 ## 背景与目标
 

@@ -21,7 +21,7 @@ spec_dev_roadmap:
 |---|--------|--------------|------|------|---------|
 | 1 | portability-hygiene | 修 writing-plans:118 裸路径 bug，插件根解析序列单点定义、9 处调用统一写法；失败隔离与 TDD 例外清单等复述收敛为单点引用；README 补 hard/soft 依赖分级表、成熟度分区与纯壳委托约定并修正核验发现的文档漂移；Codex 适配映射表去重；visual 会话目录隔离结构化；导航表依赖范围写法定义并由校验器展开（AB-38/36/37/39/40/42） | — | delivered | .spec-dev/2026-09-03-02-portability-hygiene/ |
 | 2 | concurrent-execution | 新建正式 skill `executing-plans-parallel`（进插件清单），executing-plans 在执行确认门满足条件时提议并分支调用：主线程编排与合并、implementer 子代理各占 worktree、每票 TDD 五步 + 契约自检、主线程唯一写 progress.yaml；含 PR 制交付通道、执行期探索分工与指针派发、认领键（AB-44/10/11/33） | #1 | delivered | .spec-dev/2026-09-06-01-concurrent-execution/ |
-| 3 | tdd-seam | seam 声明上游权威 + TDD 门兜底；测试反模式 6/7（同义反复、实现耦合）；mock 分层；重构移出红绿循环；typecheck 最便宜验证档（AB-01/02/03/04/05） | — | in-progress | .spec-dev/2026-09-06-02-tdd-seam/ |
+| 3 | tdd-seam | seam 声明上游权威 + TDD 门兜底；测试反模式 6/7（同义反复、实现耦合）；mock 分层；重构移出红绿循环；typecheck 最便宜验证档（AB-01/02/03/04/05） | — | delivered | .spec-dev/2026-09-06-02-tdd-seam/ |
 | 4 | review-conformance | 收尾审查增加 Spec 符合性维度 S 三向核对；设计判据包单点定义；可选架构深化维度；审查微纪律；子代理派发词纪律（AB-12/09/14/13/32） | — | pending | — |
 | 5 | plan-decomposition | expand–contract 宽面重构排序；Self-Review 第 5 查与产物 review 门三问；prefactor 最前槽位；正交约束预分配与「拒绝的解读」节；计划头部关联 skill 声明与胶囊 gist；需求完备性两则（测试先例模态、actor 枚举）（AB-06/07/08/30/35/29） | — | pending | — |
 | 6 | quick-fix-diagnosis | 红信号门槛、认知性升级信号、排序候选根因；correct seam 判定；修复收尾四则；会话级止损（AB-16/17/18/19） | — | pending | — |
@@ -59,14 +59,14 @@ spec_dev_roadmap:
 
 ### #3 tdd-seam
 
-- **2026-09-06 实施计划已保存**：入口 `.spec-dev/2026-09-06-02-tdd-seam/plan/index.md`；T00—T06 共 7 任务（隔离、TDD 核心、mock/快检、上游声明、执行接入、验收、本地交付），覆盖全部 13 Requirement / 24 Scenario。四查、plan-index、54 个替换锚点顺序模拟及 12 个 Python 块语法检查通过；未创建 worktree、未实施。默认串行，无并发声明；模型路径使用现有 Claude CLI，PR 五例真实冒烟含 S07 可写夹具，远端模型可用性尚未验证。spec 激活提交 `ad3140d`，旧例外条款已写 pending。
-- **2026-09-06 设计批准并落盘**：用户先后批准推荐方案与完整设计；spec `.spec-dev/2026-09-06-02-tdd-seam/spec/tdd-seam-design.md`（active，13 条 Requirement / 24 个 Scenario；独立审查 Approved，用户已 review 并同意编写计划；尚未实施）。初次提交 `8e56756`，审查记录同目录 `design-review.md`。沿现有 spec 测试策略、四列导航与任务接口块传递 seam；已批准声明直接消费，存量仅唯一提取，缺失/冲突交主线程、implementer blocked。
+- **2026-09-06 实施计划已保存**：入口 `.spec-dev/2026-09-06-02-tdd-seam/plan/index.md`；T00—T06 共 7 任务（隔离、TDD 核心、mock/快检、上游声明、执行接入、验收、本地交付），覆盖全部 13 Requirement / 24 Scenario。四查、plan-index、54 个替换锚点顺序模拟及 12 个 Python 块语法检查通过；T00—T06 已完成并本地交付。默认串行，无并发声明；模型路径使用现有 Claude CLI，PR 五例真实冒烟含 S07 可写夹具，真实模型五例及 S07 可写动作已通过，nightly 多轮仍未验证。spec 激活提交 `ad3140d`，旧例外条款已完成 Requirement 级取代。
+- **2026-09-06 设计批准并落盘**：用户先后批准推荐方案与完整设计；spec `.spec-dev/2026-09-06-02-tdd-seam/spec/tdd-seam-design.md`（active，13 条 Requirement / 24 个 Scenario；独立审查 Approved，用户已 review 并同意编写计划；已完成实施与本地交付）。初次提交 `8e56756`，审查记录同目录 `design-review.md`。沿现有 spec 测试策略、四列导航与任务接口块传递 seam；已批准声明直接消费，存量仅唯一提取，缺失/冲突交主线程、implementer blocked。
 - **本轮补充裁决**：纯重构交收尾，已有保护测试前后保绿，缺保护先做行为刻画，不伪造红；并发五步的末步原本是提交，ADR-0007 与结果 schema 不变。typecheck 仅使用已有适用命令且不替代必需测试。纯文案例外迁入 TDD canonical、授权可追溯复用，部分取代 #1「quick-fix TDD 例外清单引用」；技能行为改动不属于纯措辞。
 - **增量补查与验证边界**：#1 后 code-reviewer 已在 portability-hygiene covers，TDD 目录仍待新 spec 接管；#2 的 plan/implementer 条款为现行权威。执行入口缺失/冲突路径、五步与 schema、绿后重构副本、plugin-root 的自有例外断言均已查证。验收区分静态 eval、自动回归、PR 必需真实模型五场景冒烟及 nightly 非阻塞多轮 eval；未运行/缺环境不报 PASS。
 - **关键裁决**：seam 两案合一——spec/plan 已声明则以声明为准、仅即兴场景由 TDD 门发问（报告 §5.4 #1）；实现耦合测试裁决方向"挪测试位置而非改实现"（§5.4 #6）；mock 纪律 testing-anti-patterns（准入）与 test-strategy（策略）分层不合并（§5.4 #12）。
 - **探索指针**：报告 AB-01/02/03/04/05 与 §8.5 B 项修正（AB-05 executing-plans 落点 :68；AB-04 另牵 8 处"红-绿-重构"同义文本含 description/openai.yaml；code-reviewer.md:78 与 TDD:157 同为全覆盖措辞）。
-- **已扫范围**：TDD SKILL.md 与 testing-anti-patterns.md 全文结构；test-strategy Lane 表；seam/同义反复/实现耦合等同义词全仓零命中；`skills/test-driven-development/**` 与 `agents/code-reviewer.md` 不在任何 active spec covers 内（新 spec 需声明 covers 接管）。
-- **留给后继的注意事项**：（交付回写时追加）
+- **已扫范围**：早期探索记录已由本项更新：TDD/反模式、test-strategy、设计与计划接口、串并行/reviewer/元数据均已覆盖；本 spec covers 覆盖27个产品文件，旧 active 分面按批准设计共存。
+- **留给后继的注意事项**：2026-09-06 已本地交付到 main，sync_commit=7833c8b39c5925a0aa256b0e6d2b3cb1594410a4。公共测试落点沿 spec→四列导航/本票→串并行消费；TDD 是例外与纯重构单点，anti-patterns 管 mock 准入，test-strategy 管策略及票内/收尾时序。五步、结果 schema、ADR-0007 不变；#1 纯文案条款已部分取代。最终全量91/91、0 skip，24静态Scenario和5例真实模型（实际 glm-5.3-flash，含S07可写动作）通过；两个中等审查/模型发现已修复复审，nightly多轮未运行。#4 复用现有公共行为覆盖与重构候选收尾，Spec符合性新维度需划清与completeness职责；不能重引逐函数测试或把最终全量提前为每票解锁门。未 push。
 
 ### #4 review-conformance
 
