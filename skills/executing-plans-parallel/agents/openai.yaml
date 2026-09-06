@@ -1,6 +1,6 @@
 interface:
   display_name: "并发执行计划"
-  short_description: "显式选择后以独立 worktree 执行可并发任务；先声明模型与思考强度，主线程独占进度和集成，支持任务边界切换、中断恢复、验证基线推进与全局收尾。"
+  short_description: "显式选择后以独立 worktree 执行可并发任务；先声明模型与思考强度，主线程独占进度和集成、阻塞票先核验再接管，支持任务边界切换、中断恢复、验证基线推进与全局收尾。"
   default_prompt: "用 $executing-plans-parallel 执行已批准且具备并发声明的计划，先展示模型配置并核对恢复状态。"
 policy:
   allow_implicit_invocation: true

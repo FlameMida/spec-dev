@@ -195,6 +195,12 @@
       "scenario": "S21 全票绿仍执行全局收尾",
       "prompt": "所有 implementer 测试通过并已集成。\n进入收尾。",
       "expected_output": "审查范围为整个特性相对 base 的 diff，验收与最终全量检查照常执行；只有全部门通过才进入相应交付出口。"
+    },
+    {
+      "id": "parallel-blocked-live-writer",
+      "scenario": "S04/S27 运行中阻塞与失联写者",
+      "prompt": "implementer 回报合法 blocked，工作区有半成品；另一个执行者没有回报但可能仍在写入。主线程准备重试或接管。",
+      "expected_output": "主线程持锁保存 blocked 原因、claim 与证据，冻结依赖闭包，独立任务可继续。blocked 不当格式失败改 ready；先核验旧执行者及写入进程停止，才可新认领或接管。同一存活执行者可恢复原 claim；未知状态阻塞且零重复 spawn，不靠超时断定终止，遵循既有一次重试上限。"
     }
   ]
 }
