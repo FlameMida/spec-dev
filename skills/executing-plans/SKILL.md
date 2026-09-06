@@ -1,7 +1,7 @@
 ---
 name: executing-plans
 description: >-
-  执行实施计划——当已有 writing-plans 产出的实施计划（`.spec-dev/` 特性目录下 plan/ 的分文件形态：index.md + tasks/ + progress.yaml；存量单文件计划按原样读取）、准备动手实现时使用。主线程在隔离 worktree 中逐任务执行（TDD + 每任务提交 + spec 自检），全部完成后编排多维对抗代码审查（code-reviewer 子代理不写码、仅分析与复跑验证），并按验收矩阵触发 acceptance-qa 验收，最终合并总结。不适用于没有书面计划的即兴改动。 默认串行；已明确选择且声明/拓扑/资源合格时委托 executing-plans-parallel，任务边界切换及恢复由该 skill 编排。
+  执行实施计划——当已有 writing-plans 产出的实施计划（`.spec-dev/` 特性目录下 plan/ 的分文件形态：index.md + tasks/ + progress.yaml；存量单文件计划按原样读取）、准备动手实现时使用。主线程在隔离 worktree 中逐任务执行（TDD + 每任务提交 + spec 自检），全部完成后编排多维对抗代码审查（code-reviewer 子代理不写码、仅分析与复跑验证），并按验收矩阵触发 acceptance-qa 验收，最终合并总结。不适用于没有书面计划的即兴改动。 分文件进度仍由 progress.yaml 唯一跟踪；默认串行；已明确选择且声明/拓扑/资源合格时委托 executing-plans-parallel，任务边界切换及恢复由该 skill 编排。
 ---
 
 > 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
