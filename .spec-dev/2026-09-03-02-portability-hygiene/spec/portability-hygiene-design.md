@@ -35,6 +35,8 @@ spec_dev:
 
 # 便携性修复与工程卫生（portability-hygiene）设计
 
+> **Superseded-pending (2026-09-06)** — 本 spec 的「Requirement: quick-fix TDD 例外清单引用」将被 .spec-dev/2026-09-06-02-tdd-seam/spec/tdd-seam-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
+
 
 > roadmap `../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md` 子项目 #1；吸收生态对比报告 AB-38 / 36 / 37 / 39 / 40 / 42 及第四轮核验（报告 §8.5）发现的文档漂移。
 
