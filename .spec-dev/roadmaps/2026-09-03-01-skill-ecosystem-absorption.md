@@ -59,7 +59,8 @@ spec_dev_roadmap:
 
 ### #3 tdd-seam
 
-- **2026-09-06 设计批准并落盘**：用户先后批准推荐方案与完整设计；spec `.spec-dev/2026-09-06-02-tdd-seam/spec/tdd-seam-design.md`（draft，13 条 Requirement / 24 个 Scenario；独立审查 Approved，待用户 review；尚未写计划或实施）。初次提交 `8e56756`，审查记录同目录 `design-review.md`。沿现有 spec 测试策略、四列导航与任务接口块传递 seam；已批准声明直接消费，存量仅唯一提取，缺失/冲突交主线程、implementer blocked。
+- **2026-09-06 实施计划已保存**：入口 `.spec-dev/2026-09-06-02-tdd-seam/plan/index.md`；T00—T06 共 7 任务（隔离、TDD 核心、mock/快检、上游声明、执行接入、验收、本地交付），覆盖全部 13 Requirement / 24 Scenario。四查、plan-index、54 个替换锚点顺序模拟及 12 个 Python 块语法检查通过；未创建 worktree、未实施。默认串行，无并发声明；模型路径使用现有 Claude CLI，PR 五例真实冒烟含 S07 可写夹具，远端模型可用性尚未验证。spec 激活提交 `ad3140d`，旧例外条款已写 pending。
+- **2026-09-06 设计批准并落盘**：用户先后批准推荐方案与完整设计；spec `.spec-dev/2026-09-06-02-tdd-seam/spec/tdd-seam-design.md`（active，13 条 Requirement / 24 个 Scenario；独立审查 Approved，用户已 review 并同意编写计划；尚未实施）。初次提交 `8e56756`，审查记录同目录 `design-review.md`。沿现有 spec 测试策略、四列导航与任务接口块传递 seam；已批准声明直接消费，存量仅唯一提取，缺失/冲突交主线程、implementer blocked。
 - **本轮补充裁决**：纯重构交收尾，已有保护测试前后保绿，缺保护先做行为刻画，不伪造红；并发五步的末步原本是提交，ADR-0007 与结果 schema 不变。typecheck 仅使用已有适用命令且不替代必需测试。纯文案例外迁入 TDD canonical、授权可追溯复用，部分取代 #1「quick-fix TDD 例外清单引用」；技能行为改动不属于纯措辞。
 - **增量补查与验证边界**：#1 后 code-reviewer 已在 portability-hygiene covers，TDD 目录仍待新 spec 接管；#2 的 plan/implementer 条款为现行权威。执行入口缺失/冲突路径、五步与 schema、绿后重构副本、plugin-root 的自有例外断言均已查证。验收区分静态 eval、自动回归、PR 必需真实模型五场景冒烟及 nightly 非阻塞多轮 eval；未运行/缺环境不报 PASS。
 - **关键裁决**：seam 两案合一——spec/plan 已声明则以声明为准、仅即兴场景由 TDD 门发问（报告 §5.4 #1）；实现耦合测试裁决方向"挪测试位置而非改实现"（§5.4 #6）；mock 纪律 testing-anti-patterns（准入）与 test-strategy（策略）分层不合并（§5.4 #12）。

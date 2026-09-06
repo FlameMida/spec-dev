@@ -1,0 +1,17 @@
+format_version: 1
+current: null
+tasks:
+  T00: { status: pending }
+  T01: { status: pending }
+  T02: { status: pending }
+  T03: { status: pending }
+  T04: { status: pending }
+  T05: { status: pending }
+  T06: { status: pending }
+resources:
+  - "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam —— rtk git worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam && rtk git branch -d plan/2026-09-06-02-tdd-seam"
+notes:
+  - "2026-09-06: 用户批准 spec 并同意写计划；spec 激活提交 ad3140d，portability 例外条款已 pending。"
+  - "source: /Users/maverick/feature-dev；branch=main；执行模式默认串行，本计划不生成并发声明。"
+  - "本文件仅规划，未建立 worktree、未运行实施或模型验收。T00 读取真实 HEAD 记录原始 base_commit。"
+  - "Claude CLI 2.1.263 的 plugin-dir、stream-json、tools 参数已从本机 help 查证；远端模型可用性未验证。"
