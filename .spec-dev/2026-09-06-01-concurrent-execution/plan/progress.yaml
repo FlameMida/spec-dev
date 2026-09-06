@@ -1,9 +1,9 @@
 format_version: 1
-current: T01
+current: T02
 tasks:
   T00: { status: completed, commit: eac136eeed060c24c7f4d94b3b753a51f46a25f9, tests: pass }
-  T01: { status: in_progress }
-  T02: { status: pending }
+  T01: { status: completed, commit: f699fc843c7216be896ea1cfcc780ddf28c867f4, tests: pass }
+  T02: { status: in_progress }
   T03: { status: pending }
   T04: { status: pending }
   T05: { status: pending }
@@ -20,3 +20,4 @@ notes:
   - "source: /Users/maverick/feature-dev；branch=main；原始审查基线在 T00 读取真实 HEAD 后记录。"
   - "base_commit: eac136eeed060c24c7f4d94b3b753a51f46a25f9；用户开始实施，未启用并发调度自身。"
   - "T00: 隔离 worktree 已建立；相关基线 54/54、0 skip；包/skill/openai 检查通过，证据 execution/serial/T00-*.log。"
+  - "T01: 15/15；CLI 行为红绿已保存；日志仅去行尾空白以符合 diff 检查。"
