@@ -1,17 +1,17 @@
 format_version: 1
-current: T02
+current: T03
 tasks:
   T00: { status: completed, commit: "4bbbd8a9caca9b579243de9fa396be94a3358ce0", tests: "55 passed; 0 skipped; skills/plugin/plan-index passed", evidence: "execution/serial/T00" }
   T01: { status: completed, commit: "92007b18fde451a5b0a44e6c4e73cb9966b91495", tests: "37 passed; skills/plugin passed; S09 existing pass to pass; S27 native decision fail to pass with platform/session limitations", evidence: "execution/serial/T01" }
   T02: { status: completed, commit: "ddb09320d97a6d6d16e918a2894c677a488c5c19", tests: "CLI red 1 fail to green 3 pass; related regression 40 passed; S02 decision partial fail to pass; skills/plugin passed", evidence: "execution/serial/T02" }
-  T03: { status: pending }
+  T03: { status: in_progress, tests: "40 passed; skills/plugin passed; S24 decision fail to pass, green tools empty", evidence: "execution/serial/T03" }
   T04: { status: pending }
   T05: { status: pending }
   T06: { status: pending }
 resources:
   - "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance —— rtk git worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance；rtk git branch -d plan/2026-09-06-03-review-conformance"
   - "QA fixtures: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance/.spec-dev/2026-09-06-03-review-conformance/acceptance/model-smoke/fixtures —— 确认无存活模型/子代理且证据归档后，随本特性 worktree 清理；拒绝时只清理本登记目录再普通 remove"
-  - "commit message files: /tmp/review-conformance-T00-commit.txt, /tmp/review-conformance-T01-commit.txt, /tmp/review-conformance-T02-commit.txt, /tmp/review-conformance-state-commit.txt —— 最终任务只 unlink 本行明确路径"
+  - "commit message files: /tmp/review-conformance-T00-commit.txt, /tmp/review-conformance-T01-commit.txt, /tmp/review-conformance-T02-commit.txt, /tmp/review-conformance-T03-commit.txt, /tmp/review-conformance-state-commit.txt —— 最终任务只 unlink 本行明确路径"
 notes:
   - "2026-09-06: 用户已 review Spec 并同意编写计划；激活提交 43122c0；独立设计审查 Approved。"
   - "source: /Users/maverick/feature-dev；计划来源 main，执行时 T00 再核实原始 base_commit 与绑定。"
@@ -19,3 +19,4 @@ notes:
   - "PR 五组是测试组织，不是五个 Scenario/五次调用；nightly 完整多轮非阻塞；未知/SKIP 不记 PASS。"
   - "T00: source main /Users/maverick/feature-dev; base_commit 88cf00a9f5ba7a340720dd49cf8be068cb8a9e20; worktree /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance; initial commit anchor is source, updated after state commit."
   - "T01: 实际提交 92007b1；post-commit 已执行，但自动发版器限定 main，在计划分支按现有策略跳过；无版本或 tag 变更。"
+  - "模型调用修正：--tools 空集仍可能暴露 MCP；T03 起加 --strict-mcp-config 及空 mcpServers。T02 原 red 有一次无关文档调用，降格为带污染观察，严格隔离重放另存；S19 CLI 红绿不受影响。"

@@ -65,6 +65,16 @@
       "id": "review-conformance-s27",
       "prompt": "S27 上游消费共享判据\nGIVEN RA 比较方案、writing-plans 编写头部、spec reviewer 检查设计可实施性\nWHEN 各入口读取设计判据",
       "expected_output": "通过同一 design-principles 指针使用新增判据，保留八原则与原审查职责，不复制三套判据或新增独立批准门。"
+    },
+    {
+      "id": "review-conformance-s24",
+      "prompt": "S24 泛泛任务改成有界派发\nGIVEN 待派发内容只有「检查审查纪律」\nWHEN 按通用派发纪律准备输入",
+      "expected_output": "补充目标条目、现状/缺口与 file:line 的交付条件、禁止改文件等本任务排除项及覆盖声明要求；不复制整篇 spec 来替代指针，也不要求每次派发附上整套教学例子。"
+    },
+    {
+      "id": "review-conformance-s25",
+      "prompt": "S25 既有时效与失败规则继续生效\nGIVEN 派发涉及含 Superseded 条款的 active spec，且子代理执行失败\nWHEN 消费与恢复",
+      "expected_output": "派发保留现行条款过滤要求，失败按原单点缩小范围重试一次、再失败主线程接管；缩小处理批次不缩减总覆盖，未覆盖显式说明。"
     }
   ]
 }
