@@ -2,7 +2,7 @@
 
 2026-09-06T19:31:05+08:00；executing-plans 收尾触发，standard。
 
-Spec：`../spec/tdd-seam-design.md`，active；原 portability 条款的部分取代待 T06 实际交付。原始 base：`1fd4981a7fd2e99ecd47c92ac869469028abd234`。
+Spec：`../spec/tdd-seam-design.md`，active；原 portability 条款已按 Requirement 级回写部分取代；实际合并与清理证据见 delivery.json。原始 base：`1fd4981a7fd2e99ecd47c92ac869469028abd234`。
 
 ## Overview
 
@@ -48,7 +48,7 @@ Spec：`../spec/tdd-seam-design.md`，active；原 portability 条款的部分�
 
 ## Requirement Reconciliation
 
-13/13 Requirement 已实现并完成必需验收；T06 还需实际取代回写、合并与清理，完成后回填交付结论。
+13 DELIVERED / 0 DEFERRED / 0 DROPPED / 0 SUPERSEDED / 0 ADDED-IN-FLIGHT。行为及必需验收均已完成；本地合并与资源清理由 T06 记录实际证据。
 
 - 上游测试落点声明
 - 计划中的落点传递

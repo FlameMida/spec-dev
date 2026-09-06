@@ -35,7 +35,6 @@ spec_dev:
 
 # 便携性修复与工程卫生（portability-hygiene）设计
 
-> **Superseded-pending (2026-09-06)** — 本 spec 的「Requirement: quick-fix TDD 例外清单引用」将被 .spec-dev/2026-09-06-02-tdd-seam/spec/tdd-seam-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 
 
 > roadmap `../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md` 子项目 #1；吸收生态对比报告 AB-38 / 36 / 37 / 39 / 40 / 42 及第四轮核验（报告 §8.5）发现的文档漂移。
@@ -292,6 +291,8 @@ codex-compat.md 的工具映射总表 SHALL 是唯一完整映射表，其前言
 - **THEN** 仍含 code-explorer 子代理 `fork_turns: "none"` 一行
 
 ### Requirement: quick-fix TDD 例外清单引用（改了什么：不再复述清单，改为引用 + 显式化自有差异）
+
+> **Superseded (2026-09-06)** — by .spec-dev/2026-09-06-02-tdd-seam/spec/tdd-seam-design.md#requirement-quick-fix-tdd-例外清单引用；原文保留仅作历史参考。
 
 quick-fix 步骤 5a 的 TDD 例外陈述 SHALL 改为"例外清单以 test-driven-development skill 为准；quick-fix 另视纯文案改动为例外（需用户同意）"，SHALL NOT 再并列复述 TDD 的清单项。行为不变，差异显式化；"纯文案"是否并入 TDD canonical 由子项目 #3 裁决。
 

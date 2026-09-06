@@ -288,6 +288,8 @@ TDD SHALL 在唯一例外清单中保留一次性原型、生成代码、配置�
 - **WHEN** 判断纯文案例外
 - **THEN** 不按后缀免测；为改变的行为设计正反场景及适当验证，实际例外仍依其授权处理。
 
+<a id="requirement-quick-fix-tdd-例外清单引用"></a>
+
 ### Requirement: quick-fix TDD 例外清单引用（改了什么：纯文案迁入 canonical，删除自有例外复述）
 
 quick-fix SHALL 只引用 TDD 的例外清单与授权纪律，不再定义自有纯文案例外或重复列举清单项。
