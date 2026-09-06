@@ -1,8 +1,8 @@
 format_version: 1
-current: null
+current: T01
 tasks:
-  T00: { status: pending }
-  T01: { status: pending }
+  T00: { status: completed, commit: eac136eeed060c24c7f4d94b3b753a51f46a25f9, tests: pass }
+  T01: { status: in_progress }
   T02: { status: pending }
   T03: { status: pending }
   T04: { status: pending }
@@ -18,3 +18,5 @@ resources:
 notes:
   - "2026-09-06: 用户批准 spec；计划阶段未实施，采用现有串行 executing-plans 开发并发 skill。"
   - "source: /Users/maverick/feature-dev；branch=main；原始审查基线在 T00 读取真实 HEAD 后记录。"
+  - "base_commit: eac136eeed060c24c7f4d94b3b753a51f46a25f9；用户开始实施，未启用并发调度自身。"
+  - "T00: 隔离 worktree 已建立；相关基线 54/54、0 skip；包/skill/openai 检查通过，证据 execution/serial/T00-*.log。"

@@ -39,7 +39,7 @@ spec_dev:
 
 # 可选并发执行（concurrent-execution）设计
 
-> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #2；吸收报告 AB-44 / AB-10 / AB-11 / AB-33。用户于 2026-09-06 确认含模型声明、切换与恢复的修订稿；本 spec 已激活，进入实施计划编写，尚未实施。
+> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #2；吸收报告 AB-44 / AB-10 / AB-11 / AB-33。用户于 2026-09-06 确认含模型声明、切换与恢复的修订稿；本 spec 已激活，用户已指示开始实施；当前在隔离工作区按已批准计划逐任务实现。
 
 ## 背景与目标
 
@@ -426,3 +426,8 @@ awaiting_merge 可以结束当前执行会话，但不是“全部任务完成�
 ## 开放问题
 
 无阻断设计的问题。实现可以选择与仓库现有风格一致的受限声明解析和测试夹具组织方式，但不得改变上述路径、状态、授权与完成判据。
+
+## 实施核对记录
+
+- T00：独立 worktree 已建立；基线 54/54，0 skip，分发/skill/openai 校验通过。
+- T01：开始实现已批准的声明/路径接口；先增加解析与 CLI 失败用例，执行记录见 execution/serial。
