@@ -47,7 +47,7 @@ spec_dev_roadmap:
 
 ### #2 concurrent-execution
 
-- **2026-09-06 设计批准**：用户批准独立正式 skill、index 可选写集合、progress 唯一写者、集成验证后 completed、资源先登记后创建、特性级本地/PR 双出口及完整收尾。spec：`.spec-dev/2026-09-06-01-concurrent-execution/spec/concurrent-execution-design.md`（draft；增加模型声明后为 14 条 Requirement / 30 个 Scenario，本轮增量独立复审 Approved，待用户 review）；ADR-0007。此前切换与恢复增量独立复审已修正跨 worktree 统一锁身份、测试例外串行分流、编排 owner 接管与存活 implementer 恢复的区别，保留原 claim；自检修正入口拓扑与实际 ready 分离。尚未实施；PR ready 不标 roadmap delivered。
+- **2026-09-06 设计批准**：用户批准独立正式 skill、index 可选写集合、progress 唯一写者、集成验证后 completed、资源先登记后创建、特性级本地/PR 双出口及完整收尾。spec：`.spec-dev/2026-09-06-01-concurrent-execution/spec/concurrent-execution-design.md`（active；14 条 Requirement / 30 个 Scenario，增量独立复审 Approved、用户已确认，进入 writing-plans）；ADR-0007。此前切换与恢复增量独立复审已修正跨 worktree 统一锁身份、测试例外串行分流、编排 owner 接管与存活 implementer 恢复的区别，保留原 claim；自检修正入口拓扑与实际 ready 分离。尚未实施；PR ready 不标 roadmap delivered。
 - **模型声明补充要求**：用户明确要求把声明写入并发执行 skill，而非仅本会话报告，并指定沿用对话中的终端三列表格「角色｜模型｜思考强度」，主线程带 👤、实现子代理带 🤖，来源和待启动状态在表格下简述。启动/切入/恢复编排前声明；多配置分组、未知不猜、配置变化重声明，沿 notes 与 claim 关联留痕；不固定为本轮开发使用的模型，不改变模型选择权限。S28—S30 承载验收。
 - **任务边界切换补充批准**：用户同意串行任务完成并保存后再转并发，并强调中断恢复；复用现有隔离 worktree，保留已完成任务、原始审查基线与交付通道；先保存切换请求，模式检查点提交后才派发。条件不足继续串行，缺声明不自动补写；S23—S27 覆盖切换成功、资格不足、模式提交窗口、请求早于当前任务完成及派发回执丢失。恢复先核实原 owner/执行者/提交，不凭空重派或重置进度。并发模式内按 ready 数量调度一票或多票，不反复切换模式。此为 ADR-0007 下的交接协议细化，不推翻或修改 Accepted ADR。
 - **续接补查**：新 skill 仅需补 Claude 显式 skills[]；其他平台按目录发现，check-plugin 无需改。新增 implementer 沿现有 agent 形制，Bash 白名单不等于只读沙箱。plan-single-format 的三条计划/恢复/资源 Requirement 和 portability-hygiene 的「README 漂移修正」须部分取代；不能将新增状态键误称纯分面共存。其余既有接口按当前 spec 继承。

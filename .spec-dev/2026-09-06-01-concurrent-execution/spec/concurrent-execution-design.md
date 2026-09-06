@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: concurrent-execution
-  status: draft
+  status: active
   covers:
     - "skills/executing-plans-parallel/**"
     - "agents/implementer.md"
@@ -39,7 +39,7 @@ spec_dev:
 
 # 可选并发执行（concurrent-execution）设计
 
-> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #2；吸收报告 AB-44 / AB-10 / AB-11 / AB-33。用户于 2026-09-06 批准具体设计。本文件为待审查的设计契约，尚未实施或激活。
+> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #2；吸收报告 AB-44 / AB-10 / AB-11 / AB-33。用户于 2026-09-06 确认含模型声明、切换与恢复的修订稿；本 spec 已激活，进入实施计划编写，尚未实施。
 
 ## 背景与目标
 

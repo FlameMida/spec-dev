@@ -28,6 +28,8 @@ spec_dev:
 
 # plan 单一形态设计（写收敛、读宽容）
 
+> **Superseded-pending (2026-09-06)** — 本 spec 的「Requirement: plan 单一形态」「Requirement: 渐进执行与断点恢复」「Requirement: 资源登记纪律」将被 .spec-dev/2026-09-06-01-concurrent-execution/spec/concurrent-execution-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
+
 ## 背景与目标
 
 v8.0.0 交付的 plan 双形态（阈值门控）暴露两类实证问题：**分叉缝隙**——每条新纪律须在单/分文件两侧各写一遍，"资源预登记按形态分流"在 writing-plans 侧三处全部漏落地（审查发现 R4）；**执行体验**——106KB 单文件计划跨会话执行时每任务需回捞计划段落、断点恢复靠 git log 与未提交文件推断。本特性把 writing-plans 产物收敛为**唯一分文件形态**，同时保留 executing-plans 对存量单文件计划的读取执行能力（写收敛、读宽容）；两个 progressive reference（阈值门控时代的按需加载设计）随门控失效合并进各自 SKILL.md 并删除。
