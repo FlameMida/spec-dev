@@ -8,6 +8,8 @@ description: >-
 
 > **插件根**：`${CLAUDE_PLUGIN_ROOT}`——本 skill 正文与其 references 中的插件根命令以此为准；若上式仍为变量字面量（平台未替换），按 requirement-analysis 的 references/exploration-patterns.md「插件根解析」序列推导。
 
+> **外部搜索统一入口**：需要联网检索（资料、库/框架文档、时效信息）时一律先用 anysearch skill（插件内嵌），不可用再降级 WebSearch/WebFetch；降级链与派发词要求见 requirement-analysis 的 references/exploration-patterns.md。
+
 # 可选并发执行
 
 开始声明「我正在使用 executing-plans-parallel 编排已批准的实施计划」，并在首次执行动作、切换激活或恢复编排前展示下面的模型表。
@@ -90,9 +92,9 @@ T00、验收、最终任务只由主线程执行；已授权 TDD 例外、相关
 
 先用 `node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" implementation-result` 校验实际结果文件；校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「输出契约与校验」）。校验器不可用沿 canonical 降级并显式记录，不能省略真实 Git 核验。
 
-然后调用模块 `scripts/lib/parallel-plan.mjs` 的 `verifyResult(report, claim, writes)`；claim 输入含 task_id/key/worktree/branch/base_commit。该函数返回 string[]，非空立即拒收。它核验真实分支、基线 ancestry、全部实现提交、净差异和中间提交、rename 两端、dirty/untracked 与持久证据存在；先做 schema 校验再调用。主线程还须阅读红绿日志确认故障类别与测试有效性、验证实际资源归属、metadata 变化与 claim 归属，不能把结构/文件存在性等同正确性。不能运行该核验时逐项检查同等 Git 事实并记录降级，不盲信 changed_files。
+然后调用模块 `scripts/lib/parallel-plan.mjs` 的 `verifyResult(report, claim, writes)`；claim 输入含 task_id/key/worktree/branch/base_commit。该函数返回 string[]，非空立即拒收。它核验真实分支、基线 ancestry、全部实现提交、净差异和中间提交、rename 两端、dirty/untracked 与持久证据存在；Git 词法路径必须属于原始精确 writes，真实路径检查另行拒绝逃逸及基线后的链接重绑定（包括中间提交），重绑定需主线程重新核验声明后处理；先做 schema 校验再调用。主线程还须阅读红绿日志确认故障类别与测试有效性、验证实际资源归属、metadata 变化与 claim 归属，不能把结构/文件存在性等同正确性。不能运行该核验时逐项检查同等 Git 事实并记录降级，不盲信 changed_files。
 
-仅持锁主线程逐票执行保留 ancestry 的 merge，不用 squash/cherry-pick。合并前工作区干净；HEAD 为 validated_commit 或仅领先可核验的主线程进度/证据提交且业务树相同，不能含未验证实现；实际 git merge 冲突时保留冲突现场交用户，不自动选 ours/theirs。合并后运行该票集成测试并归档日志，全部通过才把 accepted integration SHA 写 tasks.TNN.commit、implementation tip 写 implementation_commit、状态 completed；再单独提交进度，禁止自引用 SHA。
+仅持锁主线程逐票执行保留 ancestry 的 merge，不用 squash/cherry-pick。合并前工作区干净；HEAD 为 validated_commit 或仅领先可核验的主线程进度/证据提交且业务树相同，不能含未验证实现；实际 git merge 冲突时保留冲突现场交用户，不自动选 ours/theirs。合并后运行该票集成测试并归档日志，全部通过才把 accepted integration SHA 写 tasks.TNN.commit、implementation tip 写 implementation_commit、状态 completed；在同一次原子进度更新中把 execution.validated_commit 同步设为该 accepted integration SHA，再单独提交进度，禁止自引用 SHA。后继票从更新后的 validated_commit 创建，包含已接受的前置实现；恢复补记与主线程执行例外票完成也遵循此规则，验证失败保持旧值。
 
 集成失败时冻结受影响任务和后继，暂停新派发/新合并；已在旧 validated_commit 工作的独立票可完成并暂存报告，不能以失败 HEAD 派新票。恢复发现实现 tip 已是集成 HEAD 祖先时不重复 merge，只补缺失验证/状态；无证据不猜 pass。解释不清的提交、丢失任务文件或 worktree 冻结相关恢复，不从来源分支的陈旧 progress 新起一套。
 

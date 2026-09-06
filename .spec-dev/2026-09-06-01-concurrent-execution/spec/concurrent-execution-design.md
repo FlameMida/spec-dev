@@ -21,6 +21,7 @@ spec_dev:
     - "scripts/schemas/README.md"
     - "scripts/tests/parallel-plan.test.mjs"
     - "scripts/tests/parallel-integration.test.mjs"
+    - "scripts/tests/search-clause.test.mjs"
     - "scripts/tests/plan-index.test.mjs"
     - "scripts/tests/plugin-root.test.mjs"
     - ".claude-plugin/marketplace.json"
@@ -445,3 +446,5 @@ awaiting_merge 可以结束当前执行会话，但不是“全部任务完成�
 - T06 核对完成：37/37 相关结构回归；四例入口/切换/PR/全局审查静态核对完成；保留冻结单文件，限定默认串行不写码陈述。
 - T06 更正：前条 37/37 为进度记录误写；实际初次 38/39，openai 简介缺三件套入口，当前补回并重新验证。
 - T06 核对完成：修复简介后三件套回归 39/39、0 skip；旧失败日志保留，更正提前完成记录。
+
+- T07 审查修复：真实 Git 反例确认符号链接扩大精确写集合，改为词法授权与各提交树路径安全双重核验；成功集成、恢复补记及串行例外完成同次推进 validated_commit；新入口补统一搜索条款，并将 search-clause 回归纳入 covers。属于已批准契约的补全。

@@ -9,6 +9,7 @@ const SKILLS = [
   "exploring",
   "quick-fix",
   "executing-plans",
+  "executing-plans-parallel",
   "writing-plans",
   "acceptance-qa",
   "clarifying",

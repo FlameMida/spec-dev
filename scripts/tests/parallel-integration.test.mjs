@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, writeFileSync, rmSync, renameSync, mkdirSync } from "node:fs";
+import { mkdtempSync, writeFileSync, rmSync, renameSync, mkdirSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { verifyResult } from "../lib/parallel-plan.mjs";
@@ -47,4 +47,26 @@ test("S13 基线错误先停：真实分支和未跟踪文件",()=>fixture(({put
   assert.match(verifyResult(report(),{...claim,branch:"wrong"},["allowed.mjs"]).join("\n"),/branch mismatch/);
   const good=report();put("untracked.mjs","x\n");
   assert.match(verifyResult(good,claim,["allowed.mjs"]).join("\n"),/dirty/);
+}));
+
+test("S10 未声明符号链接不能借目标文件权限",()=>fixture(({repo,commit,claim,report})=>{
+  symlinkSync("allowed.mjs",path.join(repo,"alias.mjs"));commit();
+  assert.match(verifyResult(report(),claim,["allowed.mjs"]).join("\n"),/outside write set/);
+}));
+test("S10 声明链接不能夹带重绑定目标的改动",()=>fixture(({repo,git,put,commit,claim,report})=>{
+  symlinkSync("allowed.mjs",path.join(repo,"alias.mjs"));commit();
+  claim.base_commit=git("rev-parse","HEAD");
+  rmSync(path.join(repo,"alias.mjs"));symlinkSync("outside.mjs",path.join(repo,"alias.mjs"));
+  put("outside.mjs","changed\n");const tip=commit();
+  const result={...report(),base_commit:claim.base_commit,commits:[tip],changed_files:["alias.mjs","outside.mjs"]};
+  assert.match(verifyResult(result,claim,["alias.mjs"]).join("\n"),/outside write set/);
+}));
+
+test("S10 中间提交链接重绑定不能被最终恢复掩盖",()=>fixture(({repo,git,commit,claim,report})=>{
+  symlinkSync("allowed.mjs",path.join(repo,"alias.mjs"));commit();
+  claim.base_commit=git("rev-parse","HEAD");
+  rmSync(path.join(repo,"alias.mjs"));symlinkSync("outside.mjs",path.join(repo,"alias.mjs"));const first=commit();
+  rmSync(path.join(repo,"alias.mjs"));symlinkSync("allowed.mjs",path.join(repo,"alias.mjs"));const last=commit();
+  const result={...report(),base_commit:claim.base_commit,commits:[first,last],changed_files:[]};
+  assert.match(verifyResult(result,claim,["alias.mjs"]).join("\n"),/write path rebound/);
 }));

@@ -86,16 +86,44 @@ export function verifyResult(report, claim, writes) {
     git("merge-base","--is-ancestor",claim.base_commit,tip);
     const raw=execFileSync("git",["-C",claim.worktree,"diff","--name-only","--no-renames","-z",claim.base_commit,tip],{encoding:"utf8"});
     const files=raw.split("\0").filter(Boolean);
-    const allowed=new Set(writes.map(p=>resolveWrite(claim.worktree,p)));
-    for (const file of files) if (!allowed.has(resolveWrite(claim.worktree,file))) bad(`outside write set: ${file}`);
+    const allowed=new Set(writes.map(normalizeWrite));
+    // Git names authorize exact files; realpath is an additional safety check.
+    const checkFile=(file, prefix="")=>{
+      if (!allowed.has(normalizeWrite(file))) bad(`${prefix}outside write set: ${file}`);
+      resolveWrite(claim.worktree,file);
+    };
+    for (const file of files) checkFile(file);
     if (JSON.stringify([...files].sort())!==JSON.stringify([...report.changed_files].sort())) bad("reported diff mismatch");
     const actual=git("rev-list","--reverse",`${claim.base_commit}..${tip}`).split("\n").filter(Boolean);
     if (JSON.stringify(actual)!==JSON.stringify(report.commits)) bad("reported commit chain mismatch");
+    // Resolve links from each committed tree, so a transient rebind cannot hide
+    // behind the final checkout. Missing entries retain their lexical location.
+    const treePath=(commit,file)=>{
+      let candidate=normalizeWrite(file);
+      for (let hops=0;hops<40;hops++) {
+        const parts=candidate.split("/"); let followed=false;
+        for (let i=0;i<parts.length;i++) {
+          const prefix=parts.slice(0,i+1).join("/");
+          const entries=git("ls-tree","-z",commit,"--",prefix).split("\0");
+          const entry=entries.find(e=>e.slice(e.indexOf("\t")+1)===prefix);
+          if (!entry?.startsWith("120000 ")) continue;
+          const target=execFileSync("git",["-C",claim.worktree,"show",`${commit}:${prefix}`],{encoding:"utf8"});
+          if (path.posix.isAbsolute(target) || target.includes("\\")) throw new Error("write escapes repository through committed link");
+          candidate=normalizeWrite(path.posix.normalize(path.posix.join(path.posix.dirname(prefix),target,...parts.slice(i+1))));
+          followed=true;break;
+        }
+        if (!followed) return candidate;
+      }
+      throw new Error("committed symlink cycle");
+    };
     // Check every intermediate commit, not only the net diff.
     for (const commit of actual) {
       if (git("rev-list","--parents","-n","1",commit).split(" ").length !== 2) bad("implementer merge commit forbidden");
       const changed=execFileSync("git",["-C",claim.worktree,"diff-tree","--no-commit-id","--name-only","--no-renames","-r","-z",commit],{encoding:"utf8"}).split("\0").filter(Boolean);
-      for (const file of changed) if (!allowed.has(resolveWrite(claim.worktree,file))) bad(`commit outside write set: ${file}`);
+      for (const file of changed) checkFile(file,"commit ");
+      for (const file of writes) {
+        if (treePath(commit,file)!==treePath(claim.base_commit,file)) bad(`write path rebound: ${file}`);
+      }
     }
     if (report.status!=="ready") bad("result is not ready");
     if (!report.tests.some(t=>t.phase==="red" && Number.isInteger(t.exit_code) && t.exit_code!==0)) bad("missing red evidence");
