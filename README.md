@@ -129,7 +129,7 @@ The script looks for the Codex built-in `skill-creator` first, and also supports
 `skills/*/evals/` holds two kinds of files with different roles:
 
 - `evals.json` — **design-intent documents**: they record the expected key behaviors of each skill (HARD-GATE refusals, handoff gates, degradation paths, etc.) for human review and a future evaluation harness. There is no runner in the repo, and most cases carry conversational preconditions with prose assertions — they are **not** an automated regression line; treat them as a checklist to walk through manually when changing skill behavior
-- `trigger-evals.json` — **cold-startable, decidable trigger-surface cases** (should-trigger / should-not-trigger single-shot prompts + near-miss negatives): currently covering six skills — acceptance-qa, clarifying, exploring, quick-fix, requirement-analysis, test-strategy; plug into any evaluation harness and run the verdicts directly
+- `trigger-evals.json` — **cold-startable, decidable trigger-surface cases** (should-trigger / should-not-trigger single-shot prompts + near-miss negatives): currently covering six skills — `acceptance-qa`, `clarifying`, `exploring`, `quick-fix`, `requirement-analysis`, `test-strategy`; plug into any evaluation harness and run the verdicts directly
 
 ### Pre-commit hooks
 
@@ -284,7 +284,7 @@ spec-dev/                            # repo root is the plugin root (flat layout
 ├── scripts/
 │   ├── check-plugin.mjs             # manifest version sync + symlink + Codex CLI install checks
 │   ├── validate-output.mjs          # subagent output contract validator + plan-index structure check
-│   ├── schemas/                     # 3 output contract schemas + 1 vendored manifest schema + usage notes
+│   ├── schemas/                     # 4 output contract schemas + 1 vendored manifest schema + usage notes
 │   ├── validate-skills.mjs          # validates skills via skill-creator
 │   ├── check-openai-sync.mjs        # openai.yaml structure & SKILL sync tripwire
 │   ├── doctor.mjs                   # /doctor health checks (platform / guardrail / markers / injection / anysearch / reasoning runtime)

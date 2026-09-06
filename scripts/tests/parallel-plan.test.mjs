@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, symlinkSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, symlinkSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { parseParallelBlock, normalizeWrite, resolveWrite, conflicting } from "../lib/parallel-plan.mjs";
@@ -28,4 +28,21 @@ test("S10 路径越界结果拒收：符号链接与新文件", () => {
     symlinkSync(path.join(other,"missing"),path.join(root,"dangling"));
     assert.throws(()=>resolveWrite(root,"dangling/new.mjs"));
   } finally { rmSync(root,{recursive:true,force:true}); rmSync(other,{recursive:true,force:true}); }
+});
+
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+const validator = fileURLToPath(new URL("../validate-output.mjs", import.meta.url));
+test("S14 红绿与自检证据齐全：schema", () => {
+  const dir=mkdtempSync(path.join(tmpdir(),"result-schema-"));
+  const data={task_id:"T01",claim_key:"c1",status:"ready",worktree:dir,branch:"ticket/c1",base_commit:"a".repeat(40),commits:["b".repeat(40)],changed_files:["src/a.mjs"],tests:[{command:"node --test",phase:"red",exit_code:1,evidence_path:"/tmp/red"},{command:"node --test",phase:"green",exit_code:0,evidence_path:"/tmp/green"}],self_check:{over_under_building:"pass",contract_alignment:"pass"},deviations:[],resources:[],blockers:[],coverage_note:"all"};
+  const run=value=>{const file=path.join(dir,"result.json");writeFileSync(file,JSON.stringify(value));return spawnSync(process.execPath,[validator,"implementation-result",file]).status;};
+  try {
+    assert.equal(run(data),0);
+    assert.equal(run({...data,commits:[]}),1);
+    assert.equal(run({...data,self_check:{over_under_building:"pass",contract_alignment:"unverified"}}),1);
+    assert.equal(run({...data,status:"blocked",commits:[],tests:[],blockers:["baseline unavailable"]}),0);
+    assert.equal(run({...data,status:"blocked",blockers:[]}),1);
+    assert.equal(run({...data,coverage_note:""}),1);
+  } finally {rmSync(dir,{recursive:true,force:true});}
 });

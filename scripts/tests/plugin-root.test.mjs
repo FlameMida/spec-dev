@@ -204,15 +204,20 @@ test("Scenario: 计数与磁盘一致", () => {
     for (const f of ["doctor.mjs", "update-vendored-skill.mjs"]) assert.ok(layout(t).includes(f), `目录结构缺 ${f}`);
   }
   const triggers = skills.filter((s) => existsSync(path.join(skillsDir, s, "evals/trigger-evals.json")));
-  assert.equal(triggers.length, 6);
   for (const t of [en, zh]) {
     const line = t.split("\n").find((l) => l.includes("`trigger-evals.json`"));
-    for (const s of triggers) assert.ok(line.includes(s), `trigger-evals 行缺 ${s}`);
+    const listed=[...line.matchAll(/`([a-z][a-z-]+)`/g)].map(m=>m[1]).sort();
+    assert.deepEqual(listed,[...triggers].sort());
   }
   assert.ok(!en.includes("four skills") && !zh.includes("四个 skill"));
-  assert.equal(readdirSync(path.join(repoRoot, "scripts/schemas")).filter((f) => f.endsWith(".json")).length, 4);
-  assert.ok(en.includes("3 output contract schemas + 1 vendored manifest schema"));
-  assert.ok(zh.includes("3 类输出契约 schema + 1 个 vendored manifest schema"));
+  const schemaFiles=readdirSync(path.join(repoRoot,"scripts/schemas")).filter(f=>f.endsWith(".json"));
+  const manifests=schemaFiles.filter(f=>f==="agent-plugin-1.0.0.json");
+  const outputs=schemaFiles.filter(f=>!manifests.includes(f));
+  assert.ok(en.includes(`${outputs.length} output contract schemas + ${manifests.length} vendored manifest schema`));
+  assert.ok(zh.includes(`${outputs.length} 类输出契约 schema + ${manifests.length} 个 vendored manifest schema`));
+  const contractTable=read("scripts/schemas/README.md").split("## 契约清单")[1].split("## 新增 schema")[0];
+  const documented=[...contractTable.matchAll(/^\| `([^`]+)` \|/gm)].map(m=>m[1]).sort();
+  assert.deepEqual(documented,schemaFiles.map(f=>f.slice(0,-5)).sort());
   assert.match(en, /four-way self-review \(spec coverage \/ placeholders \/ type consistency \/ navigation table/);
   assert.match(zh, /四查（spec 覆盖\/占位符\/类型一致\/导航表与任务文件一致）/);
 });

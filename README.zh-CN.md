@@ -129,7 +129,7 @@ node scripts/validate-skills.mjs
 `skills/*/evals/` 下有两类文件，定位不同：
 
 - `evals.json` — **设计意图文档**：记录各 skill 关键行为的预期（HARD-GATE 拒绝、交接门、降级路径等），供人工 review 与未来评测 harness 使用。仓库内没有运行器，且多数用例带对话前置状态、断言为散文——它们**不构成自动化回归防线**，改动 skill 行为时应把它们当 checklist 人工过一遍
-- `trigger-evals.json` — **可冷启动、可判定的触发面用例**（should-trigger / should-not-trigger 单发 prompt + near-miss 负例）：目前覆盖 acceptance-qa、clarifying、exploring、quick-fix、requirement-analysis、test-strategy 六个 skill，接入任意评测 harness 即可直接运行判定
+- `trigger-evals.json` — **可冷启动、可判定的触发面用例**（should-trigger / should-not-trigger 单发 prompt + near-miss 负例）：目前覆盖 `acceptance-qa`、`clarifying`、`exploring`、`quick-fix`、`requirement-analysis`、`test-strategy` 六个 skill，接入任意评测 harness 即可直接运行判定
 
 ### 提交前 hook
 
@@ -283,7 +283,7 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 ├── scripts/
 │   ├── check-plugin.mjs             # 清单版本一致性 + 符号链接 + Codex CLI 安装校验
 │   ├── validate-output.mjs          # 子代理输出契约校验器 + plan-index 结构校验
-│   ├── schemas/                     # 3 类输出契约 schema + 1 个 vendored manifest schema + 使用说明
+│   ├── schemas/                     # 4 类输出契约 schema + 1 个 vendored manifest schema + 使用说明
 │   ├── validate-skills.mjs          # 复用 skill-creator 校验 skills
 │   ├── check-openai-sync.mjs        # openai.yaml 结构与 SKILL 同步 tripwire
 │   ├── doctor.mjs                   # /doctor 健康检查（平台 / 守卫 / 标记 / 注入 / anysearch / 推理运行时）

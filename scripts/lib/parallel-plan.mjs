@@ -69,3 +69,38 @@ export function conflicting(a, b) {
   const overlap = (left, right) => left === right || left.startsWith(right + "/") || right.startsWith(left + "/");
   return a.writes.some(x => b.writes.some(y => overlap(x.normalize("NFC").toLowerCase(), y.normalize("NFC").toLowerCase()))) || a.resources.some(x => b.resources.includes(x));
 }
+
+import { execFileSync } from "node:child_process";
+export function verifyResult(report, claim, writes) {
+  const errors=[];
+  const bad=message=>errors.push(message);
+  const git=(...args)=>execFileSync("git",["-C",claim.worktree,...args],{encoding:"utf8",stdio:["ignore","pipe","pipe"]}).trim();
+  try {
+    if (report.claim_key!==claim.key || report.task_id!==claim.task_id || report.base_commit!==claim.base_commit) bad("claim mismatch");
+    if (realpathSync(report.worktree)!==realpathSync(claim.worktree) || report.branch!==claim.branch) bad("worktree/branch mismatch");
+    if (git("branch","--show-current")!==claim.branch) bad("actual branch mismatch");
+    if (git("status","--porcelain","--untracked-files=all")) bad("dirty implementation worktree");
+    const tip=report.commits.at(-1);
+    if (!tip || git("rev-parse","HEAD")!==tip) bad("tip mismatch");
+    if (!tip) return errors;
+    git("merge-base","--is-ancestor",claim.base_commit,tip);
+    const raw=execFileSync("git",["-C",claim.worktree,"diff","--name-only","--no-renames","-z",claim.base_commit,tip],{encoding:"utf8"});
+    const files=raw.split("\0").filter(Boolean);
+    const allowed=new Set(writes.map(p=>resolveWrite(claim.worktree,p)));
+    for (const file of files) if (!allowed.has(resolveWrite(claim.worktree,file))) bad(`outside write set: ${file}`);
+    if (JSON.stringify([...files].sort())!==JSON.stringify([...report.changed_files].sort())) bad("reported diff mismatch");
+    const actual=git("rev-list","--reverse",`${claim.base_commit}..${tip}`).split("\n").filter(Boolean);
+    if (JSON.stringify(actual)!==JSON.stringify(report.commits)) bad("reported commit chain mismatch");
+    // Check every intermediate commit, not only the net diff.
+    for (const commit of actual) {
+      if (git("rev-list","--parents","-n","1",commit).split(" ").length !== 2) bad("implementer merge commit forbidden");
+      const changed=execFileSync("git",["-C",claim.worktree,"diff-tree","--no-commit-id","--name-only","--no-renames","-r","-z",commit],{encoding:"utf8"}).split("\0").filter(Boolean);
+      for (const file of changed) if (!allowed.has(resolveWrite(claim.worktree,file))) bad(`commit outside write set: ${file}`);
+    }
+    if (report.status!=="ready") bad("result is not ready");
+    if (!report.tests.some(t=>t.phase==="red" && Number.isInteger(t.exit_code) && t.exit_code!==0)) bad("missing red evidence");
+    if (!report.tests.some(t=>t.phase==="green" && t.exit_code===0)) bad("missing green evidence");
+    for (const t of report.tests) if (!path.isAbsolute(t.evidence_path) || !existsSync(t.evidence_path)) bad("missing durable test evidence");
+  } catch (error) { bad(error.message); }
+  return errors;
+}

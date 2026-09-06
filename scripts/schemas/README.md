@@ -41,6 +41,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" <schema-name> <json-fil
 | `exploration-report` | 探索报告 | code-explorer | requirement-analysis 阶段 2（deep 档 multi-modal sweep） |
 | `review-findings` | 审查发现 | code-reviewer | executing-plans 收尾审查编排 |
 | `acceptance-check-items` | 验收检查项 | acceptance-qa（Tier A 为主，D/X 结论并入） | 验收编排与复核、executing-plans 收尾审查 |
+| `implementation-result` | 实现票结果（结构校验后仍须核对真实 Git） | implementer | executing-plans-parallel 主线程 |
 | `agent-plugin-1.0.0` | Agent Plugins 1.0.0 官方 manifest schema（上游 https://agent-plugins.org/schemas/1.0.0/plugin.schema.json 的 vendored 快照） | —（校验目标） | `node scripts/validate-output.mjs agent-plugin-1.0.0 plugin.json`（验收矩阵官方 schema 校验点） |
 
 每个契约的 `coverage_note` 一律必填且非空——这是「no silent caps」纪律的落点：截断/未覆盖范围必须显式声明，不允许静默缩水。`acceptance-check-items` 另以 `if/then` 强制：`result` 为 `pass`/`fail` 的检查项，`evidence_ref` 不允许空串——没有证据就标 `unverified`，而不是通过。
