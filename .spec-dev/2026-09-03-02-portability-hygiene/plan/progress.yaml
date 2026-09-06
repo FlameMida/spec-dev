@@ -1,5 +1,5 @@
 format_version: 1
-current: T08
+current: T09
 tasks:
   T00: { status: completed, commit: d4e39df, tests: pass }
   T01: { status: completed, commit: dad2cd3, tests: pass }
@@ -10,7 +10,7 @@ tasks:
   T06: { status: completed, commit: 0096bb8, tests: pass }
   T07: { status: completed, commit: df2a4e3, tests: pass }
   T08: { status: completed, commit: 6a9deed, tests: pass }
-  T09: { status: pending }
+  T09: { status: in_progress }
   T10: { status: pending }
 resources:
   - "worktree: .worktrees/plan-2026-09-03-02-portability-hygiene —— git worktree remove .worktrees/plan-2026-09-03-02-portability-hygiene && git branch -d plan/2026-09-03-02-portability-hygiene"

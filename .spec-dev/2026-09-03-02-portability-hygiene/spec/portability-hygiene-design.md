@@ -364,7 +364,7 @@ Claude Code：加载 SKILL.md → 平台替换声明行 → 会话持有插件�
 | 区间展开 / 倒序拦截 / 缺号拦截 / 存量计划仍通过 | unit | 任务内 TDD（plan-index.test.mjs 新用例） | fast | node --test 通过 |
 | dry-run 打印 GITIGNORE 且不落盘 / /tmp 会话无 visual 根 | unit | 任务内 TDD（visual-path.test.sh 新断言） | fast | bash 测试 PASS |
 | 用户项目 cwd 下校验命令可执行（bug 修复实证） | integration | 验收任务 (D)：临时目录 + 已知合法计划 fixture，按 skill 指令解析插件根后执行，对照 HEAD 095eb40 写法 | fast | 两次 exit code（0 vs 1）记录 |
-| Claude Code 加载后声明行为绝对路径 | integration | 验收任务 (X)：AI 自主验收——加载 writing-plans 并截取声明行 | PR | 加载文本片段 |
+| Claude Code 加载后声明行为绝对路径 | integration | 验收任务 (D + 独立证据审计)：真实 Claude Code 加载 writing-plans，捕获客户端已展开正文并核对声明行 | PR | 加载文本片段 |
 | 会话文件被忽略 / 已有 .gitignore 不覆盖 / 写入失败只警告 | integration | 验收任务 (D)：临时 git 仓库真实 start + stop（第三次以 `.spec-dev` 只读、特性目录可写形态启动） | PR | git check-ignore 输出、stderr 单行 warn |
 | validate-skills / check-openai-sync / check-plugin / node --test 全绿 | integration | 验收任务 (D) | fast | 命令退出码 0 |
 | RA / writing-plans / executing-plans / acceptance-qa / quick-fix 的 evals.json 人工走查 | docs | 验收任务 (D)：逐条核对未被本次改动破坏 | fast | 走查清单 |
