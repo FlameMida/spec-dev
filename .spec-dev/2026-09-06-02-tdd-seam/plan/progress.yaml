@@ -1,8 +1,8 @@
 format_version: 1
-current: null
+current: T01
 tasks:
   T00: { status: completed, commit: 1fd4981a7fd2e99ecd47c92ac869469028abd234, tests: pass }
-  T01: { status: pending }
+  T01: { status: in_progress }
   T02: { status: pending }
   T03: { status: pending }
   T04: { status: pending }
@@ -16,3 +16,4 @@ notes:
   - "本文件仅规划，未建立 worktree、未运行实施或模型验收。T00 读取真实 HEAD 记录原始 base_commit。"
   - "Claude CLI 2.1.263 的 plugin-dir、stream-json、tools 参数已从本机 help 查证；远端模型可用性未验证。"
   - "base_commit: 1fd4981a7fd2e99ecd47c92ac869469028abd234；T00 已建立登记 worktree，基线检查全部通过，见 execution/serial/T00-checks.json。"
+  - "T01 小偏差：计划 eval 生成遗漏 WHEN/expected_output；已从已批准 spec 逐条恢复，后续各票加载时同样校验，不改变行为期望。"

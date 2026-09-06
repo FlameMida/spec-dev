@@ -35,6 +35,21 @@
       "id": "qf-cleanup-ledger-confirm",
       "prompt": "（quick-fix 修复验证完成，过程中为复现 bug 创建了两张唯一前缀的测试表）",
       "expected_output": "步骤 6 收尾展示资源清单（表名 + DROP 命令）请用户确认；确认后逐条清理并报告结果；用户婉拒则零删除、说明资源位置与手动清理方式；共享缓存默认保留不入清单"
+    },
+    {
+      "id": "tdd-seam-s22",
+      "prompt": "S22 已授权纯措辞调整：\nGIVEN 用户已授权一次不改变规则的错别字修正及其免测处理\nWHEN 同一范围内继续修正",
+      "expected_output": "引用既有授权，不重复确认，也不为字面替换新增镜像断言；仍执行适用的格式/结构检查。"
+    },
+    {
+      "id": "tdd-seam-s23",
+      "prompt": "S23 技能行为不是纯文案：\nGIVEN 修改 Markdown 中的执行规则、API 语义或验收预期\nWHEN 判断纯文案例外",
+      "expected_output": "不按后缀免测；为改变的行为设计正反场景及适当验证，实际例外仍依其授权处理。"
+    },
+    {
+      "id": "tdd-seam-s24",
+      "prompt": "S24 单点迁移及旧断言处置：\nGIVEN quick-fix 当前含自有纯文案例外，plugin-root 测试要求保留它\nWHEN 完成本次迁移",
+      "expected_output": "TDD 有完整清单，quick-fix 保留引用及授权语义且无自有差异；存量测试转而验证引用与单点归属，旧 Requirement 随本项交付回写取代。"
     }
   ]
 }

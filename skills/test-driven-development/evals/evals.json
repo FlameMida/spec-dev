@@ -4,7 +4,7 @@
     {
       "id": "tdd-red-first",
       "prompt": "实现一个 retryOperation 函数：失败自动重试，最多 3 次",
-      "expected_output": "先写失败测试并运行确认以正确原因失败（功能缺失而非报错），再写最小实现，运行确认通过且其他测试仍绿，最后才考虑重构；不先写实现"
+      "expected_output": "沿获批 seam 先写失败测试，确认目标行为失败后最小实现转绿；重构候选交收尾，不插入循环，不先写实现。"
     },
     {
       "id": "tdd-delete-untested-code",
@@ -15,6 +15,26 @@
       "id": "tdd-bugfix-with-test",
       "prompt": "修复：空邮箱也能提交表单的 bug",
       "expected_output": "先写复现该 bug 的失败测试（如 rejects empty email），确认失败后再修实现，测试转绿即证明修复并防回归；不允许不带测试直接修"
+    },
+    {
+      "id": "tdd-seam-s18",
+      "prompt": "S18 各入口与图示一致：\nGIVEN TDD 正文、DOT、description/openai、反模式 5、串行和 quick-fix 引用及已有 eval\nWHEN 沿任一入口执行红绿",
+      "expected_output": "都没有循环内重构步骤，串并行每票仍保持五步；纯壳引用指向同一定义，元数据仍为中文。"
+    },
+    {
+      "id": "tdd-seam-s19",
+      "prompt": "S19 纯重构复用已有保护：\nGIVEN 已授权的结构整理不改变公共接口且已有相关行为测试\nWHEN 实施整理",
+      "expected_output": "记录前后通过证据，不伪造失败或强行添加同义测试；一旦可观察行为回归就修复回归，不把它当作允许的重构差异。"
+    },
+    {
+      "id": "tdd-seam-s20",
+      "prompt": "S20 缺少保护先刻画：\nGIVEN 待整理路径缺乏公共行为保护测试\nWHEN 准备纯重构",
+      "expected_output": "先依据现行契约补行为刻画并观察当前实现通过，记录其为刻画而非红证据，再进行结构调整；若需求期望与当前行为不同则转行为缺陷修复。"
+    },
+    {
+      "id": "tdd-seam-s21",
+      "prompt": "S21 并发红绿协议不被豁免：\nGIVEN implementer 被派发的票实际只需纯重构保护，无法提供新增行为的有效红证据\nWHEN 执行准入检查",
+      "expected_output": "不伪造红结果，回主线程按现有例外/阻塞串行路径处理；不改变 implementation-result phase 或接收器对普通实施票的红绿要求。"
     }
   ]
 }

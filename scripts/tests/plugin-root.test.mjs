@@ -154,11 +154,13 @@ test("Scenario: quick-fix 自有行保留", () => {
   assert.ok(!qf.includes("| 用户澄清/确认 |"), "通用行不应复述");
 });
 
-test("Scenario: 清单不再复述", () => {
+test("Scenario: S24 单点迁移及旧断言处置", () => {
   const qf = read("skills/quick-fix/SKILL.md");
-  assert.doesNotMatch(qf, /配置文件\/纯文案\/一次性原型/, "不应并列复述 TDD 例外清单");
-  assert.ok(qf.includes("例外清单以 test-driven-development skill 为准"), "应改为引用 TDD 清单");
-  assert.ok(qf.includes("纯文案"), "quick-fix 自有例外应显式保留");
+  const tdd = read("skills/test-driven-development/SKILL.md");
+  assert.ok(qf.includes("例外清单以 test-driven-development skill 为准"));
+  assert.doesNotMatch(qf, /quick-fix 另视纯文案|自有纯文案例外/);
+  assert.match(tdd, /例外清单[\s\S]*纯文案/);
+  assert.match(tdd, /授权/);
 });
 
 test("Scenario: 双语表存在且分级一致", () => {

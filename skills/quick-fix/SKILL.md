@@ -62,7 +62,7 @@ description: >-
 
 ### 步骤 5a：TDD 修复 + 同步 spec 小节（契约改变，单 spec 内）
 
-- **强制 TDD**：先写复现 bug 的失败测试 → 确认红（失败原因是功能缺陷而非拼写）→ 最小实现转绿 → 重构。遵循 test-driven-development skill 铁律；例外清单以 test-driven-development skill 为准，quick-fix 另视纯文案改动为例外（均需用户同意）。
+- **强制 TDD**：失败复现 → 确认有效红 → 最小实现 → 确认绿，遵循 test-driven-development；例外清单以 test-driven-development skill 为准，按其授权纪律处理，不另设自有例外。写测试前复用获批 seam，无唯一落点时并入步骤 3 原确认，不重复询问已有决定。重构候选记录位置、理由和保护证据，交自身修复收尾；纯重构遵循 TDD「收尾纯重构」，不因此强制开启可选验收。
 - **同步 spec**：修改命中 spec 的对应 Requirement/Scenario 小节，使其与新行为一致（不重写设计，只改被影响的那几行）。
 - **spec 增量提交前给用户过目**：把 spec 小节改动展示给用户确认。
 - **提交**：spec + 代码 + 测试同一 commit，天然通过 `--staged`/`--push`/CI 守卫（spec 与代码同步）。
