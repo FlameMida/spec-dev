@@ -35,7 +35,6 @@ spec_dev:
 
 # 便携性修复与工程卫生（portability-hygiene）设计
 
-> **Superseded-pending (2026-09-06)** — 本 spec 的「Requirement: README 漂移修正」将被 .spec-dev/2026-09-06-01-concurrent-execution/spec/concurrent-execution-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 
 > roadmap `../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md` 子项目 #1；吸收生态对比报告 AB-38 / 36 / 37 / 39 / 40 / 42 及第四轮核验（报告 §8.5）发现的文档漂移。
 
@@ -317,6 +316,8 @@ visual-preview SHALL 在存在特性上下文时把会话产物写入 `.spec-dev
 - **THEN** 产物位于该特性目录 `visual/<session-id>/` 下，port/token 记忆文件仍在 `.spec-dev/visual/` 根
 
 ### Requirement: README 漂移修正（改了什么：四处与仓库事实不符的陈述对齐）
+
+> **Superseded**：由 [concurrent-execution](../../2026-09-06-01-concurrent-execution/spec/concurrent-execution-design.md) 的对应 Requirement 部分取代；其余行为继续有效。
 
 README 双语 SHALL：trigger-evals 覆盖描述列出六个 skill（acceptance-qa、clarifying、exploring、quick-fix、requirement-analysis、test-strategy）；目录结构含全部 13 个 skill 目录与 scripts 下的 doctor.mjs、update-vendored-skill.mjs；writing-plans 介绍的自检列出四项（spec 覆盖 / 占位符 / 类型一致 / 导航表与任务文件一致）；schemas 描述为"3 个输出契约 schema + 1 个 vendored manifest schema"。
 

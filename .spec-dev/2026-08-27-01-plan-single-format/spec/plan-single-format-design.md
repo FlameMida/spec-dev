@@ -28,7 +28,6 @@ spec_dev:
 
 # plan 单一形态设计（写收敛、读宽容）
 
-> **Superseded-pending (2026-09-06)** — 本 spec 的「Requirement: plan 单一形态」「Requirement: 渐进执行与断点恢复」「Requirement: 资源登记纪律」将被 .spec-dev/2026-09-06-01-concurrent-execution/spec/concurrent-execution-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 
 ## 背景与目标
 
@@ -70,6 +69,8 @@ v8.0.0 交付的 plan 双形态（阈值门控）暴露两类实证问题：**�
 
 ### Requirement: plan 单一形态（改了什么：删除阈值门控与单文件生成能力，分文件成为唯一生成形态；结构与键定义继承）
 
+> **Superseded**：由 [concurrent-execution](../../2026-09-06-01-concurrent-execution/spec/concurrent-execution-design.md) 的对应 Requirement 部分取代；其余行为继续有效。
+
 writing-plans SHALL 对每份计划产出分文件形态——`plan/index.md`（计划头部：标题/技术栈/设计原则块/全局约束/「相关测试范围」声明 + 任务导航表，导航表含任务/依赖/消费接口/产出接口四列，不复制任务正文）、`plan/tasks/TNN.md`（每任务一文件：文件块/接口块/TDD 步骤，步骤用「**步骤 N:**」标题式、不使用复选框；T00 为隔离工作区、最大号为最终任务、验收任务如有居其间）、`plan/progress.yaml`（唯一运行时状态：任务状态/当前指针/commit 映射/资源台账/偏差记录；writing-plans 生成时预登记已知资源入初始 resources）。生成后 SHALL 运行 plan-index 校验（tasks/ 文件与导航表一一对应、依赖引用存在、依赖图无环），失败不得交付执行。**不再存在**单文件生成路径与阈值判定条款；progressive 渐进规范（结构/导航表规则/键结构/生成规则/Self-Review 第 4 查）SHALL 并入 writing-plans SKILL.md 本体，`references/progressive-plan-format.md` 文件删除。
 
 #### Scenario: 小计划也产分文件
@@ -98,6 +99,8 @@ writing-plans SHALL 对每份计划产出分文件形态——`plan/index.md`（
 
 ### Requirement: 渐进执行与断点恢复（改了什么：渐进加载升为新计划默认，复选框判读降格为存量兼容）
 
+> **Superseded**：由 [concurrent-execution](../../2026-09-06-01-concurrent-execution/spec/concurrent-execution-design.md) 的对应 Requirement 部分取代；其余行为继续有效。
+
 executing-plans 对分文件形态（全部新计划）SHALL：启动只读 index 与 progress；执行 TN 时只读 `tasks/TN.md` 与其依赖任务的产出接口行（不读其正文）；每任务完成原子更新 progress 并提交。检测到未完成的 progress.yaml 时 SHALL 校验 worktree/分支/最后 commit 可解析后从下一 ready 任务续跑。渐进加载纪律（含 resume 规程）SHALL 并入 executing-plans SKILL.md 本体，`references/progressive-execution.md` 文件删除。存量单文件计划的复选框判读轻量恢复（首个含未勾选步骤的任务即续跑点，勾选状态与 git log 的 feat(TN) 提交对照、不一致以提交为准并报告）SHALL 保留为兼容分支条款，不再与分文件形态对称陈述。
 
 #### Scenario: 新会话恢复执行（继承）
@@ -119,6 +122,8 @@ executing-plans 对分文件形态（全部新计划）SHALL：启动只读 inde
 - **THEN** 从任务 5 续跑；勾选与提交不一致时以提交为准并向用户报告
 
 ### Requirement: 资源登记纪律（改了什么：载体由"按形态分流"收敛为 progress.yaml resources，存量单文件台账行保留为读侧兼容）
+
+> **Superseded**：由 [concurrent-execution](../../2026-09-06-01-concurrent-execution/spec/concurrent-execution-design.md) 的对应 Requirement 部分取代；其余行为继续有效。
 
 executing-plans 执行任务期间创建计划未预登记的持久资源时，执行者 SHALL 当场写入 progress.yaml 的 resources 键、不延迟到收尾补记（计划任务文件不被编辑）；最终任务清理步骤 SHALL 遍历 progress.yaml 的 resources 清单（writing-plans 的资源台账规范定义点为 progress.yaml 键结构节）。执行**存量单文件计划**时，登记与清理 SHALL 沿用该计划最终任务内嵌的复选框台账行（就地编辑，该侧冻结、不再新增条款）。quick-fix 与 acceptance-qa 的台账指针 SHALL 指向 writing-plans 的资源台账定义（不再定位到"最终任务模板"）。
 
