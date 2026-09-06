@@ -22,6 +22,7 @@
         "./skills/visual-preview",
         "./skills/writing-plans",
         "./skills/executing-plans",
+        "./skills/executing-plans-parallel",
         "./skills/using-git-worktrees",
         "./skills/test-driven-development",
         "./skills/acceptance-qa",

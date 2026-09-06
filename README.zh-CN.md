@@ -13,13 +13,14 @@
 - **可视化预览** — `visual-preview` 浏览器伴侣：设计对话中 JIT 提议，展示 mockup、线框、布局对比并回收点击选择
 - **实施计划** — `writing-plans` 把 spec 拆成零上下文可执行的 bite-sized 任务：精确文件路径、完整代码、TDD 五步内嵌、接口消费/产出契约、禁止占位符
 - **计划执行** — `executing-plans` 主线程逐任务执行（每任务 commit + spec 自检）、收尾多维对抗审查（fan-out code-reviewer + 契约校验 + loop-until-dry + completeness critic）、合并与总结
+- **可选并发执行** — `executing-plans-parallel`: 显式选择；模型声明、任务边界切换、独占进度、隔离实现和中断恢复；共用本地/PR 交付闭环。
 - **工程纪律** — `using-git-worktrees`（原生工具优先的隔离工作区）与 `test-driven-development`（没有失败测试就没有生产代码）独立成 skill，可被任何工作流复用
 - **全能验收** — `acceptance-qa` 按「验收维度 × 执行性质」矩阵验收：单元/集成/API、Playwright E2E、视觉回归、可访问性、性能（前端 CWV / 后端 k6 / 客户端）、AI 自主验收（证据强制 + 串行复核 + verify 断言优先）与失败诊断
 - **轻量修复** — `quick-fix`，已决定、无设计空间的小修复（小 bug、小调整）的快路径：定位根因（含 spec 反查）、逐题校对、TDD 修复、可选验收；按契约影响分流以规避 spec 漂移，涉及跨 spec 契约/跨模块/新依赖时升级 requirement-analysis
 - **共享澄清** — `clarifying`，grill 式提问纪律（沿决策树一次一题、事实自查、每个决策带推荐交用户裁决）；被 requirement-analysis 与 quick-fix 引用，也可独立调用，以三出口收束（转主流程/就此结束/写入 md）
 - **契约化编排** — 子代理输出走 JSON Schema 契约，`validate-output.mjs` 确定性校验，失败退回补全
 - **零 MCP 依赖** — 结构化推理以内嵌 skill 提供（`sequential-thinking`，vendored）；浏览器自动化 MCP（playwright / chrome-devtools）按项目自配，见 `skills/acceptance-qa/references/mcp-setup.md`
-- **3 个专门化 Agents** — code-explorer、external-resource-explorer、code-reviewer（分析与复跑验证，不写实现代码；实现始终由主线程编写）
+- **4 个专门化 agents** — code-explorer、external-resource-explorer、code-reviewer 负责分析与复跑；implementer 仅在显式选择并发时于独立 worktree 写码。
 
 ## Skill 管线
 
@@ -33,6 +34,7 @@ requirement-analysis（设计 → .spec-dev/YYYY-MM-DD-NN-<feature>/spec/<featur
 writing-plans（计划 → 同特性目录 plan/ 分文件形态：index.md + tasks/ + progress.yaml）
         ↓
 executing-plans（隔离执行 + 审查 + 总结）
+   ├── executing-plans-parallel (显式选择、独立写集合、模型声明、恢复)
    ├── using-git-worktrees（隔离工作区）
    ├── test-driven-development（TDD 纪律）
    └── acceptance-qa（矩阵化验收）
@@ -129,7 +131,7 @@ node scripts/validate-skills.mjs
 `skills/*/evals/` 下有两类文件，定位不同：
 
 - `evals.json` — **设计意图文档**：记录各 skill 关键行为的预期（HARD-GATE 拒绝、交接门、降级路径等），供人工 review 与未来评测 harness 使用。仓库内没有运行器，且多数用例带对话前置状态、断言为散文——它们**不构成自动化回归防线**，改动 skill 行为时应把它们当 checklist 人工过一遍
-- `trigger-evals.json` — **可冷启动、可判定的触发面用例**（should-trigger / should-not-trigger 单发 prompt + near-miss 负例）：目前覆盖 `acceptance-qa`、`clarifying`、`exploring`、`quick-fix`、`requirement-analysis`、`test-strategy` 六个 skill，接入任意评测 harness 即可直接运行判定
+- `trigger-evals.json` — **可冷启动、可判定的触发面用例**（should-trigger / should-not-trigger 单发 prompt + near-miss 负例）：目前覆盖 `acceptance-qa`、`clarifying`、`exploring`、`quick-fix`、`requirement-analysis`、`test-strategy`, `executing-plans-parallel` 七个 skill，接入任意评测 harness 即可直接运行判定
 
 ### 提交前 hook
 
@@ -239,13 +241,14 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-des
 
 ## 专门化 Agents
 
-主线程干活、子代理不写码——实现代码始终由主线程编写，agent 只承担探索、审查与复跑验证等分析性任务：
+默认串行由主线程写码。显式选择 executing-plans-parallel 后，implementer 在独立 worktree 内按认领写码；主线程仍独占进度与合并，其他 agents 保持分析职责：
 
 | Agent | 用途 | 使用场景 |
 |-------|------|---------|
 | **code-explorer** | 深度分析代码库 | requirement-analysis 阶段 2 并行探索 |
 | **external-resource-explorer** | 外部资源探索，可引用证据 | requirement-analysis 阶段 2 外部波次与回补探索 |
 | **code-reviewer** | 代码审查（置信度 + 严重性） | executing-plans 收尾多维审查 |
+| **implementer** | 单票 TDD 与自检 | executing-plans-parallel 独立 worktree |
 
 ## 目录结构
 
@@ -263,7 +266,7 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 │   ├── pre-commit                   # 提交前校验插件包与 skills
 │   ├── post-commit                  # 提交后自动发版（升版本 + CHANGELOG + tag）
 │   └── pre-push                     # 发布兜底（校验 CHANGELOG 条目、补打版本 tag）
-├── agents/                          # 3 个专门化 agents（分析与复跑验证，不写实现代码）
+├── agents/                          # 4 个 agents，含 opt-in implementer
 ├── commands/                        # /doctor、/triage 命令
 ├── guardrail/                       # spec 漂移守护（可装入目标仓库）
 ├── skills/
@@ -273,6 +276,7 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 │   ├── visual-preview/              # 浏览器可视化预览
 │   ├── writing-plans/               # 实施计划编写
 │   ├── executing-plans/             # 计划执行 + 收尾审查
+│   ├── executing-plans-parallel/    # 显式选择的并发执行与恢复
 │   ├── using-git-worktrees/         # 隔离工作区纪律
 │   ├── test-driven-development/     # TDD 纪律
 │   ├── test-strategy/               # 测试策略纪律（Lane / 治理 / 验收矩阵对接）

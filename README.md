@@ -13,13 +13,14 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 - **Visual preview** — `visual-preview`, a browser companion: JIT-proposed during design conversations, renders mockups, wireframes and layout comparisons, and collects click-through choices
 - **Implementation plans** — `writing-plans` decomposes specs into bite-sized tasks executable with zero context: exact file paths, complete code, embedded 5-step TDD, consume/produce interface contracts, no placeholders allowed
 - **Plan execution** — `executing-plans`: the main thread executes task-by-task (per-task commit + spec self-check), then wrap-up multi-dimension adversarial review (fan-out code-reviewer + contract validation + loop-until-dry + completeness critic), merge and summary
+- **Optional parallel execution** — `executing-plans-parallel`: explicit selection, model declaration, task-boundary switching, exclusive progress, isolated implementation and interruption recovery; shared local/PR delivery.
 - **Engineering discipline** — `using-git-worktrees` (isolated workspaces, native tools first) and `test-driven-development` (no production code without a failing test) are standalone skills reusable from any workflow
 - **All-round acceptance** — `acceptance-qa` runs acceptance over the dimension × execution-nature matrix: unit/integration/API, Playwright E2E, visual regression, accessibility, performance (web CWV / k6 for APIs / client), AI autonomous acceptance (mandatory evidence + serial recheck + verify-assertions-first) and failure diagnosis
 - **Lightweight fix** — `quick-fix`, a fast path for already-decided fixes with no design space (small bugs, minor adjustments): root cause with spec back-lookup, one-question-at-a-time confirmation, TDD fix, optional acceptance; splits on contract impact to avoid spec drift and escalates to requirement-analysis on contract-crossing / cross-module / new-dependency signals
 - **Shared clarification** — `clarifying`, the grill-style questioning discipline (one question at a time down the decision tree, facts self-researched, each decision put to the user with a recommendation); referenced by requirement-analysis and quick-fix, and usable standalone with three exits (hand off to the main workflow / stop / write notes to md)
 - **Contract-driven orchestration** — subagent output goes through JSON Schema contracts, deterministically validated by `validate-output.mjs`, with one retry on failure
 - **Zero MCP dependency** — structured reasoning ships as a vendored skill (`sequential-thinking`); browser automation MCPs (playwright / chrome-devtools) are opt-in per project, see `skills/acceptance-qa/references/mcp-setup.md`
-- **3 specialized agents** — code-explorer, external-resource-explorer, code-reviewer (analysis and verification re-runs only; implementation code is always written by the main thread)
+- **4 specialized agents** — code-explorer, external-resource-explorer and code-reviewer handle analysis and verification; implementer writes code in an isolated worktree only after explicit parallel selection.
 
 ## Skill Pipeline
 
@@ -33,6 +34,7 @@ requirement-analysis (design → .spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature
 writing-plans (plan → plan/ split-file layout: index.md + tasks/ + progress.yaml)
         ↓
 executing-plans (isolated execution + review + summary)
+   ├── executing-plans-parallel (opt-in, disjoint writes, model declaration, resume)
    ├── using-git-worktrees (isolated workspace)
    ├── test-driven-development (TDD discipline)
    └── acceptance-qa (matrix-driven acceptance)
@@ -129,7 +131,7 @@ The script looks for the Codex built-in `skill-creator` first, and also supports
 `skills/*/evals/` holds two kinds of files with different roles:
 
 - `evals.json` — **design-intent documents**: they record the expected key behaviors of each skill (HARD-GATE refusals, handoff gates, degradation paths, etc.) for human review and a future evaluation harness. There is no runner in the repo, and most cases carry conversational preconditions with prose assertions — they are **not** an automated regression line; treat them as a checklist to walk through manually when changing skill behavior
-- `trigger-evals.json` — **cold-startable, decidable trigger-surface cases** (should-trigger / should-not-trigger single-shot prompts + near-miss negatives): currently covering six skills — `acceptance-qa`, `clarifying`, `exploring`, `quick-fix`, `requirement-analysis`, `test-strategy`; plug into any evaluation harness and run the verdicts directly
+- `trigger-evals.json` — **cold-startable, decidable trigger-surface cases** (should-trigger / should-not-trigger single-shot prompts + near-miss negatives): currently covering seven skills — `acceptance-qa`, `clarifying`, `exploring`, `quick-fix`, `requirement-analysis`, `test-strategy`, `executing-plans-parallel`; plug into any evaluation harness and run the verdicts directly
 
 ### Pre-commit hooks
 
@@ -240,13 +242,14 @@ Triage a request to the right lane: `/triage <request>`
 
 ## Specialized Agents
 
-The main thread does the work; subagents never write code — implementation code is always written by the main thread, and agents only take on analysis tasks like exploration, review and verification re-runs:
+The main thread implements by default. With explicit executing-plans-parallel selection, implementer writes claimed files in its own worktree; the main thread owns progress and integration, while other agents retain analysis roles:
 
 | Agent | Purpose | Where it's used |
 |-------|------|---------|
 | **code-explorer** | Deep codebase analysis | requirement-analysis phase 2 parallel exploration |
 | **external-resource-explorer** | External resource research with citable evidence | requirement-analysis phase 2 external wave and follow-up exploration |
 | **code-reviewer** | Code review (confidence + severity) | executing-plans wrap-up multi-dimension review |
+| **implementer** | Single-task TDD and self-check | executing-plans-parallel isolated worktrees |
 
 ## Directory Layout
 
@@ -264,7 +267,7 @@ spec-dev/                            # repo root is the plugin root (flat layout
 │   ├── pre-commit                   # validates the plugin package and skills before commit
 │   ├── post-commit                  # auto-release after commit (version bump + CHANGELOG + tag)
 │   └── pre-push                     # release backstop (checks CHANGELOG entry, backfills version tag)
-├── agents/                          # 3 specialized agents (analysis and verification re-runs, no implementation code)
+├── agents/                          # 4 agents, including opt-in implementer
 ├── commands/                        # /doctor, /triage commands
 ├── guardrail/                       # spec drift guard (installable into target repos)
 ├── skills/
@@ -274,6 +277,7 @@ spec-dev/                            # repo root is the plugin root (flat layout
 │   ├── visual-preview/              # browser visual preview
 │   ├── writing-plans/               # implementation plan writing
 │   ├── executing-plans/             # plan execution + wrap-up review
+│   ├── executing-plans-parallel/    # opt-in parallel execution and recovery
 │   ├── using-git-worktrees/         # isolated workspace discipline
 │   ├── test-driven-development/     # TDD discipline
 │   ├── test-strategy/               # test strategy discipline (lanes / governance / acceptance-matrix link)

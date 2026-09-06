@@ -49,8 +49,8 @@ test("Scenario: 三级全失败不静默", () => {
 
 const DECL = "> **插件根**：`${CLAUDE_PLUGIN_ROOT}`——本 skill 正文与其 references 中的插件根命令以此为准；若上式仍为变量字面量（平台未替换），按 requirement-analysis 的 references/exploration-patterns.md「插件根解析」序列推导。";
 
-test("Scenario: 四个 skill 都有声明行", () => {
-  const withDecl = ["requirement-analysis", "writing-plans", "executing-plans", "acceptance-qa"];
+test("Scenario: 命令调用方都有插件根声明行", () => {
+  const withDecl = ["requirement-analysis", "writing-plans", "executing-plans", "acceptance-qa", "executing-plans-parallel"];
   for (const s of withDecl) assert.ok(read(`skills/${s}/SKILL.md`).includes(DECL), `${s} 缺声明行或措辞不一致`);
   for (const s of readdirSync(path.join(repoRoot, "skills"))) {
     if (withDecl.includes(s) || VENDORED.includes(`skills/${s}`)) continue;
@@ -223,7 +223,7 @@ test("Scenario: 计数与磁盘一致", () => {
 });
 
 test("Scenario: 变量未替换时按序列推导——skill base directory 上两级即插件根（布局不变量）", () => {
-  for (const s of ["requirement-analysis", "writing-plans", "executing-plans", "acceptance-qa"]) {
+  for (const s of ["requirement-analysis", "writing-plans", "executing-plans", "acceptance-qa", "executing-plans-parallel"]) {
     const root = path.resolve(repoRoot, "skills", s, "..", "..");
     assert.equal(root, repoRoot, `${s} 的 base directory 上两级应为插件根`);
     assert.ok(existsSync(path.join(root, "scripts/validate-output.mjs")), "插件根下应有校验器");

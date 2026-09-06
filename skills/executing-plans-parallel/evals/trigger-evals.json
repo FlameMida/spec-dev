@@ -1,0 +1,37 @@
+{
+  "skill_name": "executing-plans-parallel",
+  "description_under_test": "并发执行已批准的分文件实施计划——仅在用户明确选择、依赖拓扑允许独立任务且写集合与资源可隔离时使用；主线程先声明模型与思考强度，独占进度与集成，implementer 在独立 worktree 中完成单票 TDD。支持任务边界切换与中断恢复；普通继续、缺声明或纯依赖链仍走 executing-plans。",
+  "should_trigger": [
+    {
+      "id": "explicit-parallel",
+      "prompt": "这个分文件计划已批准，T01/T02 声明了独立写集合，请用并发子代理执行。"
+    },
+    {
+      "id": "boundary-switch",
+      "prompt": "当前 T02 先做完，后续按已批准声明转并发执行。"
+    },
+    {
+      "id": "parallel-resume",
+      "prompt": "progress 已记录 execution.mode: parallel；恢复中断的并发执行，先核对旧 claim。"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "id": "plain-continue",
+      "prompt": "继续这个计划。"
+    },
+    {
+      "id": "chain-only",
+      "prompt": "T01 到 T04 是单条依赖链，请执行计划。"
+    },
+    {
+      "id": "parallel-research",
+      "prompt": "并行查三个库的官方文档，不实施计划。"
+    },
+    {
+      "id": "missing-plan",
+      "prompt": "直接并发写一个新功能，目前没有 spec 或计划。"
+    }
+  ],
+  "notes": "触发不等于准入通过；已有并发模式恢复不重复索取选择。未运行真实模型时只记静态走查。"
+}
