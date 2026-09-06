@@ -52,6 +52,7 @@ spec_dev:
 - 不替换默认串行范式，不改变 TDD、一次一题、契约偏差裁决或最终多维审查纪律；不吸收 roadmap #3—#8 的行为。
 - 不实现多人分布式调度、远端队列、自动抢占租约、merger 子代理或通用 Agent 运行时。
 - 不迁移存量单文件计划、不自动把缺写集合的历史计划补成并发计划；不默认推送、创建 PR 或合并远端 PR。
+- 不在任务写到一半时转交实现上下文，不迁移未提交业务改动；串行转并发只发生在任务完成并保存的边界。
 - 不把 Bash/Edit/Write 权限表描述为操作系统级隔离保证；worktree 也不隔离端口、数据库与全局 Git 状态。
 
 ## 术语表
@@ -76,10 +77,11 @@ spec_dev:
 - 写集合放 index 的可选机器可读声明、运行状态放 progress：保留三件套与四列导航；拒绝独立调度文件造成重复索引，也不为并发扩充导航表列数。声明代表能力，不代表用户已经选择并发。
 - 一个特性同一时刻只有一个编排主线程；认领与锁只用于排他和恢复，不引入分布式调度。
 - 任务完成以集成后验证为准；资源先登记后创建；PR ready 与实际合并分别记账。上述细节落实用户批准的七项设计，不扩大交付范围。
+- 用户后续批准任务边界上的串行转并发：复用当前隔离工作区和已完成进度，保留最初审查基线，持久化切换检查点后才派发。并发模式内按可用任务决定一次执行一票还是多票，不为调度数量变化反复切换模式。
 
 ## 取代与共存
 
-- [部分取代] `.spec-dev/2026-08-27-01-plan-single-format/spec/plan-single-format-design.md`：Requirement「plan 单一形态」增加可选并发声明与运行扩展；「渐进执行与断点恢复」增加多 worktree、认领、集成完成与恢复语义；「资源登记纪律」增加子代理创建前由主线程登记。下文 MODIFIED 完整继承串行与存量读取行为，分别定义 opt-in 例外。其「存量计划兼容读取」保持冻结，不取代。
+- [部分取代] `.spec-dev/2026-08-27-01-plan-single-format/spec/plan-single-format-design.md`：Requirement「plan 单一形态」增加可选并发声明与运行扩展；「渐进执行与断点恢复」增加多 worktree、认领、集成完成、任务边界切换与恢复语义；「资源登记纪律」增加子代理创建前由主线程登记。下文 MODIFIED 完整继承串行与存量读取行为，分别定义 opt-in 例外。其「存量计划兼容读取」保持冻结，不取代。
 - [部分取代] `.spec-dev/2026-09-03-02-portability-hygiene/spec/portability-hygiene-design.md`：Requirement「README 漂移修正」中的固定 13 skill、6 trigger-evals 与 schema 计数随新增正式 skill/schema 更新，保留四项 Self-Review 和 scripts 目录事实；其余插件根、依赖区分、纯壳委托、失败隔离、区间展开纪律分面共存。
 - [分面共存] `.spec-dev/2026-08-26-01-major-upgrade/spec/major-upgrade-design.md`：新增 skill 登记和输出 schema 使用既有分发与校验机制；相关旧计划/恢复/资源条款已有 Superseded 标注，不再作为取代目标。现行搜索优先级、编号与 roadmap 胶囊语义继承。
 - [分面共存] `.spec-dev/2026-08-10-supersede-lifecycle/spec/supersede-lifecycle-design.md`：只修改所覆盖文件的执行模式/追溯说明，取代时序、covers 双声明和守卫机制不变；Spec trailer 是追溯字段，不是绕过守卫的指令。
@@ -106,7 +108,7 @@ writing-plans SHALL 始终生成 index.md + tasks/TNN.md + progress.yaml：index
 
 ### Requirement: 渐进执行与断点恢复（改了什么：增加 opt-in 认领与集成恢复）
 
-执行者 SHALL 启动只读 index、progress 与 spec，执行 TN 时只读该任务正文和依赖的产出接口行；串行每任务完成后原子更新 progress 并提交，恢复核对 worktree、分支、commit 与任务文件，从最小编号 ready 任务继续，不重跑已 completed 任务。并发模式主线程依据入口声明派发，子代理按同一渐进纪律读自己的任务；代码与状态分开提交，完成判据及恢复以本 spec 的核验协议为准。存量单文件仍按复选框和 feat(TN) 提交恢复、不生成 progress、不新增并发条款。progressive 两个旧 reference 保持删除，定义留在现有 SKILL 本体。
+执行者 SHALL 启动只读 index、progress 与 spec，执行 TN 时只读该任务正文和依赖的产出接口行；串行每任务完成后原子更新 progress 并提交，恢复核对 worktree、分支、commit 与任务文件，从最小编号 ready 任务继续，不重跑已 completed 任务。用户明确要求串行转并发时，在当前任务完成并提交后按本 spec 的切换协议升级，保留已有完成记录，不重做 T00；不满足准入条件则保留串行语义。并发模式主线程依据入口声明派发，子代理按同一渐进纪律读自己的任务；代码与状态分开提交，完成判据及恢复以本 spec 的核验协议为准。存量单文件仍按复选框和 feat(TN) 提交恢复、不生成 progress、不新增并发条款。progressive 两个旧 reference 保持删除，定义留在现有 SKILL 本体。
 
 #### Scenario: S03 恢复中间合并而不重复应用
 - **GIVEN** T01 的实现提交已成为集成 HEAD 的祖先，但 completed 状态提交前会话中断。
@@ -151,6 +153,35 @@ executing-plans SHALL 仅在用户明确选择、导航拓扑存在至少两个�
 - **GIVEN** 用户已选并发、T01/T02 均依赖尚未执行的 T00、写集合不相交且资源可隔离。
 - **WHEN** 运行编排。
 - **THEN** 入口接受并发选择，先由主线程完成 T00 再派两票；两票在不同 worktree 有重叠的执行时间，最终由主线程逐个核验并集成；最终任务不被提前派发。
+
+### Requirement: 任务边界上的串行转并发
+
+执行链 SHALL 在用户明确要求切换后，等当前票完成测试/自检并提交进度、当前隔离工作区干净、没有未结束的执行者或未解决的契约偏差，再核对剩余任务的并发声明、拓扑与资源资格；通过后复用该工作区作为集成工作区，取得特性锁并持久化切换检查点，然后才允许新认领和子代理派发。completed 记录、原始审查基线与交付通道不变；不满足资格不改变模式，说明原因后继续获准的串行工作；已有任务本身 blocked 时按原阻塞纪律处理，不为切换强行结束任务。并发模式内只剩一票或遇到主线程专属票时沿既有调度规则处理，不因此写回串行模式。
+
+#### Scenario: S23 串行完成两票后切换
+- **GIVEN** T00/T01 已完成并提交，用户在执行 T02 期间要求后面转并发，剩余 T03/T04 无相互依赖且声明有效。
+- **WHEN** T02 完成并保存、主线程执行切换。
+- **THEN** 复用当前隔离工作区，从最新已验证代码所在的检查点创建 T03/T04 的 worktree；T00—T02 不重做，原始 base_commit 不替换成切换点，最终审查仍覆盖切换前后的所有代码。两票均仅在切换检查点提交后派发。
+
+#### Scenario: S24 切换条件不足继续串行
+- **GIVEN** 用户要求切换，但剩余任务只有依赖链，或没有合法并发声明，或资源不能隔离。
+- **WHEN** 主线程检查切换资格。
+- **THEN** 保留串行模式和已有进度，说明不满足的条件，不创建 implementer；缺声明时不借切换预读全部任务并自动补写，需单独修订计划并通过原审查/校验后重新评估。不重复询问已经给出的并发选择。
+
+#### Scenario: S25 切换检查点前后中断
+- **GIVEN** 串行检查点 H 已保存，主线程取得锁并准备并发状态。
+- **WHEN** 分别在 progress 原子写入前、写入后但提交前、检查点提交后但派发前中断。
+- **THEN** 前两种没有子代理派发，已提交模式仍为串行；恢复核对授权和准备状态后可完成切换提交，或仅撤销本次准备改动并保持串行。第三种按已提交并发检查点恢复，不重复 T00 或已完成任务；若已进入后续认领窗口，则继续使用 S03/S04/S12 的既有核验规则。
+
+#### Scenario: S26 切换请求先于当前任务完成时中断
+- **GIVEN** 用户在 T02 执行中要求转并发，主线程已将带 request_id 的授权原话或可恢复引用记入 notes 并单独提交，T02 尚未完成。
+- **WHEN** 新会话收到“继续”。
+- **THEN** 从已有状态恢复 T02，不把它拆给子代理；T02 完成并提交后沿已保存授权重新检查切换资格，不丢失请求、不重复询问同一授权。若中断早于请求持久化且无法从可用会话记录核实授权，则保持串行，不凭空推定用户已选择并发。
+
+#### Scenario: S27 已认领但派发回执缺失时中断
+- **GIVEN** 模式切换已提交，T03 claim 已持久化，主线程在调用 spawn 与记录 agent_id 之间中断。
+- **WHEN** 恢复执行。
+- **THEN** 先确认旧编排 owner 已停止并取得特性锁、持久化新的 execution.owner，再按 claim_key、任务分支/worktree 和平台可见执行者核对是否已派发；找到身份可核验且能恢复通信的存活 implementer 就保留原 claim 恢复联系，不再 spawn；能够证明未派发时继续该认领的派发，证明原 implementer 已终止时核验其遗留代码/证据后再接管或创建新尝试。旧 owner、implementer 身份或通信能力无法核实时冻结相关恢复并报告，不把“agent_id 为空”当成未派发证明。
 
 ### Requirement: 写集合与资源冲突准入
 
@@ -268,9 +299,33 @@ resources 是该票使用的排他外部资源键（如数据库、端口、输�
 
 `execution` 字段：`mode`、`owner`（会话唯一标识）、`integration_worktree`（绝对路径）、`integration_branch`、`base_commit`（特性审查基线）、`validated_commit`（最后通过集成验证的 tip）。可选 `delivery`：`channel: local|pr`、`state: implementing|awaiting_merge|merged|completed`、`source_branch`、`pr_url`、`merge_commit`；记录事实变化，不以 state 自证合并。
 
-`tasks.TNN` 继承 status/commit/tests/deviations，增加 `claim: { key, owner, agent_id, worktree, branch, base_commit }`、`implementation_commit`、`result_path`。agent_id 在工具返回后补写；派发前 claim 已持久化，若在派发与补写之间崩溃则核对运行中 agent 与 worktree，不盲重派。completed 的 `commit` 是通过集成验证的提交，不能填包含该 SHA 字段的状态提交；实现提交和进度 checkpoint 分开，后者随特性分支保存。每次新尝试以新 key 替换 claim，旧 key 与处置原因追加 notes，历史结果文件保留。progress 使用临时文件+rename 原子更新，不允许子代理副本合并回来。
+中途升级时增加可选 `execution.activation: { from: serial, request_id: <切换请求唯一标识>, checkpoint_commit: <H>, authorization_ref: <已保存请求 notes 的定位> }`；H 是切换前已保存串行完成状态的提交，不是包含 activation 的提交。notes 以现有 append-only 字符串项保存 `parallel-switch/<request_id>: requested; authorization=<原话或可恢复引用>`，成功切换时追加同 ID 的 activated 事件；不另建待办状态文件，实际模式仍以已提交 execution 为准。初始就选择并发不要求该 activation 字段。用户的切换授权和任务声明是两个独立条件，声明存在不能代替授权。
 
-特性锁落在解析后的共享 git common dir 的 `spec-dev-locks/<feature_key 的哈希>/`，用原子创建取得；`feature_key` 是计划所属 worktree 根下、采用 `/` 的仓库根相对特性目录（例如 `.spec-dev/2026-09-06-01-concurrent-execution`），禁止把 worktree 绝对前缀纳入哈希。同一仓库的不同 worktree 因共享 common dir 且 feature_key 相同而竞争同一锁；不能从另一个 worktree 的 cwd 直接对绝对计划路径求相对值。锁载荷中的绝对路径仅用于定位原编排者档案，锁非第二份任务状态源。挂起前停止/回收在途代理、写进度 checkpoint 后可释放自己的锁。崩溃恢复需要核实原 owner/agent 已停止并对照磁盘；无法核实则报告占用，不按时间自动接管。不同主线程对同一特性不得各自宣称 progress 的写权限。
+`tasks.TNN` 继承 status/commit/tests/deviations，增加 `claim: { key, owner, agent_id, worktree, branch, base_commit }`、`implementation_commit`、`result_path`。claim.owner 表示最初认领的编排会话，execution.owner 表示当前持锁编排者；恢复接管可以更新后者，身份与通信已核验的存活 implementer 保留原 claim，不因主线程换会话而换 key。agent_id 在工具返回后补写；派发前 claim 已持久化，若在派发与补写之间崩溃则核对运行中 agent 与 worktree，不盲重派。completed 的 `commit` 是通过集成验证的提交，不能填包含该 SHA 字段的状态提交；实现提交和进度 checkpoint 分开，后者随特性分支保存。每次新尝试以新 key 替换 claim，旧 key 与处置原因追加 notes，历史结果文件保留。progress 使用临时文件+rename 原子更新，不允许子代理副本合并回来。
+
+特性锁落在解析后的共享 git common dir 的 `spec-dev-locks/<feature_key 的哈希>/`，用原子创建取得；`feature_key` 是计划所属 worktree 根下、采用 `/` 的仓库根相对特性目录（例如 `.spec-dev/2026-09-06-01-concurrent-execution`），禁止把 worktree 绝对前缀纳入哈希。同一仓库的不同 worktree 因共享 common dir 且 feature_key 相同而竞争同一锁；不能从另一个 worktree 的 cwd 直接对绝对计划路径求相对值。锁载荷中的绝对路径仅用于定位原编排者档案，锁非第二份任务状态源。主动挂起前停止/回收在途代理、写进度 checkpoint 后可释放自己的锁。意外中断后的接管要求核实旧编排 owner 已停止并对照磁盘；旧 owner 状态无法核实则报告占用，不按时间自动接管。存活 implementer 不等于旧编排 owner 仍存活：新主线程取得锁并持久化 execution.owner 后，可以对身份可核验且能够恢复通信的存活 implementer 继续编排，保留原 claim；无法核验该 implementer 则阻塞相关票，不重派。接管时核对旧锁归属，不能删除已被另一个恢复者取得的新锁；不同主线程不得同时宣称 progress 写权限。
+
+### 串行转并发的交接顺序
+
+1. 用户在任务中途提出切换时，为请求生成 request_id，在 progress.notes 保存其授权原话或可恢复引用并单独提交（只暂存进度，不夹带当前业务半成品）；当前票仍由原主线程完成，不转交半成品。请求持久化前不声称已保存；若提交失败则说明尚未保存，继续保护当前任务改动。进入已提交、无未完成执行者的任务边界后，读取 index/progress 检查剩余任务的拓扑潜力、声明和资源，遵循三条件及 S22。无法定位原始审查基线、工作区并未隔离、存在未知改动或认领时不猜测修复，不激活并发。
+2. 沿用当前有效隔离 worktree，不重新执行 T00、不拷贝未提交业务代码。保存串行检查点 H 并核对其业务代码与最近通过验证的代码一致；检查点中新出现的非业务进度记录不要求重跑已完成票。`base_commit` 继承原计划执行周期的审查基线（必须可核验），`validated_commit` 初始化为 H；二者不可混用。切换后为每个新 worktree 建立基线的验证仍按既有派发规则执行。
+3. 取得同一特性锁，原子写入 execution、activation、notes，清空仅用于指向刚结束串行票的 current，保留 tasks 的全部完成记录、resources 和 delivery。此时不创建子 worktree 或外部资源。把模式切换和进度作为一个独立 checkpoint 提交；其提交不得夹带业务实现、扩大计划范围或改变发布权限。仓库自动发版钩子按获准的文档/状态提交规则处理，不能因切换生成未经验证的版本改动。
+4. 只有包含完整切换状态的提交成功且状态/分支核对一致，才进入既有“先认领、再派发”。切换准备失败时不派发；能正常收尾则仅撤销本次未提交的模式准备改动并释放自己持有的锁，串行检查点 H 保留。崩溃恢复先查已提交 progress，再比对未提交准备差异；不可把文件里的 mode 单独当作已成功切换。未知差异或活跃旧 owner 按原恢复规则报告阻塞，不覆盖他人内容。
+
+切换不重新批准原计划，也不使所有剩余任务自动具备并发资格。无声明时，若用户另外授权修订计划，由 writing-plans 的既有审查/校验路径更新声明后再评估；单纯的“转并发”不授权猜写集合。并发启动后并行数量可随 ready 集合变化，模式保持 parallel，已获授权的范围内不每轮重新询问。
+
+恢复先定位原集成 worktree 和特性锁 owner，再核对已提交 progress、未提交差异、运行中执行者、实际 Git 提交和证据；新会话不从来源分支的陈旧 progress 副本直接另起编排。恢复所需的原工作区/提交缺失沿 S04 报告，不重建一份空进度。恢复动作的分界如下：
+
+| 中断位置 | 可核验依据 | 恢复动作 |
+|---|---|---|
+| 请求已保存，当前串行票未完 | notes 的 request_id/授权、current、任务工作区与提交 | 先恢复当前票；完成后重检资格，复用授权 |
+| 模式准备已写，但尚未提交 | 已提交模式仍串行、准备差异仅属于该 request_id、锁归属 | 未派任何子代理；核对后补提交，或撤销仅本次准备差异 |
+| 模式已提交，尚未认领 | execution.activation、H、当前集成工作区 | 以并发模式继续，保留 completed 和最初 base_commit |
+| claim 已保存，agent_id 回执不完整 | 旧编排 owner 状态、claim_key、分支/worktree、可见运行中 agent | 先取得编排锁并持久化新 owner，再核实是否已派发；未知则阻塞，禁止重复 spawn |
+| 子代理执行中或已完成但报告未收齐 | 新编排 owner、活跃 implementer 身份与通信、任务分支、实际 diff、持久证据 | 先完成编排接管，存活 implementer 可继续原票；确认终止后核验遗留结果，缺证据不判通过 |
+| 实现已合入，completed checkpoint 未保存 | 实现提交 ancestry、集成验证证据 | 沿 S03 补未完成验证和状态提交，不重复 merge |
+
+恢复不能仅凭“时间过去了”抢锁，也不能仅凭工具返回空列表就断言旧执行者终止；必须结合该平台的会话可见性及 worktree 活动核实，不能核实时显式阻塞。已完成并有持久验证证据的任务不重跑；未完成的验证或证据丢失部分才补验。测试日志与结果证据必须可在中断后定位：implementer 将其保存在主线程预登记的该 claim 专用临时位置，主线程接收后归档到 execution/<claim_key>/，不能只留在对话中的“通过”一句。清理前核对证据已归档且相关任务已接受，未集成 worktree 与未归档结果保留。
 
 ### 派发、结果与集成
 
@@ -302,6 +357,11 @@ awaiting_merge 可以结束当前执行会话，但不是“全部任务完成�
 | S06 登记与集合 | integration | 验收任务 (D) | PR | check-plugin、validate-skills、check-openai-sync、集合检查 exit 0 |
 | S07 普通继续不并发 | docs/agent | 任务内评估用例编写；验收任务静态走查 | fast | 命中/近似不命中 trigger-evals，走查逐条结论 |
 | S08 真实并发 | integration | 验收任务 (D) | PR | 两个真实 worktree、受控执行者时间戳重叠、实际提交/合并、后继解锁 |
+| S23 边界切换成功 | integration | 验收任务 (D) | PR | 同一集成 worktree、完成记录不变、两基线区分、完整审查 diff 与派发时间戳 |
+| S24 切换资格不足 | unit/docs | 任务内 TDD + 验收任务静态走查 | fast | 不激活/不派发断言；缺声明、依赖链、资源冲突用例 |
+| S25 切换中断恢复 | integration | 任务内 TDD + 验收任务 (D) | PR | 三个故障注入点的提交图/进度/零提前派发证据；已激活后恢复不重复认领 |
+| S26 请求先保存再完成当前票 | integration | 验收任务 (D) | PR | 仅进度提交包含授权、半成品未提交；新会话复用请求、不提前派发 |
+| S27 派发回执窗口中断 | integration | 任务内 TDD + 验收任务 (D) | PR | 旧主线程终止但 implementer 存活的接管、派发前/后回执丢失、原 claim 保留、未知不冒充未派发 |
 | S09 同写锁文件/共享库；S10 越界路径 | unit/integration | 任务内 TDD + 验收任务 (D) | fast/PR | 冲突集合断言；真实 rename/symlink/diff 拒收证据 |
 | S11 重复启动；S12 旧结果 | integration/unit | 任务内 TDD + 验收任务 (D) | fast/PR | 两进程竞争锁只一成功；claim 重复/过期幂等断言 |
 | S13 基线错误；S14 红绿与自检 | integration | 验收任务 (D) | PR | 错误 cwd 不写主线；schema 正反例及红绿命令证据 |
