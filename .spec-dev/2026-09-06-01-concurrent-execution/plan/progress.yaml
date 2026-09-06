@@ -1,0 +1,20 @@
+format_version: 1
+current: null
+tasks:
+  T00: { status: pending }
+  T01: { status: pending }
+  T02: { status: pending }
+  T03: { status: pending }
+  T04: { status: pending }
+  T05: { status: pending }
+  T06: { status: pending }
+  T07: { status: pending }
+  T08: { status: pending }
+resources:
+  - "worktree: .worktrees/plan-2026-09-06-01-concurrent-execution —— 在来源工作区核验合并和干净状态后 git worktree remove .worktrees/plan-2026-09-06-01-concurrent-execution；随后 git branch -d plan/2026-09-06-01-concurrent-execution"
+  - "temp-dir: 实施 worktree/.parallel-qa —— 核验本任务归属、停止受控进程且归档证据后移除该目录；未集成工作保留"
+  - "temp-file: 实施 worktree/.parallel-qa-setup.mjs —— 夹具已停且归档后删除该文件"
+  - "temp-file: 实施 worktree/.spec-dev-commit-message —— 提交完成后删除本任务提交信息文件"
+notes:
+  - "2026-09-06: 用户批准 spec；计划阶段未实施，采用现有串行 executing-plans 开发并发 skill。"
+  - "source: /Users/maverick/feature-dev；branch=main；原始审查基线在 T00 读取真实 HEAD 后记录。"
