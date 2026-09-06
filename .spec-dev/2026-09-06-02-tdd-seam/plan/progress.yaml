@@ -1,10 +1,10 @@
 format_version: 1
-current: T02
+current: T03
 tasks:
   T00: { status: completed, commit: 1fd4981a7fd2e99ecd47c92ac869469028abd234, tests: pass }
   T01: { status: completed, commit: 431b283, tests: "39/39 pass; 7 static cases matched; model pending T05" }
-  T02: { status: in_progress }
-  T03: { status: pending }
+  T02: { status: completed, commit: a2eca183663178f21605b0f902e715248980073a, tests: "39/39 pass; 5 static cases matched; model pending T05" }
+  T03: { status: in_progress }
   T04: { status: pending }
   T05: { status: pending }
   T06: { status: pending }
