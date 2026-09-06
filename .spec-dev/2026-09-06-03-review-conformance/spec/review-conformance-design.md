@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: review-conformance
-  status: draft
+  status: active
   covers:
     - "agents/code-reviewer.md"
     - "skills/executing-plans/SKILL.md"
@@ -31,7 +31,7 @@ spec_dev:
 
 # 收尾审查符合性与共享判据设计
 
-> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #4，吸收 AB-12/09/14/13/32。用户于 2026-09-06 批准「S 与完整性审查分工」方案及完整设计。12 条 Requirement / 28 个 Scenario，独立审查 Approved，见 [design-review.md](design-review.md)；当前保持 draft，待用户 review 并确认编写实施计划，尚未开始实施。
+> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #4，吸收 AB-12/09/14/13/32。用户于 2026-09-06 批准「S 与完整性审查分工」方案、完整设计及审查后的 spec，并同意编写实施计划。12 条 Requirement / 28 个 Scenario，独立审查 Approved，见 [design-review.md](design-review.md)；本 spec 已激活，尚未开始实施。
 
 ## 背景与目标
 
