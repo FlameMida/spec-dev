@@ -19,7 +19,7 @@ spec_dev_roadmap:
 
 | # | 子项目 | 范围（一句话） | 依赖 | 状态 | 特性目录 |
 |---|--------|--------------|------|------|---------|
-| 1 | portability-hygiene | 修 writing-plans:118 裸路径 bug，插件根解析序列单点定义、9 处调用统一写法；失败隔离与 TDD 例外清单等复述收敛为单点引用；README 补 hard/soft 依赖分级表、成熟度分区与纯壳委托约定并修正核验发现的文档漂移；Codex 适配映射表去重；visual 会话目录隔离结构化；导航表依赖范围写法定义并由校验器展开（AB-38/36/37/39/40/42） | — | in-progress | .spec-dev/2026-09-03-02-portability-hygiene/ |
+| 1 | portability-hygiene | 修 writing-plans:118 裸路径 bug，插件根解析序列单点定义、9 处调用统一写法；失败隔离与 TDD 例外清单等复述收敛为单点引用；README 补 hard/soft 依赖分级表、成熟度分区与纯壳委托约定并修正核验发现的文档漂移；Codex 适配映射表去重；visual 会话目录隔离结构化；导航表依赖范围写法定义并由校验器展开（AB-38/36/37/39/40/42） | — | delivered | .spec-dev/2026-09-03-02-portability-hygiene/ |
 | 2 | concurrent-execution | 新建正式 skill `executing-plans-parallel`（进插件清单），executing-plans 在执行确认门满足条件时提议并分支调用：主线程编排与合并、implementer 子代理各占 worktree、每票 TDD 五步 + 契约自检、主线程唯一写 progress.yaml；含 PR 制交付通道、执行期探索分工与指针派发、认领键（AB-44/10/11/33） | #1 | pending | — |
 | 3 | tdd-seam | seam 声明上游权威 + TDD 门兜底；测试反模式 6/7（同义反复、实现耦合）；mock 分层；重构移出红绿循环；typecheck 最便宜验证档（AB-01/02/03/04/05） | — | pending | — |
 | 4 | review-conformance | 收尾审查增加 Spec 符合性维度 S 三向核对；设计判据包单点定义；可选架构深化维度；审查微纪律；子代理派发词纪律（AB-12/09/14/13/32） | — | pending | — |
@@ -43,7 +43,7 @@ spec_dev_roadmap:
 - **探索指针**：报告 §5.2 AB-38/36/37/39/40、§5.3 AB-42；报告 §8.5 A2/A3/B 项修正；本文备注「核验事实速查」；spec `.spec-dev/2026-09-03-02-portability-hygiene/spec/portability-hygiene-design.md`；ADR-0006（载入即声明 + 单点解析序列）。
 - **设计期新发现**：官方文档证实 `${CLAUDE_PLUGIN_ROOT}` 只在 skill/agent 正文替换、不导出到模型 Bash、references 不替换——统一写法之上必须加"载入即声明"机制（详见 spec 决策节）。
 - **已扫范围**：全仓 grep 空白核实（skills/ agents/ commands/ guardrail/ scripts/ README 双语）；7 份 active spec covers 反向索引；pre-commit/post-commit/pre-push 与 check-openai-sync 约束；11 个测试文件的断言正则；CLAUDE_PLUGIN_ROOT 全部 12 处引用与三种写法；validate-output 全部调用点；install.mjs 拷贝清单；start-server.sh 三分支；codex-compat.md 与 7 处专节 + 8 处单句适配分布；release.mjs --auto 规则；各纪律"单点定义 vs 复述"位置表。
-- **留给后继的注意事项**：（交付回写时由 executing-plans 追加）
+- **留给后继的注意事项**：2026-09-06 已交付并合入 main（本地 v8.2.0）。插件根解析与契约校验 canonical 在 exploration-patterns；四份 skill 声明与命令双引号已统一；plan-index 已展开 TNN-TMM 闭区间；visual 两根自建 .gitignore。后继 #2 应复用这些接口、保留主线中文描述/语言协议，并对 active spec 做分面共存声明。验收 76/76、真实集成与 Claude 客户端加载通过；远端模型 429、发布后缓存重装未验证，3 条既有 eval 文案陈旧见 portability-hygiene/acceptance/acceptance-report.md。
 
 ### #2 concurrent-execution
 

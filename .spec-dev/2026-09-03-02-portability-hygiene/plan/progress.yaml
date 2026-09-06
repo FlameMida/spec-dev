@@ -11,11 +11,11 @@ tasks:
   T07: { status: completed, commit: df2a4e3, tests: pass }
   T08: { status: completed, commit: 6a9deed, tests: pass }
   T09: { status: completed, commit: 3c212f0, tests: pass }
-  T10: { status: in_progress }
-resources:
-  - "worktree: .worktrees/plan-2026-09-03-02-portability-hygiene —— git worktree remove .worktrees/plan-2026-09-03-02-portability-hygiene && git branch -d plan/2026-09-03-02-portability-hygiene"
+  T10: { status: completed, commit: 4f93897, tests: pass }
+resources: []
 notes:
   - "critic 处置：covers 补 agents/code-reviewer.md（T06 已改该文件）；R8 补『写入失败只警告』『/tmp 会话无 visual 根』两条 Scenario 并实测通过；T09 行 5 rg 口径按 spec 范围拆为两条；补 Codex 布局不变量与 /tmp 分支 GITIGNORE 计数两条 fast 测试"
   - "T05 首次提交时全局断言仍红（schemas/README:44 开发期命令被误判），提交后发现并修正测试范围后 amend；此后各任务提交前加测试红即中止保护"
   - "2026-09-06 T09：76/76、visual-path、三校验与真实集成全通过；Claude 实际客户端加载采用本地响应夹具并经独立审计，远端 429 与三条基线 eval 陈旧见 acceptance 报告；无孤儿测试。"
   - "2026-09-06 T10：无冲突合入 main 中文化提交 05067de（合并 6af9004）；完整安全网 76/76 与全部校验通过，独立增量审查通过。测试首轮因验收文件并行写入触发工作区变化断言，停止写入后全量复跑通过。"
+  - "2026-09-06 T10 完成：已合入 main，worktree 与分支清理完成，resources 清空；sync_commit=3d05186，锚定提交 4f93897，默认 hook 生成本地 v8.2.0；未 push。"

@@ -87,3 +87,7 @@ Claude 远端尝试识别到当前 worktree 插件，但连续 429，120 秒后�
 T09 原计划通过旧 8.1.0 缓存中的 acceptance-qa 命令间接验证替换，本轮改为直接加载当前 worktree 的 writing-plans 并捕获完整已展开正文，符合 spec 原 Scenario；执行性质从模型判读改为客户端确定性证据加独立审计。B/C 合并为一路独立文档审查，A 与 completeness 分别独立，职责均覆盖。
 
 T10 发现 main 独有 `05067de`（描述/语言协议中文化），快进不可用；worktree 临时移除后已原分支恢复，所有提交保留。随后无冲突合入 main（`6af9004`），保留中文化。因合并引入新的代码树，重新运行完整 Node 测试、visual-path、技能/openai/plugin（含官方 Codex CLI）校验，并重跑 Claude 加载夹具；结果见 `evidence/merged-validation.json`，全部通过。
+
+## Closure
+
+2026-09-06：T00–T10 全部完成；变更已合入 main，保留 `05067de` 中文化。旧 major-upgrade 的 visual-preview Requirement 已标记部分 Superseded，pending 预告已回收。worktree/分支已删除，资源台账为空。`sync_commit: 3d05186dfa3e3e0013ad0f5267c35653c1404f7e`，锚定提交 `4f938976a0c2c5c9dddb05243760d3257dbb369f`；默认 post-commit hook 生成本地 `v8.2.0`，未推送。Roadmap #1 已 delivered，#2 concurrent-execution 依赖已满足，保持 pending。
