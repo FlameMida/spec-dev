@@ -1,10 +1,10 @@
 format_version: 1
-current: T02
+current: T03
 tasks:
   T00: { status: completed, commit: eac136eeed060c24c7f4d94b3b753a51f46a25f9, tests: pass }
   T01: { status: completed, commit: f699fc843c7216be896ea1cfcc780ddf28c867f4, tests: pass }
-  T02: { status: in_progress }
-  T03: { status: pending }
+  T02: { status: completed, commit: 85bee2361bc5360196621aca5a3ba320ac2d8d15, tests: pass }
+  T03: { status: in_progress }
   T04: { status: pending }
   T05: { status: pending }
   T06: { status: pending }
@@ -21,3 +21,4 @@ notes:
   - "base_commit: eac136eeed060c24c7f4d94b3b753a51f46a25f9；用户开始实施，未启用并发调度自身。"
   - "T00: 隔离 worktree 已建立；相关基线 54/54、0 skip；包/skill/openai 检查通过，证据 execution/serial/T00-*.log。"
   - "T01: 15/15；CLI 行为红绿已保存；日志仅去行尾空白以符合 diff 检查。"
+  - "T02: 31/31、0 skip；真实 Git 越界、中间提交、rename 两端、旧 claim 与未跟踪改动拒收；schema 与 Git 证明分离，接口无偏差。"
