@@ -37,6 +37,8 @@ The frontmatter `sync_commit` is the delivery anchor: the commit where code and 
 
 At edit time (`--hook`), "already synced" includes existing working-tree changes (staged + unstaged + untracked): **update the spec first, then touch the covered code, and you pass**; dirty files in the working tree do not expand the trigger set, and editing unrelated files is unaffected by pre-existing drift. The wrap-up audit (`--worktree`) uses the whole working tree as the change set, backstopping files written by tools that bypassed the tool surface within the turn.
 
+Explicit parallel execution uses `executing-plans-parallel` only with declared independent writes and isolated resources; default execution stays serial. Only its implementer writes claimed code in isolated worktrees. `Spec: <repo-relative spec path>` is a traceability trailer, not a drift-guard bypass.
+
 ## Temporary bypass
 
 - Recommended: leave a `Spec-Guard: off <reason>` trailer in the commit message — the range checks in pre-push and CI recognize it and let the commit through (printing a count for human review), consistent across the chain.

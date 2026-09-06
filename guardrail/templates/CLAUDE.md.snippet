@@ -21,6 +21,8 @@ This repository follows the [spec-dev](https://github.com/FlameMida/spec-dev) wo
 
 Drive work with the `requirement-analysis` (requirement→spec), `writing-plans` (spec→plan) and `executing-plans` (TDD task-by-task execution + wrap-up acceptance) skills; do not bypass the workflow and edit code directly.
 
+Explicit parallel execution uses `executing-plans-parallel` only with declared independent writes and isolated resources; default execution stays serial. Only its implementer writes claimed code in isolated worktrees. `Spec: <repo-relative spec path>` is a traceability trailer, not a drift-guard bypass.
+
 ## 本仓库采用 spec 驱动开发（spec-dev）
 
 本仓库使用 [spec-dev](https://github.com/FlameMida/spec-dev) 工作流：需求先落成 spec，再拆成 plan，最后按计划实现。**接手开发前请阅读本节。**
@@ -41,6 +43,8 @@ Drive work with the `requirement-analysis` (requirement→spec), `writing-plans`
 ### 装了 spec-dev 插件时
 
 用 `requirement-analysis`（需求→spec）、`writing-plans`（spec→plan）、`executing-plans`（TDD 逐任务执行 + 收尾验收）三个 skill 推进，不要绕过流程直接改代码。
+
+显式选择并发且写集合与资源可隔离时委托 `executing-plans-parallel`，默认仍串行；只有其 implementer 在独立 worktree 写认领代码。`Spec: <仓库根相对 spec 路径>` 仅作追溯，不代替 spec 同步或漂移检查。
 
 ### 联网检索约定
 

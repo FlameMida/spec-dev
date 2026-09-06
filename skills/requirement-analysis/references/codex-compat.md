@@ -85,3 +85,11 @@ visual-preview 的服务器脚本自动检测 `CODEX_CI` 并切换前台模式�
 ## git 提交（阶段 6）
 
 Codex 沙箱 workspace-write 模式下工作区与 `.git` 常规内容可写，`git commit` 一般可以直接执行；但 `.git/hooks/` 与 `.codex/` 被强制只读。若因沙箱策略（如 read-only 模式）导致 commit 失败，向用户说明并请其授权或自行提交，spec 文件本身照常落盘。
+
+## 并发 implementer（仅显式选择的执行分支）
+
+executing-plans-parallel 可派发有界实施子任务；主线程先读 agents/implementer.md，在 prompt 中提供其绝对路径并要求子代理先读，不能假设 spawn_agent 自动加载 agent 定义。模型声明见 executing-plans-parallel；参数选择仍服从当前工具与用户约束，不硬编码模型、强度或并发上限。
+
+工具没有 cwd/worktree 参数时，主线程先建立并验证独立 worktree，派发绝对路径、branch/base_commit/claim_key 与指针输入，要求每条命令显式指定工作目录。首次写前 implementer 核对实际绑定；父 cwd 不构成隔离证明。不能可靠隔离或工具不允许写码代理时串行降级，不虚构原生 isolation 参数，不自行扩大授权。
+
+按当前工具查询 agent 生命周期并处理返回 ID；回执缺失先查 claim 与平台可见性，空列表不能证明终止。恢复须区分旧编排 owner 与存活 implementer，规则以 executing-plans-parallel 为准。通用映射、外部检索和失败隔离沿本文件原定义。

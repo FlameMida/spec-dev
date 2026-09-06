@@ -72,3 +72,7 @@ repeat (最多 2 轮):
 - 派发：`spawn_agent` 并继承主会话上下文（`fork_turns: "all"`；参数的新旧版本兼容见 requirement-analysis 的 [codex-compat.md](../../requirement-analysis/references/codex-compat.md)；同样单响应一次性发起），`wait_agent` 收集
 - 对抗复核降级为**单 critic 串行版**——每条高/中发现由一个复核 agent 顺序反驳（Codex 子代理并发能力弱于 Claude Code，串行换取确定性）
 - 契约校验命令相同（校验器位于插件根下的 `scripts/validate-output.mjs`；Codex 下 `${CLAUDE_PLUGIN_ROOT}` 是占位符，按 exploration-patterns「插件根解析」序列代入绝对路径）
+
+## 并发分支的审查输入
+
+executing-plans-parallel 全票集成后复用本文件完整编排。输入必须包含最初 base_commit 到当前集成 HEAD 的完整 diff、spec、progress、research 与 execution 证据指针；中途串行转并发不把 base 换成切换检查点。code-reviewer 继续只分析与复跑，implementer 自检不抵销任何审查维度、completeness critic 或矩阵验收。最终本地/PR 完成判据见 delivery-channels.md。
