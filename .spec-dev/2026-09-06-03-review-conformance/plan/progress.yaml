@@ -1,16 +1,17 @@
 format_version: 1
-current: T04
+current: T05
 tasks:
   T00: { status: completed, commit: "4bbbd8a9caca9b579243de9fa396be94a3358ce0", tests: "55 passed; 0 skipped; skills/plugin/plan-index passed", evidence: "execution/serial/T00" }
   T01: { status: completed, commit: "92007b18fde451a5b0a44e6c4e73cb9966b91495", tests: "37 passed; skills/plugin passed; S09 existing pass to pass; S27 native decision fail to pass with platform/session limitations", evidence: "execution/serial/T01" }
   T02: { status: completed, commit: "ddb09320d97a6d6d16e918a2894c677a488c5c19", tests: "CLI red 1 fail to green 3 pass; related regression 40 passed; S02 strict-isolation decision partial fail to pass; skills/plugin passed", evidence: "execution/serial/T02" }
   T03: { status: completed, commit: "736dd1967e01510a7be408fc52fb67d35c5d9508", tests: "40 passed; skills/plugin passed; S24 decision fail to pass, green tools empty", evidence: "execution/serial/T03" }
   T04: { status: completed, commit: "2c662893ece18349a3c409fc8098562146241191", tests: "40 passed; skills/plugin passed; S14 existing pass to pass; S15 fail to pass; strict tools empty", evidence: "execution/serial/T04" }
-  T05: { status: pending }
+  T05: { status: in_progress, tests: "94 passed; 0 skipped; static validators passed; real model acceptance has valid semantic failures and invocation timeouts, fixes/reruns pending", evidence: "acceptance" }
   T06: { status: pending }
 resources:
   - "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance —— rtk git worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance；rtk git branch -d plan/2026-09-06-03-review-conformance"
   - "QA fixtures: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance/.spec-dev/2026-09-06-03-review-conformance/acceptance/model-smoke/fixtures —— 确认无存活模型/子代理且证据归档后，随本特性 worktree 清理；拒绝时只清理本登记目录再普通 remove"
+  - "repair/checkpoint commit message files: /tmp/review-conformance-repair-commit.txt, /tmp/review-conformance-checkpoint-commit.txt —— 最终任务只 unlink 本行明确路径"
   - "commit message files: /tmp/review-conformance-T00-commit.txt, /tmp/review-conformance-T01-commit.txt, /tmp/review-conformance-T02-commit.txt, /tmp/review-conformance-T03-commit.txt, /tmp/review-conformance-T04-commit.txt, /tmp/review-conformance-state-commit.txt —— 最终任务只 unlink 本行明确路径"
 notes:
   - "2026-09-06: 用户已 review Spec 并同意编写计划；激活提交 43122c0；独立设计审查 Approved。"
@@ -21,3 +22,7 @@ notes:
   - "T01: 实际提交 92007b1；post-commit 已执行，但自动发版器限定 main，在计划分支按现有策略跳过；无版本或 tag 变更。"
   - "模型调用修正：--tools 空集仍可能暴露 MCP；T03 起加 --strict-mcp-config 及空 mcpServers。T02 原 red 有一次无关文档调用，降格为带污染观察，严格隔离重放另存；S19 CLI 红绿不受影响。"
   - "T02 MCP 隔离补证完成：原始 red/green 输入重放，实际 glm-5.3-flash、两次 init tools=[]；严格系列结果与边界见 execution/serial/T02/strict-isolation-verdict.md。"
+  - "T05: 用户明确指示继承本机设置；后续 native-settings 系列按实际 init 记录权限模式，不覆盖用户全局配置。bare 仅暴露 Bash/Read，已停用；宿主与夹具契约、测试日志指针歧义均保留原件并修正调用。"
+  - "T05: g2-gap/g3-small/g3-switch 实际暴露覆盖推断及独立反驳/critic动作缺失；有效红已独立判读。当前固定候选批次结束后最小补强共享规则，原判据不变。g3四路/五路/容量案例300秒超时不记PASS。"
+  - "T05 checkpoint: 修复提交 945467ea9fc386f9bdc8c8597dadb3471408bd7d；修复后全量94 passed/0 skipped，独立静态复审通过。S04/S14取得有效红绿，S05/S18/S23同输入CLI仍失败；其他必需补证未完，T05仍in_progress。"
+  - "T05 checkpoint: 28目标行为15 pass/6 fail/7 unverified，后者含4项已批准nightly。原生gpt-6-astra对照有测试日志副本遗漏并超时中止，不算干净PASS；已询问后续执行器，300秒时限变更尚未获授权。T06未开始，worktree/fixture保留以便续作。"
