@@ -1,7 +1,7 @@
 interface:
   display_name: "Test-Driven Development"
   short_description: "TDD 纪律：沿获批公共落点先红后绿；纯重构在收尾保绿；例外单点与授权复用；独立真值和测试反模式防护。"
-  default_prompt: "Use $test-driven-development discipline: write the failing test first, then minimal code to pass. / 用 $test-driven-development 纪律：先写失败测试，再写最小实现让它通过。"
+  default_prompt: "Use $test-driven-development: follow the approved seam with red then green for behavior changes, preserve green behavior tests for wrap-up refactoring, and apply its authorized exceptions. / 用 $test-driven-development：行为变更沿获批落点先红后绿，收尾纯重构保持行为测试绿，例外依其单点与既有授权处理。"
 
 policy:
   allow_implicit_invocation: true
