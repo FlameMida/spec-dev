@@ -25,6 +25,21 @@
       "id": "wp-handoff-not-execute",
       "prompt": "计划已保存，用户还没回复",
       "expected_output": "向用户交接（说明将先 using-git-worktrees 再 executing-plans），等待用户确认；不在本 skill 内直接开始写实现代码"
+    },
+    {
+      "id": "wp-parallel-declaration",
+      "prompt": "已批准 spec；T01/T02 只依赖 T00，分别修改 src/a.mjs 与 src/b.mjs，测试资源隔离。编写计划。",
+      "expected_output": "保持三件套与四列导航；index 生成一个 yaml spec-dev-parallel 块，精确声明两个 writes，resources 使用 JSON 字符串数组；校验通过，声明不等于已选择并发。"
+    },
+    {
+      "id": "wp-parallel-exceptions",
+      "prompt": "T01 已获 TDD 例外；T02 的相关基线范围显式为空；T03/T04 有完整测试且写集合独立。",
+      "expected_output": "T01/T02 不进入声明，主线程串行；T03/T04 可声明；空基线不自动免除票内 TDD；progress 仍 format_version 1，默认不激活 execution。"
+    },
+    {
+      "id": "wp-parallel-state",
+      "prompt": "为已明确选择并发的分文件计划说明恢复字段与资源台账。",
+      "expected_output": "writing-plans 为唯一字段定义；execution.owner 与 claim.owner 含义不同；model-declaration 只在 notes，claim.model_declaration_id 追溯；模型声明内容由并发 skill 定义；资源先登记再确认创建，进度原子更新。"
     }
   ]
 }
