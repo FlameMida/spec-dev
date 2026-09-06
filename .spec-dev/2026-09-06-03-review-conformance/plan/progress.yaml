@@ -1,7 +1,7 @@
 format_version: 1
-current: null
+current: T00
 tasks:
-  T00: { status: pending }
+  T00: { status: completed, commit: "88cf00a9f5ba7a340720dd49cf8be068cb8a9e20", tests: "55 passed; 0 skipped; skills/plugin/plan-index passed", evidence: "execution/serial/T00" }
   T01: { status: pending }
   T02: { status: pending }
   T03: { status: pending }
@@ -16,3 +16,4 @@ notes:
   - "source: /Users/maverick/feature-dev；计划来源 main，执行时 T00 再核实原始 base_commit 与绑定。"
   - "默认串行，无并发声明；当前仅写计划，未建 worktree、未运行实施或模型验收。"
   - "PR 五组是测试组织，不是五个 Scenario/五次调用；nightly 完整多轮非阻塞；未知/SKIP 不记 PASS。"
+  - "T00: source main /Users/maverick/feature-dev; base_commit 88cf00a9f5ba7a340720dd49cf8be068cb8a9e20; worktree /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance; initial commit anchor is source, updated after state commit."
