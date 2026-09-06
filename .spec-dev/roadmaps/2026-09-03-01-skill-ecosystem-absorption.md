@@ -21,7 +21,7 @@ spec_dev_roadmap:
 |---|--------|--------------|------|------|---------|
 | 1 | portability-hygiene | 修 writing-plans:118 裸路径 bug，插件根解析序列单点定义、9 处调用统一写法；失败隔离与 TDD 例外清单等复述收敛为单点引用；README 补 hard/soft 依赖分级表、成熟度分区与纯壳委托约定并修正核验发现的文档漂移；Codex 适配映射表去重；visual 会话目录隔离结构化；导航表依赖范围写法定义并由校验器展开（AB-38/36/37/39/40/42） | — | delivered | .spec-dev/2026-09-03-02-portability-hygiene/ |
 | 2 | concurrent-execution | 新建正式 skill `executing-plans-parallel`（进插件清单），executing-plans 在执行确认门满足条件时提议并分支调用：主线程编排与合并、implementer 子代理各占 worktree、每票 TDD 五步 + 契约自检、主线程唯一写 progress.yaml；含 PR 制交付通道、执行期探索分工与指针派发、认领键（AB-44/10/11/33） | #1 | delivered | .spec-dev/2026-09-06-01-concurrent-execution/ |
-| 3 | tdd-seam | seam 声明上游权威 + TDD 门兜底；测试反模式 6/7（同义反复、实现耦合）；mock 分层；重构移出红绿循环；typecheck 最便宜验证档（AB-01/02/03/04/05） | — | pending | — |
+| 3 | tdd-seam | seam 声明上游权威 + TDD 门兜底；测试反模式 6/7（同义反复、实现耦合）；mock 分层；重构移出红绿循环；typecheck 最便宜验证档（AB-01/02/03/04/05） | — | in-progress | .spec-dev/2026-09-06-02-tdd-seam/ |
 | 4 | review-conformance | 收尾审查增加 Spec 符合性维度 S 三向核对；设计判据包单点定义；可选架构深化维度；审查微纪律；子代理派发词纪律（AB-12/09/14/13/32） | — | pending | — |
 | 5 | plan-decomposition | expand–contract 宽面重构排序；Self-Review 第 5 查与产物 review 门三问；prefactor 最前槽位；正交约束预分配与「拒绝的解读」节；计划头部关联 skill 声明与胶囊 gist；需求完备性两则（测试先例模态、actor 枚举）（AB-06/07/08/30/35/29） | — | pending | — |
 | 6 | quick-fix-diagnosis | 红信号门槛、认知性升级信号、排序候选根因；correct seam 判定；修复收尾四则；会话级止损（AB-16/17/18/19） | — | pending | — |
@@ -59,6 +59,9 @@ spec_dev_roadmap:
 
 ### #3 tdd-seam
 
+- **2026-09-06 设计批准并落盘**：用户先后批准推荐方案与完整设计；spec `.spec-dev/2026-09-06-02-tdd-seam/spec/tdd-seam-design.md`（draft，待独立审查与用户 review；尚未写计划或实施）。沿现有 spec 测试策略、四列导航与任务接口块传递 seam；已批准声明直接消费，存量仅唯一提取，缺失/冲突交主线程、implementer blocked。
+- **本轮补充裁决**：纯重构交收尾，已有保护测试前后保绿，缺保护先做行为刻画，不伪造红；并发五步的末步原本是提交，ADR-0007 与结果 schema 不变。typecheck 仅使用已有适用命令且不替代必需测试。纯文案例外迁入 TDD canonical、授权可追溯复用，部分取代 #1「quick-fix TDD 例外清单引用」；技能行为改动不属于纯措辞。
+- **增量补查与验证边界**：#1 后 code-reviewer 已在 portability-hygiene covers，TDD 目录仍待新 spec 接管；#2 的 plan/implementer 条款为现行权威。执行入口缺失/冲突路径、五步与 schema、绿后重构副本、plugin-root 的自有例外断言均已查证。验收区分静态 eval、自动回归、PR 必需真实模型五场景冒烟及 nightly 非阻塞多轮 eval；未运行/缺环境不报 PASS。
 - **关键裁决**：seam 两案合一——spec/plan 已声明则以声明为准、仅即兴场景由 TDD 门发问（报告 §5.4 #1）；实现耦合测试裁决方向"挪测试位置而非改实现"（§5.4 #6）；mock 纪律 testing-anti-patterns（准入）与 test-strategy（策略）分层不合并（§5.4 #12）。
 - **探索指针**：报告 AB-01/02/03/04/05 与 §8.5 B 项修正（AB-05 executing-plans 落点 :68；AB-04 另牵 8 处"红-绿-重构"同义文本含 description/openai.yaml；code-reviewer.md:78 与 TDD:157 同为全覆盖措辞）。
 - **已扫范围**：TDD SKILL.md 与 testing-anti-patterns.md 全文结构；test-strategy Lane 表；seam/同义反复/实现耦合等同义词全仓零命中；`skills/test-driven-development/**` 与 `agents/code-reviewer.md` 不在任何 active spec covers 内（新 spec 需声明 covers 接管）。
