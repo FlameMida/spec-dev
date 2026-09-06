@@ -35,6 +35,21 @@
       "id": "tdd-seam-s21",
       "prompt": "S21 并发红绿协议不被豁免：\nGIVEN implementer 被派发的票实际只需纯重构保护，无法提供新增行为的有效红证据\nWHEN 执行准入检查",
       "expected_output": "不伪造红结果，回主线程按现有例外/阻塞串行路径处理；不改变 implementation-result phase 或接收器对普通实施票的红绿要求。"
+    },
+    {
+      "id": "tdd-seam-s08",
+      "prompt": "S08 拒绝同构自证：\nGIVEN 被测函数用 reduce 求和，测试又用同一 reduce 算出期望值\nWHEN 检查断言",
+      "expected_output": "指出同义反复，改用有来源的已知样例结果，如 `[2, 5, 8]` 的手算值 `15`，而非换个函数名继续复制算法。"
+    },
+    {
+      "id": "tdd-seam-s09",
+      "prompt": "S09 重构后脆弱测试失败：\nGIVEN 私有协作者改名导致 mock 断言失败，而获批公共行为保持不变\nWHEN 诊断失败测试",
+      "expected_output": "把测试移回公共边界，不为保留脆弱断言恢复旧内部结构；若公共行为实际改变，则按行为回归处理。"
+    },
+    {
+      "id": "tdd-seam-s10",
+      "prompt": "S10 数据库测试边界对照：\nGIVEN 一个测试声称验证 HTTP 响应却只查内部表，另一个明确验证获批数据库适配器契约\nWHEN 审查测试落点",
+      "expected_output": "前者补回 HTTP 可观察行为断言，后者可在自身契约边界验证真实数据库；不一概禁止 DB 测试。测试夹具准备和清理不等于旁路行为断言。"
     }
   ]
 }

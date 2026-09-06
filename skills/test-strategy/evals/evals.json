@@ -10,6 +10,16 @@
       "id": "ts-governance-order",
       "prompt": "用户抱怨 CI 又慢又经常无关红，想先上测试选择系统",
       "expected_output": "按治理顺序 flaky→时长→选择劝阻：先清 flaky 再治时长（拓扑/磁盘/并行），选择系统仅在人数/时长触发条件满足后引入"
+    },
+    {
+      "id": "tdd-seam-s14",
+      "prompt": "S14 内部实现与外部替身对照：\nGIVEN 支付业务通过声明的支付客户端边界调用外部服务，同时有内部折扣计算模块\nWHEN 设计测试替身",
+      "expected_output": "可替换支付客户端并检查真实业务结果，保留内部计算；不把“自己写的外部适配器”按所有权误判为禁止替换的内部细节。"
+    },
+    {
+      "id": "tdd-seam-s15",
+      "prompt": "S15 四类依赖与集成信心：\nGIVEN 测试涉及远端 API、数据库、时钟/随机源、文件系统\nWHEN 选择策略及 Lane",
+      "expected_output": "每类按上述规则得到真实依赖或替身方案；纯内存替身可以进入 fast，真实 IO 按 PR/nightly 安排；fast 全绿不能证明真实 DB/网络集成通过。"
     }
   ]
 }
