@@ -1,0 +1,18 @@
+format_version: 1
+current: null
+tasks:
+  T00: { status: pending }
+  T01: { status: pending }
+  T02: { status: pending }
+  T03: { status: pending }
+  T04: { status: pending }
+  T05: { status: pending }
+  T06: { status: pending }
+resources:
+  - "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance —— rtk git worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance；rtk git branch -d plan/2026-09-06-03-review-conformance"
+  - "QA fixtures: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance/.spec-dev/2026-09-06-03-review-conformance/acceptance/model-smoke/fixtures —— 确认无存活模型/子代理且证据归档后，随本特性 worktree 清理；拒绝时只清理本登记目录再普通 remove"
+notes:
+  - "2026-09-06: 用户已 review Spec 并同意编写计划；激活提交 43122c0；独立设计审查 Approved。"
+  - "source: /Users/maverick/feature-dev；计划来源 main，执行时 T00 再核实原始 base_commit 与绑定。"
+  - "默认串行，无并发声明；当前仅写计划，未建 worktree、未运行实施或模型验收。"
+  - "PR 五组是测试组织，不是五个 Scenario/五次调用；nightly 完整多轮非阻塞；未知/SKIP 不记 PASS。"

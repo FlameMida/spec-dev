@@ -36,3 +36,7 @@
 - 采纳非阻塞建议作为 writing-plans 输入：五组是夹具分组，不冒充五次调用或五个 Scenario；每个必需场景要有具体命令/输入、独立真值、模型绑定与证据路径。
 - 本轮仅提交 spec、审查记录及路线图。没有修改产品规则，没有执行 schema 新类别红绿或候选模型行为验收；这些均留在后续实施与验收任务中。
 - 待用户确认后，将 spec 从 draft 激活为 active 并交接 writing-plans；本 spec `supersedes: []`，不向旧 spec 写取代预告。
+
+## 后续状态
+
+2026-09-06 用户已 review 本 spec 并明确同意编写计划；spec 于 `43122c0` 激活。实施计划见 [plan/index.md](../plan/index.md)，T00—T06 尚待执行；上文 draft 描述为独立审查当时状态。
