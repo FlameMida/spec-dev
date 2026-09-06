@@ -3,7 +3,7 @@ current: T02
 tasks:
   T00: { status: completed, commit: "4bbbd8a9caca9b579243de9fa396be94a3358ce0", tests: "55 passed; 0 skipped; skills/plugin/plan-index passed", evidence: "execution/serial/T00" }
   T01: { status: completed, commit: "92007b18fde451a5b0a44e6c4e73cb9966b91495", tests: "37 passed; skills/plugin passed; S09 existing pass to pass; S27 native decision fail to pass with platform/session limitations", evidence: "execution/serial/T01" }
-  T02: { status: in_progress, tests: "CLI red 1 fail to green 3 pass; related regression 40 passed; S02 decision partial fail to pass; skills/plugin passed", evidence: "execution/serial/T02" }
+  T02: { status: completed, commit: "ddb09320d97a6d6d16e918a2894c677a488c5c19", tests: "CLI red 1 fail to green 3 pass; related regression 40 passed; S02 decision partial fail to pass; skills/plugin passed", evidence: "execution/serial/T02" }
   T03: { status: pending }
   T04: { status: pending }
   T05: { status: pending }
