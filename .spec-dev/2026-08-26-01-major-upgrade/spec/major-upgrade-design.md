@@ -49,8 +49,6 @@ spec_dev:
 
 # spec-dev 重大升级（多平台适配 · MCP 清零 · 工作流增强）设计
 
-> **Superseded-pending (2026-09-03)** — 本 spec 的「Requirement: visual-preview 产物归位特性目录」将被 .spec-dev/2026-09-03-02-portability-hygiene/spec/portability-hygiene-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
-
 ## 背景与目标
 
 spec-dev 现为 Claude Code + Codex 双平台 skill 插件（v7.21.1）。本次升级一次性解决 12 项问题：适配 Agent plugins 1.0.0 开放标准与 grok build / pi 两个新平台；修复"CLAUDE.md/AGENTS.md 注入不可观测"；anysearch 统一搜索入口失效的六个根因；roadmap 续接丢上下文；同日产物无顺序编号；澄清纪律缺自我披露且 exploring/quick-fix 覆盖不全；visual-preview 产物游离于特性目录外；设计原则与测试策略缺规范载体；plan 单文件在大计划下的上下文峰值与断点恢复缺失；以及以 vendored skill 替代 sequential-thinking MCP 实现插件零 MCP 依赖。
@@ -329,6 +327,7 @@ update-vendored-skill 的 normalize 步骤 SHALL 将 anysearch 的 description �
 - **THEN** 落盘的 description 为增强版且其余上游变更正常并入
 
 ### Requirement: visual-preview 产物归位特性目录
+> **Superseded (2026-09-06)** — by .spec-dev/2026-09-03-02-portability-hygiene/spec/portability-hygiene-design.md#visual-preview-产物归位特性目录；原文保留仅作历史参考。
 
 visual-preview SHALL 在存在特性上下文时把会话产物写入 `.spec-dev/<特性目录>/visual/<session-id>/`，无特性上下文时回退 `.spec-dev/visual/<session-id>/`；被设计采纳的定稿 mockup SHALL 复制为特性目录 `spec/assets/` 下的入库文件；gitignore 建议 SHALL 同步覆盖两种 visual 路径；port/token 记忆文件保持 `.spec-dev/visual/` 根不变。
 
