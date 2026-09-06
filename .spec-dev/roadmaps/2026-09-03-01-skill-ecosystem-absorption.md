@@ -70,7 +70,7 @@ spec_dev_roadmap:
 
 ### #4 review-conformance
 
-- **2026-09-06 设计已批准并落盘**：用户批准 S 与完整性审查分工的推荐方案和完整设计；spec `.spec-dev/2026-09-06-03-review-conformance/spec/review-conformance-design.md`（draft，待独立审查与用户 review，尚未实施）。S 查少做/多做/做错，critic 保留现行 Scenario、文件与证据覆盖核对；零发现不等于未审查。小变更一路 A+S，常规四路，大变更五路（B 拆质量/简洁性），D 按明确要求或具体结构摩擦证据追加；容量不足分批、不丢维度。category 新增 `Spec符合性`，引用与覆盖继续用现有 description/coverage_note，通用 validator 算法不变。
+- **2026-09-06 设计已批准并落盘**：用户批准 S 与完整性审查分工的推荐方案和完整设计；spec `.spec-dev/2026-09-06-03-review-conformance/spec/review-conformance-design.md`（draft，12 条 Requirement / 28 个 Scenario，独立审查 Approved，待用户 review 并确认编写计划，尚未实施）。初始提交 `d6dd856`，审查记录同目录 `design-review.md`。S 查少做/多做/做错，critic 保留现行 Scenario、文件与证据覆盖核对；零发现不等于未审查。小变更一路 A+S，常规四路，大变更五路（B 拆质量/简洁性），D 按明确要求或具体结构摩擦证据追加；容量不足分批、不丢维度。category 新增 `Spec符合性`，引用与覆盖继续用现有 description/coverage_note，通用 validator 算法不变。
 - **本轮补查与验证边界**：核心文件命中六份 active spec，上游 SKILL 引用另与 resource-ledger/test-scoping 相交，全部按现行条款分面共存；不改 Accepted ADR。模块删除判据是假想复杂性去向，adapter 计数不推翻获批 seam；AB-13 只新增输入预检与措辞负面清单。机器 seam 为现有 validate-output CLI，模型行为为真实 Git/契约夹具下的派发与报告；PR 五组核心冒烟与 nightly 完整多轮分开，当前均未执行。并发入口已复用全局编排，只补继承 eval；此前已扫范围不重做生态调研。
 - **关键裁决**：判据单点落 design-principles.md、审查维度只引用不复制（§5.4 #7）；维度 S 的 (a)"要求但缺失"与 completeness critic 职责重叠，设计时需划清或合并。
 - **探索指针**：报告 AB-12/09/14/13/32 与 §8.5 B 项修正（scripts/schemas/review-findings.json:15 category 闭合枚举必改；ep-review-orchestration eval 写死"3 路 A/B/C"；AB-13 六项中仅"扇出前置校验、措辞负面清单"确缺；AB-32 三要素中"验收判据"空白、"排除项/对照例"散见 code-reviewer.md:193-198、exploration-patterns.md:87、spec-reviewer-prompt.md:28-34）。
