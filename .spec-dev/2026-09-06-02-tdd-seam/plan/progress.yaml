@@ -1,15 +1,17 @@
 format_version: 1
-current: T05
+current: T06
 tasks:
   T00: { status: completed, commit: 1fd4981a7fd2e99ecd47c92ac869469028abd234, tests: pass }
   T01: { status: completed, commit: 431b283, tests: "39/39 pass; 7 static cases matched; model pending T05" }
   T02: { status: completed, commit: a2eca183663178f21605b0f902e715248980073a, tests: "39/39 pass; 5 static cases matched; model pending T05" }
   T03: { status: completed, commit: ff804e4f165a79a4d798da91e37cb87dafad8a52, tests: "39/39 pass; 4 static cases matched; model pending T05" }
   T04: { status: completed, commit: 3ca43246926585438e49b65cc1fcbcf639bb8393, tests: "39/39 pass after metadata fix; 8 static cases matched; model pending T05" }
-  T05: { status: in_progress }
-  T06: { status: pending }
+  T05: { status: completed, commit: f36412117cbd5f2b89f0561a867cd250be03dc31, tests: "91/91 full; 24 STATIC_MATCH; 5 required model checks and S07 action pass; 2 review findings fixed; nightly unverified nonblocking" }
+  T06: { status: in_progress }
 resources:
   - "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam —— rtk git worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam && rtk git branch -d plan/2026-09-06-02-tdd-seam"
+  - "S07 QA fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture —— rtk proxy git -C /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture/source worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture/work；证据归档后随本特性 worktree 清理 source/branch 与 claim 目录"
+  - "S07 QA fixture r2: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture-r2 —— rtk proxy git -C /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture-r2/source worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-02-tdd-seam/.spec-dev/2026-09-06-02-tdd-seam/acceptance/model-smoke/s07-fixture-r2/work；归档后随特性 worktree 清理 source 与 claim"
 notes:
   - "2026-09-06: 用户批准 spec 并同意写计划；spec 激活提交 ad3140d，portability 例外条款已 pending。"
   - "source: /Users/maverick/feature-dev；branch=main；执行模式默认串行，本计划不生成并发声明。"
@@ -18,3 +20,6 @@ notes:
   - "base_commit: 1fd4981a7fd2e99ecd47c92ac869469028abd234；T00 已建立登记 worktree，基线检查全部通过，见 execution/serial/T00-checks.json。"
   - "T01 小偏差：计划 eval 生成遗漏 WHEN/expected_output；已从已批准 spec 逐条恢复，后续各票加载时同样校验，不改变行为期望。"
   - "T04 小偏差：计划替换的 openai short_description 遗漏既有分文件入口，存量回归真实失败；补回 index.md/tasks/progress 与历史读取说明，保留测试。初次提交未成功，任务保持 in_progress。"
+  - "T05 验收装配修正：本机 haiku 实际映射 glm-5.3-flash，继承 ultracode 两次超时；仅本次调用覆盖低强度，并显式注入候选规则及哈希、隔离 stdin 防止 Python 脚本混入输入。前轮不计 PASS；五例重新执行，不更改预期/验收等级。"
+  - "S07 动作首轮不计通过：模型将公开 claim_key 误读为脱敏占位，且夹具未输出 TAP、附加 echo 遭拒。r2 提供明文公开认领 ID 文件、真实 node:test 基线和精确命令，不更改 seam 缺失及 writes 测试条件。"
+  - "T05 模型偏差：S11 在明确计划时序后仍把收尾全量前置到解锁；独立确认后澄清 test-strategy 既有判据，保留原失败并按原输入重跑，不改期望。"
