@@ -31,7 +31,7 @@ spec_dev:
     - "guardrail/README.zh-CN.md"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: null
+  sync_commit: d9428058cfd485c09b72700fb321ffac5871b67d
   supersedes:
     - ".spec-dev/2026-08-27-01-plan-single-format/spec/plan-single-format-design.md"
     - ".spec-dev/2026-09-03-02-portability-hygiene/spec/portability-hygiene-design.md"
@@ -40,7 +40,7 @@ spec_dev:
 
 # 可选并发执行（concurrent-execution）设计
 
-> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #2；吸收报告 AB-44 / AB-10 / AB-11 / AB-33。用户于 2026-09-06 确认含模型声明、切换与恢复的修订稿；本 spec 已激活，用户已指示开始实施；实施与必需验收已完成，正在进行本地合并与清理。
+> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #2；吸收报告 AB-44 / AB-10 / AB-11 / AB-33。用户于 2026-09-06 确认含模型声明、切换与恢复的修订稿；本 spec 已激活，用户已指示开始实施；实施与必需验收已完成，已合入本地 main 并清理本次临时资源。
 
 ## 背景与目标
 
@@ -453,3 +453,5 @@ awaiting_merge 可以结束当前执行会话，但不是“全部任务完成�
 - T07 核对完成：全量91/91、0 skip；48条静态eval、14项Requirement覆盖；第四轮10组真实Git/进程受控演练及补充检查通过，独立复核findings=[]。真实模型nightly未验证、PR仅受控适配；历史失败归档。
 
 - T08 合并前核对：产品实现与 T07 91/91 回归对应代码一致，后续仅补 blocked 协议与静态输入并通过 skill/openai 检查；计划校验、差异空白检查通过。四条旧 Requirement 按批准范围部分取代，旧 spec 保持 active；无测试退役候选。
+
+- T08 完成：本地 main 快进到 d9428058cfd485c09b72700fb321ffac5871b67d，两份旧 spec 四条 Requirement 部分取代回写已合入；临时夹具、实施 worktree 与分支按台账清理，所有跟踪 worker 已退出。仅文档锚定提交，未 push、未访问真实 PR；下一项 roadmap #3 tdd-seam 保持 pending。

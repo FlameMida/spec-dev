@@ -20,7 +20,7 @@ spec_dev_roadmap:
 | # | 子项目 | 范围（一句话） | 依赖 | 状态 | 特性目录 |
 |---|--------|--------------|------|------|---------|
 | 1 | portability-hygiene | 修 writing-plans:118 裸路径 bug，插件根解析序列单点定义、9 处调用统一写法；失败隔离与 TDD 例外清单等复述收敛为单点引用；README 补 hard/soft 依赖分级表、成熟度分区与纯壳委托约定并修正核验发现的文档漂移；Codex 适配映射表去重；visual 会话目录隔离结构化；导航表依赖范围写法定义并由校验器展开（AB-38/36/37/39/40/42） | — | delivered | .spec-dev/2026-09-03-02-portability-hygiene/ |
-| 2 | concurrent-execution | 新建正式 skill `executing-plans-parallel`（进插件清单），executing-plans 在执行确认门满足条件时提议并分支调用：主线程编排与合并、implementer 子代理各占 worktree、每票 TDD 五步 + 契约自检、主线程唯一写 progress.yaml；含 PR 制交付通道、执行期探索分工与指针派发、认领键（AB-44/10/11/33） | #1 | in-progress | .spec-dev/2026-09-06-01-concurrent-execution/ |
+| 2 | concurrent-execution | 新建正式 skill `executing-plans-parallel`（进插件清单），executing-plans 在执行确认门满足条件时提议并分支调用：主线程编排与合并、implementer 子代理各占 worktree、每票 TDD 五步 + 契约自检、主线程唯一写 progress.yaml；含 PR 制交付通道、执行期探索分工与指针派发、认领键（AB-44/10/11/33） | #1 | delivered | .spec-dev/2026-09-06-01-concurrent-execution/ |
 | 3 | tdd-seam | seam 声明上游权威 + TDD 门兜底；测试反模式 6/7（同义反复、实现耦合）；mock 分层；重构移出红绿循环；typecheck 最便宜验证档（AB-01/02/03/04/05） | — | pending | — |
 | 4 | review-conformance | 收尾审查增加 Spec 符合性维度 S 三向核对；设计判据包单点定义；可选架构深化维度；审查微纪律；子代理派发词纪律（AB-12/09/14/13/32） | — | pending | — |
 | 5 | plan-decomposition | expand–contract 宽面重构排序；Self-Review 第 5 查与产物 review 门三问；prefactor 最前槽位；正交约束预分配与「拒绝的解读」节；计划头部关联 skill 声明与胶囊 gist；需求完备性两则（测试先例模态、actor 枚举）（AB-06/07/08/30/35/29） | — | pending | — |
@@ -47,15 +47,15 @@ spec_dev_roadmap:
 
 ### #2 concurrent-execution
 
-- **2026-09-06 实施计划已保存**：入口 `.spec-dev/2026-09-06-01-concurrent-execution/plan/index.md`；T00—T08 共 9 任务，覆盖 S01—S30；顺序为隔离、声明/路径校验、结果/schema/Git 核验、计划字段、implementer/交付协议、并发 skill 登记、串行/平台接入、验收、合并清理。使用现有串行 executing-plans 开发新 skill，不以未验收产物调度自身。计划四查、plan-index 和内嵌源码语法校验已完成；进度全 pending，等待实施交接，尚无功能测试 PASS 或真实模型行为结论。
-- **2026-09-06 设计批准**：用户批准独立正式 skill、index 可选写集合、progress 唯一写者、集成验证后 completed、资源先登记后创建、特性级本地/PR 双出口及完整收尾。spec：`.spec-dev/2026-09-06-01-concurrent-execution/spec/concurrent-execution-design.md`（active；14 条 Requirement / 30 个 Scenario，增量独立复审 Approved、用户已确认，writing-plans 已完成）；ADR-0007。此前切换与恢复增量独立复审已修正跨 worktree 统一锁身份、测试例外串行分流、编排 owner 接管与存活 implementer 恢复的区别，保留原 claim；自检修正入口拓扑与实际 ready 分离。尚未实施；PR ready 不标 roadmap delivered。
+- **2026-09-06 实施计划已保存**：入口 `.spec-dev/2026-09-06-01-concurrent-execution/plan/index.md`；T00—T08 共 9 任务，覆盖 S01—S30；顺序为隔离、声明/路径校验、结果/schema/Git 核验、计划字段、implementer/交付协议、并发 skill 登记、串行/平台接入、验收、合并清理。使用现有串行 executing-plans 开发新 skill，不以未验收产物调度自身。计划四查、plan-index 和内嵌源码语法校验已完成；T00—T08 已完成并本地交付；必需验收通过，真实模型行为仍未验证。
+- **2026-09-06 设计批准**：用户批准独立正式 skill、index 可选写集合、progress 唯一写者、集成验证后 completed、资源先登记后创建、特性级本地/PR 双出口及完整收尾。spec：`.spec-dev/2026-09-06-01-concurrent-execution/spec/concurrent-execution-design.md`（active；14 条 Requirement / 30 个 Scenario，增量独立复审 Approved、用户已确认，writing-plans 已完成）；ADR-0007。此前切换与恢复增量独立复审已修正跨 worktree 统一锁身份、测试例外串行分流、编排 owner 接管与存活 implementer 恢复的区别，保留原 claim；自检修正入口拓扑与实际 ready 分离。本地实施与交付已完成；PR ready 本身仍不构成交付。
 - **模型声明补充要求**：用户明确要求把声明写入并发执行 skill，而非仅本会话报告，并指定沿用对话中的终端三列表格「角色｜模型｜思考强度」，主线程带 👤、实现子代理带 🤖，来源和待启动状态在表格下简述。启动/切入/恢复编排前声明；多配置分组、未知不猜、配置变化重声明，沿 notes 与 claim 关联留痕；不固定为本轮开发使用的模型，不改变模型选择权限。S28—S30 承载验收。
 - **任务边界切换补充批准**：用户同意串行任务完成并保存后再转并发，并强调中断恢复；复用现有隔离 worktree，保留已完成任务、原始审查基线与交付通道；先保存切换请求，模式检查点提交后才派发。条件不足继续串行，缺声明不自动补写；S23—S27 覆盖切换成功、资格不足、模式提交窗口、请求早于当前任务完成及派发回执丢失。恢复先核实原 owner/执行者/提交，不凭空重派或重置进度。并发模式内按 ready 数量调度一票或多票，不反复切换模式。此为 ADR-0007 下的交接协议细化，不推翻或修改 Accepted ADR。
 - **续接补查**：新 skill 仅需补 Claude 显式 skills[]；其他平台按目录发现，check-plugin 无需改。新增 implementer 沿现有 agent 形制，Bash 白名单不等于只读沙箱。plan-single-format 的三条计划/恢复/资源 Requirement 和 portability-hygiene 的「README 漂移修正」须部分取代；不能将新增状态键误称纯分面共存。其余既有接口按当前 spec 继承。
 - **关键裁决**：默认范式（主线程串行、子代理不写码）不变，并发为 opt-in——与报告 rejected #9 及 CHANGELOG v5.6.0"不新增 implementer 子代理、per-task 门留作 opt-in"裁决一致，例外已由 ADR-0007 记录；形态为独立正式 skill `executing-plans-parallel`（登记 .claude-plugin/marketplace.json skills[]、带 agents/openai.yaml 与 evals），executing-plans 在执行确认门加"满足条件时提议、同意则调用"，PR 出口单点定义供两模式引用；触发 = 用户显式选择 且 导航表 ≥2 条独立链 且 写集合不相交；merger 由主线程兼任、冲突上抛用户；每票强制 TDD 五步 + 契约锚定自检；已授权例外/空基线票归主线程串行；收尾仍走多维审查全套。
 - **探索指针**：报告 §3.1、AB-44/10/11/33；本文备注「并发模式设计事实」；`.spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md:171`（并行会话合并冲突对策）；外部 `/Users/maverick/skills/skills/in-progress/implement-spec/SKILL.md`（35 行，上游 2026-08-21 后无变更）。
 - **已扫范围**：executing-plans/writing-plans/review-orchestration/using-git-worktrees 全文与"主线程/不写码"全部陈述位置（SKILL.md、README 双语、openai.yaml、.codex-plugin、guardrail snippet）；progress.yaml 契约与真实实例；evals 中断言串行的用例（ep-continuous-execution、ep-execution-confirm-gate、ep-contract-deviation-stops、wp-final-task-closure 等）；上游 implement-spec 的 9 个社区 issue；Claude Code 官方 sub-agents/worktrees 文档；Codex spawn_agent 官方文档与源码。续接时阶段 2 只需补：新 skill 目录/清单登记流程（check-plugin 双向校验）、implementer 类 agent 定义形制。
-- **留给后继的注意事项**：（交付回写时追加）
+- **留给后继的注意事项**：2026-09-06 已交付到本地 main，sync_commit=d9428058cfd485c09b72700fb321ffac5871b67d。入口 skills/executing-plans-parallel/SKILL.md，声明/progress 唯一定义在 writing-plans，交付通道在 delivery-channels。全量91/91、0 skip，48条静态eval、10组真实Git/进程受控演练及独立复核通过；真实模型nightly与真实托管PR未验证。进度仅主线程持锁写入；blocked/失联不得按超时重派，接管前核验原写者停止。默认串行、原始base与validated基线分离、声明三列表和恢复追溯均保留。后继从 #3 tdd-seam 的胶囊继续需求设计，不改已接受 ADR-0007；本次未 push。
 
 ### #3 tdd-seam
 

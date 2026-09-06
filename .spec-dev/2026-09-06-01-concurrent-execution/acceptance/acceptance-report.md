@@ -1,6 +1,6 @@
 # 并发执行验收报告
 
-状态：T07 必需 fast/PR 验收通过，READY_FOR_LOCAL_MERGE；实际交付与资源清理由 T08 完成。
+状态：DELIVERED，本地 main 已接受，T00—T08 全部完成，台账资源已清理。
 
 范围：原始基线 `eac136eeed060c24c7f4d94b3b753a51f46a25f9` 起的完整特性变更。目标是本地插件、真实临时 Git 仓库/worktree 与受控 Node 进程。没有访问生产环境或托管 PR。
 
@@ -55,7 +55,7 @@ STATIC_MATCH 指人工逐条对照真实规则；CONTROLLED_PASS 指按 skill �
 
 ## Requirement Reconciliation
 
-14 条 Requirement 均有实现和对应验收定位（逐条见 eval-review.md），当前未发现 DEFERRED/DROPPED/SUPERSEDED 的漏交项。14 项必需验收均已通过，尚无延期项；T08 负责实际本地合并、取代回写和清理，完成后定稿 DELIVERED。
+14 条 Requirement 均有实现和对应验收定位（逐条见 eval-review.md），当前未发现 DEFERRED/DROPPED/SUPERSEDED 的漏交项。14 项 Requirement 均为 DELIVERED，无延期或丢弃项；T08 本地合并、取代回写与资源清理全部完成。
 
 ## 验证边界与偏差
 
@@ -68,3 +68,5 @@ STATIC_MATCH 指人工逐条对照真实规则；CONTROLLED_PASS 指按 skill �
 - 测试退役：此次保留旧串行与存量读取行为，无已失效且应退役的 Scenario 测试，未删除测试。
 
 最终协议复核：replay-review-final.json findings=[]；270 条命令/动作、18 份状态快照，两执行者重叠222ms，全部11个可追踪 worker PID 已退出。红绿原始日志已校验与归档一致；归档仅去行尾空白以符合仓库检查，归档 SHA-256 和原路径映射见 replay-evidence-map.json。
+
+本地交付锚点：d9428058cfd485c09b72700fb321ffac5871b67d。实施分支已快进合入 main，所有文档/证据随提交保留；临时资源与实施 worktree/分支已清理。最终文档提交仅锚定已接受提交，不把自己的 SHA 写入自身。

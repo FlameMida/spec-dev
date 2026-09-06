@@ -1,5 +1,5 @@
 format_version: 1
-current: T08
+current: null
 tasks:
   T00: { status: completed, commit: eac136eeed060c24c7f4d94b3b753a51f46a25f9, tests: pass }
   T01: { status: completed, commit: f699fc843c7216be896ea1cfcc780ddf28c867f4, tests: pass }
@@ -9,12 +9,8 @@ tasks:
   T05: { status: completed, commit: 996f3419a28759300ab62ac8534e978b1c5430f3, tests: static_pass }
   T06: { status: completed, commit: eeb8f1de8365e68b57881f1c07ad3e35a7cde8de, tests: static_pass }
   T07: { status: completed, commit: d4734063deaa6b899ca8f2b831d39fd8a86139ac, tests: controlled_pass }
-  T08: { status: in_progress }
-resources:
-  - "worktree: .worktrees/plan-2026-09-06-01-concurrent-execution —— 在来源工作区核验合并和干净状态后 git worktree remove .worktrees/plan-2026-09-06-01-concurrent-execution；随后 git branch -d plan/2026-09-06-01-concurrent-execution"
-  - "temp-dir: 实施 worktree/.parallel-qa —— 核验本任务归属、停止受控进程且归档证据后移除该目录；未集成工作保留"
-  - "temp-file: 实施 worktree/.parallel-qa-setup.mjs —— 夹具已停且归档后删除该文件"
-  - "temp-file: 实施 worktree/.spec-dev-commit-message —— 提交完成后删除本任务提交信息文件"
+  T08: { status: completed, commit: d9428058cfd485c09b72700fb321ffac5871b67d, tests: pass }
+resources: []
 notes:
   - "2026-09-06: 用户批准 spec；计划阶段未实施，采用现有串行 executing-plans 开发并发 skill。"
   - "source: /Users/maverick/feature-dev；branch=main；原始审查基线在 T00 读取真实 HEAD 后记录。"
@@ -30,3 +26,4 @@ notes:
   - "T06: 修复简介后三件套回归 39/39、0 skip；旧失败日志保留，更正提前完成记录。"
   - "T07: 审查确认并修复精确路径绕过、validated_commit 推进与新入口搜索条款；追加真实 Git 红绿回归与每提交链接重绑定核验，验收仍进行中。"
   - "T07: 全量91/91、0 skip；48条静态eval、14项Requirement覆盖；第四轮10组真实Git/进程受控演练及补充检查通过，独立复核findings=[]。真实模型nightly未验证、PR仅受控适配；历史失败归档。"
+  - "T08: local main accepted d9428058cfd485c09b72700fb321ffac5871b67d; .parallel-qa, implementation worktree and branch removed; setup file never created, task commit-message files removed after commits; all 11 tracked worker PIDs ESRCH; archived evidence retained; no push."
