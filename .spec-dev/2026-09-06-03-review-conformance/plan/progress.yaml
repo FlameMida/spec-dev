@@ -2,7 +2,7 @@ format_version: 1
 current: T01
 tasks:
   T00: { status: completed, commit: "4bbbd8a9caca9b579243de9fa396be94a3358ce0", tests: "55 passed; 0 skipped; skills/plugin/plan-index passed", evidence: "execution/serial/T00" }
-  T01: { status: in_progress, tests: "37 passed; skills/plugin passed; S09 existing pass to pass; S27 native decision fail to pass with platform/session limitations", evidence: "execution/serial/T01" }
+  T01: { status: completed, commit: "92007b18fde451a5b0a44e6c4e73cb9966b91495", tests: "37 passed; skills/plugin passed; S09 existing pass to pass; S27 native decision fail to pass with platform/session limitations", evidence: "execution/serial/T01" }
   T02: { status: pending }
   T03: { status: pending }
   T04: { status: pending }
@@ -17,3 +17,4 @@ notes:
   - "默认串行，无并发声明；当前仅写计划，未建 worktree、未运行实施或模型验收。"
   - "PR 五组是测试组织，不是五个 Scenario/五次调用；nightly 完整多轮非阻塞；未知/SKIP 不记 PASS。"
   - "T00: source main /Users/maverick/feature-dev; base_commit 88cf00a9f5ba7a340720dd49cf8be068cb8a9e20; worktree /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance; initial commit anchor is source, updated after state commit."
+  - "T01: 实际提交 92007b1；post-commit 已执行，但自动发版器限定 main，在计划分支按现有策略跳过；无版本或 tag 变更。"
