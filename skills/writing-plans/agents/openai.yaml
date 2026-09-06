@@ -1,6 +1,6 @@
 interface:
   display_name: "Writing Plans"
-  short_description: "把获批 spec 写成 plan 三件套：精确任务接口与 seam 来源、TDD 五步、适用快检和验收闭环；progress 唯一记状态。"
+  short_description: "把获批 spec 写成 plan 三件套：共享设计判据、精确任务接口与 seam 来源、TDD 五步、适用快检和验收闭环；progress 唯一记状态。"
   default_prompt: "Use $writing-plans to turn the approved spec into a detailed implementation plan. / 用 $writing-plans 把已批准的 spec 拆成详细实施计划。"
 
 policy:

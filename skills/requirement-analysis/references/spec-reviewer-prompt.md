@@ -47,3 +47,7 @@
 ```
 
 **主线程处置**：审查回报的问题逐条裁决——成立则修 spec，不成立则记录不采纳理由；**只要 spec 有过修改（含 inline 自检的修改），必须让用户重新 review**。
+
+## 共享设计判据
+
+审查方案形态时读取 writing-plans 的 [design-principles.md](../../writing-plans/references/design-principles.md)「模块判据」，结合当前需求与已批准 seam 使用。保持本模板的真实缺口校准：接口可以更简单或只有一个 adapter 本身不足以否决设计；不复制判据，不新增批准门。

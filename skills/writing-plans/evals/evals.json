@@ -55,6 +55,21 @@
       "id": "tdd-seam-s12",
       "prompt": "S12 无适用命令：\nGIVEN 项目没有 typecheck 或其他适用静态命令\nWHEN 编写与执行计划",
       "expected_output": "标注静态快检不适用并沿用测试命令，不虚构 `tsc`、不安装额外依赖；不适用不等于任务测试通过。"
+    },
+    {
+      "id": "review-conformance-s08",
+      "prompt": "S08 模块删除判据比较两个模块\nGIVEN 一个模块只转发调用，另一个集中处理多个调用方共同的业务规则\nWHEN 使用模块删除判据",
+      "expected_output": "比较假想移除后的复杂性去向及实际用途；不实际删除模块或保护测试，不仅凭转发形态要求整改。"
+    },
+    {
+      "id": "review-conformance-s09",
+      "prompt": "S09 一个 adapter 与已批准 seam\nGIVEN 计划已批准一个公共 seam，当前只有一个生产 adapter\nWHEN 使用 adapter 计数评价抽象",
+      "expected_output": "不为凑两个实现创建 fake、不据此取消已批准 seam；只有真实需求和具体复杂性证据才能支持改进建议。"
+    },
+    {
+      "id": "review-conformance-s10",
+      "prompt": "S10 多 adapter 仍暴露内部结构\nGIVEN 两个真实 adapter 的接口向消费者暴露各自内部参数，调用方需做分支判断\nWHEN 使用接口三问",
+      "expected_output": "检查是否能减少方法、简化参数、隐藏内部复杂性，并引用实际边界；adapter 数量不自动证明抽象合理。"
     }
   ]
 }

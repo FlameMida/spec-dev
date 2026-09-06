@@ -60,6 +60,11 @@
       "id": "tdd-seam-s01",
       "prompt": "S01 复用一个公共接口覆盖多个行为：\nGIVEN 现有 `Cart.total()` 可观察优惠和空购物车两个 Scenario，内部有三个辅助函数\nWHEN 展示设计及写入 spec",
       "expected_output": "声明 `Cart.total()`、两个 Scenario 和依赖替换边界；不因辅助函数数量另造三个落点，也不额外开独立 seam 批准门。"
+    },
+    {
+      "id": "review-conformance-s27",
+      "prompt": "S27 上游消费共享判据\nGIVEN RA 比较方案、writing-plans 编写头部、spec reviewer 检查设计可实施性\nWHEN 各入口读取设计判据",
+      "expected_output": "通过同一 design-principles 指针使用新增判据，保留八原则与原审查职责，不复制三套判据或新增独立批准门。"
     }
   ]
 }

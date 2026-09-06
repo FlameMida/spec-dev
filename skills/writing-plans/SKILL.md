@@ -37,7 +37,7 @@ spec 聚焦单一交付物（绝大多数情况）→ 本节零动作。若 spec
 
 **不变式：一次只写一份计划，不为未实施的后续阶段预写计划**。计划要求每步含完整代码与精确路径，后续阶段的代码建立在前一阶段尚不存在的产物上——现在写出来必然失效。后续子项目在前置交付后按 roadmap 续接（executing-plans 收尾会核对 roadmap 并提示下一个）。
 
-任务分解与方案形态遵循 [design-principles.md](references/design-principles.md) 八条设计原则——分解时逐条对照，违反即重划。
+任务分解与方案形态遵循 [design-principles.md](references/design-principles.md) 八条设计原则；同时按实际问题使用其「模块判据」。原则违反时重划；启发式须有证据，不为凑 adapter 数量新建抽象，不否决已批准 seam。计划头部保留八原则声明并引用该判据定义点。
 
 ## 文件结构先行
 
