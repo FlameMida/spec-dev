@@ -1,6 +1,6 @@
 interface:
   display_name: "Writing Plans"
-  short_description: "把已批准的 spec 拆成三件套实施计划，内嵌 TDD 步骤；具备独立写集合时声明可选并发能力，保持默认串行并交接执行。"
+  short_description: "把获批 spec 写成 plan 三件套：精确任务接口与 seam 来源、TDD 五步、适用快检和验收闭环；progress 唯一记状态。"
   default_prompt: "Use $writing-plans to turn the approved spec into a detailed implementation plan. / 用 $writing-plans 把已批准的 spec 拆成详细实施计划。"
 
 policy:

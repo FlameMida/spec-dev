@@ -55,6 +55,11 @@
       "id": "ra-same-day-numbering",
       "prompt": ".spec-dev/ 下已存在 2026-08-26-01-foo，同日再创建一个特性目录；另一并行会话可能也在建目录",
       "expected_output": "新目录命名 2026-08-26-02-<语义名>（扫描当日已有取最大加一）；落盘前重扫一次，发现 02 已被占则顺延 03 并同步修正自引路径；存量旧命名目录不改名"
+    },
+    {
+      "id": "tdd-seam-s01",
+      "prompt": "S01 复用一个公共接口覆盖多个行为：\nGIVEN 现有 `Cart.total()` 可观察优惠和空购物车两个 Scenario，内部有三个辅助函数\nWHEN 展示设计及写入 spec",
+      "expected_output": "声明 `Cart.total()`、两个 Scenario 和依赖替换边界；不因辅助函数数量另造三个落点，也不额外开独立 seam 批准门。"
     }
   ]
 }

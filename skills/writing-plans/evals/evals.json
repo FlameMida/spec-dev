@@ -40,6 +40,21 @@
       "id": "wp-parallel-state",
       "prompt": "为已明确选择并发的分文件计划说明恢复字段与资源台账。",
       "expected_output": "writing-plans 为唯一字段定义；execution.owner 与 claim.owner 含义不同；model-declaration 只在 notes，claim.model_declaration_id 追溯；模型声明内容由并发 skill 定义；资源先登记再确认创建，进度原子更新。"
+    },
+    {
+      "id": "tdd-seam-s02",
+      "prompt": "S02 并发消费者无需读取前票正文：\nGIVEN T02 依赖 T01 的公共接口，两个任务共享一个已批准 seam\nWHEN 只向 T02 提供本票、spec、index 与依赖接口行",
+      "expected_output": "输入可定位 seam、接口签名与对应 Scenario；无需读取 T01 正文；导航仍为四列，无新进度字段或清单文件。"
+    },
+    {
+      "id": "tdd-seam-s11",
+      "prompt": "S11 有 typecheck 命令：\nGIVEN 项目配置已有 typecheck，计划同时声明目标行为测试和最终全量命令\nWHEN 完成一批接口编辑及本票实现",
+      "expected_output": "可先获得 typecheck 反馈，仍运行本票红绿与相关验证；最终全量保留，静态通过不解锁尚未完成集成验证的后继。"
+    },
+    {
+      "id": "tdd-seam-s12",
+      "prompt": "S12 无适用命令：\nGIVEN 项目没有 typecheck 或其他适用静态命令\nWHEN 编写与执行计划",
+      "expected_output": "标注静态快检不适用并沿用测试命令，不虚构 `tsc`、不安装额外依赖；不适用不等于任务测试通过。"
     }
   ]
 }

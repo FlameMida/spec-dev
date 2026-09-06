@@ -105,6 +105,11 @@ spec_dev:
 
 ## 测试与验收策略
 
+### 测试落点声明
+
+随完整设计批准的声明，记录公共接口与签名/协议、覆盖的 Scenario、允许替换的依赖边界（没有则写无）及来源。优先复用既有、足以观察目标行为的较高层接口，不逐私有函数创建测试；一个 seam 可覆盖多个 Scenario。后续计划接口块引用此声明。
+
+
 [以**验收矩阵**表达（结构定义见 acceptance-qa skill 的 references/acceptance-matrix.md）：每个 Scenario 至少一行；
 「任务内 TDD」行由 writing-plans 直接翻译为任务的失败测试（GIVEN→arrange、WHEN→act、THEN→assert）；
 「验收任务」行进入计划尾部的验收任务，由 executing-plans 收尾触发 acceptance-qa 执行。
