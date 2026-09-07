@@ -11,6 +11,7 @@ from .review_store import (actor_dir, atomic, completion, digest, lock, object_p
                            report_get, status, tasks, verify)
 
 TOOLS = {'mcp__review__' + x for x in ['context', 'read_source', 'run_test', 'submit_report']}
+MAX_SEGMENT_SECONDS = 1800
 
 
 def reviewer_rules(source, actor):
@@ -114,7 +115,8 @@ def stop(proc):
 
 def execute(run, budget):
     run = run.resolve()
-    if not 0 < budget <= 300: raise ValueError('一次片段预算必须大于0且不超过300秒')
+    if not 0 < budget <= MAX_SEGMENT_SECONDS:
+        raise ValueError('一次片段预算必须大于0且不超过' + str(MAX_SEGMENT_SECONDS) + '秒')
     with lock(run / 'run.lock', blocking=False):
         data = verify(run)
         current = status(run)

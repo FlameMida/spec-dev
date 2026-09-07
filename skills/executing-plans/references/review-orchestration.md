@@ -16,7 +16,7 @@ rtk proxy python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review-runner.py" status --run 
 
 worker只拥有内嵌stdio提供的context/read_source/run_test/submit_report，无任意Bash/Write/Agent。程序固定执行者和测试定义，原始证据按内容哈希保存，报告引用真实ID；A仍须亲自请求测试。受控入口只对逐成员现行Scenario集合非空且相同、并有独立因果说明的重复候选执行合并；不同Scenario或无Scenario的质量候选保守分列，保留全部来源，不把同一行或一次编辑当同因。程序核查引用原文、实际进程回执、独立反驳依赖、critic覆盖依据及最终未完成项；所有维度的语义判断、严重性与同根因因果仍由独立审查承担。
 
-一次run调用最多300秒；中断保留未完成，最多允许3个显式片段。沿同一目录重新run仅继续未完成任务，已完成不重跑；候选规则、控制器或被审快照变化须新run，不把后继成功拼回旧运行。先前测试已开始而无完整回执则不自动复跑。`completed`仅表示审查链闭合；`review_result`、confirmed、observations及原始测试退出码分别决定后续修复，不能当代码交付PASS。超过预算、未复核新候选或覆盖缺口必须保留incomplete/blocked，不自动无限重启。
+一次run调用默认且最多1800秒（30分钟），可用`--budget-seconds`指定更短预算；中断保留未完成，最多允许3个显式片段。入口不设置Claude CLI费用上限；时间上限独立生效。沿同一目录重新run仅继续未完成任务，已完成不重跑；候选规则、控制器或被审快照变化须新run，不把后继成功拼回旧运行。先前测试已开始而无完整回执则不自动复跑。`completed`仅表示审查链闭合；`review_result`、confirmed、observations及原始测试退出码分别决定后续修复，不能当代码交付PASS。超过预算、未复核新候选或覆盖缺口必须保留incomplete/blocked，不自动无限重启。
 
 本入口保留本机认证、设置和hooks，信任宿主扩展与获批测试代码；受控工具不是OS沙箱。实际worker工具清单不符则中止。原生入口与受控入口均遵守下列语义判据，受控入口由程序完成机械校验和派发，不要求worker重复这些步骤。
 

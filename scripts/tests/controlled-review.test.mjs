@@ -340,3 +340,23 @@ test('R04 实际worker派发保留覆盖契约原文并排除原生报告模板'
   assert.ok(!prompt.includes('## 代码审查报告'),actor+'不能混入原生Markdown模板');
  }
 });
+
+for(const explicit of [false,true]) {
+ test('R05 '+(explicit?'显式':'默认')+'30分钟片段保存真实预算且不设CLI费用上限',t=>{
+  const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
+  const f=fixture(t,{client:fakeClient(folder)});
+  const result=invoke(['run','--run',f.run,...(explicit?['--budget-seconds','1800']:[])]);
+  assert.equal(result.data.status,'completed',JSON.stringify(result));
+  const segments=JSON.parse(readFileSync(path.join(f.run,'segments.json'),'utf8'));
+  assert.equal(segments[0].budget_seconds,1800);
+  const invocation=JSON.parse(readFileSync(path.join(f.run,'actors','A','attempt-1.invocation.json'),'utf8'));
+  assert.ok(!invocation.argv.includes('--max-budget-usd'));
+ });
+}
+
+test('R06 超过30分钟的片段被拒绝，不能开始worker',t=>{
+ const f=fixture(t);
+ const result=invoke(['run','--run',f.run,'--budget-seconds','1801']);
+ assert.equal(result.data.status,'blocked');assert.match(result.data.gaps.join(' '),/1800/);
+ assert.equal(existsSync(path.join(f.run,'segments.json')),false);
+});

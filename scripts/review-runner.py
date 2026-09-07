@@ -5,6 +5,7 @@ import json
 import subprocess
 from pathlib import Path
 from lib.review_store import initialize, status
+from lib.review_process import MAX_SEGMENT_SECONDS, execute
 
 
 def main():
@@ -13,7 +14,7 @@ def main():
     p.add_argument('--run', required=True)
     p.add_argument('--config')
     p.add_argument('--actor')
-    p.add_argument('--budget-seconds', type=float, default=300)
+    p.add_argument('--budget-seconds', type=float, default=MAX_SEGMENT_SECONDS)
     args = p.parse_args()
     try:
         if args.command == 'init':
@@ -25,7 +26,6 @@ def main():
             serve(Path(args.run), args.actor)
             return 0
         else:
-            from lib.review_process import execute
             result = execute(Path(args.run), args.budget_seconds)
         print(json.dumps(result, ensure_ascii=False))
         return 0 if result.get('status') not in ['blocked', 'incomplete'] or args.command == 'status' else 1
