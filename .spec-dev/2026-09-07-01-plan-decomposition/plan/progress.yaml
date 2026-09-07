@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T07",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -38,7 +38,9 @@
       "commit": "cd6b7b0dcfee538439ce9dc7dc81d5577e7ffbe8"
     },
     "T07": {
-      "status": "in_progress"
+      "status": "completed",
+      "tests": "40/40 machine pass; six real-model readonly cases pass after bounded source/actor fixes",
+      "commit": "0528a24bf063e6411b4fb5edff570f883bccde0f"
     },
     "T08": {
       "status": "pending"
