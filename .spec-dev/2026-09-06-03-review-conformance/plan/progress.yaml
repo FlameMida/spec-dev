@@ -6,7 +6,7 @@ tasks:
   T02: { status: completed, commit: "ddb09320d97a6d6d16e918a2894c677a488c5c19", tests: "CLI red 1 fail to green 3 pass; related regression 40 passed; S02 strict-isolation decision partial fail to pass; skills/plugin passed", evidence: "execution/serial/T02" }
   T03: { status: completed, commit: "736dd1967e01510a7be408fc52fb67d35c5d9508", tests: "40 passed; skills/plugin passed; S24 decision fail to pass, green tools empty", evidence: "execution/serial/T03" }
   T04: { status: completed, commit: "2c662893ece18349a3c409fc8098562146241191", tests: "40 passed; skills/plugin passed; S14 existing pass to pass; S15 fail to pass; strict tools empty", evidence: "execution/serial/T04" }
-  T05: { status: in_progress, tests: "94 passed/0 skipped; harness 13 passed; PR scenario targets 24/24, full run closure and evidence integrity incomplete; see run-gates.json", evidence: "acceptance" }
+  T05: { status: in_progress, tests: "122 passed/0 skipped, including 28 controlled-runtime regressions; small-r4 complete in 3 segments; mechanical-r3 and combined-r1 exhausted 3 segments incomplete; see controlled-runtime/final-verdicts.json", evidence: "acceptance" }
   T06: { status: pending }
 resources:
   - "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance —— rtk git worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance；rtk git branch -d plan/2026-09-06-03-review-conformance"
@@ -29,3 +29,9 @@ notes:
   - "T05 harness repair: 用户修吧授权修验收工具并仅复跑S05/S18/S23；继承本机设置，300秒不变。9项工具回归通过，完整回归94/0skip；36份CLI记录，目标17pass/4fail/7unverified；S23本轮未触发且历史失败未消除。T05保持in_progress，T06未执行。"
   - "T05 continuation: 用户做吧授权补S05完整测试证据、真实缺陷触发S23、复验S06/S22/S26与S07/S15/S16，必要最小修复后独立复审和全量，再进入T06；继承本机设置，每例300秒，nightly四项非阻塞。"
   - "T05 continuation checkpoint: 产品修复d5d852036beef95841356f116a07004a7ca5fae8；14次有界复验（4 exit0/10 timeout124），目标24pass/0fail/4nightly unverified。收口、采集一致性及执行者声明三门未通过；T05in_progress/T06pending，不自动DEFERRED。"
+
+  - "2026-09-07: 用户授权统一运行控制器修正；设计spec/controlled-review-design.md，执行plan/runtime-correction.md。新增宿主证据、身份、分页、独立输入及有界恢复，保留本机设置。"
+  - "T05 runtime: 28项公共CLI/stdio边界回归及完整122项通过，0skip；独立代码复核已闭环。九次真实run均保存对应运行器原文与哈希，112个原始spool无损归档。"
+  - "T05 runtime acceptance: 最新small-r4累计866.725秒恢复完成，3条真实缺陷独立确认；mechanical-r3/combined-r1分别900.901/901.121秒耗尽3片段仍未收口，不执行第四片段。旧整例300秒指标不记通过，T06仍pending。"
+  - "T05 runtime product commit: 984f496c87a5613d40958c36f0aa9fdfc2dca497；pre-commit官方Codex安装/skills/openai/diff通过，post-commit按计划分支跳过自动发版。"
+  - "收尾实时核查：主工作区main已为9f40a4929e3d5cf3309de01d738820d66dacca50（refactor: 移除英文）且干净，不包含本次产品提交；本计划仍基于原始88cf00a，未执行合并。将来T06须保留并核对该后续主线变更。"
