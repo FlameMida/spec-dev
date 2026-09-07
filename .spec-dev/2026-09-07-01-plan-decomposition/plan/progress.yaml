@@ -43,7 +43,7 @@
       "commit": "0528a24bf063e6411b4fb5edff570f883bccde0f"
     },
     "T08": {
-      "status": "blocked",
+      "status": "in_progress",
       "tests": "r8 local full 165/165, reference 11/11, targeted 68/68, official plugin/skills pass; A/B/C fixed review pass; RA S21 initial/content/serial-decisions pass; complete model-generated plan FAIL and first full action FAIL (core state semantics PASS), so resume/verify/repair not run"
     },
     "T09": {
@@ -79,7 +79,9 @@
     "[本计划拥有] /tmp/pd-r7-action-first、pd-r7-judge-s20-s26、pd-r7-judge-s01-s19：独立原件，主线程归档后保留；r7first host-stop按登记PID终止，非超时，现场保留。",
     "[本计划拥有] /tmp/pd-r7-judge-s02-s32、pd-r7-judge-s27、pd-r7-planning-action：独立只读审计原件；主线程归档，planning-r7在原无时限调用结束后验完整产物。",
     "[预登记] acceptance/r8-fix、model-smoke/r8-*、decision-fixtures/r8-*、action-fixtures/r8-*及model-actions对应目录；文档示例机器验证仅在记录的临时测试Git仓中执行，不执行模型生成任务。原生独立审计/tmp/pd-r8-*，只读产品与证据。",
-    "[本计划拥有] /tmp/pd-r8-review-a、pd-r8-review-bc、pd-r8-review-s：独立受影响维度审查；示例测试TemporaryDirectory(pd-r8-example-*)逐测试finally清理。r8-s21-followup通过实际r8-s21对话历史补分支，不喂THEN答案。"
+    "[本计划拥有] /tmp/pd-r8-review-a、pd-r8-review-bc、pd-r8-review-s：独立受影响维度审查；示例测试TemporaryDirectory(pd-r8-example-*)逐测试finally清理。r8-s21-followup通过实际r8-s21对话历史补分支，不喂THEN答案。",
+    "[预登记] r9机制修复：acceptance/r9-fix、model-actions/r9-*、model-smoke/r9-*、decision-fixtures/r9-*、action-fixtures/r9-*；临时pd-r9-*及pd-r8-example-*测试自身回收；主线程唯一写产品/进度，独立审查仅/tmp/pd-r9-*，原失败不覆盖。",
+    "[预登记] r10异常续接修复：acceptance/r10-fix、model-actions/r10-*、action-fixtures/r10-*；临时/tmp/pd-r10-*与测试自身临时仓；只归档本任务原件，未知锁/失败现场不清理，主线程唯一写产品与progress。"
   ],
   "notes": [
     "2026-09-07: 用户选择方案2并批准完整设计、spec及编写计划；尚未获执行授权，未创建实施worktree，未运行候选代码或模型验收。",
@@ -124,6 +126,10 @@
     "r8修复：参考原语三项真实RED后11/11 GREEN；A独立11+8、BC4及仅状态/证据提交绑定验证通过；S21初始及内容认可分支独立PASS。旧r7失败原件保留；T08继续，后续模型生成/动作验收未通过。PD_TIMEOUT_SECONDS=0。",
     "r8本地修复提交 de9726ead8c9454511b03dfc843f1464661fd9ce：三处产品文档、验收驱动和定向红绿/独立审查原件已保存；SKILL description未变，按hook既有选项SKIP_OPENAI_SYNC_CHECK=1，所有14项字段检查仍通过；SKIP_RELEASE_HOOK=1不发版。r8-planning仍运行，未因此标T08完成。",
     "r8-first/first自然结束347.7秒、无时限；T01待验/T02pending/验证基线保持，178产品hash未变，独立动作审查进行中，本次结果尚未审查放行进入resume。r8-planning完整产物FAIL，原件归档；S21独立决策分支串行补验已启动。",
-    "r8收尾：修复de9726e已独立复核；全部当前模型调用无时间上限并自然结束。最终165/165全量在所有模型写者停止后执行且归档。独立规划与首票完整动作仍FAIL，均为未遵循已有明确规则，未确认需继续叠加的产品规则缺口；保存两个失败现场并将快照增至16，T08 blocked、T09 pending，后续依赖段不假放行。"
+    "r8收尾：修复de9726e已独立复核；全部当前模型调用无时间上限并自然结束。最终165/165全量在所有模型写者停止后执行且归档。独立规划与首票完整动作仍FAIL，均为未遵循已有明确规则，未确认需继续叠加的产品规则缺口；保存两个失败现场并将快照增至16，T08 blocked、T09 pending，后续依赖段不假放行。",
+    "用户再次要求修复，r9从已证实失败补参考步骤机制：入口/状态预检、证据资源登记、blocked与恢复操作；既有协议/schema/CLI不扩展。当前模型kimi-k2，PD_TIMEOUT_SECONDS=0。",
+    "r9-first无时限自然结束，待独立判读。夹具公平性审计确认缺Spec指针/组验证接口；只对新r9-context补已有导航事实，THEN不变。新增短加载示例复用已测参考代码，规避超长脚本手工转写；不扩大工具许可，独立计划仍内嵌。r9-context/first已启动，PD_TIMEOUT_SECONDS=0。",
+    "r9-context因独立确认原锁凭据重造后写入及错误推进活动组验证基线，按实际契约违规停止，非耗时/超时；原始工具输出、提交与未释放现场保留，后继not_run。r10补首次flush原receipt及核验同会话续接、Path导入、HEAD:读取和正确组基线；宿主事实补真实session_owner与既有worktree台账，不变THEN。",
+    "r10参考去重25/25 PASS；A独立15/15及S契约验证无新发现。全部模型写者停止后机器全量165/165、0 fail/skip，skills/plugin exit0。r9两失败现场完整快照至18个且bundle验证，live不清；后续r10实际模型与规划验收待执行，T08不完成。"
   ]
 }

@@ -55,7 +55,7 @@ completed 组必须有 verify 自己目录中的通过证据，记录的业务�
 
 ## 可执行参考步骤
 
-以下 Python 3 标准库片段演示上面的既有协议，不是新的锁 CLI、状态格式或自动恢复服务。计划作者按实际特性路径、会话 owner、任务角色和批准命令内嵌适用代码；执行者仍须先核对授权与 plan-state。每个取锁→操作→检查点→释放阶段在同一脚本内保留锁凭据，不把短命进程 PID 当编排 owner。示例不接管已有锁；已有锁、维护门、身份不符或异常均停止并保留现场。
+以下 Python 3 标准库片段演示上面的既有协议，不是新的锁 CLI、状态格式或自动恢复服务。计划作者按实际特性路径、会话 owner、任务角色和批准命令内嵌适用代码；执行者仍须先核对授权与 plan-state。每个取锁→操作→检查点→释放阶段在同一脚本内保留锁凭据，并在首次保护写入前向实际工具回执 flush 原始凭据，不把短命进程 PID 当编排 owner。默认入口不接管已有锁；仅下述已核验同会话续接可继续原锁。未知锁、维护门、身份不符或异常均停止并保留现场。
 
 脚本通过已有许可通道执行，例如 `rtk proxy python3 -` 的标准输入；仅需计算哈希时可直接用该通道，不必先写临时脚本。文件写入限于批准的特性目录及该特性在真实 common-dir 下的锁/维护门元数据。工具拒绝后报告该具体命令和许可缺口；不得转去范围外临时仓实施任务，也不得以禁用权限限制代替授权。只编写计划时，只生成和校验计划；实际执行仍等待对应授权。
 
@@ -104,7 +104,8 @@ def maintenance(lock, owner):
         gate.rmdir()
 
 @contextmanager
-def held_lock(worktree, feature_key, owner):
+def held_lock(worktree, feature_key, owner, *, resume_receipt=None,
+              prior_call_stopped=False):
     worktree = Path(worktree).resolve()
     key = PurePosixPath(feature_key)
     require(bool(owner) and isinstance(owner, str), "session owner required")
@@ -122,9 +123,23 @@ def held_lock(worktree, feature_key, owner):
     parent.mkdir(exist_ok=True)
     require(not parent.is_symlink(), "lock parent is a symlink")
     lock = parent / hashlib.sha256(feature_key.encode("utf-8")).hexdigest()
-    with maintenance(lock, owner):
-        lock.mkdir()  # If occupied, no owner overwrite and no protected writes.
-        payload, entity = create_owner(lock, owner)
+    if resume_receipt is not None:
+        # Host must verify the previous call terminated and serialize this session's writes.
+        require(prior_call_stopped is True, "previous call must be confirmed stopped")
+        require(resume_receipt["payload"]["owner"] == owner, "different session receipt")
+        require(all(resume_receipt[name] == value for name, value in
+                    (("worktree", str(worktree)), ("feature_key", feature_key),
+                     ("lock", str(lock)))), "receipt path does not match authorized feature")
+        payload, entity = resume_receipt["payload"], resume_receipt["entity"]
+        with maintenance(lock, owner):
+            owned(lock, payload, entity)  # Never reconstruct the expected identity from L.
+    else:
+        with maintenance(lock, owner):
+            lock.mkdir()  # If occupied, no owner overwrite and no protected writes.
+            payload, entity = create_owner(lock, owner)
+    original = {"worktree": str(worktree), "feature_key": feature_key,
+                "lock": str(lock), "payload": payload, "entity": entity}
+    print("LOCK_RECEIPT " + json.dumps(original), flush=True)  # Before any protected write.
     receipt = {"worktree": worktree, "feature_key": feature_key,
                "feature": feature, "lock": lock,
                "payload": payload, "entity": entity}
@@ -155,6 +170,12 @@ def commit_only(receipt, relative_paths, message):
 
 def checkpoint(receipt, state, message):
     check_owner(receipt)
+    require(Path(receipt.get("validator", "")).is_file(),
+            "actual validate-output.mjs path required before checkpoint")
+    if state["integration"].get("worktree") is not None:
+        state["integration"]["owner"] = receipt["payload"]["owner"]
+        if "execution" in state:
+            state["execution"]["owner"] = receipt["payload"]["owner"]
     relative = receipt["feature_key"] + "/plan/progress.yaml"
     target = receipt["worktree"] / relative
     require(target.resolve() == target, "canonical checkpoint path required")
@@ -164,7 +185,74 @@ def checkpoint(receipt, state, message):
         stream.flush()
         os.fsync(stream.fileno())
     os.replace(temporary, target)
-    return commit_only(receipt, [relative], message)
+    commit = commit_only(receipt, [relative], message)
+    preflight(receipt, schemas=("plan-state",))
+    return commit
+
+def preflight(receipt, schemas=("plan-index", "plan-state")):
+    validator = Path(receipt["validator"]).resolve(strict=True)
+    for schema in schemas:
+        result = subprocess.run(["rtk", "proxy", "node", str(validator), schema,
+                                 str(receipt["feature"] / "plan")],
+                                cwd=receipt["worktree"], capture_output=True)
+        print(result.stdout.decode(), end="", flush=True)
+        print(result.stderr.decode(), end="", flush=True)
+        require(result.returncode == 0,
+                schema + " rejected checkpoint; preserve state and stop")
+        data = json.loads(result.stdout)
+        require(data.get("ok") is True, schema + " did not accept checkpoint")
+        if schema == "plan-state":
+            require(data.get("protocol_version") == 1, "unsupported protocol")
+    return data  # A valid blocked state may have ready_tasks=[].
+
+def register_evidence(receipt, state, directory, policy):
+    check_owner(receipt)
+    saved = json.loads(git(receipt["worktree"], "show",
+                           "HEAD:" + receipt["feature_key"] + "/plan/progress.yaml"))
+    require(state == saved, "stale resource state; reload the committed checkpoint")
+    require(not git(receipt["worktree"], "status", "--porcelain"),
+            "save pending changes before registering a resource")
+    path = PurePosixPath(directory)
+    require(str(path) == directory and not path.is_absolute()
+            and ".." not in path.parts and directory.startswith("execution/groups/"),
+            "canonical evidence resource path required")
+    require(isinstance(policy, str) and policy.strip(), "resource retention policy required")
+    entry = ("evidence: " + receipt["feature_key"] + "/" + directory
+             + " —— rtk proxy echo 'retain registered evidence; no cleanup in this phase'")
+    if entry not in state["resources"]:
+        state["resources"].append(entry)
+        state["notes"].append("evidence " + directory + ": " + policy)
+        checkpoint(receipt, state, "chore: register " + directory)
+    receipt["evidence_resource"] = (directory, entry)
+
+def fail_task(receipt, state, group, task, reason, evidence):
+    # Call only for an explained check failure, after preserving its real record.
+    require(state["integration"]["active_group"] == group, "wrong active group")
+    require(reason and evidence, "failure reason and actual evidence required")
+    item = state["tasks"][task]
+    item.update(status="blocked", tests="fail")
+    item.setdefault("evidence_paths", []).extend(
+        path for path in evidence if path not in item.get("evidence_paths", []))
+    state["integration"]["groups"][group]["status"] = "blocked"
+    state["current"] = None
+    state["notes"].append(task + ": " + reason)
+    return checkpoint(receipt, state, "fix: preserve blocked " + task)
+
+def resume_member(receipt, state, group, member, affected, verify, reason):
+    # affected is the approved dependency closure, read from the navigation table.
+    require(state["integration"]["active_group"] == group, "wrong active group")
+    require(state["integration"]["groups"][group]["status"] == "blocked",
+            "repair starts from a reconciled blocked checkpoint")
+    require(reason and member not in affected and verify not in affected,
+            "explicit member repair and dependency closure required")
+    state["tasks"][member]["status"] = "in_progress"
+    for task in affected:
+        state["tasks"][task]["status"] = "blocked"
+    state["tasks"][verify]["status"] = "pending"
+    state["integration"]["groups"][group]["status"] = "in_progress"
+    state["current"] = member
+    state["notes"].append(member + ": " + reason)
+    return checkpoint(receipt, state, "fix: begin member repair " + member)
 
 def business_tree(worktree, feature_key, commit):
     raw = git(worktree, "ls-tree", "-r", "-z", commit)
@@ -194,6 +282,11 @@ def record_check(receipt, argv, attempt, commit):
     require(not relative.is_absolute() and ".." not in relative.parts
             and str(relative) == attempt
             and attempt.startswith("execution/groups/"), "evidence path required")
+    resource_root, resource_entry = receipt.get("evidence_resource", ("", ""))
+    saved = json.loads(git(worktree, "show", "HEAD:" + feature_key + "/plan/progress.yaml"))
+    require(resource_entry in saved.get("resources", []) and resource_root
+            and relative.is_relative_to(PurePosixPath(resource_root)),
+            "evidence resource must be registered and committed before running checks")
     directory = feature / attempt
     require(directory.resolve() == directory, "canonical evidence path required")
     directory.mkdir(parents=True)  # Existing attempts are never overwritten.
@@ -223,12 +316,47 @@ def record_check(receipt, argv, attempt, commit):
 
 参考实现拒绝特性路径别名及状态/证据父目录软链接；检查执行前要求工作区干净、传入提交与当前业务树相同，允许仅进度或证据不同的后续提交。检查后再次核对业务树和额外改动；异常时保留原始输出与锁，不能为不匹配的实现生成通过记录。
 
+执行环境已有当前插件时，可只读加载已验证的参考代码，避免在超长 Bash 参数中手工重写全部函数：
+
+```python
+from pathlib import Path
+
+reference = Path(plugin_root) / "skills/executing-plans/references/integration-groups.md"
+source = reference.read_text().split("<!-- integration-group-reference:start -->\n```python\n", 1)[1].split("\n```", 1)[0]
+exec(compile(source, str(reference), "exec"))
+```
+
+随后按本节调用顺序设置实际会话 owner、validator 与当前状态。加载参考代码本身不取锁、不读任务、不执行任务；这些仍由当前阶段显式操作。遇到工具拒绝不禁用限制、不另写范围外 helper。需要脱离插件交付的计划须内嵌相同完整参考代码，不能留下运行时不存在的插件路径。
+
+已提交状态按 Git blob 读取，保留 `HEAD:`，不能用 `git show <路径>` 的提交过滤输出代替文件：
+
+```python
+state = json.loads(git(worktree, "show", "HEAD:" + feature_key + "/plan/progress.yaml"))
+```
+
+异常后若需要在下一段辅助调用继续，主线程先核对上一段真实工具回执已结束、同一编排会话没有其他写者，并保留首次 `LOCK_RECEIPT` 行及其工具回执来源。将该行 JSON 原样作为 `resume_receipt`，沿当前真实会话 owner 调用 `held_lock(..., resume_receipt=original, prior_call_stopped=True)`。这个 True 只记录宿主已核验的前置，不检测进程或提供并发互斥；主线程必须串行调用，未核验不能设 True。参考函数只在维护门内校验原路径、原 payload/token、原设备号/inode，既不新建丢失锁，也不改变 owner 或 token。
+
+**禁止从当前 `owner.json` 或 `lstat` 重建原凭据**；缺少最初回执、跨会话、原调用状态未知、同会话另有写者均保留现场并停止。这是同一 owner 延续同一实体，不是失联 owner 接管；跨会话恢复仍按原独立核验/接管规则。锁通过后仍需核对已提交状态、真实业务差异与证据，不能跳过 S14/S15 的恢复步骤。
+
+调用顺序也属于可执行步骤，不能只复制锁/写文件函数：
+
+1. 正常执行入口先实际读取 spec、index、已提交 progress，再用真实插件根的 `scripts/validate-output.mjs` 执行 `plan-index` 和 `plan-state`。只从返回的 ready 选择本票；读取本票正文与导航表依赖接口，不提前读取验证票正文来寻找组规则。批准的公共保护/组验证命令由 index 接口提供。
+2. `held_lock(worktree, feature_key, session_owner)` 的 owner 由真实编排会话提供，原会话回执可追溯；token 才随机生成。取锁后令 `receipt["validator"] = 实际插件根 / "scripts/validate-output.mjs"`，再次 `preflight(receipt)` 核对持锁时状态。不要用每张票自行生成的 UUID 替代会话 owner。
+3. 每次状态更新使用 `checkpoint`：独立提交后立即 `plan-state`；失败停止并保留锁和状态，成功才继续。无效状态已经提交时也不能返回成功。合法 `blocked` 的 `ready_tasks=[]` 允许保存，但不允许普通调度硬选下一票。
+4. 首次证据目录创建前调用 `register_evidence(receipt, state, "execution/groups/G01/T01", "本次特性拥有；原始输出持久保留，归档确认后仅回收登记的重复现场")`；它先提交资源台账并预检，随后 `record_check` 才允许在该目录下创建唯一 attempt。恢复时重新读取 state，按原登记行设置当前阶段的 receipt；保留全部旧目录，attempt 不复用。
+5. 预期组间暂时失败仍走成员待验；实际检查出现**意外失败**，先保存实现 C/原始 record，核实归属并更新对应 `implementation_commit` 和组 `checkpoint_commit=C`，再 `fail_task(...)` 保存本票/组 blocked。验证失败只 block verify/组、保留其他成员待验。已经解释的失败正常保存后可按暂停顺序释放；未解释异常仍保留锁，不能用一个通用 catch 把所有异常猜成业务失败。
+6. 修复从实际已提交状态和核验后的锁归属开始；例如批准 G01 的成员 T01→T02、verify=T03，调用 `resume_member(receipt, state, "G01", "T01", ["T02"], "T03", 实际已批准修复原因)`，该检查点提交/预检后才修改 T01 写集合。T01 重新待验后，明确把 T02 从 blocked 改成 in_progress 并 `checkpoint`，核对原改名仍有效、补检查后恢复待验，不重复应用补丁；再按 T03 原全部验证重跑。旧 evidence、implementation SHA 和验证基线不清空，成功共同 V 单独完成。
+
+`held_lock` 本身不强制入口 `plan-state` 成功：S14/S15 的已核验恢复窗口可能暂时报 checkpoint_uncommitted 或已解释实现提交未登记。恢复者先核对原 owner 已停、磁盘/提交差异归属和原始证据，在锁内补检查点并通过预检；未知差异仍冻结，不提供跳过校验的普通执行开关。
+
+这些是示例函数及调用约定，resources 仍是既有字符串数组，未给公共 CLI 增加字段或服务。资源行沿既有格式给出仓库根相对标识和可执行的保留回执命令，具体所有权/保存策略记入 notes；证据原件不因收尾自动删除。计划作者内嵌时给出实际 validator、会话来源、失败原因和依赖闭包。只编计划时用内存 `ast.parse`/`compile(source, name, "exec")` 检查语法，不执行任务，也不调用会创建临时源文件/字节码的 py_compile；汇报只列本轮实际运行的静态校验，未来 T02/T03 的命令写“待执行”。
+
 调用这些原语时，任务正文仍要完整列出自己的状态变更，不能省略成“同上”。参考顺序：
 
 | 边界 | 先决事实和状态写入 | 提交顺序 |
 |---|---|---|
 | T00 完成 | 复用或创建隔离后都绑定实际 worktree/branch/owner；基线真实通过；T00.commit 与 integration.base_commit/validated_commit 使用已存在的实际提交 | 先确定已有提交 B，再 `checkpoint` 保存状态；不能要求状态提交引用它自己的 SHA |
-| 组激活 | 全部外部前置 completed；保存组首行为保护；组 status=in_progress、base_commit=B、checkpoint_commit=实际已保存点、active_group=GNN | 在首次成员业务改动之前单独 `checkpoint` |
+| 组激活 | 全部外部前置 completed；保存组首行为保护；读取原 `integration.validated_commit` 为 B（不能改用最新 HEAD）；组 status=in_progress、base_commit=B、checkpoint_commit=实际已保存点、active_group=GNN；保留原 integration.base_commit/validated_commit | 在首次成员业务改动之前单独 `checkpoint` |
 | 成员实施 | 本票 in_progress/current 先提交；批准的写集合实际改动后，用 `commit_only` 保存实现 C；`record_check` 在该实际业务树上执行检查并保存原件 | 实现 C → 独立证据提交 → 成员 awaiting_verification、implementation_commit=C、commit=null、tests=pending_group、evidence_paths 和组 checkpoint_commit=C → 独立 `checkpoint` |
 | 组验证 | 全员待验；每条批准检查都真实执行并 `record_check`；任一必需项失败按修复协议处理 | 全部通过后取得实际通过业务树的 V；保留组 base/checkpoint 和所有历史 evidence；成员/verify/组一次完成，verify 自己也有 evidence_paths，所有 commit=V → 独立 `checkpoint` |
 | 暂停 | 所有修正及提交都在 `held_lock` 内；运行 plan-state 并核对干净 | 离开正常上下文才经过维护门释放；异常保留锁/现场，不能继续执行下一阶段 |
