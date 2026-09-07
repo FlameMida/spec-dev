@@ -82,6 +82,16 @@ def run_test(run, actor, test_id):
         return result
 
 
+def test_view(record):
+    """Keep raw bytes in the immutable object; omit only losslessly redundant encodings."""
+    view = dict(record)
+    for stream in ['stdout', 'stderr']:
+        encoded = stream + '_base64'
+        if base64.b64decode(record[encoded]) == record[stream].encode():
+            del view[encoded]
+    return view
+
+
 def context(run, actor):
     data = verify(run)
     all_tasks = tasks(run)
@@ -92,7 +102,7 @@ def context(run, actor):
     evidence = []
     for path in (run / 'objects').glob('*.json'):
         record = object_get(run, path.stem)
-        if record['kind'] == 'test' and (record['actor'] == actor or record['id'] in evidence_ids): evidence.append(record)
+        if record['kind'] == 'test' and (record['actor'] == actor or record['id'] in evidence_ids): evidence.append(test_view(record))
     triggers = []
     if actor == 'D' or actor == 'supplement-D':
         if data.get('d_request'): triggers.append({'actor': 'host', 'report_id': None, 'citations': data['d_request']})
@@ -103,15 +113,18 @@ def context(run, actor):
                     triggers.append({'actor': item['actor'], 'report_id': report['id'], 'citations': report['body']['d_request']})
     documents = {}
     remaining = 4000
-    preferred = [data['spec'], data['plan']] + [x for test in data['tests'] for x in test['argv'] if x in data['texts']]
+    preferred = [x for test in data['tests'] for x in test['argv'] if x in data['texts']]
     for name in dict.fromkeys(preferred + list(data['texts'])):
+        if name in [data['spec'], data['plan']]: continue  # Already present in full below.
         body = data['texts'][name]
         if len(body.encode()) > remaining: continue
         documents[name] = {'content': body, 'numbered': '\n'.join(str(i) + ': ' + line for i, line in enumerate(body.splitlines(), 1))}
         remaining -= len(body.encode())
     return {'run': data['id'], 'actor': actor, 'base': data['base'], 'head': data['head'],
             'tests': data['tests'], 'task': task, 'scenarios': scenarios(data),
-            'files': list(data['texts']), 'diff': data['diff'], 'spec_path': data['spec'], 'plan_path': data['plan'],
+            'files': list(data['texts']),
+            'changed_files': [name for name in subprocess.check_output(['rtk', 'proxy', 'git', 'diff', '--name-only', '-z', data['base'] + '...' + data['head']], cwd=data['repo']).decode().split('\0') if name],
+            'diff': data['diff'], 'spec_path': data['spec'], 'plan_path': data['plan'],
             'spec': data['texts'][data['spec']], 'plan': data['texts'][data['plan']],
             'source_documents': documents,
             'architecture_scope': [ref for trigger in triggers for ref in trigger['citations']], 'architecture_sources': triggers,
@@ -122,8 +135,8 @@ def context(run, actor):
 def page_parts(text):
     parts = []; current = []; size = 0
     for char in text:
-        length = len(char.encode())
-        if size + length > 4000:
+        length = len(json.dumps(char, ensure_ascii=False)[1:-1].encode())
+        if size + length > 6000:
             parts.append(''.join(current)); current = []; size = 0
         current.append(char); size += length
     if current: parts.append(''.join(current))
@@ -148,7 +161,7 @@ def read_page(run, actor, resource, cursor):
 
 
 def deliver(run, actor, value, basis=None):
-    text = json.dumps(value, ensure_ascii=False)
+    text = json.dumps(value, ensure_ascii=False, separators=(',', ':'))
     if len(text.encode()) <= 8000:
         if basis is not None: atomic(actor_dir(run, actor) / 'context-basis.json', {'attempt': ATTEMPT, 'reports': basis})
         return value
@@ -170,25 +183,51 @@ def call_tool(run, actor, name, args):
         return deliver(run, actor, {'file': args['file'], 'content': content,
                 'numbered': '\n'.join(str(i) + ': ' + line for i, line in enumerate(content.splitlines(), 1))})
     if name == 'run_test':
-        only(args, ['test_id']); return deliver(run, actor, run_test(run, actor, args['test_id']))
+        only(args, ['test_id']); return deliver(run, actor, test_view(run_test(run, actor, args['test_id'])))
     if name == 'submit_report': return submit(run, actor, args, attempt=ATTEMPT)
     raise ValueError('未知受控工具')
 
 
-def tool_list():
-    def schema(properties):
-        return {'type': 'object', 'properties': properties, 'required': list(properties), 'additionalProperties': False}
-    text = {'type': 'string'}
+def tool_list(actor=None):
+    def schema(properties, required=None):
+        return {'type': 'object', 'properties': properties,
+                'required': list(properties) if required is None else required, 'additionalProperties': False}
+    def array(items, minimum=0):
+        return {'type': 'array', 'items': items, 'minItems': minimum}
+    text = {'type': 'string', 'minLength': 1}
+    ref = schema({'file': text, 'line': {'type': 'integer', 'minimum': 1}, 'quote': text})
+    refs = array(ref, 1)
+    candidate = {'type': 'string', 'pattern': '^[0-9a-f]{64}:[0-9]+$'}
+    # Reuse the published findings contract; tighten only the controlled entry's existing rules.
+    report = json.loads((Path(__file__).resolve().parents[1] / 'schemas/review-findings.json').read_text())
+    finding = report['properties']['findings']['items']
+    finding['properties']['confidence']['minimum'] = 80
+    finding['properties']['line'] = {'type': 'integer', 'minimum': 1}
+    finding['additionalProperties'] = False
+    report['additionalProperties'] = False
+    envelope = schema({
+        'report': report,
+        'citations': array(schema({'finding_index': {'type': 'integer', 'minimum': 0}, **ref['properties']})),
+        'coverage': array(schema({'scenario': text, 'status': {'type': 'string', 'enum': ['reviewed', 'gap']}, 'citations': refs})),
+        'evidence_ids': array({'type': 'string', 'pattern': '^[0-9a-f]{64}$',
+                               'description': 'Only id from actual test receipt; not call_id, run, report_id or paging resource.'}),
+        'd_request': array(ref),
+        'decisions': array(schema({'candidate_id': candidate,
+            'verdict': {'type': 'string', 'enum': ['confirmed', 'rejected', 'insufficient']}, 'citations': refs, 'reason': text})),
+        'gaps': array(schema({'actor': text, 'reason': text})),
+        'merge_groups': array(schema({'candidate_ids': array(candidate, 2), 'reason': text, 'citations': refs,
+            'member_citations': array(schema({'candidate_id': candidate, 'citations': refs}))},
+            ['candidate_ids', 'reason', 'citations']))
+    }, ['report', 'citations', 'coverage', 'evidence_ids', 'd_request'])
+    if actor and actor.startswith('refute-'): envelope['required'].append('decisions')
+    if actor and actor.startswith('critic-'): envelope['required'].append('gaps')
     return [
-        {'name': 'context', 'description': '先以{}读取固定范围、diff、契约、Scenario、测试ID、已完成报告及回执。任意工具返回paged=true时，content为原JSON片段；以{resource,cursor:next_cursor}读取后续页直到next_cursor=null，按序拼接。全部页读完才记录完整性审查依据。', 'inputSchema': {'type': 'object', 'properties': {'resource': text, 'cursor': {'type': 'integer', 'minimum': 0}}, 'additionalProperties': False}},
-        {'name': 'read_source', 'description': '读取快照文件原文与行号；仅接受context.files中的精确路径。', 'inputSchema': schema({'file': text})},
-        {'name': 'run_test', 'description': '本actor亲自请求固定测试；程序生成完整真实回执，重复请求返回同一回执，不能传命令/路径/actor。', 'inputSchema': schema({'test_id': text})},
-        {'name': 'submit_report', 'description': '提交一次受控报告外层。成功后简短返回。report遵循现有review-findings：findings中file,line,severity(高/中/低),confidence,category,description,fix_suggestion必填；coverage_note必填。citations每项finding_index,file,line,quote，主锚必须实际匹配，S还要spec引用。coverage逐Scenario给scenario,status(reviewed/gap),citations(无finding_index)。evidence_ids引用context或run_test真实ID。d_request为有结构摩擦的源码引用数组，无则[]。refute角色另给decisions[{candidate_id,verdict(confirmed/rejected/insufficient),citations,reason}]；同根因成立候选由refute角色用merge_groups[{candidate_ids,reason,citations}]保留来源并说明为何一次修复会同时消除；不同原因不合并。受控入口只允许每成员真实Scenario集合非空且相同的候选合并，集合按契约文件及Requirement/Scenario位置区分；不同Scenario即使同一行也保留独立记录。原A候选缺Scenario可在merge_groups中给member_citations[{candidate_id,citations}]补充实际依据，不得添加不相关引用凑集合。相同集合仍须因果说明。critic另给gaps[{actor,reason}]无则[]。所有引用quote必须等于read_source当前整行原文（无行号前缀），允许多行。',
-         'inputSchema': {'type': 'object', 'properties': {'report': {'type': 'object'}, 'citations': {'type': 'array', 'items': {'type': 'object'}},
-           'coverage': {'type': 'array', 'items': {'type': 'object'}}, 'evidence_ids': {'type': 'array', 'items': text},
-           'd_request': {'type': 'array', 'items': {'type': 'object'}}, 'decisions': {'type': 'array', 'items': {'type': 'object'}},
-           'gaps': {'type': 'array', 'items': {'type': 'object'}}, 'merge_groups': {'type': 'array', 'items': {'type': 'object'}}},
-           'required': ['report', 'citations', 'coverage', 'evidence_ids', 'd_request'], 'additionalProperties': False}}
+        {'name': 'context', 'description': '先以{}读取固定范围、完整diff/契约、Scenario、测试ID及实际依赖报告。files是全部快照文件，changed_files才是变更文件。任意工具返回paged=true时，content为原JSON片段；以{resource,cursor:next_cursor}读取后续页直到null，按序拼接。全部页读完才记录依赖依据；可同一轮批量读取余下已知页码。',
+         'inputSchema': schema({'resource': text, 'cursor': {'type': 'integer', 'minimum': 0}}, [])},
+        {'name': 'read_source', 'description': '读取快照文件原文与行号；仅接受context.files中的精确路径。已在context完整提供的源码无需重复读取。', 'inputSchema': schema({'file': text})},
+        {'name': 'run_test', 'description': '本actor亲自请求固定测试；程序生成真实完整回执，重复请求返回同一回执。保存返回id用于evidence_ids；call_id不是证据ID。文本stdout/stderr完整，宿主另存原始字节。', 'inputSchema': schema({'test_id': text})},
+        {'name': 'submit_report', 'description': '提交一次受控报告；严格使用下列schema，不添加自创字段。主引用须匹配finding位置；Spec符合性另引契约。quote为实码整行原文，无行号前缀，可多行。d_request仅file/line/quote，结构摩擦说明写coverage_note。A/AS必须引用本人测试ID。S/AS/critic逐条覆盖Scenario。refute必须逐候选decisions；critic必须gaps，无则[]。merge_groups仅refute用：成员实际现行Scenario集合须非空且相同，另需因果说明，不能仅凭同一行合并；原候选缺Scenario可用member_citations补足，不得凑集合。成功后仅回复已提交，禁止重复输出报告。',
+         'inputSchema': envelope}
     ]
 
 
@@ -204,15 +243,15 @@ def serve(run, actor):
             if method == 'initialize':
                 result = {'protocolVersion': '2025-06-18', 'capabilities': {'tools': {}},
                           'serverInfo': {'name': 'spec-dev-review', 'version': '1'}}
-            elif method == 'tools/list': result = {'tools': tool_list()}
+            elif method == 'tools/list': result = {'tools': tool_list(actor)}
             elif method == 'tools/call':
                 params = request['params']
                 try:
                     value = call_tool(run, actor, params['name'], params.get('arguments', {}))
-                    result = {'content': [{'type': 'text', 'text': json.dumps(value, ensure_ascii=False)}]}
+                    result = {'content': [{'type': 'text', 'text': json.dumps(value, ensure_ascii=False, separators=(',', ':'))}]}
                 except (ValueError, OSError, KeyError, TypeError, subprocess.SubprocessError) as error:
                     value = deliver(run, actor, {'error': str(error)})
-                    result = {'isError': True, 'content': [{'type': 'text', 'text': json.dumps(value, ensure_ascii=False)}]}
+                    result = {'isError': True, 'content': [{'type': 'text', 'text': json.dumps(value, ensure_ascii=False, separators=(',', ':'))}]}
             elif method == 'ping': result = {}
             else:
                 print(json.dumps({'jsonrpc': '2.0', 'id': request['id'], 'error': {'code': -32601, 'message': 'Method not found'}}), flush=True)

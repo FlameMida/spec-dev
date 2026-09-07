@@ -293,3 +293,50 @@ test('R04 补查者必须实际读取原报告与critic缺口',t=>{
  const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
  const f=fixture(t,{client:fakeClient(folder,'skip-supplement-context')});const r=invoke(['run','--run',f.run,'--budget-seconds','20']);assert.equal(r.data.status,'incomplete',JSON.stringify(r));assert.ok(r.data.gaps.includes('supplement-S 缺少完成回执'));
 });
+
+
+test('R03 MCP声明完整嵌套契约，调用者无需猜测引用和发现字段',async t=>{
+ const f=fixture(t);const b=await broker(t,f.run,'B');
+ const tools=(await b.rpc('tools/list')).result.tools;
+ const s=tools.find(x=>x.name==='submit_report').inputSchema;
+ const ref=s.properties.d_request.items;
+ assert.deepEqual(ref.required,['file','line','quote']);assert.equal(ref.additionalProperties,false);
+ assert.equal(ref.properties.line.type,'integer');
+ const finding=s.properties.report.properties.findings.items;
+ assert.ok(finding.required.includes('fix_suggestion'));assert.ok(finding.properties.category.enum.includes('Spec符合性'));
+ assert.equal(finding.properties.confidence.minimum,80);
+ assert.equal(s.properties.coverage.items.properties.citations.minItems,1);
+ assert.deepEqual(s.properties.decisions.items.properties.verdict.enum,['confirmed','rejected','insufficient']);
+ assert.match('a'.repeat(64),new RegExp(s.properties.evidence_ids.items.pattern));
+ assert.ok(!new RegExp(s.properties.evidence_ids.items.pattern).test('call_invented'));
+ const valid=cleanReport({d_request:[{file:'cart.py',line:2,quote:'    return sum(values) + 1'}]});
+ assert.equal((await b.call('submit_report',valid)).error,false);
+});
+
+test('R01 worker测试视图去重编码，完整字节仍由宿主保存',async t=>{
+ const f=fixture(t);const b=await broker(t,f.run,'A');
+ const r=(await b.call('run_test',{test_id:'related'})).data;
+ assert.equal(r.stdout,'actual test stdout\n');assert.equal(r.stderr,'actual stderr\n');
+ assert.equal('stdout_base64' in r,false);assert.equal('stderr_base64' in r,false);
+ const original=JSON.parse(readFileSync(path.join(f.run,'objects',r.id+'.json'),'utf8'));
+ assert.equal(Buffer.from(original.stdout_base64,'base64').toString(),r.stdout);
+ assert.equal(Buffer.from(original.stderr_base64,'base64').toString(),r.stderr);
+ const c=(await b.call('context')).data;assert.equal('stdout_base64' in c.test_receipts[0],false);
+ assert.deepEqual(c.changed_files,['cart.py']);assert.equal('spec.md' in c.source_documents,false);
+ assert.equal(c.spec,readFileSync(path.join(f.repo,'spec.md'),'utf8'));
+});
+
+test('R04 实际worker派发保留覆盖契约原文并排除原生报告模板',t=>{
+ const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
+ const f=fixture(t,{client:fakeClient(folder)});
+ assert.equal(invoke(['run','--run',f.run,'--budget-seconds','20']).data.status,'completed');
+ const source=readFileSync(path.join(root,'agents/code-reviewer.md'),'utf8');
+ const coverageRule=source.split('\n').find(line=>line.startsWith('- `coverage_note`'));
+ assert.ok(coverageRule);
+ for(const actor of ['A','B','C','S','critic-1']) {
+  const invocation=JSON.parse(readFileSync(path.join(f.run,'actors',actor,'attempt-1.invocation.json'),'utf8'));
+  const prompt=invocation.argv.at(-1);
+  assert.ok(prompt.includes(coverageRule),actor+'必须保留覆盖证据语义');
+  assert.ok(!prompt.includes('## 代码审查报告'),actor+'不能混入原生Markdown模板');
+ }
+});

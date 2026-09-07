@@ -1,6 +1,7 @@
 """容量、依赖与有界执行；模型从不拥有状态推进或证据写入权限。"""
 import json
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -10,6 +11,35 @@ from .review_store import (actor_dir, atomic, completion, digest, lock, object_p
                            report_get, status, tasks, verify)
 
 TOOLS = {'mcp__review__' + x for x in ['context', 'read_source', 'run_test', 'submit_report']}
+
+
+def reviewer_rules(source, actor):
+    """Keep common rules verbatim and only the assigned dimension; native UI/tool templates do not apply."""
+    role = actor.removeprefix('supplement-')
+    dimensions = {'A', 'B', 'C', 'S'} if role == 'AS' else {role.split('-')[0]}
+    if actor.startswith(('refute-', 'critic-')): dimensions = {'A', 'B', 'C', 'S', 'D'}
+    source = re.sub(r'\A---\n.*?\n---\n', '', source, count=1, flags=re.S)
+    sections = []; lines = []; fenced = False
+    for line in source.splitlines(keepends=True):
+        if line.startswith('## ') and not fenced and lines:
+            sections.append(''.join(lines)); lines = []
+        lines.append(line)
+        if line.startswith('```'): fenced = not fenced
+    if lines: sections.append(''.join(lines))
+    kept = []
+    for section in sections:
+        title = section.splitlines()[0] if section.splitlines() else ''
+        if title in ['## 输出格式', '## 使用的工具']: continue
+        if title == '## 契约输出模式（编排调用时）':
+            # The coverage semantics apply to every transport, unlike the native output template.
+            kept.extend(line + '\n' for line in section.splitlines() if line.startswith('- `coverage_note`'))
+            continue
+        if title == '## 审查维度':
+            sections = re.split(r'(?=^### 维度 )', section, flags=re.M)
+            section = ''.join(part for part in sections if not part.startswith('### 维度 ') or
+                              re.match(r'### 维度 ([A-Z])', part).group(1) in dimensions)
+        kept.append(section)
+    return ''.join(kept)
 
 
 def worker_prompt(data, actor):
@@ -27,15 +57,15 @@ def worker_prompt(data, actor):
         instruction = '独立完整性审查，逐条核对现行Scenario、所有维度报告与真实测试回执。已审零发现不等于测试覆盖；使用回执真实actor/hash/exit，不以文件存在或模型自报告判断。gaps绑定缺口维度和原因，无缺口给[]；发现新高/中候选照常报告，控制器另派反驳。'
     else: instruction = descriptions[role]
     sources = data['candidate_sources']
-    reviewer = sources['agents/code-reviewer.md']
+    reviewer = reviewer_rules(sources['agents/code-reviewer.md'], actor)
     design = sources['skills/writing-plans/references/design-principles.md'] if role.startswith('B') or role == 'D' or actor.startswith(('refute-', 'critic-')) else ''
     return ('你是独立只读审查worker，执行者由宿主绑定为' + actor + '。任务：' + instruction +
-        '\n先调用context取得固定原始base/HEAD、完整diff及契约。context.source_documents已提供固定源码原文与行号；可直接据此核对引用，不必重复读取已完整提供的文件。缺少的文件再read_source；只用四个受控工具。没有任何任意Bash/Write/Agent能力。实际测试只能run_test，用提供的test_id；不得编造或填写actor/路径/命令。测试失败是有效证据，不等于运行失败。'
-        '\n所有工具的大输出均在受控接口内分页：paged=true时content是完整JSON的一段，按next_cursor调用context({resource:返回的resource,cursor:next_cursor})直到null，拼接各段理解完整结果。不能从首段推断完整输入；不存在需要任意文件读取的外部输出路径。'
+        '\n先调用context取得固定原始base/HEAD、完整diff及契约。context.source_documents已提供固定源码原文与行号；可直接据此核对引用，不必重复读取已完整提供的文件。缺少的文件再read_source；files是全部快照，changed_files是实际变更文件；保持宿主角色，不接管其他维度。只用四个受控工具。没有任何任意Bash/Write/Agent能力。实际测试只能run_test，用提供的test_id；不得编造或填写actor/路径/命令。测试失败是有效证据，不等于运行失败。'
+        '\n所有工具的大输出均在受控接口内分页：paged=true时content是完整JSON的一段，按next_cursor调用context({resource:返回的resource,cursor:next_cursor})直到null，拼接各段理解完整结果；可同一轮批量请求其余已知页码，减少往返。不能从首段推断完整输入；不存在需要任意文件读取的外部输出路径。'
         '\n分页resource只是传输句柄，不能填入evidence_ids；测试证据ID只取完整run_test结果或context.test_receipts中的id。初审各维度仅见共同事实与自身回执；D用architecture_sources核对结构触发范围。反驳、critic和补查按实际依赖读取报告。恢复后分页从当前context重新开始，旧worker的页面不能复用。'
         '\n只报告当前已成立且有实际影响的问题。条件尚未成立的未来假设不算当前缺陷；现行范围要求删除的越界代码，其缺测试/缺文档只作为该删除建议的附属说明，不能按“若未来批准保留”另增一条独立问题。测试覆盖按获批公共行为与现行Scenario判断。'
-        '\n最终必须用submit_report提交外层对象（完整结构见工具说明），成功后立即简短结束。不输出长重复报告，不另行调用CLI校验；宿主已执行真实validator。模型语义责任保留。context若带pending_report表示前片段已提交，核对后直接结束，不覆盖。'
-        '\ncoverage写本角色实际审查；S/AS/critic必须逐条覆盖context.scenarios，缺口写gap。报告描述不手写测试统计或辅助文件指针，引用真实evidence_ids，测试摘要由宿主原始回执提供。每条发现引用实码整行，S另引用适用契约；不引用已取代条款。d_request只用于具体结构摩擦：如消费者依赖内部表示、边界耦合或接口使用困难，需引用生产者与受影响消费者等实际证据并说明摩擦。单纯Bug、新增API违反Spec、机械diff或优化设想均不自行触发D；这些仅按相应维度报告。'
+        '\n无需逐步播报。最终必须用submit_report提交外层对象（完整结构见工具schema），用精炼描述与必要引用说明实际影响，不复述整份输入。成功后仅回复“已提交”。不输出长重复报告，不另行调用CLI校验；宿主已执行真实validator。模型语义责任保留。context若带pending_report表示前片段已提交，核对后直接结束，不覆盖。'
+        '\ncoverage写本角色实际审查；S/AS/critic必须逐条覆盖context.scenarios，缺口写gap。报告描述不手写测试统计或辅助文件指针，引用真实evidence_ids，测试摘要由宿主原始回执提供。每条发现引用实码整行，S另引用适用契约；不引用已取代条款。d_request只用于具体结构摩擦：如消费者依赖内部表示、边界耦合或接口使用困难，需引用生产者与受影响消费者等实际证据；d_request条目严格只有file/line/quote，摩擦说明写coverage_note。单纯Bug、新增API违反Spec、机械diff或优化设想均不自行触发D；这些仅按相应维度报告。'
         '\n以下是候选reviewer规则，工具动作按上述宿主受控接口执行；不自行派发或写文件：\n' + reviewer + '\n' + design)
 
 
