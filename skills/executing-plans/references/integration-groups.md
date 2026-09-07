@@ -364,3 +364,18 @@ state = json.loads(git(worktree, "show", "HEAD:" + feature_key + "/plan/progress
 普通 v1 计划同样把状态写入和独立提交写全，但不能因此套用 v2 的强制持锁边界。临时 helper 如确需持久保存，创建、归属与清理均写进获批计划，不临时写到未授权目录。
 
 旧符号清零要按本次语法和源码精确匹配。例如只有命名 import/export 与 `export const/function trim` 的 ESM 夹具，可以匹配 `\b(?:import|export)\s*\{[^}]*\btrim\b` 或 `\bexport\s+(?:const|function)\s+trim\b`；`s.trim()` 是保留的运行行为，不应命中。复杂语法优先使用项目已有解析/静态检查器。测试命令的诊断可能在 stdout（例如 node:test 的 TAP），证据同时保存两个流；预期暂时失败依据实际回执与归因判断，不能只 grep stderr。
+
+
+## 最终收尾与终端归档
+
+组完成仍先回普通调度；下面只适用于全部实施/组验证/验收已完成的最终票，不是恢复业务施工的捷径。v2（含 parallel 投影）保留原 integration/execution 工作区、分支及全部历史 evidence.cwd，不把它们改成合并目标；终端校验还从每个原成员 implementation_commit 的 progress 核对历史 worktree/branch/base_commit，不能只让当前字段互相作证。终端只读校验以全部任务/组 completed 且 current/active_group=null 为条件，实际 SHA ancestry、业务树、证据归属/哈希与干净检查不变，ready_tasks=[]；没有实际验证与交付回执不能据此标完成。无 ancestry 的 squash 不能自动通过。已有 execution.delivery 时还必须为 merged/completed，拒绝仍 implementing/awaiting_merge 的矛盾档案；无该项不新增字段。
+
+生成最终票时内嵌下列实际操作与失败分支，变量从本票读取的已提交 notes/resources 中恢复，不依赖前票 shell：
+
+1. 在原绑定区持锁核对全部前置 ID、完成全量/审查/验收和必要 Spec 回写，保存最终票 in_progress。notes 追加实际来源绝对路径、来源分支、同一 common-dir、原工作区/分支和归属、通过验证的既存提交、待合并原 tip；原 tip 取已存在的提交，随后保存它的检查点单独提交，不做 SHA 自引用。登记的是可恢复事实，不新增 progress 字段。
+2. 原辅助调用干净结束并释放自己的锁后，只读核验来源检出与分支、干净状态及 common-dir。此锁空窗不能 merge、提交或写 notes。复用隔离交原机制完成实际交付义务，未取得回执前保持最终票 in_progress，不能提前锚定。
+3. 在已核验的来源用 `held_lock(source_worktree, feature_key, session_owner)` **重新取得同一特性锁的新 receipt**，给 receipt 绑定实际 validator。不得改旧 receipt.worktree，不用原区 resume_receipt 跨路径续接。取锁后重新核对来源/原分支 tip/台账，按授权实际合并；核验原保存 tip 与实际原分支 tip 都是目标 HEAD 的祖先、已验收树与目标树一致，新增合并差异须重新验证。将真实 merge HEAD 追加本次 state.notes，成功随最终检查点落盘，失败随 blocked 检查点落盘；中途进程丢失时从实际 Git ancestry/原 tip 与原始工具回执恢复，不把未保存的 notes 当事实。全部来源 merge、提交、notes 写入都在此新锁内；此时来源仍是非终端档案，普通 plan-state 拒绝原区绑定是预期恢复窗口，不能把它当可派业务票的入口或跳过其他核验。
+4. 按台账在来源执行已授权清理，先核对原工作区干净且已接受的实际 tip 已包含于目标；逐条保存实际结果，只销掉成功/已不存在的精确条目，保留证据原件与移交条目。全部清理成功后完成适用 sync_commit（缺字段则新增）及独立提交，再核验最终目标。Spec/锚定也是业务树的一部分，不能继续用变更前的全局验证 SHA 声称当前树已验证。
+5. 取得实际核验过的目标提交 V（已存在），在原 state 对象上更新 integration.validated_commit=V、最终票 commit=V/status=completed、current=null；parallel 同步 execution.validated_commit。保留组的 base/checkpoint/validated SHA、成员 implementation_commit 和全部历史记录。调用现有 `checkpoint` 原子写入并独立提交，真实 plan-state 终端分支应 exit0/ready=[]；干净退出来源 held_lock 后再结束收尾。
+
+清理或归档中断：原绑定区仍完整时可按原锁规则保存合法 blocked；原区已移除时，在来源保存最终票 blocked、current=最终票、原绑定/旧证据与已发生的清理/合并事实，使用 `checkpoint` 保存并提交后，其预检仍应 exit1/ready=[]，异常留下**来源 receipt** 和原始错误。这不是 PASS，也不是可调度状态。恢复只允许已批准的最终收尾：先证实上次调用结束、核对同一来源/合并祖先/剩余台账/锁实体，按既有同会话 receipt 续接或跨会话排他恢复纪律取得写权，再补未完成的清理/锚定/验证，最后保存终端检查点。不能为让中间状态通过而改原绑定、改日志 cwd、伪填 completed 或重派业务票。

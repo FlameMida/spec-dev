@@ -221,6 +221,11 @@ function readyTasks(p){
 }
 function runtimeFacts(p){
   const s=p.state,x=s.integration;
+  // A completed archive is never a scheduling/recovery workspace. Keep its
+  // historical binding and evidence intact when inspecting the merged copy.
+  const archived=s.current===null&&x.active_group===null&&
+    Object.values(s.tasks).every(t=>t.status==='completed')&&
+    Object.values(x.groups).every(g=>g.status==='completed');
   const git=(cwd,...args)=>execFileSync('git',['-C',cwd,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
   const root=realpathSync(git(p.planDir,'rev-parse','--show-toplevel'));
   const feature=path.relative(root,path.dirname(p.planDir)).split(path.sep).join('/');
@@ -254,7 +259,7 @@ function runtimeFacts(p){
     const file=withinFeature(relative),r=parseUniqueJson(readFileSync(file,'utf8'));
     keys(r,['command','cwd','exit_code','commit','tree','stdout','stderr','stdout_sha256','stderr_sha256'],[],'evidence');
     need(arr(r.command)&&r.command.length&&Number.isInteger(r.exit_code),'invalid test record');
-    need(realpathSync(r.cwd)===root,'evidence cwd mismatch');ancestor(r.commit,head);
+    need(archived?r.cwd===x.worktree:realpathSync(r.cwd)===root,'evidence cwd mismatch');ancestor(r.commit,head);
     need(r.tree===businessTree(r.commit),'evidence tree mismatch');
     for(const kind of ['stdout','stderr']){
       const bytes=readFileSync(withinFeature(r[kind]));need(createHash('sha256').update(bytes).digest('hex')===r[kind+'_sha256'],'evidence hash mismatch');
@@ -264,13 +269,23 @@ function runtimeFacts(p){
   }
   const bootstrap=s.tasks.T00.status!=='completed';
   if(bootstrap)return;
-  need(realpathSync(x.worktree)===root&&git(root,'branch','--show-current')===x.branch,'worktree/branch binding mismatch');
-  const gd=realpathSync(git(root,'rev-parse','--absolute-git-dir'));
-  const cd=realpathSync(path.resolve(root,git(root,'rev-parse','--git-common-dir')));
-  need(gd!==cd,'group plan requires isolated worktree');
+  if(archived){
+    need(!s.execution?.delivery||['merged','completed'].includes(s.execution.delivery.state),'terminal archive has incomplete delivery');
+    need(path.isAbsolute(x.worktree)&&path.normalize(x.worktree)===x.worktree,'invalid archived worktree path');
+  }else{
+    need(realpathSync(x.worktree)===root&&git(root,'branch','--show-current')===x.branch,'worktree/branch binding mismatch');
+    const gd=realpathSync(git(root,'rev-parse','--absolute-git-dir'));
+    const cd=realpathSync(path.resolve(root,git(root,'rev-parse','--git-common-dir')));
+    need(gd!==cd,'group plan requires isolated worktree');
+  }
   ancestor(x.base_commit,x.validated_commit);ancestor(x.validated_commit,head);
   for(const [id,t] of Object.entries(s.tasks)){
     for(const k of ['commit','implementation_commit'])if(t[k])ancestor(t[k],head);
+    if(archived&&p.membership.has(id)){
+      const history=parseUniqueJson(execFileSync('git',['-C',root,'show',t.implementation_commit+':'+progressRel],{encoding:'utf8'}));
+      need(history.format_version===2&&['worktree','branch','base_commit'].every(k=>history.integration?.[k]===x[k]),
+        id+': historical binding mismatch');
+    }
     const records=(t.evidence_paths??[]).map(ep=>readEvidence(ep));
     if(t.status==='awaiting_verification'){
       const gid=p.membership.get(id);need(epPrefix(t.evidence_paths,gid,id),'member evidence attribution mismatch');

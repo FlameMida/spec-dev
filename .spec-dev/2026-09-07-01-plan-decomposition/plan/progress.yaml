@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T08",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -43,8 +43,8 @@
       "commit": "0528a24bf063e6411b4fb5edff570f883bccde0f"
     },
     "T08": {
-      "status": "blocked",
-      "tests": "r10 reference 25/25 and local full 165/165 PASS; independent A/S reference reviews PASS; r10-first lock/state/evidence/recovery PASS but full action FAIL missing Spec read; complete r10 planning FAIL; r11 review-guided S20 FAIL, S32 full artifact FAIL (contract subcriteria PASS), S27 provider quota; r10 writable planning and r11-first quota-blocked; resume/verify/repair not run"
+      "status": "in_progress",
+      "tests": "r12 final local 179/179; terminal source helper 2/2; independent source/contract reviews PASS; prior model FAIL retained; current deepseek connectivity PASS; real-model retry pending"
     },
     "T09": {
       "status": "pending"
@@ -84,7 +84,8 @@
     "[预登记] r10异常续接修复：acceptance/r10-fix、model-actions/r10-*、action-fixtures/r10-*；临时/tmp/pd-r10-*与测试自身临时仓；只归档本任务原件，未知锁/失败现场不清理，主线程唯一写产品与progress。",
     "[预登记] r10规划验收：acceptance/model-smoke/r10-planning 与 decision-fixtures/r10-planning；复用既有S20/S27/S32输入，独立完整稿分别对账，模型不写产品。acceptance/action-fixtures/r10-planning与model-actions/r10-planning为独立可写规划，任务只编写及静态校验。",
     "[预登记] r11审查后规划修订：acceptance/planning-revisions/r11及r11-feedback；仅模型只读完整稿、宿主归档；保留首稿FAIL，反馈只含实际缺陷，不读取隐藏THEN/判定器，不冒充首次自主通过。/tmp/pd-r11-*为本任务独立审查/受控验证。",
-    "[预登记] r11-first新执行夹具、model-actions/r11-first、action-feedback/r11-first.txt；旧r10-first整动作FAIL保留（未读Spec/notes报告不准确），新run仅加入实际审查反馈，不代替首次自主通过。仍从新夹具真实first开始，独立PASS后才resume。"
+    "[预登记] r11-first新执行夹具、model-actions/r11-first、action-feedback/r11-first.txt；旧r10-first整动作FAIL保留（未读Spec/notes报告不准确），新run仅加入实际审查反馈，不代替首次自主通过。仍从新夹具真实first开始，独立PASS后才resume。",
+    "[预登记] r12：acceptance/r12-fix、provider-check-r12、planning-revisions/r12及r12-feedback、model-actions/r12-*、action-fixtures/r12-*；/tmp/pd-r12-* 为本任务测试与独立审查，真实临时仓由测试 finally 回收。历史现场保留，不清未知资源。"
   ],
   "notes": [
     "2026-09-07: 用户选择方案2并批准完整设计、spec及编写计划；尚未获执行授权，未创建实施worktree，未运行候选代码或模型验收。",
@@ -139,6 +140,8 @@
     "r10-planning/plan实际生成7文件并仅内存compile/json检查，随后Kimi 403五小时额度耗尽自行exit1，未执行model plan-index。r11-first实际Read Spec并通过入口两CLI，未取锁/未写业务或状态，亦403自行exit1。两段timeout_seconds=0、timed_out=false、178源hash相同。新快照至21个全部bundle验证、live/失败原件保留。已发出的r11只读修订等待自然终态，不再新建Claude请求。",
     "所有已发出的Claude调用现已自然结束，未设宿主时限；最后r11/S27 exit1/707s、178hash相同，终态待独立quota对账。r11/S20修订仍FAIL，r11/S32返回完整稿后独立审查中。T08保存blocked/current=null、T09pending，不再新请求，不合并主分支/发版/推送。",
     "r11/S32受反馈修订整稿仍FAIL：contract时序与精确符号检查、八原则子判据及宿主plan-index通过；路径/复用分支/sync_commit/资源销账缺口保留。新修订不覆盖r10首稿FAIL，不将CLI或子判据PASS提升整稿。",
-    "最终独立quota审计：r11/S27同403五小时额度，正文截断至T07，缺完整T08/progress/自检；6份当前批进程记录PID/PGID/会话均无存活匹配，另3例只读runner已完成。所有模型调用已结束、无重试安排。r11修订S20/S32整稿仍FAIL，原子协议修复及局部改善不替代全矩阵验收，T08blocked/T09pending。"
+    "最终独立quota审计：r11/S27同403五小时额度，正文截断至T07，缺完整T08/progress/自检；6份当前批进程记录PID/PGID/会话均无存活匹配，另3例只读runner已完成。所有模型调用已结束、无重试安排。r11修订S20/S32整稿仍FAIL，原子协议修复及局部改善不替代全矩阵验收，T08blocked/T09pending。",
+    "用户明确修复并重试；r12修复规划生命周期模板自身矛盾并独立复审，继承当前Claude配置、PD_TIMEOUT_SECONDS=0；先最小连通验证，产品冻结后才启动模型验收，不将审查修订记为首稿PASS。",
+    "r12确认规划模板T00跳过/最终锁空窗等矛盾，并回归T03/T05补足已批准S27终端归档生命周期：只在全部完成的只读档案上核对原历史binding、SHA/树/证据并ready=[]，活动态不放宽，未合并delivery拒绝。实际RED→修复→最终179/179及A/S复审通过，2个真实source锁/清理续接测试通过；provider probe当前deepseek-v4-flash[1m]成功。原模型FAIL保留，继续新run，不提前T08完成。"
   ]
 }

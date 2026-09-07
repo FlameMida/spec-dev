@@ -101,3 +101,65 @@ for(const name of ['index.md','progress.yaml'])test('S14 exact committed checkpo
   writeFileSync(file,'\n'+readFileSync(file,'utf8'));
   assert.match(JSON.stringify(check(f,false)),/checkpoint_uncommitted/);
 }finally{rmSync(f.outer,{recursive:true});}});
+
+
+function archiveFixture(){
+ const f=fixture();enter(f);waiting(f,'T01');waiting(f,'T02');f.save();
+ const v=git(f.wt,'rev-parse','HEAD'),ev=evidence(f,'T03');
+ for(const id of ['T01','T02'])Object.assign(f.state.tasks[id],{status:'completed',tests:'pass',commit:v});
+ f.state.tasks.T03={status:'completed',tests:'pass',commit:v,evidence_paths:[ev]};
+ Object.assign(f.state.integration.groups.G01,{status:'completed',validated_commit:v,evidence_paths:[ev]});
+ Object.assign(f.state.integration,{active_group:null,validated_commit:v});
+ f.state.tasks.T04={status:'in_progress'};f.state.current='T04';f.save('ready for delivery');check(f);
+ const main=path.join(f.outer,'main'),originalWorktree=f.wt,originalRecord=readFileSync(path.join(f.wt,f.feature,ev));
+ git(main,'merge','--ff-only','fixture-work');git(main,'worktree','remove',f.wt);git(main,'branch','-d','fixture-work');
+ f.wt=main;f.dir=path.join(main,f.feature,'plan');
+ f.save=(message='archive')=>{writeFileSync(path.join(f.dir,'progress.yaml'),JSON.stringify(f.state,null,2)+'\n');git(main,'add','.');git(main,'commit','--allow-empty','-qm',message);};
+ f.complete=()=>{f.state.tasks.T04={status:'completed',tests:'pass',commit:git(main,'rev-parse','HEAD')};f.state.current=null;f.save();};
+ return Object.assign(f,{originalWorktree,originalRecord,ev});
+}
+test('S27 terminal archive remains verifiable after actual merge and owned worktree cleanup',()=>{const f=archiveFixture();try{
+ f.complete();assert.deepEqual(check(f).ready_tasks,[]);assert.equal(f.state.integration.worktree,f.originalWorktree);
+ assert.deepEqual(readFileSync(path.join(f.wt,f.feature,f.ev)),f.originalRecord);
+}finally{rmSync(f.outer,{recursive:true});}});
+test('S27 terminal parallel archive preserves the historical execution projection',()=>{const f=archiveFixture();try{
+ const x=f.state.integration;f.state.execution={mode:'parallel',owner:x.owner,integration_worktree:x.worktree,integration_branch:x.branch,base_commit:x.base_commit,validated_commit:x.validated_commit};
+ f.complete();assert.deepEqual(check(f).ready_tasks,[]);
+}finally{rmSync(f.outer,{recursive:true});}});
+for(const status of ['in_progress','blocked','pending'])test('S27 post-cleanup '+status+' checkpoint never gains terminal scheduling privileges',()=>{const f=archiveFixture();try{
+ f.state.tasks.T04={status};f.state.current=status==='in_progress'?'T04':null;f.save();check(f,false);
+}finally{rmSync(f.outer,{recursive:true});}});
+test('S27 terminal archive rejects rewritten historical cwd',()=>{const f=archiveFixture();try{
+ const p=path.join(f.wt,f.feature,f.ev),e=JSON.parse(readFileSync(p));e.cwd=f.wt;writeFileSync(p,JSON.stringify(e));f.complete();
+ assert.match(JSON.stringify(check(f,false)),/cwd mismatch/);
+}finally{rmSync(f.outer,{recursive:true});}});
+test('S27 terminal archive rejects changed evidence bytes',()=>{const f=archiveFixture();try{
+ const e=JSON.parse(f.originalRecord);writeFileSync(path.join(f.wt,f.feature,e.stdout),'forged');f.complete();
+ assert.match(JSON.stringify(check(f,false)),/hash mismatch/);
+}finally{rmSync(f.outer,{recursive:true});}});
+test('S27 terminal archive rejects unexplained target business changes',()=>{const f=archiveFixture();try{
+ writeFileSync(path.join(f.wt,'source.txt'),'unverified target edit\n');git(f.wt,'add','.');git(f.wt,'commit','-qm','unverified');f.complete();
+ assert.match(JSON.stringify(check(f,false)),/unexplained business commit/);
+}finally{rmSync(f.outer,{recursive:true});}});
+test('S27 terminal archive rejects missing original commit ancestry',()=>{const f=archiveFixture();try{
+ f.complete();git(f.wt,'checkout','--orphan','unrelated');git(f.wt,'add','.');git(f.wt,'commit','-qm','copied archive without history');check(f,false);
+}finally{rmSync(f.outer,{recursive:true});}});
+test('S27 terminal archive still rejects uncommitted progress',()=>{const f=archiveFixture();try{
+ f.complete();f.state.notes.push('uncommitted');writeFileSync(path.join(f.dir,'progress.yaml'),JSON.stringify(f.state));
+ assert.match(JSON.stringify(check(f,false)),/checkpoint_uncommitted/);
+}finally{rmSync(f.outer,{recursive:true});}});
+
+for(const field of ['worktree','branch'])test('S27 terminal archive rejects forged historical '+field,()=>{const f=archiveFixture();try{
+ if(field==='worktree'){
+  f.state.integration.worktree=path.join(f.outer,'never-existed');
+  for(const t of Object.values(f.state.tasks))for(const rel of t.evidence_paths??[]){
+   const p=path.join(f.wt,f.feature,rel),e=JSON.parse(readFileSync(p));e.cwd=f.state.integration.worktree;writeFileSync(p,JSON.stringify(e));
+  }
+ }else f.state.integration.branch='never-existed';
+ f.complete();assert.match(JSON.stringify(check(f,false)),/historical binding mismatch/);
+}finally{rmSync(f.outer,{recursive:true});}});
+
+for(const state of ['implementing','awaiting_merge'])test('S27 terminal archive rejects explicit incomplete delivery '+state,()=>{const f=archiveFixture();try{
+ const x=f.state.integration;f.state.execution={mode:'parallel',owner:x.owner,integration_worktree:x.worktree,integration_branch:x.branch,base_commit:x.base_commit,validated_commit:x.validated_commit,delivery:{channel:'pr',state}};
+ f.complete();assert.match(JSON.stringify(check(f,false)),/incomplete delivery/);
+}finally{rmSync(f.outer,{recursive:true});}});

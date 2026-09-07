@@ -483,6 +483,10 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 - plan-state 的可调度结果以已提交的 index/progress 检查点为准；工作区内有尚未提交的声明/状态差异时返回 exit 1、`checkpoint_uncommitted`、ready_tasks=[]，供恢复者核对后补提交或保留阻塞。不能用磁盘中已 rename 但未提交的 completed 提前解锁。初始计划尚未建立隔离时从所在真实仓库校验已提交的 v2 档案，运行字段为 null 合法；T00 完成后要求隔离绑定，非 Git 或无法隔离的组不采用普通非 Git 原地降级。
 - 解析器不执行声明文本或测试命令；路径限制特性内证据目录，拒绝绝对证据路径、`..`、符号链接逃逸和哈希不符。工作区由真实 Git/common-dir/branch 绑定，不能靠 JSON 写一个路径冒充。
 
+终端归档补充（S27 生命周期闭合，T08 修复）：只有全部任务（含最终票）和组均 completed、current/active_group 均 null 的已提交档案，plan-state 才按终端只读分支核验，ready_tasks 固定为空。允许从实际合并目标或保留完整 Git 历史的档案副本读取；原 integration/execution 路径与分支是历史绑定，原证据 cwd 必须精确匹配该保存路径，不要求已按台账删除的原工作区仍存在；还从原成员 implementation_commit 的已提交 progress 核对 worktree/branch/base_commit，避免当前字段互相自证。全部原 SHA ancestry、验证树、日志哈希、证据归属、当前目标树及干净检查继续生效，不能以终端状态跳过验证或自动接受无 ancestry 的 squash。已有 execution.delivery 时还必须为 merged/completed，拒绝仍 implementing/awaiting_merge 的矛盾档案；无该项不新增字段。活动/等待/blocked 状态继续要求原隔离绑定，不因位置变化获得调度权限。
+
+最终写者在原区保存检查点、实际验证提交和可恢复的来源/合并/所有权事实后，结束并释放原辅助调用；只读核实同一 common-dir 的来源检出/分支后，在来源重新取得同一特性锁的新 receipt，才实际合并并核验目标包含原 tip，进行获批清理与归档；锁空窗不写来源。不得修改旧 receipt 的路径或把 resume_receipt 跨工作区使用。原区删除后清理/提交中断时，在来源保留旧绑定和证据、保存最终票 blocked 检查点；其 plan-state 仍应 exit1/ready=[]，仅允许核实原来源/合并/台账/锁事实后继续终端收尾，不能派业务票。全部适用清理、Spec 回写/锚定和目标验证实际完成后，才更新实际全局验证 SHA、最终票 completed 并独立提交终端检查点；不改组验证 SHA/历史日志，parallel 同步既有投影，无新字段/CLI。
+
 ## 测试与验收策略
 
 ### 已批准测试落点
