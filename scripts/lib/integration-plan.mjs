@@ -115,7 +115,7 @@ export function loadIntegrationPlan(planDir){
   return {planDir:path.resolve(planDir),rows,ids,byId,declaration,membership,verification,parallel,state};
 }
 export function validateIntegrationPlan(planDir){
-  try{loadIntegrationPlan(planDir);return [];}catch(e){return [{path:'integration',expected:'valid integration plan',actual:e.message}];}
+  try{const p=loadIntegrationPlan(planDir);if(p)validateStateShape(p);return [];}catch(e){return [{path:'integration',expected:'valid integration plan',actual:e.message}];}
 }
 // GROUP-RUNTIME
 
@@ -142,7 +142,10 @@ export function validateStateShape(p){
     if(t.status==='completed')need(sha(t.commit),id+': completed commit missing');
     if(p.membership.has(id)||p.verification.has(id)){
       need(!own(t,'claim')&&!own(t,'result_path'),id+': group task cannot use implementer claim');
-      if(t.status==='completed')need(t.tests==='pass',id+': group completion needs pass');
+      if(t.status==='completed'){
+        need(t.tests==='pass'&&t.evidence_paths?.length,id+': group completion needs pass evidence');
+        if(p.membership.has(id))need(sha(t.implementation_commit),id+': completed member implementation missing');
+      }
     }
   }
   const x=s.integration;keys(x,['owner','worktree','branch','base_commit','validated_commit','active_group','groups'],[],'integration');
@@ -169,7 +172,11 @@ export function validateStateShape(p){
       need(g.base_commit===x.validated_commit,gid+': global validated baseline moved');
     }
   }
-  if(x.active_group!==null)need(['in_progress','blocked'].includes(x.groups[x.active_group].status),'inactive active_group');
+  if(x.active_group!==null){
+    need(['in_progress','blocked'].includes(x.groups[x.active_group].status),'inactive active_group');
+    const d=p.declaration.groups[x.active_group];
+    if(s.tasks[d.verify].status==='in_progress')need(d.members.every(id=>s.tasks[id].status==='awaiting_verification'),'verifier started before all members ready');
+  }
   if(s.current!==null){
     need(['in_progress','blocked'].includes(s.tasks[s.current].status),'current must point to active task');
     if(x.active_group!==null)need((p.membership.get(s.current)??p.verification.get(s.current))===x.active_group,'current outside active group');
@@ -212,7 +219,85 @@ function readyTasks(p){
   }
   return ready.sort();
 }
-function runtimeFacts(p){ return []; }
+function runtimeFacts(p){
+  const s=p.state,x=s.integration;
+  const git=(cwd,...args)=>execFileSync('git',['-C',cwd,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+  const root=realpathSync(git(p.planDir,'rev-parse','--show-toplevel'));
+  const feature=path.relative(root,path.dirname(p.planDir)).split(path.sep).join('/');
+  need(feature.startsWith('.spec-dev/')&&!feature.includes('..'),'plan outside feature root');
+  const relPlan=feature+'/plan',progressRel=relPlan+'/progress.yaml',evidencePrefix=feature+'/execution/';
+  const status=git(root,'status','--porcelain','--untracked-files=all','--',relPlan);
+  need(!status,'checkpoint_uncommitted');
+  for(const name of ['index.md','progress.yaml']){
+    const actual=readFileSync(path.join(p.planDir,name),'utf8');
+    need(git(root,'show','HEAD:'+relPlan+'/'+name)===actual.trimEnd(),'checkpoint_uncommitted: '+name);
+  }
+  const head=git(root,'rev-parse','HEAD');
+  const ancestor=(a,b)=>{
+    need(sha(a)&&sha(b),'invalid commit SHA');
+    git(root,'cat-file','-e',a+'^{commit}');git(root,'cat-file','-e',b+'^{commit}');
+    git(root,'merge-base','--is-ancestor',a,b);
+  };
+  const businessTree=commit=>{
+    const raw=execFileSync('git',['-C',root,'ls-tree','-r','-z',commit],{encoding:'utf8'});
+    const entries=raw.split('\0').filter(Boolean).filter(line=>{const f=line.slice(line.indexOf('\t')+1);return f!==progressRel&&!f.startsWith(evidencePrefix);});
+    return createHash('sha256').update(entries.join('\0')).digest('hex');
+  };
+  const withinFeature=relative=>{
+    need(typeof relative==='string'&&relative.startsWith('execution/groups/')&&!relative.includes('\\'),'invalid evidence path');
+    normalizeWrite(relative);
+    const base=realpathSync(path.dirname(p.planDir)),resolved=realpathSync(path.join(base,relative)),rel=path.relative(base,resolved);
+    need(rel&&!rel.startsWith('..')&&!path.isAbsolute(rel),'evidence escapes feature');return resolved;
+  };
+  function readEvidence(relative,verified=null){
+    const file=withinFeature(relative),r=parseUniqueJson(readFileSync(file,'utf8'));
+    keys(r,['command','cwd','exit_code','commit','tree','stdout','stderr','stdout_sha256','stderr_sha256'],[],'evidence');
+    need(arr(r.command)&&r.command.length&&Number.isInteger(r.exit_code),'invalid test record');
+    need(realpathSync(r.cwd)===root,'evidence cwd mismatch');ancestor(r.commit,head);
+    need(r.tree===businessTree(r.commit),'evidence tree mismatch');
+    for(const kind of ['stdout','stderr']){
+      const bytes=readFileSync(withinFeature(r[kind]));need(createHash('sha256').update(bytes).digest('hex')===r[kind+'_sha256'],'evidence hash mismatch');
+    }
+    if(verified){need(r.exit_code===0,'verification did not pass');need(r.tree===businessTree(verified),'verification tied to different business tree');}
+  }
+  const bootstrap=s.tasks.T00.status!=='completed';
+  if(bootstrap)return [];
+  need(realpathSync(x.worktree)===root&&git(root,'branch','--show-current')===x.branch,'worktree/branch binding mismatch');
+  const gd=realpathSync(git(root,'rev-parse','--absolute-git-dir'));
+  const cd=realpathSync(path.resolve(root,git(root,'rev-parse','--git-common-dir')));
+  need(gd!==cd,'group plan requires isolated worktree');
+  ancestor(x.base_commit,x.validated_commit);ancestor(x.validated_commit,head);
+  for(const [id,t] of Object.entries(s.tasks)){
+    for(const k of ['commit','implementation_commit'])if(t[k])ancestor(t[k],head);
+    for(const ep of t.evidence_paths??[])readEvidence(ep);
+    if(t.status==='awaiting_verification'){
+      const gid=p.membership.get(id);need(epPrefix(t.evidence_paths,gid,id),'member evidence attribution mismatch');
+      ancestor(x.groups[gid].base_commit,t.implementation_commit);ancestor(t.implementation_commit,x.groups[gid].checkpoint_commit);
+    }
+  }
+  function epPrefix(paths,gid,id){return paths.every(q=>q.startsWith('execution/groups/'+gid+'/'+id+'/'));}
+  for(const [gid,g] of Object.entries(x.groups)){
+    if(g.status==='pending')continue;
+    ancestor(x.base_commit,g.base_commit);ancestor(g.base_commit,g.checkpoint_commit);ancestor(g.checkpoint_commit,head);
+    const d=p.declaration.groups[gid],all=[...d.members,d.verify];
+    for(const id of all)for(const dep of p.byId.get(id).deps)if(!all.includes(dep))need(s.tasks[dep].status==='completed',gid+': external dependency not complete');
+    if(g.status==='completed'){
+      ancestor(g.base_commit,g.validated_commit);ancestor(g.validated_commit,x.validated_commit);
+      need(epPrefix(g.evidence_paths,gid,d.verify),'verification evidence attribution mismatch');
+      for(const ep of g.evidence_paths)readEvidence(ep,g.validated_commit);
+      need(g.evidence_paths.every(ep=>s.tasks[d.verify].evidence_paths?.includes(ep)),'verifier/group evidence mismatch');
+    }
+  }
+  const allowed=relative=>relative===progressRel||relative.startsWith(evidencePrefix);
+  const baseline=x.active_group?x.groups[x.active_group].checkpoint_commit:x.validated_commit;
+  const changes=execFileSync('git',['-C',root,'diff','--name-only','--no-renames','-z',baseline,head],{encoding:'utf8'}).split('\0').filter(Boolean);
+  need(changes.every(allowed),'unexplained business commit after checkpoint');
+  const dirty=execFileSync('git',['-C',root,'status','--porcelain=v1','-z','--untracked-files=all'],{encoding:'utf8'});
+  // Any dirty path requires explicit recovery; metadata is committed before readiness too.
+  need(!dirty,'uncommitted work requires recovery');
+  return [];
+}
+
 export function inspectPlanState(planDir){
   const result={ok:false,schema:'plan-state',file:planDir,errors:[],protocol_version:1,active_group:null,ready_tasks:[]};
   try{

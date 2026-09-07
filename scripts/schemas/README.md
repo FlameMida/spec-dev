@@ -57,3 +57,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" <schema-name> <json-fil
 ## 审查符合性类别
 
 review-findings 的 category 增加 `Spec符合性`，用于 S 原始发现；D 沿用质量/规范/建议。必填字段不变。契约原文/路径:行、实现证据与偏差写入 description；覆盖范围、Scenario、测试证据指针及缺口写入 coverage_note。机器校验只检查结构与类别，不保证引用真实或行为成立，语义由主线程复核和 completeness critic 核查。空 findings 搭配非空 coverage_note 是合法报告，不自动代表全部覆盖或交付。
+
+## 集成组校验
+
+`plan-index <plan-dir>` 校验可选 json spec-dev-integration 声明、角色、组出口与 v2 形状；无组旧路径不变。`plan-state <plan-dir>` 仅接收含组 v2（progress.yaml 内为 JSON 子集），核对已提交进度、Git 与证据，输出 protocol_version=1、active_group 和 ready_tasks。exit 0 是记录一致，业务 blocked 可以 ready_tasks=[]；未知版本、未提交检查点或证据不符 exit 1。CLI 只读，不取得锁、不执行测试、不代替模型/主线程判断日志语义。所有插件根命令沿现有解析定义。

@@ -61,6 +61,7 @@ try {
 function printUsage() {
   console.log(`Usage: node scripts/validate-output.mjs <schema-name> <json-file>
        node scripts/validate-output.mjs plan-index <plan目录>
+       node scripts/validate-output.mjs plan-state <plan目录>
 
 Validates a JSON file against scripts/schemas/<schema-name>.json.
 Supported schema subset: type, required, properties, items, enum, const,

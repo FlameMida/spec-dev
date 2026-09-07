@@ -530,3 +530,5 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 - T01：公共plan-index首次红16个非法组被旧CLI错误接受；实现后34/34通过（含旧plan-index/parallel）。只增加声明结构、角色与出口检查，未接入状态/执行；接口与本票导航一致，无额外调度行为。证据execution/serial/T01。
 
 - T02：implement v2 state and group readiness；35/35通过，缺少plan-state能力的有效组路径已观察红；真实Git事实由T03接入；公共CLI/字段与导航契约锚定，未扩展普通implementer或额外调度。证据execution/serial/T02。
+
+- T03：verify persisted Git checkpoints and evidence；53/53通过，未提交完成态/错分支/损坏日志/逃逸链接/不存在提交等七个拒绝分支已观察有效红；公共CLI/字段与导航契约锚定，未扩展普通implementer或额外调度。证据execution/serial/T03。
