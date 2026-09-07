@@ -1,6 +1,6 @@
 # 审查符合性验收报告
 
-**T05仍未完成，T06未开始。** 最新完成工具契约、重复传输和角色规则装配修正，完整回归 **125通过、0失败、0跳过**，含31项受控回归；独立增量代码复核闭环。两组复杂真实运行不再出现字段重试，但仍未完成反驳/critic链路。最后覆盖语义补齐后尚未开启新模型run。详情见 [本轮修正与超时核查](controlled-runtime/efficiency-review.md)。CLI费用不限，时间仍按现有300秒限制，等待用户对放宽时间的答复。隔离分支保留，未合并、推送或发布。
+**T05实质验收与独立完整性审查通过；归档提交/状态以progress.yaml为准，T06待执行。** 用户已批准每段1800秒、最多3段、Claude CLI费用不限，继承本机设置。冻结产品129bbe2上两复杂案例均第二段completed，真实D/无误D、容量、A本人测试、A/B/S empty合并及最终critic独立核实。全库 **128通过、0失败、0跳过**，含34项受控回归，全部静态与官方Codex安装检查通过。原始模型附属语义错误已独立排除/收窄，准确性仍记partial；见[真实复验](controlled-runtime/long-budget-review.md)。
 
 下表28个Scenario为控制器实施前的历史目标证据：**24 pass / 0 fail / 4 unverified**，后4项是已批准非阻塞nightly。它们不代表新控制器单独覆盖全部28场景，也不是完整验收通过；新旧运行级门分别记在 `run-gates.json`。
 
@@ -28,7 +28,7 @@
 | 采集完整性 | fail | 42次完整采集回执中6个最终路径被覆盖或缺失，见continuation-capture-integrity.json/capture-recovery |
 | 执行者与声明 | fail | large A无独立测试；mechanical critic误认归档完整；switch附属引用错误 |
 
-这些历史记录保持原判定；最新控制器已解决程序证据保管和身份约束，但复杂真实运行收口仍阻止T05结束。没有自动DEFERRED或以部分目标通过宣布交付。
+这些历史记录保持原判定；最新控制器的复杂运行已独立收口，见run-gates.json。没有把历史失败改成PASS，也没有自动DEFERRED。
 
 ## 28 Scenario 覆盖
 
@@ -69,27 +69,31 @@
 
 | Requirement | Scenario | 对账 |
 |---|---|---|
-| 实现符合性三向核对 | S01, S02, S03, S04 | PR目标已覆盖；运行级门未通过，尚不宣告DELIVERED |
-| S 发现的契约依据 | S05 | PR目标已覆盖；运行级门未通过，尚不宣告DELIVERED |
-| 可选架构深化 | S06, S07 | PR目标已覆盖；运行级门未通过，尚不宣告DELIVERED |
-| 共享模块判据 | S08, S09, S10 | PR目标已覆盖；运行级门未通过，尚不宣告DELIVERED |
-| 审查输入预检 | S11, S12 | PR目标已覆盖；运行级门未通过，尚不宣告DELIVERED |
-| 发现措辞基于证据 | S13 | 完整nightly未运行（已批准非阻塞） |
-| 规模化维度编排（改了什么：各档覆盖 S，大变更五路重分配，容量不足不丢维度） | S14, S15, S16 | PR目标已覆盖；运行级门未通过，尚不宣告DELIVERED |
-| 完整性审查的证据覆盖（改了什么：明确零发现与未覆盖的区别，保留现行 Scenario 核对） | S17, S18 | PR目标已覆盖；运行级门未通过，尚不宣告DELIVERED |
-| 发现与覆盖契约（改了什么：新增符合性类别并具体化证据内容） | S19, S20, S21 | PR目标已覆盖；运行级门未通过，尚不宣告DELIVERED |
-| 跨维度复核与收口（改了什么：符合性发现与覆盖补查进入既有复核） | S22, S23 | PR目标已覆盖；运行级门未通过，尚不宣告DELIVERED |
-| 通用派发完成条件（改了什么：在原主题与来源要求上增加完成条件、排除项和对照示例） | S24, S25 | PR目标已覆盖；运行级门未通过，尚不宣告DELIVERED |
-| 串并行入口共同消费（改了什么：上游与审查入口接入新增单点规则） | S26, S27, S28 | PR目标已覆盖；运行级门未通过，尚不宣告DELIVERED |
+| 实现符合性三向核对 | S01, S02, S03, S04 | DELIVERED；历史PR目标证据 + 当前run-gates必需门通过 |
+| S 发现的契约依据 | S05 | DELIVERED；历史PR目标证据 + 当前run-gates必需门通过 |
+| 可选架构深化 | S06, S07 | DELIVERED；历史PR目标证据 + 当前run-gates必需门通过 |
+| 共享模块判据 | S08, S09, S10 | DELIVERED；历史PR目标证据 + 当前run-gates必需门通过 |
+| 审查输入预检 | S11, S12 | DELIVERED；历史PR目标证据 + 当前run-gates必需门通过 |
+| 发现措辞基于证据 | S13 | DELIVERED；静态规则及独立否决机制有据；本轮附属误报已明确处置，完整nightly未运行（已批准非阻塞） |
+| 规模化维度编排（改了什么：各档覆盖 S，大变更五路重分配，容量不足不丢维度） | S14, S15, S16 | DELIVERED；历史PR目标证据 + 当前run-gates必需门通过 |
+| 完整性审查的证据覆盖（改了什么：明确零发现与未覆盖的区别，保留现行 Scenario 核对） | S17, S18 | DELIVERED；历史PR目标证据 + 当前run-gates必需门通过 |
+| 发现与覆盖契约（改了什么：新增符合性类别并具体化证据内容） | S19, S20, S21 | DELIVERED；历史PR目标证据 + 当前run-gates必需门通过 |
+| 跨维度复核与收口（改了什么：符合性发现与覆盖补查进入既有复核） | S22, S23 | DELIVERED；历史PR目标证据 + 当前run-gates必需门通过 |
+| 通用派发完成条件（改了什么：在原主题与来源要求上增加完成条件、排除项和对照示例） | S24, S25 | DELIVERED；历史PR目标证据 + 当前run-gates必需门通过 |
+| 串并行入口共同消费（改了什么：上游与审查入口接入新增单点规则） | S26, S27, S28 | DELIVERED；历史PR目标证据 + 当前run-gates必需门通过 |
 
 ## 模型与原始证据
 
 共50份CLI原始流见 `model-evidence-index.json`；逐例verdict区分目标与整例状态。候选、harness、参数、输出、错误、真实源码/diff及只读哈希均归档。旧失败、污染、超时、未触发试验保留。
 
-S05完整归因、S06实际D、S22去重、S23新候选反驳、S26原始base及critic均有独立证据。S15四/五路、S16预算2也有维度完成回执，但对应完整运行仍有上表缺口。
+S05完整归因、S06实际D、S22去重、S23新候选反驳、S26原始base及critic均有独立证据。S15四/五路、S16预算2的历史目标证据保留；最新组合/机械run另外提供完整终态，见两份long-budget-*-verdict.json。
 
 原生Codex对照是既有的日志缺失且超时记录，不作干净PASS。原TAP无损归档及恢复规则见 `raw-evidence-map.json`/`restore-raw-evidence.py`；新被覆盖的测试结果从原回执另存 `model-smoke/capture-recovery/`，不修写原报告或冒称模型未改写。
 
+## 控制器补充对账
+
+R01–R06共6项DELIVERED，单列于controlled-runtime/long-budget-runtime-reconciliation.json，不计入原12Requirement/28Scenario。189份spool、两例57内容对象及14份测试归因审计通过。恢复时的同actor测试复用与本段新增测试分别记录；不宣称原始Claude无效JSON正文的截断预览完整。
+
 ## coverage_note
 
-12Requirement/28Scenario全部列入，历史条款排除。S10/S13/S25/S27完整nightly未运行；通过限于具体样本、候选和装配方式，不声称模型稳定遵循。统一控制器通过122项完整回归、独立代码复核及小例真实恢复收口；两组复杂运行、最新模型正向A/S合并仍未完成验证。T05in_progress、T06pending。
+原12Requirement均DELIVERED；28Scenario历史目标24pass/0fail/4非阻塞nightly未运行，静态命中不等于完整模型PASS。当前控制器128项完整回归、独立代码增量审查、两复杂真实恢复收口及A/B/S正向合并证据齐全。模型原始语义partial：C seam误关联、reviewed误读及附属授权推断等已独立否决/收窄，不据此新增批准门、测试或修改要求。通过限于固定案例、版本与配置，不承诺模型稳定零误报。T05实质验收与独立完整性审查通过；归档提交/状态以progress.yaml为准，T06待执行。

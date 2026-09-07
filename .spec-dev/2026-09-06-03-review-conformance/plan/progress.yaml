@@ -6,13 +6,14 @@ tasks:
   T02: { status: completed, commit: "ddb09320d97a6d6d16e918a2894c677a488c5c19", tests: "CLI red 1 fail to green 3 pass; related regression 40 passed; S02 strict-isolation decision partial fail to pass; skills/plugin passed", evidence: "execution/serial/T02" }
   T03: { status: completed, commit: "736dd1967e01510a7be408fc52fb67d35c5d9508", tests: "40 passed; skills/plugin passed; S24 decision fail to pass, green tools empty", evidence: "execution/serial/T03" }
   T04: { status: completed, commit: "2c662893ece18349a3c409fc8098562146241191", tests: "40 passed; skills/plugin passed; S14 existing pass to pass; S15 fail to pass; strict tools empty", evidence: "execution/serial/T04" }
-  T05: { status: in_progress, tests: "125 passed/0 failed/0 skipped, including 31 controlled regressions; efficiency fixes statically reviewed; combined-r3 and mechanical-r4 incomplete; final coverage prose correction not model-replayed; see controlled-runtime/efficiency-review.md", evidence: "acceptance" }
+  T05: { status: in_progress, tests: "128 passed/0 failed/0 skipped；34 controlled regressions；两复杂run第二段收口，独立核心判读通过；原始语义partial已处置；待最终独立对账及归档提交", evidence: "acceptance" }
   T06: { status: pending }
 resources:
   - "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance —— rtk git worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance；rtk git branch -d plan/2026-09-06-03-review-conformance"
   - "QA fixtures: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance/.spec-dev/2026-09-06-03-review-conformance/acceptance/model-smoke/fixtures —— 确认无存活模型/子代理且证据归档后，随本特性 worktree 清理；拒绝时只清理本登记目录再普通 remove"
   - "repair/checkpoint commit message files: /tmp/review-conformance-repair-commit.txt, /tmp/review-conformance-checkpoint-commit.txt —— 最终任务只 unlink 本行明确路径"
   - "commit message files: /tmp/review-conformance-T00-commit.txt, /tmp/review-conformance-T01-commit.txt, /tmp/review-conformance-T02-commit.txt, /tmp/review-conformance-T03-commit.txt, /tmp/review-conformance-T04-commit.txt, /tmp/review-conformance-state-commit.txt —— 最终任务只 unlink 本行明确路径"
+  - "long-budget audit script: /tmp/review-long-budget-audit.py —— 归档脚本与最终结果后，最终任务只 unlink 本路径"
 notes:
   - "2026-09-06: 用户已 review Spec 并同意编写计划；激活提交 43122c0；独立设计审查 Approved。"
   - "source: /Users/maverick/feature-dev；计划来源 main，执行时 T00 再核实原始 base_commit 与绑定。"
@@ -37,4 +38,6 @@ notes:
   - "收尾实时核查：主工作区main已为9f40a4929e3d5cf3309de01d738820d66dacca50（refactor: 移除英文）且干净，不包含本次产品提交；本计划仍基于原始88cf00a，未执行合并。将来T06须保留并核对该后续主线变更。"
   - "T05 efficiency: 完整嵌套MCP契约、去重传输及角色规则装配修正；覆盖语义遗漏已由真实派发测试红绿验证，125项全量通过。新版两复杂run无字段错误，但combined-r3两段600.839秒仅A完成，mechanical-r4三段841.266秒主动中断（5维完成，refute/critic未完成）；不记全收口。"
   - "最新用户允许Claude CLI不设成本上限；本入口原本没有--max-budget-usd。已单独询问时间是否从300秒改30分钟，尚无答复；不擅自改墙钟或模型设置。145个spool已无损归档，当前无模型worker。"
+  - "后续用户回复可以，已明确授权每段30分钟、最多3段、费用不限。默认/显式1800及超界拒绝测试已红绿验证，三片段上限回归通过；真实g4-combined-r4与g4-mechanical-r5按新预算运行中。旧pending时间选择记录仅代表前一检查点。"
   - "T05 efficiency product commit: 6eb5253c0878950bfb87ea29d8460936d405a242; pre-commit passed; no merge/push/release."
+  - "T05 long-budget: 产品129bbe2cf0329f92b36d12d1aedcf817aa912c0b；组合2010.801秒、机械2298.834秒两段完成，无第三段。57对象/14测试/189spool核验通过，停止写入后128项全量及静态通过。原始附属语义错误独立排除/收窄，未改写raw结果。"
