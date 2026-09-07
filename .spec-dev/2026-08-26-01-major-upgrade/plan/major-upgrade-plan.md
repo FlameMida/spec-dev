@@ -547,7 +547,7 @@ test("五处版本号一致", () => {
   "$schema": "https://agent-plugins.org/schema/1.0.0/plugin.json",
   "name": "spec-dev",
   "version": "<当前版本>",
-  "description": "Bilingual design-plan-execute skill pipeline with all-round acceptance / 中英双语设计→计划→执行 skill 管线与全能验收",
+  "description": "设计→计划→执行 skill 管线与全能验收",
   "license": "MIT",
   "homepage": "https://github.com/FlameMida/spec-dev",
   "skills": "./skills"
