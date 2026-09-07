@@ -43,8 +43,8 @@
       "commit": "0528a24bf063e6411b4fb5edff570f883bccde0f"
     },
     "T08": {
-      "status": "in_progress",
-      "tests": "r12 final local 179/179; terminal source helper 2/2; independent source/contract reviews PASS; prior model FAIL retained; current deepseek connectivity PASS; real-model retry pending"
+      "status": "blocked",
+      "tests": "179/179 local source final PASS; S32 full artifact/continuous product chain/r13 repair PASS. S20/S27/writable complete artifacts still FAIL or incomplete; current provider401 account block, no timeout; all model processes ended."
     },
     "T09": {
       "status": "pending"
@@ -85,7 +85,16 @@
     "[预登记] r10规划验收：acceptance/model-smoke/r10-planning 与 decision-fixtures/r10-planning；复用既有S20/S27/S32输入，独立完整稿分别对账，模型不写产品。acceptance/action-fixtures/r10-planning与model-actions/r10-planning为独立可写规划，任务只编写及静态校验。",
     "[预登记] r11审查后规划修订：acceptance/planning-revisions/r11及r11-feedback；仅模型只读完整稿、宿主归档；保留首稿FAIL，反馈只含实际缺陷，不读取隐藏THEN/判定器，不冒充首次自主通过。/tmp/pd-r11-*为本任务独立审查/受控验证。",
     "[预登记] r11-first新执行夹具、model-actions/r11-first、action-feedback/r11-first.txt；旧r10-first整动作FAIL保留（未读Spec/notes报告不准确），新run仅加入实际审查反馈，不代替首次自主通过。仍从新夹具真实first开始，独立PASS后才resume。",
-    "[预登记] r12：acceptance/r12-fix、provider-check-r12、planning-revisions/r12及r12-feedback、model-actions/r12-*、action-fixtures/r12-*；/tmp/pd-r12-* 为本任务测试与独立审查，真实临时仓由测试 finally 回收。历史现场保留，不清未知资源。"
+    "[预登记] r12：acceptance/r12-fix、provider-check-r12、planning-revisions/r12及r12-feedback、model-actions/r12-*、action-fixtures/r12-*；/tmp/pd-r12-* 为本任务测试与独立审查，真实临时仓由测试 finally 回收。历史现场保留，不清未知资源。",
+    "[预登记] r13审查后修订：acceptance/planning-revisions/r13及r13-feedback、/tmp/pd-r13-*；仅在r12完整稿真实审计FAIL后逐项反馈，不改原GIVEN/业务范围，不覆盖旧输出，不把修订计为首稿自主PASS。",
+    "[预登记] r13实际动作：action-fixtures/r13-verify与r13-repair、model-actions对应目录、action-feedback/r13-*.txt、/tmp/pd-r13-*；host按真实Git/测试构造独立等价待验/故障夹具，明确host来源，不回滚/改写r12现场。",
+    "[预登记] r14容量重试：acceptance/planning-revisions/r14与r14-feedback，仍原r13 S20输入、prior和反馈，单调用输出上限65536、不设超时；r13-planning可写规划独立夹具/model-actions及action-feedback，只给r12实际审查反馈，历史全留；/tmp/pd-r14-*仅独立审计。",
+    "[预登记] r14-chain真实连续模型first/resume/verify：独立action-fixtures/r14-chain、model-actions/r14-chain、action-feedback/r14-chain-*.txt；逐段自然退出并独立审查后才下一段。不得将host-seeded verify当连续模型全链。/tmp/pd-r14-chain-*独立审查原件保留。",
+    "[预登记] r15逐文件规划修复：acceptance/planning-file-repairs/r15、planning-file-feedback/r15、run-planning-file-repair.py；输入为原GIVEN+原模型完整文件+实际审查反馈，宿主只抽取/拼接不补实现。/tmp/pd-r15-*审计。每个文件单次无超时Read-only模型调用，整稿仍须独立验收。",
+    "[预登记] r16严格逐文件修复S20：acceptance/planning-file-repairs/r16、planning-file-feedback/r16、run-planning-file-repair-v2.py；r15 frozen原件不改，新增抽取标签唯一/无嵌套尾截断及最终SelfReview强门，/tmp/pd-r16-*审计。",
+    "[预登记] r15-chain：新独立action-fixtures/r15-chain、model-actions/r15-chain及action-feedback/r15-chain-first.txt；原r14first完整FAIL不放行后继。仅从真实已完成状态选择当前票，逐段独立审查后续接；/tmp/pd-r15-chain-*审计。",
+    "[预登记] r13-planning同夹具计划定向修订：model-actions/r13-planning/plan-r14、action-feedback/r14-planning-repair.txt；旧7文件已完整快照，模型只编辑generated/plan必要文件并静态检查，不执行生成任务。/tmp/pd-r14-planning-review只读复审。",
+    "[预登记] r13-planning/plan-r15定向T04终端恢复修订、action-feedback/r15-planning-repair.txt、/tmp/pd-r15-planning-review；plan-r14磁盘版本先完整快照r13-planning-after-r14，原版本和失败不覆盖，只改生成计划不执行。"
   ],
   "notes": [
     "2026-09-07: 用户选择方案2并批准完整设计、spec及编写计划；尚未获执行授权，未创建实施worktree，未运行候选代码或模型验收。",
@@ -142,6 +151,14 @@
     "r11/S32受反馈修订整稿仍FAIL：contract时序与精确符号检查、八原则子判据及宿主plan-index通过；路径/复用分支/sync_commit/资源销账缺口保留。新修订不覆盖r10首稿FAIL，不将CLI或子判据PASS提升整稿。",
     "最终独立quota审计：r11/S27同403五小时额度，正文截断至T07，缺完整T08/progress/自检；6份当前批进程记录PID/PGID/会话均无存活匹配，另3例只读runner已完成。所有模型调用已结束、无重试安排。r11修订S20/S32整稿仍FAIL，原子协议修复及局部改善不替代全矩阵验收，T08blocked/T09pending。",
     "用户明确修复并重试；r12修复规划生命周期模板自身矛盾并独立复审，继承当前Claude配置、PD_TIMEOUT_SECONDS=0；先最小连通验证，产品冻结后才启动模型验收，不将审查修订记为首稿PASS。",
-    "r12确认规划模板T00跳过/最终锁空窗等矛盾，并回归T03/T05补足已批准S27终端归档生命周期：只在全部完成的只读档案上核对原历史binding、SHA/树/证据并ready=[]，活动态不放宽，未合并delivery拒绝。实际RED→修复→最终179/179及A/S复审通过，2个真实source锁/清理续接测试通过；provider probe当前deepseek-v4-flash[1m]成功。原模型FAIL保留，继续新run，不提前T08完成。"
+    "r12确认规划模板T00跳过/最终锁空窗等矛盾，并回归T03/T05补足已批准S27终端归档生命周期：只在全部完成的只读档案上核对原历史binding、SHA/树/证据并ready=[]，活动态不放宽，未合并delivery拒绝。实际RED→修复→最终179/179及A/S复审通过，2个真实source锁/清理续接测试通过；provider probe当前deepseek-v4-flash[1m]成功。原模型FAIL保留，继续新run，不提前T08完成。",
+    "修复已本地提交09e5019；hook因正文修改未同步openai.yaml先拒绝，已逐字核对两SKILL frontmatter未变，沿hook现有SKIP_OPENAI_SYNC_CHECK=1通过14项字段检查；未发版。r12-first完整动作独立PASS，已进入同夹具resume；r12/S20完整稿仍有确定执行缺陷，将按实际审查反馈修订，其他模型调用仍自然运行无宿主时限。",
+    "r12 resume 状态/锁/证据独立PASS；同工具同权限同路径动作的dict安全编码不属于改道，主线程复核后接受，原denials和初始字面意见保留。verify/repair真实业务组复验完成，但渐进读取/RTK有确定违例，原整lane不提升PASS；r13仅反馈真实缺陷，独立host夹具前置来源明确。",
+    "r12/r13当前：first/resume通过（resume安全同范围语法修正主线程裁决原件保留）；r12 verify/repair实际功能通过但预读正文导致完整FAIL。r13独立host-seeded verify完整PASS，不冒称连续T01-T03。r12 S20/S32及可写规划完整FAIL，r12S27与r13S20自然退出因32000输出上限，非timeout/额度。r13S32仍截断/回执自引用/清理失败状态缺口。当前r13S27/r14S20/S32及r13-planning提高单次容量65536且无超时，产品冻结09e5019；历史不覆盖。",
+    "r15/S32完整稿独立PASS：实际模型唯一T08完整替换、10旧文件不变、finalmanifest逐hash核验、整体SelfReview实际存在，18段shell语法/9个受控状态分支/结构CLI通过。不替代首次自主或可写生成验收；S20/S27仍修订。",
+    "r15-chain/first完整PASS，可进入同夹具resume；C=bfe72579e42411729c89d0fedb7e8a27f20293f7，HEAD18b498eec02bbae6238980a6b71e283111a10aa2，T01待验/T02pending，锁释放。真实host基线与B/首改前树逐字同义独立复核通过，未虚称模型额外运行；历史r14 FAIL保留。",
+    "r15-chain/resume产品完整动作PASS/can_verify=true，T01原状态/证据与B不变，T02真实b改名C2=e27c043004ffddeaa2fd8c58cfdd72f95b0df56c，HEADad8cbcd39c689c2da5092965e491c201a9eca15b。辅助裸echo的RTK格式FAIL保留，未谎称hook改写；独立确认不属于T08产品状态/锁/证据门，根单独判为非阻塞调用约定偏差，下一verify明确纠正，不改产品THEN。",
+    "r15-chain同夹具first→resume→verify连续产品动作完整PASS。verify实际两项检查/5新提交/统一V=e27c043004ffddeaa2fd8c58cfdd72f95b0df56c、最终8739308be9efffee5df99b384d7c8d6b85d3cbff，B/原implementation/旧证据全保留，T04pending，锁释放。resume非阻塞RTK显示格式FAIL保留，整链不冒称全输入PASS。当前只剩S20/S27完整稿、可写planning终端恢复窗，T08仍in_progress。",
+    "r16阻塞检查点：当前deepseek-v4-flash[1m]服务自然401账户阻断，S27/T06和可写plan-r15都非timeout，根逐process.json核验无活跃PID。S27 8/11替换保留，T06无稿、T07/T08未调用；S20只剩T08两项恢复/销账缺陷；可写规划新Spec差异guard只查文件名不查正文仍FAIL。全部报告/下一轮具体反馈保存，31份完整fixture快照已verify，live保留。T08blocked/T09pending，不合并main、不push、不release；不把已通过链重复运行。"
   ]
 }
