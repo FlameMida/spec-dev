@@ -544,3 +544,5 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 - T07：complete requirement and context inputs；40/40机器检查及6例真实模型只读决策通过；参与者能力与拒绝记录消费边界经真实失败补充，实际夹具验收留T08；公共CLI/字段与导航契约锚定，未扩展普通implementer或额外调度。证据execution/serial/T07。
 
 - T08修复：按原S05/S14/S16拒绝只含旧业务树证据的待验状态，逐字校验已提交checkpoint；3例回归真实红后相关48/48绿。原模型失败促成既有维护门/暂停顺序、未知差异保留、v2模板路由及证据路径/提交顺序的入口澄清；契约未扩张，实际操作仍待新轮验证。
+
+- T08第二轮澄清：既有特性锁SHA-256与L.maintenance路径具体化（沿concurrent演练既有实现），列操作顺序并禁止短命shell PID自证owner；恢复证据缺失/已解释树变化须补验。WP组票先读执行协议、准确归档JSON与符号清零，不改变批准状态/格式/调度契约。r2真实模型失败与harness输入缺口分别记录，待r3验证。

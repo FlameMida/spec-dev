@@ -83,6 +83,8 @@ TDD 循环的完整纪律遵循 test-driven-development skill——普通行为�
 
 这是集成组字段的唯一定义点；执行时序遵循 [integration-groups.md](../executing-plans/references/integration-groups.md)。仅在普通切片和每批绿的 expand–contract 均不可行且设计已批准时生成；不以文件多、测试慢或想并发为理由启用。
 
+含组时，写任务正文前必须实际读取 integration-groups.md 及其引用的 executing-plans-parallel 锁规则；下方字段表不能代替执行协议。把适用的取锁、T00 真实绑定、组激活、实现/证据/状态分开提交、暂停与完成操作写进可执行步骤；脱离 skill 时仍能操作，不能仅写“按协议更新”。每条 record.json 必须按定义生成结构化记录，原始 stdout/stderr 另存，不能把 tee 输出命名为 record.json。
+
 
 index 中至多一个 `json spec-dev-integration` fenced block，内容为 JSON（使用 JSON 避免引入第二套复杂 YAML 语法；重复键显式拒绝）。声明示例为确定的结构示意，不是本特性的实施计划：
 
@@ -441,6 +443,8 @@ git add <spec 路径> && git commit -m "chore(spec): sync_commit 锚定 ${SYNC:0
 4. **导航表与任务文件一致**：导航表接口列与各任务文件的接口块逐条一致吗？tasks/ 文件名与表内任务 ID 一一对应吗（plan-index 校验过再交付）？
 
 5. **依赖最小性**：每条边能否指出实际消费接口、验证或安全顺序理由？补漏边、删无理由的边；保留 T00/迁移/验收/最终任务及组出口的必要约束。不能靠删安全边制造并发或消除环；若必要依赖构成环，报告结构不成立并重划任务边界。成员实际消费前序成员接口时也要显式写依赖，members 顺序不代替接口边。
+
+对计划中的检查命令同时核对“该步执行前/后的真实文件内容”：未迁移的本票消费者仍可能触发声明的暂时导入失败，不能提前要求它已改好。旧形清零检查应识别被迁移的导入/导出符号，不能用整行同时含 export 和旧名字的宽泛匹配，把保留的方法调用也判作旧导出。逐段检查 shell 引号、括号与目录切换，合并/清理必须消费 T00 记录的实际路径和资源所有权。
 
 发现问题就地修复，无需复审；发现 spec 需求没有对应任务就补任务。
 
