@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T08",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -43,7 +43,7 @@
       "commit": "0528a24bf063e6411b4fb5edff570f883bccde0f"
     },
     "T08": {
-      "status": "pending"
+      "status": "in_progress"
     },
     "T09": {
       "status": "pending"
@@ -56,7 +56,9 @@
     "[预登记] model/process: T04—T07 red/green，T08 model-smoke/model-actions/check-lock 两进程 —— 创建时记录真实PID/PGID/开始时间与run；只停止确认属于本次的活跃进程；全量测试前停止写者",
     "[预登记] CLI-test tmpdirs: os.tmpdir 下 pd-index-/pd-state- 及其fixture Git/worktree —— 各用例finally清理自身mkdtemp返回目录；崩溃残留先核对日志归属，台账外不动",
     "[预登记] fixture lock: 各action-fixture真实common-dir/spec-dev-locks/sha256(.spec-dev/migration) —— 核验owner及进程已停止、保存事实后仅移除自己的owner文件与空目录，不按超时接管",
-    "[预登记] readonly fixtures: 本特性 acceptance/decision-fixtures/run —— 测试先例有/无、参与者、来源冲突原件；随验收证据保留，不删除未归档输入"
+    "[预登记] readonly fixtures: 本特性 acceptance/decision-fixtures/run —— 测试先例有/无、参与者、来源冲突原件；随验收证据保留，不删除未归档输入",
+    "[本计划拥有] 外部审查/机器原件 /tmp/pd-review-a、pd-review-b-quality、pd-review-s、pd-review-refute、pd-review-extra、pd-qa-judge-01-11、pd-qa-judge-12-22、pd-qa-machine-r1 —— T08核验后复制到本特性acceptance，原件归档后方可清重复；原生审查子代理仅写上述路径。",
+    "[本计划拥有] 补充审计/tmp/pd-qa-judge-23-33、pd-qa-action-r1-first、pd-qa-planning-action、pd-review-b-refute；acceptance/planning-fixtures/r2、action-fixtures/r2/planning-r2/repair-r2 —— 归档后仅清理登记的临时Git现场"
   ],
   "notes": [
     "2026-09-07: 用户选择方案2并批准完整设计、spec及编写计划；尚未获执行授权，未创建实施worktree，未运行候选代码或模型验收。",
@@ -75,6 +77,8 @@
     "T06红探针：S30/S31既有核心保护已通过，S06/S12未落到整组blocked/成员待验协议。按本票范围补test-strategy指向执行单点的gist+pointer，并修正TDD description仍限定收尾的遗漏；不改变状态字段。",
     "S12原输入只给T06编号，未给其group-verification角色；模型混入成员延期分支。补批准夹具的成员清单/全部待验/T06唯一验证身份，旧新候选另目录对照，固定THEN不变；原green保存为失败证据。",
     "S12完整角色夹具仍有效失败：green-context-s12模型把T06写failed、G01写pending_group（非法status）；补入口gist中规范状态名与成员保留待验、组外等待，完整状态协议仍仅在integration-groups定义。原失败输出保留，固定输入定向复跑。",
-    "T07首轮green在S23示例中把后台身份推成服务凭据，在S25只列污染/缺记录两分支而遗漏完整记录可直接消费。入口补来源边界与正常消费路径，维持既有批准/修订门，固定输入复跑。"
+    "T07首轮green在S23示例中把后台身份推成服务凭据，在S25只列污染/缺记录两分支而遗漏完整记录可直接消费。入口补来源边界与正常消费路径，维持既有批准/修订门，固定输入复跑。",
+    "T08机器全量162/162、0 fail/skip；全部写者停止后原始输出先写/tmp再归档。33例只读并行执行独立输出目录；沿T04/T06已证实夹具缺口补S12验证角色与S28完整成员上下文，THEN不变。原生五维审查分批，来源范围冻结为98d80a5d。",
+    "T08收尾缺陷修复：独立反驳确认T03历史证据错绑当前业务树、checkpoint空白误报；新增3个真实Git回归先16/19红，再48/48相关绿。原模型锁后写入与规划证据路径/提交绑定失败保留；补原协议入口及模板路由，不扩展契约。B简洁性导航差异经独立对照为v1冻结/v2严格的批准格式差异，不作中级缺陷；去除runtimeFacts无意义空数组返回为局部同义清理。"
   ]
 }

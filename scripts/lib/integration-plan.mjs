@@ -230,7 +230,8 @@ function runtimeFacts(p){
   need(!status,'checkpoint_uncommitted');
   for(const name of ['index.md','progress.yaml']){
     const actual=readFileSync(path.join(p.planDir,name),'utf8');
-    need(git(root,'show','HEAD:'+relPlan+'/'+name)===actual.trimEnd(),'checkpoint_uncommitted: '+name);
+    const committed=execFileSync('git',['-C',root,'show','HEAD:'+relPlan+'/'+name],{encoding:'utf8'});
+    need(committed===actual,'checkpoint_uncommitted: '+name);
   }
   const head=git(root,'rev-parse','HEAD');
   const ancestor=(a,b)=>{
@@ -259,9 +260,10 @@ function runtimeFacts(p){
       const bytes=readFileSync(withinFeature(r[kind]));need(createHash('sha256').update(bytes).digest('hex')===r[kind+'_sha256'],'evidence hash mismatch');
     }
     if(verified){need(r.exit_code===0,'verification did not pass');need(r.tree===businessTree(verified),'verification tied to different business tree');}
+    return r;
   }
   const bootstrap=s.tasks.T00.status!=='completed';
-  if(bootstrap)return [];
+  if(bootstrap)return;
   need(realpathSync(x.worktree)===root&&git(root,'branch','--show-current')===x.branch,'worktree/branch binding mismatch');
   const gd=realpathSync(git(root,'rev-parse','--absolute-git-dir'));
   const cd=realpathSync(path.resolve(root,git(root,'rev-parse','--git-common-dir')));
@@ -269,10 +271,11 @@ function runtimeFacts(p){
   ancestor(x.base_commit,x.validated_commit);ancestor(x.validated_commit,head);
   for(const [id,t] of Object.entries(s.tasks)){
     for(const k of ['commit','implementation_commit'])if(t[k])ancestor(t[k],head);
-    for(const ep of t.evidence_paths??[])readEvidence(ep);
+    const records=(t.evidence_paths??[]).map(ep=>readEvidence(ep));
     if(t.status==='awaiting_verification'){
       const gid=p.membership.get(id);need(epPrefix(t.evidence_paths,gid,id),'member evidence attribution mismatch');
       ancestor(x.groups[gid].base_commit,t.implementation_commit);ancestor(t.implementation_commit,x.groups[gid].checkpoint_commit);
+      need(records.some(r=>r.tree===businessTree(t.implementation_commit)),id+': missing evidence for current implementation tree');
     }
   }
   function epPrefix(paths,gid,id){return paths.every(q=>q.startsWith('execution/groups/'+gid+'/'+id+'/'));}
@@ -295,14 +298,13 @@ function runtimeFacts(p){
   const dirty=execFileSync('git',['-C',root,'status','--porcelain=v1','-z','--untracked-files=all'],{encoding:'utf8'});
   // Any dirty path requires explicit recovery; metadata is committed before readiness too.
   need(!dirty,'uncommitted work requires recovery');
-  return [];
 }
 
 export function inspectPlanState(planDir){
   const result={ok:false,schema:'plan-state',file:planDir,errors:[],protocol_version:1,active_group:null,ready_tasks:[]};
   try{
     const p=loadIntegrationPlan(planDir);need(p,'plan-state requires integration v2');validateStateShape(p);
-    const errors=runtimeFacts(p);need(!errors.length,errors.join('; '));
+    runtimeFacts(p);
     result.active_group=p.state.integration.active_group;result.ready_tasks=readyTasks(p);result.ok=true;
   }catch(e){result.errors.push({path:'plan-state',expected:'consistent persisted integration state',actual:e.message});}
   return result;

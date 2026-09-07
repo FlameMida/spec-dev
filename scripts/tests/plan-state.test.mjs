@@ -28,14 +28,14 @@ function fixture(){
 }
 function run(f){return spawnSync(process.execPath,[cli,'plan-state',f.dir],{encoding:'utf8'});}
 function check(f,ok=true){const r=run(f);assert.equal(r.status,ok?0:1,r.stdout+r.stderr);const j=JSON.parse(ok?r.stdout:r.stderr);assert.equal(j.ok,ok);if(!ok)assert.deepEqual(j.ready_tasks,[]);return j;}
-function evidence(f,id,exit=0){
+function evidence(f,id,exit=0,attempt='a1',command=[process.execPath,'-e',`process.exit(${exit})`]){
   const commit=git(f.wt,'rev-parse','HEAD');
   const listing=execFileSync('git',['-C',f.wt,'ls-tree','-r','-z',commit],{encoding:'utf8'});
   const tree=hash(listing.split('\0').filter(Boolean).filter(line=>{const name=line.slice(line.indexOf('\t')+1);return name!==f.feature+'/plan/progress.yaml'&&!name.startsWith(f.feature+'/execution/');}).join('\0'));
-  const rel=`execution/groups/G01/${id}/a1`,dir=path.join(f.wt,f.feature,rel);mkdirSync(dir,{recursive:true});
-  const processResult=spawnSync(process.execPath,['-e',`process.exit(${exit})`],{cwd:f.wt,encoding:'utf8'});
+  const rel=`execution/groups/G01/${id}/${attempt}`,dir=path.join(f.wt,f.feature,rel);mkdirSync(dir,{recursive:true});
+  const processResult=spawnSync(command[0],command.slice(1),{cwd:f.wt,encoding:'utf8'});
   writeFileSync(path.join(dir,'stdout.log'),processResult.stdout);writeFileSync(path.join(dir,'stderr.log'),processResult.stderr);
-  const record={command:[process.execPath,'-e',`process.exit(${exit})`],cwd:f.wt,exit_code:processResult.status,commit,tree,stdout:rel+'/stdout.log',stderr:rel+'/stderr.log',stdout_sha256:hash(processResult.stdout),stderr_sha256:hash(processResult.stderr)};
+  const record={command,cwd:f.wt,exit_code:processResult.status,commit,tree,stdout:rel+'/stdout.log',stderr:rel+'/stderr.log',stdout_sha256:hash(processResult.stdout),stderr_sha256:hash(processResult.stderr)};
   writeFileSync(path.join(dir,'record.json'),JSON.stringify(record));return rel+'/record.json';
 }
 function enter(f){f.state.integration.active_group='G01';Object.assign(f.state.integration.groups.G01,{status:'in_progress',base_commit:f.base,checkpoint_commit:f.base});}
@@ -71,3 +71,33 @@ test('S16 failed verification record cannot support completed group',()=>{const 
 }finally{rmSync(f.outer,{recursive:true});}});
 
 test('S17 unsupported data version is rejected',()=>{const f=fixture();try{f.state.format_version=9;f.save();check(f,false);}finally{rmSync(f.outer,{recursive:true});}});
+
+test('S05/S16 waiting evidence must include the current implementation tree while preserving history',()=>{const f=fixture();try{
+  enter(f);
+  const command=[process.execPath,'-e',"require('node:assert/strict').equal(require('node:fs').readFileSync('source.txt','utf8'),'before\\n')"];
+  const old=evidence(f,'T01',0,'baseline',command),recordPath=path.join(f.wt,f.feature,old),original=readFileSync(recordPath);
+  assert.equal(JSON.parse(original).exit_code,0);
+  f.state.tasks.T01={status:'awaiting_verification',implementation_commit:f.base,commit:null,tests:'pending_group',evidence_paths:[old]};
+  f.save('same tree history');
+  assert.deepEqual(check(f).ready_tasks,['T02']);
+  writeFileSync(path.join(f.wt,'source.txt'),'after\n');git(f.wt,'add','source.txt');git(f.wt,'commit','-qm','migration');
+  const implementation=git(f.wt,'rev-parse','HEAD');
+  f.state.tasks.T01.implementation_commit=implementation;f.state.integration.groups.G01.checkpoint_commit=implementation;f.save();
+  assert.match(JSON.stringify(check(f,false)),/current implementation tree/);
+  const current=evidence(f,'T01',1,'current',command);
+  assert.equal(JSON.parse(readFileSync(path.join(f.wt,f.feature,current))).exit_code,1);
+  f.state.tasks.T01.evidence_paths.push(current);f.save('current check plus historical baseline');
+  assert.deepEqual(check(f).ready_tasks,['T02']);
+  assert.deepEqual(readFileSync(recordPath),original);
+}finally{rmSync(f.outer,{recursive:true});}});
+
+for(const name of ['index.md','progress.yaml'])test('S14 exact committed checkpoint accepts leading whitespace in '+name,()=>{const f=fixture();try{
+  const file=path.join(f.dir,name);writeFileSync(file,'\n'+readFileSync(file,'utf8'));
+  git(f.wt,'add','.');git(f.wt,'commit','-qm','legal leading whitespace');
+  if(name==='index.md'){
+    const base=git(f.wt,'rev-parse','HEAD');f.state.tasks.T00.commit=base;f.state.integration.base_commit=base;f.state.integration.validated_commit=base;f.save('bind plan baseline');
+  }
+  assert.deepEqual(check(f).ready_tasks,['T01']);
+  writeFileSync(file,'\n'+readFileSync(file,'utf8'));
+  assert.match(JSON.stringify(check(f,false)),/checkpoint_uncommitted/);
+}finally{rmSync(f.outer,{recursive:true});}});
