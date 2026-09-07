@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T03",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -18,7 +18,9 @@
       "commit": "9591f83cbd57335443bc597cdfa5d6a12189df1c"
     },
     "T03": {
-      "status": "in_progress"
+      "status": "completed",
+      "tests": "53/53 pass; real Git, persisted checkpoint, log hash and symlink rejection verified",
+      "commit": "02589347d8cb5df663228744c047fc180b54f970"
     },
     "T04": {
       "status": "pending"
