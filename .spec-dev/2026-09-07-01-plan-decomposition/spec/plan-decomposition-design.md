@@ -528,3 +528,5 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 - T00：用户已确认执行；建立计划自有隔离工作区，base_commit=46752f43af19e91ff00964785f9ac35fb80d33b7；相关基线61/61、skills与官方Codex插件校验通过，见execution/serial/T00。未把本机CLI版本视作模型已运行。
 
 - T01：公共plan-index首次红16个非法组被旧CLI错误接受；实现后34/34通过（含旧plan-index/parallel）。只增加声明结构、角色与出口检查，未接入状态/执行；接口与本票导航一致，无额外调度行为。证据execution/serial/T01。
+
+- T02：implement v2 state and group readiness；36/36通过，缺少plan-state能力的有效组路径已观察红；真实Git事实由T03接入；公共CLI/字段与导航契约锚定，未扩展普通implementer或额外调度。证据execution/serial/T02。

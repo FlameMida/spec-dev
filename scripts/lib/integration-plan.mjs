@@ -118,3 +118,107 @@ export function validateIntegrationPlan(planDir){
   try{loadIntegrationPlan(planDir);return [];}catch(e){return [{path:'integration',expected:'valid integration plan',actual:e.message}];}
 }
 // GROUP-RUNTIME
+
+const statuses=['pending','in_progress','awaiting_verification','completed','blocked'];
+const sha=x=>typeof x==='string'&&/^[0-9a-f]{40,64}$/.test(x);
+const nullableSha=x=>x===null||sha(x);
+const arr=x=>Array.isArray(x)&&x.every(v=>typeof v==='string');
+export function validateStateShape(p){
+  const s=p.state;keys(s,['format_version','current','tasks','resources','notes','integration'],['execution'],'progress');
+  need(s.format_version===2,'unsupported progress version');need(s.current===null||p.ids.includes(s.current),'invalid current');
+  need(arr(s.resources)&&arr(s.notes),'resources/notes string arrays');
+  keys(s.tasks,p.ids,[],'tasks');
+  for(const [id,t] of Object.entries(s.tasks)){
+    keys(t,['status'],['commit','tests','deviations','claim','implementation_commit','result_path','evidence_paths'],id);
+    need(statuses.includes(t.status),id+': invalid status');
+    if(own(t,'deviations'))need(arr(t.deviations),id+': deviations array');
+    if(own(t,'evidence_paths'))need(arr(t.evidence_paths),id+': evidence_paths array');
+    for(const k of ['commit','implementation_commit'])if(own(t,k))need(nullableSha(t[k]),id+': invalid '+k);
+    if(t.status==='awaiting_verification'){
+      need(p.membership.has(id),id+': awaiting_verification requires group membership');
+      need(t.tests==='pending_group'&&sha(t.implementation_commit)&&t.commit==null,id+': invalid pending evidence state');
+      need(t.evidence_paths?.length,id+': waiting evidence missing');
+    }
+    if(t.status==='completed')need(sha(t.commit),id+': completed commit missing');
+    if(p.membership.has(id)||p.verification.has(id)){
+      need(!own(t,'claim')&&!own(t,'result_path'),id+': group task cannot use implementer claim');
+      if(t.status==='completed')need(t.tests==='pass',id+': group completion needs pass');
+    }
+  }
+  const x=s.integration;keys(x,['owner','worktree','branch','base_commit','validated_commit','active_group','groups'],[],'integration');
+  for(const k of ['owner','worktree','branch'])need(x[k]===null||(typeof x[k]==='string'&&x[k].trim()),'invalid '+k);
+  for(const k of ['base_commit','validated_commit'])need(nullableSha(x[k]),'invalid '+k);
+  keys(x.groups,Object.keys(p.declaration.groups),[],'runtime groups');
+  need(x.active_group===null||own(x.groups,x.active_group),'invalid active_group');
+  for(const [gid,g] of Object.entries(x.groups)){
+    keys(g,['status','base_commit','checkpoint_commit','validated_commit','evidence_paths'],[],gid);
+    need(['pending','in_progress','blocked','completed'].includes(g.status),gid+': invalid group status');
+    need(arr(g.evidence_paths),gid+': evidence_paths array');
+    for(const k of ['base_commit','checkpoint_commit','validated_commit'])need(nullableSha(g[k]),gid+': invalid '+k);
+    const d=p.declaration.groups[gid],members=d.members.map(id=>s.tasks[id]),v=s.tasks[d.verify];
+    if(g.status==='pending')need([...members,v].every(t=>t.status==='pending')&&[g.base_commit,g.checkpoint_commit,g.validated_commit].every(v=>v===null),gid+': dirty pending group');
+    if(g.status==='completed'){
+      need(sha(g.validated_commit)&&g.evidence_paths.length && [...members,v].every(t=>t.status==='completed'&&t.commit===g.validated_commit),gid+': partial group completion');
+      need(x.active_group!==gid,gid+': completed cannot remain active');
+    }else{
+      need(g.validated_commit===null,gid+': premature verified commit');
+      need([...members,v].every(t=>t.status!=='completed'),gid+': premature task completion');
+    }
+    if(['in_progress','blocked'].includes(g.status)){
+      need(x.active_group===gid&&sha(g.base_commit)&&sha(g.checkpoint_commit),gid+': active binding missing');
+      need(g.base_commit===x.validated_commit,gid+': global validated baseline moved');
+    }
+  }
+  if(x.active_group!==null)need(['in_progress','blocked'].includes(x.groups[x.active_group].status),'inactive active_group');
+  if(s.current!==null){
+    need(['in_progress','blocked'].includes(s.tasks[s.current].status),'current must point to active task');
+    if(x.active_group!==null)need((p.membership.get(s.current)??p.verification.get(s.current))===x.active_group,'current outside active group');
+  }
+  const running=Object.entries(s.tasks).filter(([,t])=>t.status==='in_progress');
+  if(x.active_group!==null)need(running.every(([id])=>id===s.current),'other task running during group');
+  if(s.execution){
+    keys(s.execution,['mode','owner','integration_worktree','integration_branch','base_commit','validated_commit'],['activation','delivery'],'execution');
+    need(s.execution.mode==='parallel','unsupported execution mode');
+    for(const [left,right] of [['owner','owner'],['worktree','integration_worktree'],['branch','integration_branch'],['base_commit','base_commit'],['validated_commit','validated_commit']])need(x[left]===s.execution[right],'projection mismatch: '+left);
+  }
+  const bootstrap=s.tasks.T00.status!=='completed';
+  if(bootstrap)need(x.base_commit===null&&x.validated_commit===null&&x.active_group===null&&Object.entries(s.tasks).every(([id,t])=>id==='T00'||t.status==='pending'),'invalid bootstrap');
+  else need(x.owner&&path.isAbsolute(x.worktree??'')&&x.branch&&sha(x.base_commit)&&sha(x.validated_commit),'runtime binding missing');
+  return s;
+}
+function readyTasks(p){
+  const s=p.state,x=s.integration,completed=id=>s.tasks[id].status==='completed';
+  if(s.tasks.T00.status!=='completed')return s.tasks.T00.status==='blocked'?[]:['T00'];
+  if(x.active_group){
+    const gid=x.active_group,g=p.declaration.groups[gid],runtime=x.groups[gid];
+    if(runtime.status==='blocked')return [];
+    for(const id of g.members){
+      const t=s.tasks[id];if(t.status==='awaiting_verification')continue;
+      if(t.status==='blocked')return [];
+      const eligible=p.byId.get(id).deps.every(d=>p.membership.get(d)===gid?['awaiting_verification','completed'].includes(s.tasks[d].status):completed(d));
+      return eligible?[id]:[];
+    }
+    return s.tasks[g.verify].status==='blocked'?[]:[g.verify];
+  }
+  const ready=[];
+  for(const row of p.rows){
+    if(!['pending','in_progress'].includes(s.tasks[row.id].status))continue;
+    if(p.verification.has(row.id))continue;
+    if(p.membership.has(row.id)){
+      const gid=p.membership.get(row.id),g=p.declaration.groups[gid];if(row.id!==g.members[0])continue;
+      const all=[...g.members,g.verify],external=[...new Set(all.flatMap(id=>p.byId.get(id).deps).filter(d=>!all.includes(d)))];
+      if(external.every(completed)&&!Object.values(s.tasks).some(t=>t.status==='in_progress'))ready.push(row.id);
+    }else if(row.deps.every(completed))ready.push(row.id);
+  }
+  return ready.sort();
+}
+function runtimeFacts(p){ return []; }
+export function inspectPlanState(planDir){
+  const result={ok:false,schema:'plan-state',file:planDir,errors:[],protocol_version:1,active_group:null,ready_tasks:[]};
+  try{
+    const p=loadIntegrationPlan(planDir);need(p,'plan-state requires integration v2');validateStateShape(p);
+    const errors=runtimeFacts(p);need(!errors.length,errors.join('; '));
+    result.active_group=p.state.integration.active_group;result.ready_tasks=readyTasks(p);result.ok=true;
+  }catch(e){result.errors.push({path:'plan-state',expected:'consistent persisted integration state',actual:e.message});}
+  return result;
+}

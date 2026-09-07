@@ -7,7 +7,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { parseParallelBlock } from "./lib/parallel-plan.mjs";
-import { validateIntegrationPlan } from "./lib/integration-plan.mjs";
+import { validateIntegrationPlan, inspectPlanState } from "./lib/integration-plan.mjs";
 import { fileURLToPath } from "node:url";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -18,6 +18,12 @@ const [schemaName, jsonFile] = process.argv.slice(2);
 if (!schemaName || !jsonFile) {
   printUsage();
   process.exit(2);
+}
+
+if (schemaName === "plan-state") {
+  const result = inspectPlanState(jsonFile);
+  (result.ok ? console.log : console.error)(JSON.stringify(result, null, 2));
+  process.exit(result.ok ? 0 : 1);
 }
 
 if (schemaName === "plan-index") {
