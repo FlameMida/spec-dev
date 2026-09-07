@@ -193,7 +193,7 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-des
 /executing-plans 执行 .spec-dev/2026-07-04-auth/plan/index.md
 ```
 
-- **writing-plans**：假设执行者零上下文——每份计划固定以任务 0（建立隔离工作区，含已隔离检测与 git 降级命令）开头、以最终任务（合并与清理）收尾，spec 验收矩阵含「验收任务」行时在两者之间固定生成验收任务，worktree 生命周期在计划内闭合、脱离插件也能按序执行；头部随行偏差处理指引；每任务给精确文件路径、完整代码、TDD 五步（失败测试→确认失败→最小实现→确认通过→提交）、接口消费/产出块；写完跑四查（spec 覆盖/占位符/类型一致/导航表与任务文件一致）再交接
+- **writing-plans**：假设执行者零上下文——每份计划固定以任务 0（建立隔离工作区，含已隔离检测与 git 降级命令）开头、以最终任务（合并与清理）收尾，spec 验收矩阵含「验收任务」行时在两者之间固定生成验收任务，worktree 生命周期在计划内闭合、脱离插件也能按序执行；头部随行偏差处理指引；每任务给精确文件路径、完整代码、适用的行为红绿/纯重构保护/集成组验证步骤、接口消费/产出与关联 skill；写完跑五查（spec 覆盖/占位符/类型一致/导航表与任务文件一致/依赖最小性）再交接
 - **executing-plans**：执行确认后从任务 0（隔离工作区，纪律遵循 using-git-worktrees）开始，主线程逐任务连续执行（每任务 commit `feat(TN): xxx` + spec 自检），全部完成后 fan-out code-reviewer 多维对抗审查（review-findings 契约校验 + 高/中发现对抗复核 + completeness critic），按验收矩阵触发 acceptance-qa 验收，审查处置征询用户后执行最终任务（合并与清理）并总结
 
 ## visual-preview 使用方法

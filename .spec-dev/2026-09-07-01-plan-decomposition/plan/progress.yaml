@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T05",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -28,7 +28,7 @@
       "commit": "5a9b05bcf0fcda0b8f3d5f691778184ce82bf5c4"
     },
     "T05": {
-      "status": "pending"
+      "status": "in_progress"
     },
     "T06": {
       "status": "pending"
@@ -64,6 +64,7 @@
     "T04: 默认glm-5.3-flash[1M]六例实际返回429额度限制，CLI exit0/result success不能当模型成功。provider提示reset 2026-09-07 18:09:28（时区未声明）；不更改模型/预算或用静态结果冒充红。原始probe.py加UTF-8编码头修复本机直接运行解析问题，案例未改；候选规则读取范围显式排除本特性spec/plan/evals/预期。",
     "用户先要求Claude不可用时搁置测试，随后说明已重新配置且可用；据最新指示恢复原范围验证，保留首轮429失败，用red-r2新目录重跑固定输入/预期。",
     "T04新规则首轮模型仍误用普通完成条件(S06)、单票外部前置(S08)，恢复时跳过未确认成员(S28)。保留首轮失败，入口增加先读组协议与全组前置/局部失败/恢复顺序gist，单点明确成员和组均blocked；固定输入预期不改，定向复跑。",
-    "S28探针原GIVEN未附完整组清单，模型两次将提及的T03/T04当全部成员，无法知道THEN中的T05；补固定夹具G01.members=T03/T04/T05、T05pending/verifyT06、已保存授权，在旧新候选上重新对照，预期不变。旧候选文本从02589347读取并逐文件记录真实哈希，不修改产品源码回退。"
+    "S28探针原GIVEN未附完整组清单，模型两次将提及的T03/T04当全部成员，无法知道THEN中的T05；补固定夹具G01.members=T03/T04/T05、T05pending/verifyT06、已保存授权，在旧新候选上重新对照，预期不变。旧候选文本从02589347读取并逐文件记录真实哈希，不修改产品源码回退。",
+    "T04 real-model checks resumed on configured kimi-k2[1M]; proceeding to T05."
   ]
 }

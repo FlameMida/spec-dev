@@ -220,8 +220,8 @@ test("Scenario: 计数与磁盘一致", () => {
   const contractTable=read("scripts/schemas/README.md").split("## 契约清单")[1].split("## 新增 schema")[0];
   const documented=[...contractTable.matchAll(/^\| `([^`]+)` \|/gm)].map(m=>m[1]).sort();
   assert.deepEqual(documented,schemaFiles.map(f=>f.slice(0,-5)).sort());
-  assert.match(en, /four-way self-review \(spec coverage \/ placeholders \/ type consistency \/ navigation table/);
-  assert.match(zh, /四查（spec 覆盖\/占位符\/类型一致\/导航表与任务文件一致）/);
+  assert.match(en, /five-way self-review \(spec coverage \/ placeholders \/ type consistency \/ navigation table[^\n]*dependency minimality/);
+  assert.match(zh, /五查（spec 覆盖\/占位符\/类型一致\/导航表与任务文件一致\/依赖最小性）/);
 });
 
 test("Scenario: 变量未替换时按序列推导——skill base directory 上两级即插件根（布局不变量）", () => {

@@ -536,3 +536,5 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 - T04：仅新增具名eval输入并运行六例真实Claude探针，当前配置glm-5.3-flash[1M]全部返回provider429，无有效行为红，任务blocked；步骤3实现未执行。见execution/serial/T04/model-results.json，不能以CLI exit0/result success冒充模型成功。T05—T09仍pending。
 
 - T04：integrate exclusive group execution and recovery；36/36机器回归及六项真实模型只读决定通过，修正三处组入口分流遗漏，S28补完整夹具后重新对照；实际写入留T08；公共CLI/字段与导航契约锚定，未扩展普通implementer或额外调度。证据execution/serial/T04。
+
+- T05：generate typed tasks and integration-group plans；71/71机器检查及4例真实模型只读决策通过；接口与范围按批准计划自检，实际产物验收留T08；公共CLI/字段与导航契约锚定，未扩展普通implementer或额外调度。证据execution/serial/T05。

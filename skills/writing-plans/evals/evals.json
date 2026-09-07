@@ -70,6 +70,46 @@
       "id": "review-conformance-s10",
       "prompt": "S10 多 adapter 仍暴露内部结构\nGIVEN 两个真实 adapter 的接口向消费者暴露各自内部参数，调用方需做分支判断\nWHEN 使用接口三问",
       "expected_output": "检查是否能减少方法、简化参数、隐藏内部复杂性，并引用实际边界；adapter 数量不自动证明抽象合理。"
+    },
+    {
+      "id": "plan-decomposition-s01",
+      "prompt": "能逐票绿时不使用集成组\nGIVEN 三个调用包可在旧形保留时分别迁移并通过相关测试。\nWHEN 分解机械改名。",
+      "expected_output": "生成 expand、具有真实依赖的迁移票及依赖全部迁移票的 contract；不因文件多就延期整体绿。"
+    },
+    {
+      "id": "plan-decomposition-s02",
+      "prompt": "批次不能独立绿时保留小票\nGIVEN 共享类型改动导致多个包必须全部迁移后才能通过相关验证，批准设计记录该事实。\nWHEN 编写计划。",
+      "expected_output": "各批次各有 TNN 文件和提交，归入明确组及组验证任务，不合并为一张超大票，不承诺中间绿。"
+    },
+    {
+      "id": "plan-decomposition-s19",
+      "prompt": "必要重构位于隔离之后\nGIVEN 已批准把当前混合职责拆开才能安全实现后续功能。\nWHEN 写计划。",
+      "expected_output": "T00 隔离和基线、T01 前置纯重构及行为保护、后续功能票按需依赖 T01；没有阻碍时不造空 T01 重构票。"
+    },
+    {
+      "id": "plan-decomposition-s20",
+      "prompt": "删除冗余而保留必要边\nGIVEN 独立文案票被无理由串到 API 票之后，迁移 contract 又遗漏对最后一个 migrate 的依赖。\nWHEN Self-Review。",
+      "expected_output": "删除前一冗余边、补后一必要边，保留 T00/验收/最终任务和整组出口；同步导航与任务接口，不把结构校验当成依赖语义证明。"
+    },
+    {
+      "id": "plan-decomposition-s21",
+      "prompt": "检查点不变成多重授权\nGIVEN spec 有参与者和约束两处值得用户重点审阅。\nWHEN 呈现 review 门。",
+      "expected_output": "陈述两处检查点并只问是否确认并开始计划；用户仅认可内容时不冒充执行授权，检查暴露独立决策时按一次一题处理。"
+    },
+    {
+      "id": "plan-decomposition-s26",
+      "prompt": "脱离会话仍能找到纪律\nGIVEN 新执行者只取得特性目录、index、spec 与本票。\nWHEN 读取 T01 或组验证任务。",
+      "expected_output": "能从声明定位 TDD/集成组/测试策略的适用规则，seam 仍来自原接口传递；技能不可用时使用计划自足步骤，唯有组的必需机器入口不可用时停止而非猜执行。"
+    },
+    {
+      "id": "plan-decomposition-s27",
+      "prompt": "各类任务有实际步骤且首尾闭合\nGIVEN 同一计划有普通票、T01 纯重构、集成组、项目验收及最终任务。\nWHEN 检查生成产物。",
+      "expected_output": "每票有精确文件、接口、命令、预期结果与对应类型的完整步骤，组员没有假绿步骤；T00 与最终生命周期闭合、只一个状态源，导航通过结构校验。"
+    },
+    {
+      "id": "plan-decomposition-s32",
+      "prompt": "迁移旧形不能永久遗留\nGIVEN expand 新增同用途新接口并暂存旧接口，但候选计划没有删除旧接口的工作。\nWHEN 方案或计划自检。",
+      "expected_output": "不能以“允许 expand”通过检查；补明确 contract 和验证，或重新分解，八原则声明块仍存在。"
     }
   ]
 }
