@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T02",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -13,7 +13,9 @@
       "commit": "f6f58e5545ebc5577b0432942463c46226e36aa8"
     },
     "T02": {
-      "status": "in_progress"
+      "status": "completed",
+      "tests": "35/35 pass; valid group CLI red observed; runtime facts pending T03",
+      "commit": "9591f83cbd57335443bc597cdfa5d6a12189df1c"
     },
     "T03": {
       "status": "pending"
