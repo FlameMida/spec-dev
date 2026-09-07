@@ -44,7 +44,7 @@
     },
     "T08": {
       "status": "blocked",
-      "tests": "165/165 final local tests; skills/plugin pass; mandatory model/action QA BLOCKED by provider quota and retained failures"
+      "tests": "r8 local full 165/165, reference 11/11, targeted 68/68, official plugin/skills pass; A/B/C fixed review pass; RA S21 initial/content/serial-decisions pass; complete model-generated plan FAIL and first full action FAIL (core state semantics PASS), so resume/verify/repair not run"
     },
     "T09": {
       "status": "pending"
@@ -61,7 +61,25 @@
     "[本计划拥有] 外部审查/机器原件 /tmp/pd-review-a、pd-review-b-quality、pd-review-s、pd-review-refute、pd-review-extra、pd-qa-judge-01-11、pd-qa-judge-12-22、pd-qa-machine-r1 —— T08核验后复制到本特性acceptance，原件归档后方可清重复；原生审查子代理仅写上述路径。",
     "[本计划拥有] 补充审计/tmp/pd-qa-judge-23-33、pd-qa-action-r1-first、pd-qa-planning-action、pd-review-b-refute；acceptance/planning-fixtures/r2、action-fixtures/r2/planning-r2/repair-r2 —— 归档后仅清理登记的临时Git现场",
     "[预登记] 新一轮acceptance/action-fixtures/r3、repair-r3、planning-r3及model-smoke/r3；外部/tmp/pd-qa-planning-r2、pd-qa-judge-r2-a/b/c —— 同样保留失败原件、归档后才清理；只停止各process.json可核对归属的PID/PGID。",
-    "[本计划拥有] /tmp/pd-qa-machine-final-local、pd-final-local.py、pd-completeness-interim、pd-review-a-r3、pd-review-s-r3、pd-review-s-r4、pd-review-bc-r3、pd-qa-judge-r3；acceptance/fixture-snapshots八组完整归档已验证，live fixture暂留，T09不提前清理。"
+    "[本计划拥有] /tmp/pd-qa-machine-final-local、pd-final-local.py、pd-completeness-interim、pd-review-a-r3、pd-review-s-r3、pd-review-s-r4、pd-review-bc-r3、pd-qa-judge-r3；acceptance/fixture-snapshots八组完整归档已验证，live fixture暂留，T09不提前清理。",
+    "[预登记] acceptance/model-smoke/r4、decision-fixtures/r4、action-fixtures/r4/planning-r4/repair-r4、model-actions对应目录；模型PID/PGID按process.json取证；外部独立审计/tmp/pd-r4-*，只读产品，主线程独占进度。",
+    "[预登记] 指定muse模型的model-smoke/r5-check,r5、decision-fixtures对应目录，以及action-fixtures/r5/planning-r5/repair-r5和model-actions对应目录；旧r4现场保留，后续归档登记。",
+    "[本计划拥有] acceptance/provider-check-20260907-185120：最新配置最小无工具调用原始证据；进程已结束，证据保留。",
+    "[本计划拥有] acceptance/provider-check-20260907-185354：授权开启后最小调用原始证据，保留原件；仅终止process.json登记进程。",
+    "[预登记] acceptance/model-smoke/r6-check 与 decision-fixtures/r6-check：当前muse 1.3模型的S21有界复核，300秒上限，原始证据保留。",
+    "[本计划拥有] /tmp/pd-r6-coverage/report.json：原生独立审查线程只读核对S03/S20已有证据，不写产品或进度。",
+    "[本计划拥有] acceptance/machine-r6-s03：现有integration-plan真实CLI用例补录JSON错误原件；临时pd-index夹具由原用例finally回收。",
+    "[本计划拥有] acceptance/machine-r6-s03-groupmembership：两个合法组及仅成员重复变异的CLI证据，静态计划夹具保留。",
+    "[本计划拥有] acceptance/model-smoke/retry-20260907-205907 与 decision-fixtures/retry-20260907-205907：用户明确重试，同模型S21只读验收，300秒上限，保留原件。",
+    "[本计划拥有] acceptance/model-smoke/current-20260907-210211 与 decision-fixtures/current-20260907-210211：用户换模型并明确不设时间上限，继承当前模型，PD_TIMEOUT_SECONDS=0，原件保留；每30秒心跳。",
+    "[本计划拥有] acceptance/planning-fixtures/s20-group-exit：S20剩余组出口/独立验收必要边的独立候选，保留历史r2输入；主线程创建，尚未运行模型。",
+    "[本计划拥有] /tmp/pd-s20-input-review/report.json：新S20夹具独立只读公平性/覆盖审计；不运行模型或写产品。",
+    "[本计划拥有] acceptance/model-smoke/current-20260907-210954 与 decision-fixtures/current-20260907-210954：用户再次换模型后重试S21，继承当前配置，PD_TIMEOUT_SECONDS=0，保留原始输出。",
+    "[预登记] acceptance/model-smoke/r7 与 r7-s20、decision-fixtures对应目录；action-fixtures/r7/planning-r7/repair-r7与model-actions对应目录；当前kimi-k2，PD_TIMEOUT_SECONDS=0；原始trace及PID归档，模型只操作各自夹具；/tmp/pd-s21-current-review/report.json独立只读。",
+    "[本计划拥有] /tmp/pd-r7-action-first、pd-r7-judge-s20-s26、pd-r7-judge-s01-s19：独立原件，主线程归档后保留；r7first host-stop按登记PID终止，非超时，现场保留。",
+    "[本计划拥有] /tmp/pd-r7-judge-s02-s32、pd-r7-judge-s27、pd-r7-planning-action：独立只读审计原件；主线程归档，planning-r7在原无时限调用结束后验完整产物。",
+    "[预登记] acceptance/r8-fix、model-smoke/r8-*、decision-fixtures/r8-*、action-fixtures/r8-*及model-actions对应目录；文档示例机器验证仅在记录的临时测试Git仓中执行，不执行模型生成任务。原生独立审计/tmp/pd-r8-*，只读产品与证据。",
+    "[本计划拥有] /tmp/pd-r8-review-a、pd-r8-review-bc、pd-r8-review-s：独立受影响维度审查；示例测试TemporaryDirectory(pd-r8-example-*)逐测试finally清理。r8-s21-followup通过实际r8-s21对话历史补分支，不喂THEN答案。"
   ],
   "notes": [
     "2026-09-07: 用户选择方案2并批准完整设计、spec及编写计划；尚未获执行授权，未创建实施worktree，未运行候选代码或模型验收。",
@@ -86,6 +104,26 @@
     "T08 r2：两次真实首票操作仍绕过维护门，宿主按PID/PGID终止并保留-15事实，禁止进入resume。planning-r2真实生成通过结构CLI但独立审计仍fail。补既有SHA-256/L.maintenance定位与逐步锁操作、恢复补验边界、规划前必读执行协议和准确符号检查。来源为既有concurrent受控replay实际路径，未新增锁API。S19/S26/S27的Read-only夹具缺精确文件清单，产生无效猜测读取；宿主停止并补目录穷举，不计产品失败。S21补真实spec片段；THEN均保持。",
     "r3实际init仍为kimi-k2；多数调用exit1返回403 five-hour usage limit，全部进程已结束，不继续尝试。S15/S19有完整结果待独立判读。测试permission_mode显式default（未改全局配置/模型），暴露rtk ls等未列入窄Bash白名单：后续harness扩为Bash(rtk *)并保留授权范围审计，此调整尚未运行。S独立审查及B/C反驳确认新增锁禁令误覆盖v1激活前请求，已按原契约限定parallel/v2，原v1先保存请求/H再取锁不变；待本地核对。T08保持blocked、T09不启动，无合并/推送/roadmap完成回写。",
     "阻塞收尾本地完整测试165/165、0 fail/skip（88.29s），skills/plugin含官方Codex安装均exit0；仅在全部模型写者停止后跑，原始日志先/tmp再归档。八个QA仓库完整tar+Git bundle通过verify，dirty/锁现场保留；acceptance/.gitignore排除活体main/work避免gitlink，快照与日志可交付。S15 r3仅只读补验决定通过，S19完整产物仍fail；各历史不覆盖。",
-    "已保存阻塞检查点251e63f；本地165/165与A/S复审通过；T08状态blocked且无完成commit，主分支仍46752f43且干净，未合并/推送。恢复要从本worktree的T08重开新模型run，保留旧失败。"
+    "已保存阻塞检查点251e63f；本地165/165与A/S复审通过；T08状态blocked且无完成commit，主分支仍46752f43且干净，未合并/推送。恢复要从本worktree的T08重开新模型run，保留旧失败。",
+    "用户更换Claude模型后明确继续；从0d3090e恢复T08，不重做T00—T07、不复用旧模型失败为PASS。新模型继承本机配置，以实际init/result核验；新run=r4，历史记录保留。",
+    "用户更正必需模型为muse-spark-1.3-contributor。r4实际init为deepseek-v4-flash，收到更正后停止任务所属调用，保留model-mismatch-r4与原trace，不计指定模型验收。后续以PD_MODEL经CLI --model显式指定，不改全局设置。",
+    "r5-check/S21显式--model muse-spark-1.3-contributor，init已确认该模型；CLI exit1、result.is_error=true、api_error_status=403、modelUsage为空，服务商要求明确同意数据用于质量改进。无实际模型推理/验收PASS；不代替用户启用数据授权、不换模型。所有r4/r5模型及runner进程已结束，T08回到blocked、T09保持pending。原始facts/stdout/stderr保留。",
+    "用户再次换模型后复查，未强制旧模型。provider-check-20260907-185120 的实际 init.model=muse-spark-1.2-contributor[1m]，exit1、is_error=true、api_error_status=403、modelUsage为空；服务商仍要求明确同意数据用于质量改进。未启用数据授权，未启动验收批次，T08仍blocked、T09pending。",
+    "用户已开启数据授权。最小调用provider-check-20260907-185354实际init=muse-spark-1.3-contributor[1m]，90秒无回复后宿主终止exit-15，未观察到403但不可判可用。使用既有S21真实Read场景与原300秒上限做一次有界复核，不批量启动。",
+    "授权开启后最小调用90秒无回复；r6-check/S21在187.46秒返回exit1/is_error=true/api_error_status=500 Internal server error，modelUsage为空，无Read。当前实际模型muse-spark-1.3-contributor[1m]，不再观察到403，但未证明模型可用；不再重复重试。S03补录现有18测试19次CLI输出，又补两个合法组仅成员重复的正确变异（0/1及对应字段）。r4三组完整快照与Git bundle均验证，现场保留，T08blocked/T09pending。",
+    "独立S03/S20补核已归档acceptance/reviews/pd-r6-coverage/report.json：S03真实CLI错误字段及双合法组的重复成员变异通过；S20仍需同Scenario内组出口/独立验收必要边的最小模型补例，输入与具体边已列明。复用审查线程边界保留，T08不因机器补核完成而完成。",
+    "用户明确要求重试；以muse-spark-1.3-contributor[1m]重跑S21，run=retry-20260907-205907，旧500原件保留；未先启动后继批次。",
+    "用户中途更换模型，已终止旧muse调用PID/PGID39714，exit-15/140秒，非产品失败；用户明确不设时间上限，新run=current-20260907-210211继承最新配置并关闭宿主截止时间(PD_TIMEOUT_SECONDS=0)，不改全局配置。",
+    "按独立pd-r6-coverage最小建议建立S20补充候选（七票、独立验收、伪边T03->T02及漏边T04->T03）。宿主plan-index实际拒绝漏成员依赖，未修改历史输入或预期。按用户无时限要求，两类harness支持PD_TIMEOUT_SECONDS=0，默认旧行为保留。",
+    "最新配置实际mimo-v2.5[1m]；current-20260907-210211 S21在187.74秒自行exit1，api_error_status500/is_errortrue/modelUsage空、无Read，timed_outfalse/timeout_seconds0。无宿主超时，不继续启动后继；保留用户后续模型验收不设宿主时限的偏好。T08blocked、T09pending。",
+    "用户再次更换模型并要求重试；run=current-20260907-210954继承当前配置，不固定历史模型，不设宿主截止时间，待实际回执判定。",
+    "current-20260907-210954/S21实际kimi-k2，20.27秒exit0/is_errorfalse且真实Read；服务可用但输出须独立审计，不能当场记Scenario通过。继续未完成r7只读/可写验收，不重启已通过实施任务，无宿主时限。",
+    "r7只读8调用（含连通S21和S20补例）均真实kimi-k2回复；S21与S01/S02/S19/S26/S27完整稿未通过，S32语义通过但自足性待纠正，S20依赖补核通过但整稿其他错误保留。r7first未遵循既有RTK/夹具边界，planning-r7生成7文件并结构校验通过后尝试在外部tmp执行生成任务；两段按实际scope违反停止，均非超时，外部Write/Bash请求被拒绝。候选178文件前后相等；3个新QA仓完整归档/bundle已验证（累计14），live保留；恢复/统一完成/修复链不放行，T08blocked/T09pending，当前不再是模型连接阻塞。",
+    "planning-r7终稿独立审计FAIL并归档reviews/pd-r7-planning-action/report.json：七文件hash核对、plan-index独立exit0；锁释放/取锁失败继续覆盖owner/trim清零误伤等错误未消除。两次外部请求均被拒绝，未发现外部脚本或对应临时仓，无成功外部执行；178候选hash一致。当前剩余阻塞为必需模型行为及完整产物验收，所有本轮调用已结束。",
+    "用户明确要求修复：按已提出的审阅模板、可执行参考步骤和串行干净夹具复测三项推进，保持现有字段/CLI/锁协议，无新锁API，不设宿主时限。r7真实模型失败为本轮规则修复的红证据；所有原件保留，产品先冻结再编辑。",
+    "r8修复：参考原语三项真实RED后11/11 GREEN；A独立11+8、BC4及仅状态/证据提交绑定验证通过；S21初始及内容认可分支独立PASS。旧r7失败原件保留；T08继续，后续模型生成/动作验收未通过。PD_TIMEOUT_SECONDS=0。",
+    "r8本地修复提交 de9726ead8c9454511b03dfc843f1464661fd9ce：三处产品文档、验收驱动和定向红绿/独立审查原件已保存；SKILL description未变，按hook既有选项SKIP_OPENAI_SYNC_CHECK=1，所有14项字段检查仍通过；SKIP_RELEASE_HOOK=1不发版。r8-planning仍运行，未因此标T08完成。",
+    "r8-first/first自然结束347.7秒、无时限；T01待验/T02pending/验证基线保持，178产品hash未变，独立动作审查进行中，本次结果尚未审查放行进入resume。r8-planning完整产物FAIL，原件归档；S21独立决策分支串行补验已启动。",
+    "r8收尾：修复de9726e已独立复核；全部当前模型调用无时间上限并自然结束。最终165/165全量在所有模型写者停止后执行且归档。独立规划与首票完整动作仍FAIL，均为未遵循已有明确规则，未确认需继续叠加的产品规则缺口；保存两个失败现场并将快照增至16，T08 blocked、T09 pending，后续依赖段不假放行。"
   ]
 }
