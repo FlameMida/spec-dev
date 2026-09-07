@@ -1,6 +1,6 @@
 interface:
   display_name: "并发执行计划"
-  short_description: "显式 opt-in 并发计划：主线程编排与唯一状态，独立 worktree 完成获批 seam 下的红绿；缺失或冲突 blocked，集成验证后完成。"
+  short_description: "显式并发、唯一进度写者与验证后集成；集成组排空在途票后主线程独占，统一通过后恢复原模式。"
   default_prompt: "用 $executing-plans-parallel 执行已批准且具备并发声明的计划，先展示模型配置并核对恢复状态。"
 policy:
   allow_implicit_invocation: true

@@ -78,6 +78,10 @@ T00、验收、最终任务只由主线程执行；已授权 TDD 例外、相关
 恢复不能仅凭“时间过去了”抢锁，也不能仅凭工具返回空列表就断言旧执行者终止；必须结合该平台的会话可见性及 worktree 活动核实，不能核实时显式阻塞。已完成并有持久验证证据的任务不重跑；未完成的验证或证据丢失部分才补验。测试日志与结果证据必须可在中断后定位：implementer 将其保存在主线程预登记的该 claim 专用临时位置，主线程接收后归档到 execution/<claim_key>/，不能只留在对话中的“通过”一句。清理前核对证据已归档且相关任务已接受，未集成 worktree 与未归档结果保留。
 
 
+## 集成组主线程分流
+
+含组 v2 在普通调度前使用 plan-state；组员和组验证票不进入 parallel 声明/implementer 集合。按 executing-plans 的 [integration-groups.md](../executing-plans/references/integration-groups.md) 收拢在途票、独占集成分支、保存待验与统一验证；期间禁止新派发和其他合入，validated_commit 不随待验提交前移。状态字段由 writing-plans 单点定义，integration 与 execution 投影同次更新。组完成后保留原 mode、base_commit、模型声明与授权恢复普通派发；不把票内待验当成切模式完成边界。
+
 ## 派发一轮
 
 1. 主线程完成 T00 和集成基线，再从 ready 的最小任务号起选择互不冲突集合；ready 只看 completed 依赖，implementer ready 回报不算完成。保留最初 base_commit 为全特性审查基线，validated_commit 为新分支的唯一派发基线。

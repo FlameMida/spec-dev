@@ -48,9 +48,9 @@ spec_dev:
 
 # 计划分解与集成组设计
 
-> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #5，吸收 AB-06/07/08/30/35/29。用户于 2026-09-07 选择“方案 2：多张小任务卡组成集成组”，并以 `ok` 批准整篇设计。本文件为批准设计的可执行化规格；2026-09-07用户确认执行后已完成T00—T03，T04模型探针遇额度限制，当前状态见plan/progress.yaml与实施记录。
+> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #5，吸收 AB-06/07/08/30/35/29。用户于 2026-09-07 选择“方案 2：多张小任务卡组成集成组”，并以 `ok` 批准整篇设计。本文件为批准设计的可执行化规格；2026-09-07用户确认执行后已完成T00—T03，T04在用户更新Claude配置后继续，当前状态见plan/progress.yaml与实施记录。
 
-> 独立审查 **Approved**，23 条 Requirement / 33 个 Scenario，见 [design-review.md](design-review.md)。用户已 review 通过并于 2026-09-07 以 `ok` 同意编写实施计划；现已激活；[实施计划](../plan/index.md) 已保存（T00—T09），用户已明确确认执行；当前T00—T03完成、T04因模型429阻塞，后继尚未实施。
+> 独立审查 **Approved**，23 条 Requirement / 33 个 Scenario，见 [design-review.md](design-review.md)。用户已 review 通过并于 2026-09-07 以 `ok` 同意编写实施计划；现已激活；[实施计划](../plan/index.md) 已保存（T00—T09），用户已明确确认执行；当前T00—T03完成、T04已恢复验证；后继沿唯一进度续跑。
 
 ## 背景与目标
 
@@ -534,3 +534,5 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 - T03：verify persisted Git checkpoints and evidence；53/53通过，未提交完成态/错分支/损坏日志/逃逸链接/不存在提交等七个拒绝分支已观察有效红；公共CLI/字段与导航契约锚定，未扩展普通implementer或额外调度。证据execution/serial/T03。
 
 - T04：仅新增具名eval输入并运行六例真实Claude探针，当前配置glm-5.3-flash[1M]全部返回provider429，无有效行为红，任务blocked；步骤3实现未执行。见execution/serial/T04/model-results.json，不能以CLI exit0/result success冒充模型成功。T05—T09仍pending。
+
+- T04：integrate exclusive group execution and recovery；36/36机器回归及六项真实模型只读决定通过，修正三处组入口分流遗漏，S28补完整夹具后重新对照；实际写入留T08；公共CLI/字段与导航契约锚定，未扩展普通implementer或额外调度。证据execution/serial/T04。

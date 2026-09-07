@@ -1,6 +1,6 @@
 interface:
   display_name: "Executing Plans"
-  short_description: "串行执行批准的计划（index.md + tasks/ + progress.yaml；存量单文件按原样读取）：消费 seam、每票红绿与契约自检；收尾 S 符合性、覆盖核对和可选架构深化，完成验收及本地/PR 对账。"
+  short_description: "执行已批准计划（index.md + tasks/ + progress.yaml）：普通票逐票完成；显式集成组由主线程独占，分票待验、统一验证、检查点恢复，保留完整收尾与交付。"
   default_prompt: "Use $executing-plans to execute the implementation plan task-by-task with TDD and final review. / 用 $executing-plans 以 TDD 逐任务执行实施计划并做收尾审查。"
 
 policy:

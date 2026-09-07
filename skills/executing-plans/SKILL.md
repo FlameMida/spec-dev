@@ -53,15 +53,21 @@ description: >-
 
 - 启动只读：`index.md` + `progress.yaml`（+ 同特性目录 spec）。**不读任何 tasks/ 正文**。
 - 执行 TN 时只读：`tasks/TN.md` + 导航表中 TN 依赖行的「产出接口」列。不提前读无关后继任务正文。
-- 任务完成条件（全部满足才置 completed）：依赖全 completed、TDD 步骤完成、测试通过、commit 可解析、接口块与导航表一致、progress.yaml 已原子更新并随任务提交。
+- 普通任务完成条件（全部满足才置 completed）：依赖全 completed、适用 TDD/纯重构步骤完成、测试通过、commit 可解析、接口块与导航表一致、progress.yaml 已原子更新并随任务提交。含组成员/验证票的完成与 ready 由 integration-groups 定义；本票操作已保存不等于 completed。
 - 偏差处理沿用主文件三级纪律；契约级偏差冻结受影响后继（导航表依赖闭包），修订 index 接口行与相关任务文件后再继续。
 
 **恢复执行（resume）**——检测到 `progress.yaml` 存在且有非 completed 任务时：
 1. 校验一致性：worktree/分支存在、`current`/completed 各任务的 commit 可 `git cat-file -e` 解析、progress 引用的任务文件都存在。任一不成立 → 停下向用户报告不一致，不猜测继续。
-2. 从下一 ready 任务（依赖全 completed 的最小编号 pending）续跑；同前只读该任务文件与依赖接口行。
+2. 普通分支从下一 ready 任务（依赖全 completed 的最小编号 pending）续跑；组分支消费 plan-state 的 ready_tasks 并按 integration-groups 恢复。同前只读该任务文件与依赖接口行。
 3. 恢复不重跑已 completed 任务的测试（最终任务的全量验证是安全网）。
 
 **存量单文件的轻量恢复（兼容分支）**：单文件计划无 progress.yaml——按复选框判读：首个含未勾选步骤的任务即续跑点；勾选状态与 git log 的 `feat(TN)` 提交对照，不一致时以提交为准并报告。
+
+## 集成组分支
+
+涉及集成组的进入、组员检查失败、调度或恢复时，先读 [integration-groups.md](references/integration-groups.md)，再应用该分支；不要先套普通票的 ready/completed 规则。进入组前检查的是整组全部外部前置，组首单票 ready 不足以开工。组内意外局部失败使成员与组 blocked；修复后成员恢复待验，全部成员待验后才执行组验证。恢复时先处理尚未待验的成员，不能仅因当前票已待验就直接跳到验证。
+
+含组的 v2 先使用 plan-index 和 plan-state 协议检查，按 [integration-groups.md](references/integration-groups.md) 执行主线程独占、待验、组验证与恢复。无组 v1/旧单文件保持原分支。每个状态边界以已提交检查点为准，组内 awaiting_verification 只允许本组显式依赖消费；组外等验证票 completed。组验证是阶段 3 的普通执行类型，不与阶段 4 的 acceptance-qa 任务混淆。
 
 ## 阶段 2：隔离工作区
 
@@ -71,6 +77,8 @@ description: >-
 
 
 ## 阶段 3：逐任务执行
+
+下面普通票流程不对集成组成员强行标 completed；到组入口时按 integration-groups 完成整组（含独立组验证任务），组成功后回本流程。纯重构使用 TDD 的前后保护步骤，不伪造失败。
 
 任务 0 已在阶段 2 完成，计划的验收任务（如有）留待阶段 4、最终任务（合并与清理）留待阶段 6——两者都不参与本阶段连续执行；对其余每个任务（任务 1 起），按序：
 

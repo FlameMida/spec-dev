@@ -23,7 +23,7 @@
       "commit": "02589347d8cb5df663228744c047fc180b54f970"
     },
     "T04": {
-      "status": "blocked",
+      "status": "in_progress",
       "tests": "BLOCKED: 6/6 Claude calls returned provider429; no valid model red; T04 implementation not run"
     },
     "T05": {
@@ -60,6 +60,9 @@
     "T01漂移守卫实际exit1：major-upgrade/portability/concurrent对validate-output及scripts通配covers交集；按已批准新增组切面单次trailer放行，旧编号/插件根/parallel行为保留；本地发版hook变更按原规则记录。",
     "T01首次提交被git diff --check拒绝：Node原始失败日志含尾空格，代码未提交；进度完成准备已撤回，完成锚待实际提交成功后填。日志以gzip无损归档，未改原始字节。",
     "T01正式提交f6f58e5成功；发版hook按既有非main策略跳过，未改版本/推送。",
-    "T04: 默认glm-5.3-flash[1M]六例实际返回429额度限制，CLI exit0/result success不能当模型成功。provider提示reset 2026-09-07 18:09:28（时区未声明）；不更改模型/预算或用静态结果冒充红。原始probe.py加UTF-8编码头修复本机直接运行解析问题，案例未改；候选规则读取范围显式排除本特性spec/plan/evals/预期。"
+    "T04: 默认glm-5.3-flash[1M]六例实际返回429额度限制，CLI exit0/result success不能当模型成功。provider提示reset 2026-09-07 18:09:28（时区未声明）；不更改模型/预算或用静态结果冒充红。原始probe.py加UTF-8编码头修复本机直接运行解析问题，案例未改；候选规则读取范围显式排除本特性spec/plan/evals/预期。",
+    "用户先要求Claude不可用时搁置测试，随后说明已重新配置且可用；据最新指示恢复原范围验证，保留首轮429失败，用red-r2新目录重跑固定输入/预期。",
+    "T04新规则首轮模型仍误用普通完成条件(S06)、单票外部前置(S08)，恢复时跳过未确认成员(S28)。保留首轮失败，入口增加先读组协议与全组前置/局部失败/恢复顺序gist，单点明确成员和组均blocked；固定输入预期不改，定向复跑。",
+    "S28探针原GIVEN未附完整组清单，模型两次将提及的T03/T04当全部成员，无法知道THEN中的T05；补固定夹具G01.members=T03/T04/T05、T05pending/verifyT06、已保存授权，在旧新候选上重新对照，预期不变。旧候选文本从02589347读取并逐文件记录真实哈希，不修改产品源码回退。"
   ]
 }
