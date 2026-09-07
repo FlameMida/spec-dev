@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T04",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -23,8 +23,9 @@
       "commit": "02589347d8cb5df663228744c047fc180b54f970"
     },
     "T04": {
-      "status": "in_progress",
-      "tests": "BLOCKED: 6/6 Claude calls returned provider429; no valid model red; T04 implementation not run"
+      "status": "completed",
+      "tests": "36/36 machine pass; six real-model readonly checks pass after fixes; action QA due T08",
+      "commit": "5a9b05bcf0fcda0b8f3d5f691778184ce82bf5c4"
     },
     "T05": {
       "status": "pending"
