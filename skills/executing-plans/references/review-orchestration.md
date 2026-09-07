@@ -2,6 +2,28 @@
 
 > **阅读时机**：executing-plans 的实施票全部完成后。串并行使用本文件唯一的维度、路数和收口规则。每个编排动作前用一句话说明进度。
 
+## 受控运行入口
+
+需要程序核验证据和收尾时，使用插件内 `scripts/review-runner.py`。此入口在 macOS/Linux 依赖 Python 3.9+、本机已认证 Claude CLI、Node 和 Git；本仓库命令经 rtk。其他客户端可继续下文原生编排，但不能声称具有受控运行器的证据写入隔离与状态保证。维度、D依据、相关测试命令及原始范围由主线程在预检后固定，不能让运行器替代这些语义裁决。
+
+配置JSON包含 `repo`（被审仓库绝对路径）、`base`、`head`、`spec`、`plan`（后两者是仓库相对路径）、`tier`（small/regular/large）、`capacity`（本次实际worker容量）、`tests`（如 `[{"id":"related","argv":["rtk","proxy","node","--test","test/cart.test.js"]}]`）。可选 `d_request` 为真实结构摩擦的 `{file,line,quote}` 引用数组；`model`/`effort` 仅沿用户既有选择，省略时继承本机默认。运行目录必须在被审仓库之外，scope需对应干净HEAD。使用：
+
+```bash
+rtk proxy python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review-runner.py" init --config review-config.json --run /absolute/review-run
+rtk proxy python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review-runner.py" run --run /absolute/review-run
+rtk proxy python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review-runner.py" status --run /absolute/review-run
+```
+
+worker只拥有内嵌stdio提供的context/read_source/run_test/submit_report，无任意Bash/Write/Agent。程序固定执行者和测试定义，原始证据按内容哈希保存，报告引用真实ID；A仍须亲自请求测试。受控入口只对逐成员现行Scenario集合非空且相同、并有独立因果说明的重复候选执行合并；不同Scenario或无Scenario的质量候选保守分列，保留全部来源，不把同一行或一次编辑当同因。程序核查引用原文、实际进程回执、独立反驳依赖、critic覆盖依据及最终未完成项；所有维度的语义判断、严重性与同根因因果仍由独立审查承担。
+
+一次run调用最多300秒；中断保留未完成，最多允许3个显式片段。沿同一目录重新run仅继续未完成任务，已完成不重跑；候选规则、控制器或被审快照变化须新run，不把后继成功拼回旧运行。先前测试已开始而无完整回执则不自动复跑。`completed`仅表示审查链闭合；`review_result`、confirmed、observations及原始测试退出码分别决定后续修复，不能当代码交付PASS。超过预算、未复核新候选或覆盖缺口必须保留incomplete/blocked，不自动无限重启。
+
+本入口保留本机认证、设置和hooks，信任宿主扩展与获批测试代码；受控工具不是OS沙箱。实际worker工具清单不符则中止。原生入口与受控入口均遵守下列语义判据，受控入口由程序完成机械校验和派发，不要求worker重复这些步骤。
+
+大工具结果通过同一受控 `context({resource,cursor})` 接口分页；模型读完全部页后才形成完整上下文依据，无须读取客户端转存路径。完成回执绑定原始stdout/stderr哈希；测试预算统一服从宿主执行片段，不另设隐含的短超时。
+
+初审各维度仅消费共同事实及自身已封存回执，避免后启动的初审跟随他人结论；D另外取得有来源的结构触发范围。反驳与critic读取实际依赖报告和所引用的测试，补查同时读取原维度报告与critic缺口。分页送达记录绑定当前worker进程，恢复须重新读取；错误响应也分页。需要删除的越界代码，其假设保留后的测试或文档缺口不另算当前独立问题。
+
 ## 输入预检
 
 主线程在扇出前从原执行记录核实 base、HEAD、完整 diff、计划入口（index.md 或存量单文件）、关联 spec 和批准变更来源。基线必须属于当前特性；保留 `git diff <base>...HEAD` 范围表达与变更文件清单。固定已核实的审查范围，代码变化则说明新范围并复审受影响维度，不混用前后证据。

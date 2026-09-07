@@ -102,6 +102,8 @@ Codex 清单（`.codex-plugin/plugin.json`、`.agents/plugins/marketplace.json`�
 
 契约校验器无法运行（缺 Node 或插件根无法定位）时，主线程按 schema 人工核对必填键与 `coverage_note`，并在报告注明"契约校验降级"——唯一定义点是 `skills/requirement-analysis/references/exploration-patterns.md`（「输出契约与校验」与「插件根解析」节）。
 
+受控审查入口（macOS/Linux）额外需要 Python 3.9+、已认证的本机 Claude CLI 和 rtk；其他平台原生流程保留，但不声称具备相同的程序控制保证。用法见 `skills/executing-plans/references/review-orchestration.md`。
+
 ## 插件包维护
 
 仓库根即插件根（扁平结构）：`skills/`、`agents/`、`commands/`、`scripts/`、`.claude-plugin/plugin.json`（Claude Code 清单）、`.codex-plugin/plugin.json`（Codex 清单）、根级 `plugin.json`（Agent Plugins 1.0.0）与 `package.json`（pi 分发清单）都在仓库根直接修改，`README.md`、`CHANGELOG.md` 只有一份，无需任何镜像同步。发版时需同步更新五处版本号（`.claude-plugin/marketplace.json` 的 `metadata.version`、`.claude-plugin/` 与 `.codex-plugin/` 两份 `plugin.json` 的 `version`、根级 `plugin.json`、`package.json`），`check-plugin.mjs` 会校验它们保持一致：
@@ -231,9 +233,9 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-des
 
 它会定位根因（含与漂移守卫 `covers` 对齐的 spec 反查），逐题确认根因/修复方案/契约影响，在 TDD 下修复，并按契约影响分流——行为改变则同步对应 spec，不变则以 `Spec-Guard: off` trailer 提交——最后可选触发 acceptance-qa。若根因涉及跨 spec 的行为契约、跨多个模块或需要新依赖，quick-fix 会停下并提议升级到 requirement-analysis。
 
-## 零 MCP 依赖
+## 无外部 MCP 服务依赖
 
-插件不再分发任何 MCP 配置。结构化深度思考由内嵌的 `sequential-thinking` skill 提供（无可用运行时时降级为回复中显式分点推演）。Tier A 浏览器自动化验收所需的 playwright / chrome-devtools MCP 改为按项目自配——见 `skills/acceptance-qa/references/mcp-setup.md`；未配置时 acceptance-qa 自动降级到 Tier D 工具链（原生 Playwright 测试、trace、控制台日志）。
+插件不依赖外部 MCP 服务。受控审查入口通过运行时生成的本地 stdio MCP 配置提供受限工具，不注册全局 MCP。结构化深度思考由内嵌的 `sequential-thinking` skill 提供（无可用运行时时降级为回复中显式分点推演）。Tier A 浏览器自动化验收所需的 playwright / chrome-devtools MCP 改为按项目自配——见 `skills/acceptance-qa/references/mcp-setup.md`；未配置时 acceptance-qa 自动降级到 Tier D 工具链（原生 Playwright 测试、trace、控制台日志）。
 
 检查插件健康状态（平台 / guardrail / 标记块 / 注入回放 / anysearch / 推理运行时六域）：`/doctor`
 

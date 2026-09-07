@@ -413,3 +413,7 @@ PR 五组的分组用于组织夹具，不将组数宣称为只有五次模型�
 原始红及严格输入重放见acceptance/model-smoke/evidence-repair-red.json、g3-switch-evidence-repair-r1.replay-integrity.json、g3-regular-evidence-repair-r1.replay-integrity.json；仅替换候选原文及证据目录，逆替换一致。独立复验确认两个语义修复点转绿；switch完成实际收口，regular仍在300秒时限截断，不算整例通过。最终交付状态以plan/progress.yaml及验收报告为准，T05尚未结束。
 
 本次实际守卫交集为portability-hygiene/tdd-seam/review-conformance：前者插件根/失败隔离/校验单点未变；tdd-seam的公共行为测试与纯重构保护未变；本特性仅落实既有证据与授权边界。其余共存分面保持本节既有声明，无取代回写。
+
+## 2026-09-07 统一修正范围扩展（进行中）
+
+用户明确要求统一方案修正证据、归属与收尾，并在披露需新增控制器后授权继续。由[受控审查运行修正](controlled-review-design.md)补充本设计：原非目标中的不新增自动调度器对新增受控入口不再适用，运行协议与原review-findings分离；既有原生跨平台入口和28项语义判据仍有效。受控入口依赖、内嵌stdio和300秒有界恢复单独声明，不以新预算结果改写旧整例记录。T05/T06实际状态仍由plan/progress.yaml唯一维护。
