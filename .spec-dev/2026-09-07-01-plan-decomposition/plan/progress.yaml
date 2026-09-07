@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T01",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -8,7 +8,9 @@
       "commit": "46752f43af19e91ff00964785f9ac35fb80d33b7"
     },
     "T01": {
-      "status": "in_progress"
+      "status": "completed",
+      "tests": "34/34 pass; red 16 expected invalid groups accepted",
+      "commit": "f6f58e5545ebc5577b0432942463c46226e36aa8"
     },
     "T02": {
       "status": "pending"
@@ -51,6 +53,7 @@
     "progress.yaml以JSON子集书写但format_version保持1；全部任务pending，无未来测试/模型/完成SHA。",
     "2026-09-07: 用户在计划执行交接问题后以ok确认开始执行；main干净，base_commit=46752f43af19e91ff00964785f9ac35fb80d33b7；本计划创建指定worktree，主线程串行。",
     "T01漂移守卫实际exit1：major-upgrade/portability/concurrent对validate-output及scripts通配covers交集；按已批准新增组切面单次trailer放行，旧编号/插件根/parallel行为保留；本地发版hook变更按原规则记录。",
-    "T01首次提交被git diff --check拒绝：Node原始失败日志含尾空格，代码未提交；进度完成准备已撤回，完成锚待实际提交成功后填。日志以gzip无损归档，未改原始字节。"
+    "T01首次提交被git diff --check拒绝：Node原始失败日志含尾空格，代码未提交；进度完成准备已撤回，完成锚待实际提交成功后填。日志以gzip无损归档，未改原始字节。",
+    "T01正式提交f6f58e5成功；发版hook按既有非main策略跳过，未改版本/推送。"
   ]
 }
