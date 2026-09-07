@@ -82,7 +82,7 @@ spec_dev_roadmap:
 
 ### #5 plan-decomposition
 
-- **2026-09-07 方案与完整设计已批准，spec 已落盘**：用户选择「方案2」——保留独立小票、集成组统一验证；随后以 `ok` 批准完整设计。spec `.spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md`（draft，待独立审查及用户 review），ADR-0008。尚未编写实施计划或实施，模型/运行时验收未执行。
+- **2026-09-07 方案与完整设计已批准，spec 独立审查通过**：用户选择「方案2」——保留独立小票、集成组统一验证；随后以 `ok` 批准完整设计。spec `.spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md`（draft，23 条 Requirement / 33 个 Scenario，独立审查 Approved；审查基线 `9a8bd71`，记录同目录 `design-review.md`），ADR-0008。当前等待用户 review 并确认开始编写实施计划；尚未编写计划或实施，模型/运行时验收未执行。
 - **本轮补充裁决**：不可逐批绿时引入 awaiting_verification，只有同组依赖可消费，组外经唯一验证票等待；组员/验证票由主线程独占现有隔离集成工作区，进入前收拢在途普通任务，整组通过后同次原子完成并推进已验证基线。保留原始审查基线、每票实现提交和失败证据；状态/代码分开提交，中断核对事实、不重复施工。无组旧计划原样读取；组数据升级及校验 CLI 必须明确支持协议。review 三问以 2–3 个检查点加一次整体确认呈现。
 - **本轮补查结果**：#2 的计划形态/恢复/完成条款、#3 的红绿时序/纯重构保护、major-upgrade 的设计原则/胶囊需部分取代；普通 implementer 五步、结果 schema、ADR-0005/0007 与 S/critic 保持。新组协议的复杂度由用户明确选择承担，不采用最初推荐的单张原子大票。
 - **新增探索指针**：spec 解释完整状态与恢复设计；`skills/executing-plans/SKILL.md:56` 是原 completed 判据、`:61` 是原 ready 判据；`skills/test-driven-development/SKILL.md:135` 是纯重构保护原定义；`scripts/validate-output.mjs:175` 起的 plan-index 是现有公共结构校验入口。前置 #4 的验收报告仅说明已交付边界，不构成本项模型证据。

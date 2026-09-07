@@ -49,6 +49,8 @@ spec_dev:
 
 > roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #5，吸收 AB-06/07/08/30/35/29。用户于 2026-09-07 选择“方案 2：多张小任务卡组成集成组”，并以 `ok` 批准整篇设计。本文件为批准设计的可执行化规格，尚未实施；模型与运行时验证均未执行。
 
+> 独立审查 **Approved**，23 条 Requirement / 33 个 Scenario，见 [design-review.md](design-review.md)。当前保持 draft，等待用户 review 并确认开始编写实施计划。
+
 ## 背景与目标
 
 让计划在普通变更和不能逐票独立通过测试的宽面迁移中，都能保持明确的任务边界、真实依赖和可恢复进度。通过显式集成组区分“本票操作已保存”与“整组验证通过”，并补齐上游参与者、约束、测试先例和上下文声明，减少拆票后的隐含条件。
