@@ -7,13 +7,13 @@ tasks:
   T03: { status: completed, commit: "736dd1967e01510a7be408fc52fb67d35c5d9508", tests: "40 passed; skills/plugin passed; S24 decision fail to pass, green tools empty", evidence: "execution/serial/T03" }
   T04: { status: completed, commit: "2c662893ece18349a3c409fc8098562146241191", tests: "40 passed; skills/plugin passed; S14 existing pass to pass; S15 fail to pass; strict tools empty", evidence: "execution/serial/T04" }
   T05: { status: completed, commit: "c8068b139762a7d5ea420a67304899b5be5e5f90", tests: "128 passed/0 failed/0 skipped；34 controlled regressions；两复杂run第二段收口，独立核心判读通过；原始语义partial已处置；最终独立对账通过并归档", evidence: "acceptance" }
-  T06: { status: in_progress, evidence: "acceptance/delivery.json" }
+  T06: { status: completed, commit: "941ec2439335a6003c195c16158505503c712fd1", tests: "最终集成树128 passed/0 failed/0 skipped；static及官方Codex安装通过；main产品hash一致", evidence: "acceptance/delivery.json" }
 resources:
-  - "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance —— rtk git worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance；rtk git branch -d plan/2026-09-06-03-review-conformance"
-  - "QA fixtures: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance/.spec-dev/2026-09-06-03-review-conformance/acceptance/model-smoke/fixtures —— 确认无存活模型/子代理且证据归档后，随本特性 worktree 清理；拒绝时只清理本登记目录再普通 remove"
-  - "repair/checkpoint commit message files: /tmp/review-conformance-repair-commit.txt, /tmp/review-conformance-checkpoint-commit.txt —— 最终任务只 unlink 本行明确路径"
-  - "commit message files: /tmp/review-conformance-T00-commit.txt, /tmp/review-conformance-T01-commit.txt, /tmp/review-conformance-T02-commit.txt, /tmp/review-conformance-T03-commit.txt, /tmp/review-conformance-T04-commit.txt, /tmp/review-conformance-state-commit.txt —— 最终任务只 unlink 本行明确路径"
-  - "long-budget audit script: /tmp/review-long-budget-audit.py —— 归档脚本与最终结果后，最终任务只 unlink 本路径"
+  - "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance —— rtk git worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance；rtk git branch -d plan/2026-09-06-03-review-conformance；2026-09-07 已清理"
+  - "QA fixtures: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance/.spec-dev/2026-09-06-03-review-conformance/acceptance/model-smoke/fixtures —— 确认无存活模型/子代理且证据归档后，随本特性 worktree 清理；拒绝时只清理本登记目录再普通 remove；2026-09-07 已清理"
+  - "repair/checkpoint commit message files: /tmp/review-conformance-repair-commit.txt, /tmp/review-conformance-checkpoint-commit.txt —— 最终任务只 unlink 本行明确路径；2026-09-07 核实原已不存在"
+  - "commit message files: /tmp/review-conformance-T00-commit.txt, /tmp/review-conformance-T01-commit.txt, /tmp/review-conformance-T02-commit.txt, /tmp/review-conformance-T03-commit.txt, /tmp/review-conformance-T04-commit.txt, /tmp/review-conformance-state-commit.txt —— 最终任务只 unlink 本行明确路径；2026-09-07 核实原已不存在"
+  - "long-budget audit script: /tmp/review-long-budget-audit.py —— 归档脚本与最终结果后，最终任务只 unlink 本路径；2026-09-07 已清理"
 notes:
   - "2026-09-06: 用户已 review Spec 并同意编写计划；激活提交 43122c0；独立设计审查 Approved。"
   - "source: /Users/maverick/feature-dev；计划来源 main，执行时 T00 再核实原始 base_commit 与绑定。"
@@ -44,3 +44,4 @@ notes:
   - "T05 completed: c8068b139762a7d5ea420a67304899b5be5e5f90归档218个任务自有文件；pre-commit通过，未发版。review_c最终完整性Approved，进入T06。"
   - "T06准备：原始base不变；main后续7文件已识别，先合入隔离分支再验证并ff-only回来源；两组模型已全部终止，测试退役无双条件候选，supersedes为空。"
   - "T06最终集成树47689519535c466941c71035203ceb6bfff809ac全库128通过/0失败/0跳过，静态与官方安装通过；main七文件逐项保留，运行器与审查规则未变；21夹具119文件最终快照已归档。"
+  - "T06 completed: main以ff-only合并到941ec2439335a6003c195c16158505503c712fd1；两spec同步锚定该实际交付提交。产品hash一致；普通worktree remove及branch -d成功，无force；夹具21/119归档已逐字节核验，8个临时提交文件原已不存在，审计临时脚本已清理。原12Requirement与新增R01-R06均DELIVERED，nightly四项仍非阻塞未运行；未push/发布。"

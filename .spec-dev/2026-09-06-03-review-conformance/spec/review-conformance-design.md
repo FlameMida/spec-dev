@@ -24,14 +24,14 @@ spec_dev:
     - "scripts/tests/review-findings.test.mjs"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: null
+  sync_commit: 941ec2439335a6003c195c16158505503c712fd1
   supersedes: []
   superseded_by: null
 ---
 
 # 收尾审查符合性与共享判据设计
 
-> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #4，吸收 AB-12/09/14/13/32。用户于 2026-09-06 批准「S 与完整性审查分工」方案、完整设计及审查后的 spec，并同意编写实施计划。12 条 Requirement / 28 个 Scenario，独立审查 Approved，见 [design-review.md](design-review.md)；本 spec 已激活，尚未开始实施。
+> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #4，吸收 AB-12/09/14/13/32。用户于 2026-09-06 批准「S 与完整性审查分工」方案、完整设计及审查后的 spec，并同意编写实施计划。12 条 Requirement / 28 个 Scenario，独立审查 Approved，见 [design-review.md](design-review.md)；本 spec 已完成本地交付，T00–T06 全部完成；验收与模型边界见 acceptance/acceptance-report.md。
 
 ## 背景与目标
 

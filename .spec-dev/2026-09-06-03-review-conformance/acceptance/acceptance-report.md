@@ -1,6 +1,6 @@
 # 审查符合性验收报告
 
-**T05实质验收与独立完整性审查通过；归档提交/状态以progress.yaml为准，T06待执行。** 用户已批准每段1800秒、最多3段、Claude CLI费用不限，继承本机设置。冻结产品129bbe2上两复杂案例均第二段completed，真实D/无误D、容量、A本人测试、A/B/S empty合并及最终critic独立核实。全库 **128通过、0失败、0跳过**，含34项受控回归，全部静态与官方Codex安装检查通过。原始模型附属语义错误已独立排除/收窄，准确性仍记partial；见[真实复验](controlled-runtime/long-budget-review.md)。
+**T00–T06全部完成并本地交付；实际合并、资源清理与任务状态分别见本特性目录的acceptance/delivery.json和plan/progress.yaml。** 用户已批准每段1800秒、最多3段、Claude CLI费用不限，继承本机设置。冻结产品129bbe2上两复杂案例均第二段completed，真实D/无误D、容量、A本人测试、A/B/S empty合并及最终critic独立核实。全库 **128通过、0失败、0跳过**，含34项受控回归，全部静态与官方Codex安装检查通过。原始模型附属语义错误已独立排除/收窄，准确性仍记partial；见[真实复验](controlled-runtime/long-budget-review.md)。
 
 下表28个Scenario为控制器实施前的历史目标证据：**24 pass / 0 fail / 4 unverified**，后4项是已批准非阻塞nightly。它们不代表新控制器单独覆盖全部28场景，也不是完整验收通过；新旧运行级门分别记在 `run-gates.json`。
 
@@ -96,4 +96,8 @@ R01–R06共6项DELIVERED，单列于controlled-runtime/long-budget-runtime-reco
 
 ## coverage_note
 
-原12Requirement均DELIVERED；28Scenario历史目标24pass/0fail/4非阻塞nightly未运行，静态命中不等于完整模型PASS。当前控制器128项完整回归、独立代码增量审查、两复杂真实恢复收口及A/B/S正向合并证据齐全。模型原始语义partial：C seam误关联、reviewed误读及附属授权推断等已独立否决/收窄，不据此新增批准门、测试或修改要求。通过限于固定案例、版本与配置，不承诺模型稳定零误报。T05实质验收与独立完整性审查通过；归档提交/状态以progress.yaml为准，T06待执行。
+原12Requirement均DELIVERED；28Scenario历史目标24pass/0fail/4非阻塞nightly未运行，静态命中不等于完整模型PASS。当前控制器128项完整回归、独立代码增量审查、两复杂真实恢复收口及A/B/S正向合并证据齐全。模型原始语义partial：C seam误关联、reviewed误读及附属授权推断等已独立否决/收窄，不据此新增批准门、测试或修改要求。通过限于固定案例、版本与配置，不承诺模型稳定零误报。T00–T06全部完成并本地交付；实际合并、资源清理与任务状态分别见本特性目录的acceptance/delivery.json和plan/progress.yaml。
+
+## 本地交付
+
+main已快进至 `941ec2439335a6003c195c16158505503c712fd1`，两spec.sync_commit锚定该实际交付提交。最终集成树全库128/0/0与静态检查见delivery-checks.json；主线8.3.0及七文件变更保留，产品hash一致。worktree/计划分支/夹具及登记审计临时脚本已清理；八个登记提交说明文件原已不存在。未push或发布；交付记录见delivery.json。
