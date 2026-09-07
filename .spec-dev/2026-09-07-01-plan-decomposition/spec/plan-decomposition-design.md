@@ -48,9 +48,9 @@ spec_dev:
 
 # 计划分解与集成组设计
 
-> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #5，吸收 AB-06/07/08/30/35/29。用户于 2026-09-07 选择“方案 2：多张小任务卡组成集成组”，并以 `ok` 批准整篇设计。本文件为批准设计的可执行化规格；2026-09-07用户确认执行后已完成T00—T03，T04在用户更新Claude配置后继续，当前状态见plan/progress.yaml与实施记录。
+> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #5，吸收 AB-06/07/08/30/35/29。用户于 2026-09-07 选择“方案 2：多张小任务卡组成集成组”，并以 `ok` 批准整篇设计。本文件为批准设计的可执行化规格；2026-09-07用户确认执行后已完成T00—T07；Claude调用恢复后正在执行T08，当前状态见plan/progress.yaml与实施记录。
 
-> 独立审查 **Approved**，23 条 Requirement / 33 个 Scenario，见 [design-review.md](design-review.md)。用户已 review 通过并于 2026-09-07 以 `ok` 同意编写实施计划；现已激活；[实施计划](../plan/index.md) 已保存（T00—T09），用户已明确确认执行；当前T00—T03完成、T04已恢复验证；后继沿唯一进度续跑。
+> 独立审查 **Approved**，23 条 Requirement / 33 个 Scenario，见 [design-review.md](design-review.md)。用户已 review 通过并于 2026-09-07 以 `ok` 同意编写实施计划；现已激活；[实施计划](../plan/index.md) 已保存（T00—T09），用户已明确确认执行；当前T00—T07完成，T08正在执行机器与真实模型验收；后继沿唯一进度续跑。
 
 ## 背景与目标
 
@@ -546,3 +546,5 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 - T08修复：按原S05/S14/S16拒绝只含旧业务树证据的待验状态，逐字校验已提交checkpoint；3例回归真实红后相关48/48绿。原模型失败促成既有维护门/暂停顺序、未知差异保留、v2模板路由及证据路径/提交顺序的入口澄清；契约未扩张，实际操作仍待新轮验证。
 
 - T08第二轮澄清：既有特性锁SHA-256与L.maintenance路径具体化（沿concurrent演练既有实现），列操作顺序并禁止短命shell PID自证owner；恢复证据缺失/已解释树变化须补验。WP组票先读执行协议、准确归档JSON与符号清零，不改变批准状态/格式/调度契约。r2真实模型失败与harness输入缺口分别记录，待r3验证。
+
+- T08第三轮S复审：新增锁禁令被独立确认误覆盖v1激活前授权请求；限定parallel/v2持锁阶段，保留既有v1先存请求与H后取锁顺序。模型配额403阻塞后不继续调用，最终任务尚未开始。

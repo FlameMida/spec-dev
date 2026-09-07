@@ -43,7 +43,8 @@
       "commit": "0528a24bf063e6411b4fb5edff570f883bccde0f"
     },
     "T08": {
-      "status": "in_progress"
+      "status": "blocked",
+      "tests": "165/165 final local tests; skills/plugin pass; mandatory model/action QA BLOCKED by provider quota and retained failures"
     },
     "T09": {
       "status": "pending"
@@ -59,7 +60,8 @@
     "[预登记] readonly fixtures: 本特性 acceptance/decision-fixtures/run —— 测试先例有/无、参与者、来源冲突原件；随验收证据保留，不删除未归档输入",
     "[本计划拥有] 外部审查/机器原件 /tmp/pd-review-a、pd-review-b-quality、pd-review-s、pd-review-refute、pd-review-extra、pd-qa-judge-01-11、pd-qa-judge-12-22、pd-qa-machine-r1 —— T08核验后复制到本特性acceptance，原件归档后方可清重复；原生审查子代理仅写上述路径。",
     "[本计划拥有] 补充审计/tmp/pd-qa-judge-23-33、pd-qa-action-r1-first、pd-qa-planning-action、pd-review-b-refute；acceptance/planning-fixtures/r2、action-fixtures/r2/planning-r2/repair-r2 —— 归档后仅清理登记的临时Git现场",
-    "[预登记] 新一轮acceptance/action-fixtures/r3、repair-r3、planning-r3及model-smoke/r3；外部/tmp/pd-qa-planning-r2、pd-qa-judge-r2-a/b/c —— 同样保留失败原件、归档后才清理；只停止各process.json可核对归属的PID/PGID。"
+    "[预登记] 新一轮acceptance/action-fixtures/r3、repair-r3、planning-r3及model-smoke/r3；外部/tmp/pd-qa-planning-r2、pd-qa-judge-r2-a/b/c —— 同样保留失败原件、归档后才清理；只停止各process.json可核对归属的PID/PGID。",
+    "[本计划拥有] /tmp/pd-qa-machine-final-local、pd-final-local.py、pd-completeness-interim、pd-review-a-r3、pd-review-s-r3、pd-review-s-r4、pd-review-bc-r3、pd-qa-judge-r3；acceptance/fixture-snapshots八组完整归档已验证，live fixture暂留，T09不提前清理。"
   ],
   "notes": [
     "2026-09-07: 用户选择方案2并批准完整设计、spec及编写计划；尚未获执行授权，未创建实施worktree，未运行候选代码或模型验收。",
@@ -81,6 +83,8 @@
     "T07首轮green在S23示例中把后台身份推成服务凭据，在S25只列污染/缺记录两分支而遗漏完整记录可直接消费。入口补来源边界与正常消费路径，维持既有批准/修订门，固定输入复跑。",
     "T08机器全量162/162、0 fail/skip；全部写者停止后原始输出先写/tmp再归档。33例只读并行执行独立输出目录；沿T04/T06已证实夹具缺口补S12验证角色与S28完整成员上下文，THEN不变。原生五维审查分批，来源范围冻结为98d80a5d。",
     "T08收尾缺陷修复：独立反驳确认T03历史证据错绑当前业务树、checkpoint空白误报；新增3个真实Git回归先16/19红，再48/48相关绿。原模型锁后写入与规划证据路径/提交绑定失败保留；补原协议入口及模板路由，不扩展契约。B简洁性导航差异经独立对照为v1冻结/v2严格的批准格式差异，不作中级缺陷；去除runtimeFacts无意义空数组返回为局部同义清理。",
-    "T08 r2：两次真实首票操作仍绕过维护门，宿主按PID/PGID终止并保留-15事实，禁止进入resume。planning-r2真实生成通过结构CLI但独立审计仍fail。补既有SHA-256/L.maintenance定位与逐步锁操作、恢复补验边界、规划前必读执行协议和准确符号检查。来源为既有concurrent受控replay实际路径，未新增锁API。S19/S26/S27的Read-only夹具缺精确文件清单，产生无效猜测读取；宿主停止并补目录穷举，不计产品失败。S21补真实spec片段；THEN均保持。"
+    "T08 r2：两次真实首票操作仍绕过维护门，宿主按PID/PGID终止并保留-15事实，禁止进入resume。planning-r2真实生成通过结构CLI但独立审计仍fail。补既有SHA-256/L.maintenance定位与逐步锁操作、恢复补验边界、规划前必读执行协议和准确符号检查。来源为既有concurrent受控replay实际路径，未新增锁API。S19/S26/S27的Read-only夹具缺精确文件清单，产生无效猜测读取；宿主停止并补目录穷举，不计产品失败。S21补真实spec片段；THEN均保持。",
+    "r3实际init仍为kimi-k2；多数调用exit1返回403 five-hour usage limit，全部进程已结束，不继续尝试。S15/S19有完整结果待独立判读。测试permission_mode显式default（未改全局配置/模型），暴露rtk ls等未列入窄Bash白名单：后续harness扩为Bash(rtk *)并保留授权范围审计，此调整尚未运行。S独立审查及B/C反驳确认新增锁禁令误覆盖v1激活前请求，已按原契约限定parallel/v2，原v1先保存请求/H再取锁不变；待本地核对。T08保持blocked、T09不启动，无合并/推送/roadmap完成回写。",
+    "阻塞收尾本地完整测试165/165、0 fail/skip（88.29s），skills/plugin含官方Codex安装均exit0；仅在全部模型写者停止后跑，原始日志先/tmp再归档。八个QA仓库完整tar+Git bundle通过verify，dirty/锁现场保留；acceptance/.gitignore排除活体main/work避免gitlink，快照与日志可交付。S15 r3仅只读补验决定通过，S19完整产物仍fail；各历史不覆盖。"
   ]
 }
