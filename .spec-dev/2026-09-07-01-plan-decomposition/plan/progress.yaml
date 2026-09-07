@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T05",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -28,7 +28,9 @@
       "commit": "5a9b05bcf0fcda0b8f3d5f691778184ce82bf5c4"
     },
     "T05": {
-      "status": "in_progress"
+      "status": "completed",
+      "tests": "71/71 machine pass; four real-model readonly decisions pass; generated artifact due T08",
+      "commit": "d4f92dab3a1493b842517fc7f0962714792c6117"
     },
     "T06": {
       "status": "pending"
