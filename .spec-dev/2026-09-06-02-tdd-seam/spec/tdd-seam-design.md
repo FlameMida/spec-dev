@@ -36,6 +36,8 @@ spec_dev:
 
 # 公共测试落点与红绿纪律（tdd-seam）设计
 
+> **Superseded-pending (2026-09-07)** — 本 spec 的「Requirement: 红绿循环与重构分离」、「Requirement: 收尾纯重构的行为保护」将被 .spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
+
 > roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #3；吸收报告 AB-01～05，并处理 #1 明确留给本项的纯文案例外归属。用户于 2026-09-06 批准推荐方案、完整设计及审查后的 spec，并同意编写实施计划；本 spec 已激活并完成本地交付；必需验收、取代回写与清理证据见 ../acceptance/acceptance-report.md。
 
 ## 背景与目标

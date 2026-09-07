@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: plan-decomposition
-  status: draft
+  status: active
   covers:
     - "skills/writing-plans/SKILL.md"
     - "skills/writing-plans/agents/openai.yaml"
@@ -49,7 +49,7 @@ spec_dev:
 
 > roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #5，吸收 AB-06/07/08/30/35/29。用户于 2026-09-07 选择“方案 2：多张小任务卡组成集成组”，并以 `ok` 批准整篇设计。本文件为批准设计的可执行化规格，尚未实施；模型与运行时验证均未执行。
 
-> 独立审查 **Approved**，23 条 Requirement / 33 个 Scenario，见 [design-review.md](design-review.md)。当前保持 draft，等待用户 review 并确认开始编写实施计划。
+> 独立审查 **Approved**，23 条 Requirement / 33 个 Scenario，见 [design-review.md](design-review.md)。用户已 review 通过并于 2026-09-07 以 `ok` 同意编写实施计划；现已激活，尚未实施。
 
 ## 背景与目标
 
@@ -96,7 +96,7 @@ spec_dev:
 
 ## 取代与共存
 
-部分取代只在交付时回写旧 Requirement；本 spec 仍 draft，不提前写 pending 或修改旧条款。标题以下均按主名匹配、忽略旧标题的“改了什么”括注。
+部分取代只在交付时回写旧 Requirement；本 spec 已获用户 review 并激活，同次向旧 spec 写入 pending；旧条款内容及 active 状态保留至本项交付。标题以下均按主名匹配、忽略旧标题的“改了什么”括注。
 
 | 旧 active spec | 被部分取代的 Requirement | 新版本落点与原因 |
 |---|---|---|

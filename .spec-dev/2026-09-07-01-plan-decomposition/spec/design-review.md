@@ -5,7 +5,7 @@
 - 审查基线：`9a8bd71c3e121972465279ee6396b8f13c2da680`。
 - 审查方式：原生独立子代理 `plan_decomposition_spec_review`，`fork_turns=none`，只读；按 requirement-analysis 的 spec-reviewer-prompt 和共享 design-principles 校准。
 - 结论：**Approved**。23 条 Requirement / 33 个 Scenario；无阻塞问题、无需行为修订。
-- 状态：用户已批准方案与完整设计；当前 spec review 及“开始编写实施计划”的确认仍待用户。本记录不授权实施。
+- 状态：用户已批准方案与完整设计；用户已于 2026-09-07 review 通过并同意开始编写实施计划；spec 已激活。本记录不授权实施。
 
 ## 主线程 inline 自检
 
