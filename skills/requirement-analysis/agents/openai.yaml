@@ -1,6 +1,6 @@
 interface:
   display_name: "Requirement Analysis"
-  short_description: "需求设计：有界探索与明确交付条件、逐题澄清、方案和完整设计批准；消费共享判据，声明公共测试落点，spec 经独立审查后交接计划。"
+  short_description: "需求设计：有界探索含测试先例，参与者与约束归属明确；逐题澄清、整篇批准和目标化review后交接计划，公共seam沿来源继承。"
   default_prompt: "Use $requirement-analysis to design this feature through the 8-phase workflow and produce a spec. / 用 $requirement-analysis 走 8 阶段工作流设计这个功能并产出 spec。"
 
 policy:

@@ -46,7 +46,7 @@ spec_dev_roadmap:
 ### #N <子项目名>
 
 - **关键裁决**：分解期与本子项目相关的澄清结论，每条一行
-- **探索指针**：相关 explorations 文件、前置子项目 spec/acceptance-report 的仓库根相对路径
+- **探索指针**：相关 explorations 文件、前置子项目 spec/acceptance-report 的仓库根相对路径 每个新增指针同时附一句用途/适用边界摘要；摘要与路径成对保留，源文是事实依据。
 - **已扫范围**：分解期/前置子项目已完成的探索模态与范围（续接的 requirement-analysis 阶段 2 对已登记范围不重扫、只补缺口）
 - **留给后继的注意事项**：（交付回写时由 executing-plans 追加；登记时留空）
 

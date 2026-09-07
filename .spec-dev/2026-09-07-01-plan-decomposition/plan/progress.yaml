@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T07",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -38,7 +38,7 @@
       "commit": "cd6b7b0dcfee538439ce9dc7dc81d5577e7ffbe8"
     },
     "T07": {
-      "status": "pending"
+      "status": "in_progress"
     },
     "T08": {
       "status": "pending"
@@ -72,6 +72,7 @@
     "T04 real-model checks resumed on configured kimi-k2[1M]; proceeding to T05.",
     "T06红探针：S30/S31既有核心保护已通过，S06/S12未落到整组blocked/成员待验协议。按本票范围补test-strategy指向执行单点的gist+pointer，并修正TDD description仍限定收尾的遗漏；不改变状态字段。",
     "S12原输入只给T06编号，未给其group-verification角色；模型混入成员延期分支。补批准夹具的成员清单/全部待验/T06唯一验证身份，旧新候选另目录对照，固定THEN不变；原green保存为失败证据。",
-    "S12完整角色夹具仍有效失败：green-context-s12模型把T06写failed、G01写pending_group（非法status）；补入口gist中规范状态名与成员保留待验、组外等待，完整状态协议仍仅在integration-groups定义。原失败输出保留，固定输入定向复跑。"
+    "S12完整角色夹具仍有效失败：green-context-s12模型把T06写failed、G01写pending_group（非法status）；补入口gist中规范状态名与成员保留待验、组外等待，完整状态协议仍仅在integration-groups定义。原失败输出保留，固定输入定向复跑。",
+    "T07首轮green在S23示例中把后台身份推成服务凭据，在S25只列污染/缺记录两分支而遗漏完整记录可直接消费。入口补来源边界与正常消费路径，维持既有批准/修订门，固定输入复跑。"
   ]
 }

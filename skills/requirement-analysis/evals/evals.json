@@ -75,6 +75,36 @@
       "id": "review-conformance-s25",
       "prompt": "S25 既有时效与失败规则继续生效\nGIVEN 派发涉及含 Superseded 条款的 active spec，且子代理执行失败\nWHEN 消费与恢复",
       "expected_output": "派发保留现行条款过滤要求，失败按原单点缩小范围重试一次、再失败主线程接管；缩小处理批次不缩减总覆盖，未覆盖显式说明。"
+    },
+    {
+      "id": "plan-decomposition-s21",
+      "prompt": "检查点不变成多重授权\nGIVEN spec 有参与者和约束两处值得用户重点审阅。\nWHEN 呈现 review 门。",
+      "expected_output": "陈述两处检查点并只问是否确认并开始计划；用户仅认可内容时不冒充执行授权，检查暴露独立决策时按一次一题处理。"
+    },
+    {
+      "id": "plan-decomposition-s22",
+      "prompt": "存在与不存在测试均如实报告\nGIVEN 两个 standard 夹具分别有可复用公共入口测试、没有相邻测试。\nWHEN 完成探索。",
+      "expected_output": "前者提供来源与复用建议，后者明确缺口；不将 standard 改成 deep 多模态盲扫，不凭没有先例发明私有测试 seam。"
+    },
+    {
+      "id": "plan-decomposition-s23",
+      "prompt": "非人触发者不能遗漏\nGIVEN 同一操作既可由用户启动，也可由后台重试触发，后者没有交互式授权能力。\nWHEN 设计 spec。",
+      "expected_output": "列出两类实际参与者与适用边界，给后台重复执行命名 Scenario，不给每类参与者机械复制全部场景或编造不存在的 actor。"
+    },
+    {
+      "id": "plan-decomposition-s24",
+      "prompt": "不同约束分别有证据\nGIVEN “状态只能主线程写”和“工作区路径不能逃逸”可独立失败。\nWHEN 设计并拆票。",
+      "expected_output": "分别映射写者门与路径检查、对应 Scenario，并在消费任务继承；不能以其中一项通过证明另一项。"
+    },
+    {
+      "id": "plan-decomposition-s25",
+      "prompt": "被拒解读不能重新变需求\nGIVEN 用户已拒绝“多任务意味着共享目录多人并发写”。\nWHEN 下游计划消费 spec。",
+      "expected_output": "读取采用理解及来源，不重新增加该行为；无真实歧义时不捏造拒绝项，规范性决策仍按 ADR 资格判断。"
+    },
+    {
+      "id": "plan-decomposition-s33",
+      "prompt": "摘要冲突时回读源文\nGIVEN 胶囊摘要说模型通过，来源报告实际是 unverified。\nWHEN 续接下一子项目。",
+      "expected_output": "以实际来源及其时点报告边界、修正当前使用的摘要，不重复索要原始需求；交付后仍追加下一项注意事项。"
     }
   ]
 }

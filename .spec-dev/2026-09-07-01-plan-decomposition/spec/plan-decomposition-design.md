@@ -540,3 +540,5 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 - T05：generate typed tasks and integration-group plans；71/71机器检查及4例真实模型只读决策通过；接口与范围按批准计划自检，实际产物验收留T08；公共CLI/字段与导航契约锚定，未扩展普通implementer或额外调度。证据execution/serial/T05。
 
 - T06：align refactor and group verification discipline；34/34机器检查及4例真实模型只读决策通过；保留S12错误状态证据后定向修复，既有schema未改；公共CLI/字段与导航契约锚定，未扩展普通implementer或额外调度。证据execution/serial/T06。
+
+- T07：complete requirement and context inputs；40/40机器检查及6例真实模型只读决策通过；参与者能力与拒绝记录消费边界经真实失败补充，实际夹具验收留T08；公共CLI/字段与导航契约锚定，未扩展普通implementer或额外调度。证据execution/serial/T07。

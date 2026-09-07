@@ -136,6 +136,12 @@ deep     — 跨层架构变更、新技术栈、用户使用"彻底/全面/审�
 
 **回补探索**：澄清或方案期发现新库/新领域，允许回补一轮外部探索（同样单响应发起），回补后继续当前阶段。
 
+## 需求完备性与约束归属
+
+standard 档在既有有界探索主题内核对相邻测试、公共行为入口与 fixture/mock 惯例，或单独分配这个主题；细则见 exploration-patterns，不将 standard 升成 deep 多模态盲扫。
+
+在方案定型前枚举实际参与者及其适用行为/错误路径，包括真实的后台或系统触发者；独立约束分别映射负责边界和验证位置。判据沿 writing-plans/references/design-principles 的迁移过渡与约束归属单点，spec 模板保存参与者及有依据的拒绝解读。没有真实 actor/歧义时不为凑数发明，也不重开获批 seam。参与者盘点只记录有来源的能力与边界，不把后台身份推成已有凭据或授权策略。下游先读采用理解及裁决来源；已有完整记录且需求无冲突就直接消费，不因存在拒绝记录而假定 spec 写错、缺项或必须重新批准。确实缺记录或存在冲突时才按原修订流程处理。
+
 ## 阶段 4: 对抗验证 + 提出 2-3 方案
 
 **目标**：先证伪自己的信息，再给出可比较的方案。
@@ -178,6 +184,7 @@ deep     — 跨层架构变更、新技术栈、用户使用"彻底/全面/审�
 - **取代分流（supersede triage）**：对阶段 2 探索命中的每份行为相交 active spec 做三分类判定并写入 spec——**完全取代**（新 spec 整体替换旧特性）与**部分取代**（替换旧 spec 的部分 Requirement）登记进 frontmatter `supersedes`（仓库根相对路径）与正文「取代与共存」节（部分取代必须列出被取代的具体 Requirement 标题清单，每条附一句取代理由）；**分面共存**（同文件不同行为切面、无冲突）不登记 supersedes，记一行判定理由并各自声明 covers。节模板与标注形制见 [spec-template.md](assets/spec-template.md)。用户要求删除整个特性且无新行为承接时，产出仅含 REMOVED Requirements 的轻量 spec 作为后继（记录删除理由，交付时按完全取代回写旧 spec）。spec 的取代回写随交付生效（executing-plans 最终任务），与 ADR 的即时回写构成双轨
 - 结构参考 [spec-template.md](assets/spec-template.md)，按需增删节；**行为需求必须用 Requirement + Scenario 结构表达**（`### Requirement:` 一条一个 SHALL 且可观察，`#### Scenario:` 用 GIVEN/WHEN/THEN——它们是后续 TDD 测试与验收的直接锚点）；修改既有功能时行为部分改用差量三节（ADDED/MODIFIED/REMOVED Requirements，见模板）
 - **漂移守卫锚点（必填）**：落盘时保留模板顶部的 `spec_dev` frontmatter，填写 `feature` 与 `covers`（本特性拥有的代码路径 glob；纯文档特性留空数组 `[]`）——此阶段 `status` 保持 `draft`。该 frontmatter 是 pre-commit / CI 漂移守卫的锚点，缺失或永停 draft 意味着该特性代码不受"改了代码却没同步 spec"的拦截保护
+- 新建/本次更新胶囊指针时使用一句用途/适用边界摘要 + 精确来源路径；摘要不能替代续接读取原文，旧胶囊没有摘要仍正常读，不全库回填。
 - **roadmap 回填（仅当本特性是某 active roadmap 的子项目）**：把特性目录路径回填至 roadmap 对应子项目行、状态置 `in-progress`；不属于任何 roadmap 则无此步
 - git commit 该 spec 文件、本次新增的 ADR 文件与 roadmap 回填（仅这些文件；非 git 仓库则跳过并向用户说明）
 
@@ -194,6 +201,8 @@ deep     — 跨层架构变更、新技术栈、用户使用"彻底/全面/审�
 **第二步——对抗验证**：派 1 个临时子代理（Claude Code 用 general-purpose，Codex 用 `spawn_agent`），提示词按 [spec-reviewer-prompt.md](references/spec-reviewer-prompt.md) 模板构造，对 spec 做独立审查（完整性/一致性/清晰度/范围/YAGNI）。审查回报的问题逐条处置：成立则修 spec，不成立则记录理由。
 
 **第三步——用户 review 门**：
+
+先展示最新版 spec 链接、简短变更摘要和 2–3 个针对实际参与者、约束或边界的陈述式检查点，再使用下方一次整体确认。检查暴露多个决策时仍逐题澄清，不将提示变成多题或额外批准门。
 
 > 「Spec 已写入并提交至 `<路径>`。请 review，如需修改请告诉我，确认后我们开始编写实施计划。」
 
