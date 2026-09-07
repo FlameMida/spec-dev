@@ -34,6 +34,7 @@ spec_dev:
     - "scripts/tests/integration-plan.test.mjs"
     - "scripts/tests/plan-state.test.mjs"
     - "scripts/tests/plan-single-format.test.mjs"
+    - "scripts/tests/plugin-root.test.mjs"
     - "scripts/schemas/README.md"
     - "README.md"
     - "README.zh-CN.md"
@@ -49,7 +50,7 @@ spec_dev:
 
 > roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #5，吸收 AB-06/07/08/30/35/29。用户于 2026-09-07 选择“方案 2：多张小任务卡组成集成组”，并以 `ok` 批准整篇设计。本文件为批准设计的可执行化规格，尚未实施；模型与运行时验证均未执行。
 
-> 独立审查 **Approved**，23 条 Requirement / 33 个 Scenario，见 [design-review.md](design-review.md)。用户已 review 通过并于 2026-09-07 以 `ok` 同意编写实施计划；现已激活，尚未实施。
+> 独立审查 **Approved**，23 条 Requirement / 33 个 Scenario，见 [design-review.md](design-review.md)。用户已 review 通过并于 2026-09-07 以 `ok` 同意编写实施计划；现已激活；[实施计划](../plan/index.md) 已保存（T00—T09），等待明确执行授权，尚未实施。
 
 ## 背景与目标
 
