@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T06",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -33,7 +33,9 @@
       "commit": "d4f92dab3a1493b842517fc7f0962714792c6117"
     },
     "T06": {
-      "status": "in_progress"
+      "status": "completed",
+      "tests": "34/34 machine pass; four real-model readonly cases pass; S12 complete-role rerun corrected invalid status",
+      "commit": "cd6b7b0dcfee538439ce9dc7dc81d5577e7ffbe8"
     },
     "T07": {
       "status": "pending"
