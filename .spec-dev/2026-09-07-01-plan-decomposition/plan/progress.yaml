@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T06",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -33,7 +33,7 @@
       "commit": "d4f92dab3a1493b842517fc7f0962714792c6117"
     },
     "T06": {
-      "status": "pending"
+      "status": "in_progress"
     },
     "T07": {
       "status": "pending"
@@ -67,6 +67,9 @@
     "用户先要求Claude不可用时搁置测试，随后说明已重新配置且可用；据最新指示恢复原范围验证，保留首轮429失败，用red-r2新目录重跑固定输入/预期。",
     "T04新规则首轮模型仍误用普通完成条件(S06)、单票外部前置(S08)，恢复时跳过未确认成员(S28)。保留首轮失败，入口增加先读组协议与全组前置/局部失败/恢复顺序gist，单点明确成员和组均blocked；固定输入预期不改，定向复跑。",
     "S28探针原GIVEN未附完整组清单，模型两次将提及的T03/T04当全部成员，无法知道THEN中的T05；补固定夹具G01.members=T03/T04/T05、T05pending/verifyT06、已保存授权，在旧新候选上重新对照，预期不变。旧候选文本从02589347读取并逐文件记录真实哈希，不修改产品源码回退。",
-    "T04 real-model checks resumed on configured kimi-k2[1M]; proceeding to T05."
+    "T04 real-model checks resumed on configured kimi-k2[1M]; proceeding to T05.",
+    "T06红探针：S30/S31既有核心保护已通过，S06/S12未落到整组blocked/成员待验协议。按本票范围补test-strategy指向执行单点的gist+pointer，并修正TDD description仍限定收尾的遗漏；不改变状态字段。",
+    "S12原输入只给T06编号，未给其group-verification角色；模型混入成员延期分支。补批准夹具的成员清单/全部待验/T06唯一验证身份，旧新候选另目录对照，固定THEN不变；原green保存为失败证据。",
+    "S12完整角色夹具仍有效失败：green-context-s12模型把T06写failed、G01写pending_group（非法status）；补入口gist中规范状态名与成员保留待验、组外等待，完整状态协议仍仅在integration-groups定义。原失败输出保留，固定输入定向复跑。"
   ]
 }

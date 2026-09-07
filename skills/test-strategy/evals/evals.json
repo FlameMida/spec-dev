@@ -20,6 +20,16 @@
       "id": "tdd-seam-s15",
       "prompt": "S15 四类依赖与集成信心：\nGIVEN 测试涉及远端 API、数据库、时钟/随机源、文件系统\nWHEN 选择策略及 Lane",
       "expected_output": "每类按上述规则得到真实依赖或替身方案；纯内存替身可以进入 fast，真实 IO 按 PR/nightly 安排；fast 全绿不能证明真实 DB/网络集成通过。"
+    },
+    {
+      "id": "plan-decomposition-s06",
+      "prompt": "意外局部失败阻塞\nGIVEN T03 的本应通过的独立行为保护测试失败，且不属于批准的组间暂时失败范围。\nWHEN 准备推进 T04。",
+      "expected_output": "T03/整组 blocked，不自动扩大“预期失败”白名单；保存原因并先修复或走契约偏差。"
+    },
+    {
+      "id": "plan-decomposition-s12",
+      "prompt": "失败不移动已验证基线\nGIVEN 组基线 B 已通过，T06 在当前实现 tip 测试失败。\nWHEN 记录结果。",
+      "expected_output": "T06/组 blocked，成员保持待验，validated_commit 仍为 B；报告失败命令及日志，不派组外任务。"
     }
   ]
 }
