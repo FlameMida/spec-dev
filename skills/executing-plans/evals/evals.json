@@ -190,6 +190,76 @@
       "id": "review-conformance-s28",
       "prompt": "S28 架构建议不破坏测试纪律\nGIVEN D 建议调整内部结构，公共 seam 与行为契约仍成立，最终全量属于原计划收尾\nWHEN 主线程决定后续处置",
       "expected_output": "按现有授权和 TDD 收尾纯重构规则记录保护证据，不增加逐私有函数测试，不把最终全量变为每票解锁门。"
+    },
+    {
+      "id": "plan-decomposition-s05",
+      "prompt": "已保存批次仍显示待验\nGIVEN T03 已提交、局部检查符合计划，整体测试仍因后续迁移未完成而失败。\nWHEN 保存 T03 进度。",
+      "expected_output": "status=awaiting_verification、tests=pending_group，保留真实失败日志、implementation_commit；commit 完成锚仍为空，验证基线不变。"
+    },
+    {
+      "id": "plan-decomposition-s06",
+      "prompt": "意外局部失败阻塞\nGIVEN T03 的本应通过的独立行为保护测试失败，且不属于批准的组间暂时失败范围。\nWHEN 准备推进 T04。",
+      "expected_output": "T03/整组 blocked，不自动扩大“预期失败”白名单；保存原因并先修复或走契约偏差。"
+    },
+    {
+      "id": "plan-decomposition-s07",
+      "prompt": "同一状态对组内外不同\nGIVEN T03 待验，组内 T04 依赖 T03，组外 T09 依赖组验证 T06，全部组外前置已完成。\nWHEN 计算 ready。",
+      "expected_output": "T04 可以执行、T09 不可以，且不把 T03 改 completed 来解锁。"
+    },
+    {
+      "id": "plan-decomposition-s08",
+      "prompt": "外部前置未完不进组\nGIVEN 组末成员 T05 还依赖组外 pending 的 T02，虽然组首 T03 的依赖已满足。\nWHEN 选择下个任务。",
+      "expected_output": "不激活整组；先按普通规则完成 T02，避免进入半成品分支后再等待外部工作。"
+    },
+    {
+      "id": "plan-decomposition-s11",
+      "prompt": "全组通过同次完成\nGIVEN T03—T05 待验，T06 在实现提交 V 对应业务树上运行全部组验证并通过。\nWHEN 接受整组。",
+      "expected_output": "各成员保留自身 implementation_commit，成员/验证票的 commit 均锚定 V，全部 completed/tests=pass，组 completed，validated_commit=V；进度提交另有 SHA，后继仅在此检查点持久化后解锁。"
+    },
+    {
+      "id": "plan-decomposition-s12",
+      "prompt": "失败不移动已验证基线\nGIVEN 组基线 B 已通过，T06 在当前实现 tip 测试失败。\nWHEN 记录结果。",
+      "expected_output": "T06/组 blocked，成员保持待验，validated_commit 仍为 B；报告失败命令及日志，不派组外任务。"
+    },
+    {
+      "id": "plan-decomposition-s13",
+      "prompt": "前序接口修正影响后继\nGIVEN T06 发现 T03 产出接口与批准接口不一致，T04/T05 已待验且消费该接口。\nWHEN 在 T03 授权范围内修复。",
+      "expected_output": "先把 T03 置 in_progress、受影响后继置 blocked，保留旧提交/证据；修复后逐票核对仍有效的操作与局部检查，已成立的内容不重复改写，证据失效部分补验，再回待验并复跑全部组验证；越出批准契约则冻结等裁决。"
+    },
+    {
+      "id": "plan-decomposition-s14",
+      "prompt": "实现提交早于进度中断\nGIVEN T03 implementation commit 已存在，待验状态尚未提交，磁盘差异与本票能够唯一对应。\nWHEN 恢复。",
+      "expected_output": "核对实际提交、局部检查和自检证据后补记待验；缺证据只补检查，不重做迁移，不凭提交信息直接认定通过。"
+    },
+    {
+      "id": "plan-decomposition-s15",
+      "prompt": "组通过后进度保存窗口\nGIVEN T06 全部验证通过且日志存在，分别在进度 rename 前、rename 后 commit 前、状态 commit 后中断。\nWHEN 恢复。",
+      "expected_output": "前两种检查业务树与 V 一致后补原子完成/提交；第三种直接消费已完成事实，不重复测试或改写成员；证据缺失/树变化则补验，未知差异阻塞。"
+    },
+    {
+      "id": "plan-decomposition-s16",
+      "prompt": "工作区或证据不可信\nGIVEN 组工作区丢失、提交不可解析、日志哈希不符或出现无法解释的业务变更。\nWHEN plan-state 或恢复入口核对。",
+      "expected_output": "给出具体不一致、ready 为空，保留已有现场；不新建空进度、不清理未接受产物。"
+    },
+    {
+      "id": "plan-decomposition-s17",
+      "prompt": "旧能力不能静默降级\nGIVEN 含组计划声明 format_version=2，但旧 CLI 不认识 plan-state，或新 CLI 收到未知版本。\nWHEN 执行入口预检。",
+      "expected_output": "不将其作为普通 v1 计划继续，不写业务/状态；明确缺少支持并保留原文件。此保证针对遵守入口的执行者，不声称能约束忽略指令的旧客户端。"
+    },
+    {
+      "id": "plan-decomposition-s18",
+      "prompt": "无组存量继续原样读取\nGIVEN v1 普通/并发分文件计划或旧单文件计划。\nWHEN 新执行入口载入。",
+      "expected_output": "使用原有对应分支，保留旧状态及授权，不强制转换为 v2、不添加组。"
+    },
+    {
+      "id": "plan-decomposition-s28",
+      "prompt": "组内切换请求等组完成\nGIVEN 用户在 T04 期间请求转并发，T03 已待验。\nWHEN T04 提交待验且随后会话中断。",
+      "expected_output": "授权请求保存在 notes，mode 不变；恢复 T05/T06，整组完成后沿已保存授权检查原准入，不把 T04 待验作为可切换完成边界。"
+    },
+    {
+      "id": "plan-decomposition-s29",
+      "prompt": "普通票不继承待验解锁特权\nGIVEN 无组 T01 返回 ready 但尚未集成，T02 依赖它。\nWHEN 新执行器调度。",
+      "expected_output": "T02 仍等待 completed；手写 awaiting_verification 于无组票被拒绝，原 Git 接收和合并冲突规则仍生效。"
     }
   ]
 }

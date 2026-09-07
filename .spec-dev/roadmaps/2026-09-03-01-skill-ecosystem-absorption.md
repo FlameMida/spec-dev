@@ -82,7 +82,7 @@ spec_dev_roadmap:
 
 ### #5 plan-decomposition
 
-- **2026-09-07 方案与完整设计已批准，spec 独立审查通过**：用户选择「方案2」——保留独立小票、集成组统一验证；随后以 `ok` 批准完整设计。spec `.spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md`（active，23 条 Requirement / 33 个 Scenario，独立审查 Approved；审查基线 `9a8bd71`，记录同目录 `design-review.md`），ADR-0008。用户已 review 并同意编写实施计划，现已激活并向三份旧 spec 写取代预告；实施计划 `.spec-dev/2026-09-07-01-plan-decomposition/plan/index.md` 已保存（10票，T00—T09；声明/状态/真实证据→串并行协议→分解与需求→全矩阵验收→本地交付），等待用户明确开始执行；尚未实施，模型/运行时验收未执行。
+- **2026-09-07 方案与完整设计已批准，spec 独立审查通过**：用户选择「方案2」——保留独立小票、集成组统一验证；随后以 `ok` 批准完整设计。spec `.spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md`（active，23 条 Requirement / 33 个 Scenario，独立审查 Approved；审查基线 `9a8bd71`，记录同目录 `design-review.md`），ADR-0008。用户已 review 并同意编写实施计划，现已激活并向三份旧 spec 写取代预告；实施计划 `.spec-dev/2026-09-07-01-plan-decomposition/plan/index.md` 已保存（10票，T00—T09；声明/状态/真实证据→串并行协议→分解与需求→全矩阵验收→本地交付），用户已于2026-09-07确认执行；隔离分支plan/2026-09-07-01-plan-decomposition完成T00—T03（最新53/53机器回归），T04六例默认glm-5.3-flash模型探针均provider429，保留blocked检查点且未写T04规则实现。T05—T09待续，未验收/合并/推送；真实状态在该worktree的plan/progress.yaml。
 - **本轮补充裁决**：不可逐批绿时引入 awaiting_verification，只有同组依赖可消费，组外经唯一验证票等待；组员/验证票由主线程独占现有隔离集成工作区，进入前收拢在途普通任务，整组通过后同次原子完成并推进已验证基线。保留原始审查基线、每票实现提交和失败证据；状态/代码分开提交，中断核对事实、不重复施工。无组旧计划原样读取；组数据升级及校验 CLI 必须明确支持协议。review 三问以 2–3 个检查点加一次整体确认呈现。
 - **本轮补查结果**：#2 的计划形态/恢复/完成条款、#3 的红绿时序/纯重构保护、major-upgrade 的设计原则/胶囊需部分取代；普通 implementer 五步、结果 schema、ADR-0005/0007 与 S/critic 保持。新组协议的复杂度由用户明确选择承担，不采用最初推荐的单张原子大票。
 - **新增探索指针**：spec 解释完整状态与恢复设计；`skills/executing-plans/SKILL.md:56` 是原 completed 判据、`:61` 是原 ready 判据；`skills/test-driven-development/SKILL.md:135` 是纯重构保护原定义；`scripts/validate-output.mjs:175` 起的 plan-index 是现有公共结构校验入口。前置 #4 的验收报告仅说明已交付边界，不构成本项模型证据。

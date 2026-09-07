@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T04",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -23,7 +23,8 @@
       "commit": "02589347d8cb5df663228744c047fc180b54f970"
     },
     "T04": {
-      "status": "pending"
+      "status": "blocked",
+      "tests": "BLOCKED: 6/6 Claude calls returned provider429; no valid model red; T04 implementation not run"
     },
     "T05": {
       "status": "pending"
@@ -58,6 +59,7 @@
     "2026-09-07: 用户在计划执行交接问题后以ok确认开始执行；main干净，base_commit=46752f43af19e91ff00964785f9ac35fb80d33b7；本计划创建指定worktree，主线程串行。",
     "T01漂移守卫实际exit1：major-upgrade/portability/concurrent对validate-output及scripts通配covers交集；按已批准新增组切面单次trailer放行，旧编号/插件根/parallel行为保留；本地发版hook变更按原规则记录。",
     "T01首次提交被git diff --check拒绝：Node原始失败日志含尾空格，代码未提交；进度完成准备已撤回，完成锚待实际提交成功后填。日志以gzip无损归档，未改原始字节。",
-    "T01正式提交f6f58e5成功；发版hook按既有非main策略跳过，未改版本/推送。"
+    "T01正式提交f6f58e5成功；发版hook按既有非main策略跳过，未改版本/推送。",
+    "T04: 默认glm-5.3-flash[1M]六例实际返回429额度限制，CLI exit0/result success不能当模型成功。provider提示reset 2026-09-07 18:09:28（时区未声明）；不更改模型/预算或用静态结果冒充红。原始probe.py加UTF-8编码头修复本机直接运行解析问题，案例未改；候选规则读取范围显式排除本特性spec/plan/evals/预期。"
   ]
 }

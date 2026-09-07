@@ -211,6 +211,16 @@
       "id": "review-conformance-s26",
       "prompt": "S26 中途切换并发后的全量审查\nGIVEN T01 串行完成后切换并发，剩余票已集成\nWHEN 全局审查接收输入",
       "expected_output": "diff 覆盖最初 base 到当前集成 HEAD，包括 T01；共用包含 S 的完整编排与 critic，implementer 自检不抵销任何维度。"
+    },
+    {
+      "id": "plan-decomposition-s09",
+      "prompt": "并发模式中遇到集成组\nGIVEN mode=parallel 且两张普通票仍在执行。\nWHEN 下一阶段准备进入 G01。",
+      "expected_output": "先停止新派发，核验并收拢在途票及回报，完成所需合入到已验证基线；没有未知执行者/未接收实现后才激活 G01；期间无其他新合入、派发或模式切换。"
+    },
+    {
+      "id": "plan-decomposition-s10",
+      "prompt": "第二主线程不能进组\nGIVEN A 已持有 G01 所属特性锁，B 从同仓库另一 worktree 恢复。\nWHEN B 准备更新进度。",
+      "expected_output": "B 无写权，旧 owner 是否停止无法核实就阻塞；不按超时、空 agent 列表或锁路径不同猜测接管成功。"
     }
   ]
 }
