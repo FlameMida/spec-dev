@@ -51,3 +51,188 @@
 每条 evidence_paths 指向特性内 `execution/groups/GNN/TNN/<attempt>/record.json`；每次尝试独立目录。记录包含 command（实际 argv 字符串数组）、cwd、exit_code、commit、tree、stdout/stderr 相对特性路径和两个 sha256。tree 是 `git ls-tree -r -z C` 中排除本特性 plan/progress.yaml 与 execution/ 后的记录用 NUL 连接再 SHA-256；其余文件（包括 spec/index/任务接口）改变都会使树不同。日志可恢复/哈希吻合只证明字节没变，主线程和审查者仍核对工具回执、命令与失败类别；不手写“pass”冒充测试。
 
 completed 组必须有 verify 自己目录中的通过证据，记录的业务树等于 V；成员历史非零记录仍保留，不改成零。CLI 不会运行测试、取得锁或执行恢复写入。未提交进度返回 checkpoint_uncommitted；恢复者核对磁盘、已提交档案、真实提交和日志后补检查点，不用未提交 completed 解锁。
+
+
+## 可执行参考步骤
+
+以下 Python 3 标准库片段演示上面的既有协议，不是新的锁 CLI、状态格式或自动恢复服务。计划作者按实际特性路径、会话 owner、任务角色和批准命令内嵌适用代码；执行者仍须先核对授权与 plan-state。每个取锁→操作→检查点→释放阶段在同一脚本内保留锁凭据，不把短命进程 PID 当编排 owner。示例不接管已有锁；已有锁、维护门、身份不符或异常均停止并保留现场。
+
+脚本通过已有许可通道执行，例如 `rtk proxy python3 -` 的标准输入；仅需计算哈希时可直接用该通道，不必先写临时脚本。文件写入限于批准的特性目录及该特性在真实 common-dir 下的锁/维护门元数据。工具拒绝后报告该具体命令和许可缺口；不得转去范围外临时仓实施任务，也不得以禁用权限限制代替授权。只编写计划时，只生成和校验计划；实际执行仍等待对应授权。
+
+<!-- integration-group-reference:start -->
+```python
+import hashlib, json, os, stat, subprocess, uuid
+from contextlib import contextmanager
+from pathlib import Path, PurePosixPath
+
+def require(condition, message):
+    if not condition:
+        raise RuntimeError(message)
+
+def git(worktree, *args):
+    return subprocess.check_output(
+        ["rtk", "proxy", "git", *args], cwd=worktree)
+
+def identity(directory):
+    info = directory.lstat()
+    require(stat.S_ISDIR(info.st_mode), "lock entity is not a directory")
+    return [info.st_dev, info.st_ino]
+
+def owned(directory, payload, entity):
+    require(identity(directory) == entity, "lock entity changed")
+    owner_file = directory / "owner.json"
+    require(not owner_file.is_symlink(), "owner file is a symlink")
+    require(json.loads(owner_file.read_text()) == payload, "lock owner changed")
+
+def create_owner(directory, owner):
+    entity = identity(directory)
+    payload = {"owner": owner, "token": str(uuid.uuid4())}
+    with (directory / "owner.json").open("x") as stream:
+        json.dump(payload, stream)
+    return payload, entity
+
+@contextmanager
+def maintenance(lock, owner):
+    gate = Path(str(lock) + ".maintenance")
+    gate.mkdir()  # FileExistsError: stop before touching another owner's data.
+    payload, entity = create_owner(gate, owner)
+    try:
+        yield
+    finally:
+        owned(gate, payload, entity)
+        (gate / "owner.json").unlink()
+        gate.rmdir()
+
+@contextmanager
+def held_lock(worktree, feature_key, owner):
+    worktree = Path(worktree).resolve()
+    key = PurePosixPath(feature_key)
+    require(bool(owner) and isinstance(owner, str), "session owner required")
+    require(not key.is_absolute() and ".." not in key.parts
+            and str(key) == feature_key and feature_key not in ("", "."),
+            "canonical repository-relative feature_key required")
+    require(Path(git(worktree, "rev-parse", "--show-toplevel").decode().strip()).resolve()
+            == worktree, "wrong worktree root")
+    feature = (worktree / feature_key).resolve()
+    require(feature.relative_to(worktree).as_posix() == feature_key,
+            "canonical feature path required")
+    common = Path(git(worktree, "rev-parse", "--path-format=absolute",
+                      "--git-common-dir").decode().strip()).resolve()
+    parent = common / "spec-dev-locks"
+    parent.mkdir(exist_ok=True)
+    require(not parent.is_symlink(), "lock parent is a symlink")
+    lock = parent / hashlib.sha256(feature_key.encode("utf-8")).hexdigest()
+    with maintenance(lock, owner):
+        lock.mkdir()  # If occupied, no owner overwrite and no protected writes.
+        payload, entity = create_owner(lock, owner)
+    receipt = {"worktree": worktree, "feature_key": feature_key,
+               "feature": feature, "lock": lock,
+               "payload": payload, "entity": entity}
+    try:
+        yield receipt
+    except BaseException:
+        # Preserve the lock and interrupted state for explicit recovery.
+        raise
+    else:
+        require(not git(worktree, "status", "--porcelain"),
+                "uncommitted work: retain lock for recovery")
+        with maintenance(lock, owner):
+            owned(lock, payload, entity)
+            (lock / "owner.json").unlink()
+            lock.rmdir()
+
+def check_owner(receipt):
+    owned(receipt["lock"], receipt["payload"], receipt["entity"])
+
+def commit_only(receipt, relative_paths, message):
+    check_owner(receipt)
+    worktree = receipt["worktree"]
+    require(not git(worktree, "diff", "--cached", "--name-only", "-z"),
+            "existing staged changes require ownership review")
+    git(worktree, "add", "--", *relative_paths)
+    git(worktree, "commit", "-m", message)
+    return git(worktree, "rev-parse", "HEAD").decode().strip()
+
+def checkpoint(receipt, state, message):
+    check_owner(receipt)
+    relative = receipt["feature_key"] + "/plan/progress.yaml"
+    target = receipt["worktree"] / relative
+    require(target.resolve() == target, "canonical checkpoint path required")
+    temporary = target.with_name(target.name + "." + str(uuid.uuid4()) + ".tmp")
+    with temporary.open("x") as stream:
+        stream.write(json.dumps(state, ensure_ascii=False, indent=2) + "\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.replace(temporary, target)
+    return commit_only(receipt, [relative], message)
+
+def business_tree(worktree, feature_key, commit):
+    raw = git(worktree, "ls-tree", "-r", "-z", commit)
+    progress = (feature_key + "/plan/progress.yaml").encode()
+    execution = (feature_key + "/execution/").encode()
+    kept = []
+    for entry in raw.split(b"\0"):
+        if not entry:
+            continue
+        name = entry.split(b"\t", 1)[1]
+        if name != progress and not name.startswith(execution):
+            kept.append(entry)
+    return hashlib.sha256(b"\0".join(kept)).hexdigest()
+
+def record_check(receipt, argv, attempt, commit):
+    check_owner(receipt)
+    worktree, feature_key = receipt["worktree"], receipt["feature_key"]
+    tree = business_tree(worktree, feature_key, commit)
+    require(tree == business_tree(worktree, feature_key, "HEAD"),
+            "record commit does not match current business tree")
+    require(not git(worktree, "status", "--porcelain"),
+            "commit and review pending changes before running checks")
+    require(isinstance(argv, list) and argv and
+            all(isinstance(arg, str) for arg in argv), "argv array required")
+    feature = receipt["feature"]
+    relative = PurePosixPath(attempt)
+    require(not relative.is_absolute() and ".." not in relative.parts
+            and str(relative) == attempt
+            and attempt.startswith("execution/groups/"), "evidence path required")
+    directory = feature / attempt
+    require(directory.resolve() == directory, "canonical evidence path required")
+    directory.mkdir(parents=True)  # Existing attempts are never overwritten.
+    result = subprocess.run(argv, cwd=receipt["worktree"], capture_output=True)
+    record = {"command": argv, "cwd": str(receipt["worktree"]),
+              "exit_code": result.returncode, "commit": commit,
+              "tree": tree}
+    for label, content in (("stdout", result.stdout), ("stderr", result.stderr)):
+        relative_log = attempt + "/" + label + ".log"
+        (feature / relative_log).write_bytes(content)
+        record[label] = relative_log
+        record[label + "_sha256"] = hashlib.sha256(content).hexdigest()
+    # Keep raw streams even if a check unexpectedly changes the tested tree.
+    check_owner(receipt)
+    require(tree == business_tree(worktree, feature_key, "HEAD"),
+            "check changed the committed business tree")
+    require(not git(worktree, "status", "--porcelain", "--", ".",
+                    ":(exclude)" + feature_key + "/" + attempt),
+            "check changed files outside its evidence directory")
+    relative_record = attempt + "/record.json"
+    (feature / relative_record).write_text(json.dumps(record, indent=2) + "\n")
+    commit_only(receipt, [receipt["feature_key"] + "/" + attempt],
+                "test: preserve " + attempt)
+    return relative_record, result.returncode
+```
+<!-- integration-group-reference:end -->
+
+参考实现拒绝特性路径别名及状态/证据父目录软链接；检查执行前要求工作区干净、传入提交与当前业务树相同，允许仅进度或证据不同的后续提交。检查后再次核对业务树和额外改动；异常时保留原始输出与锁，不能为不匹配的实现生成通过记录。
+
+调用这些原语时，任务正文仍要完整列出自己的状态变更，不能省略成“同上”。参考顺序：
+
+| 边界 | 先决事实和状态写入 | 提交顺序 |
+|---|---|---|
+| T00 完成 | 复用或创建隔离后都绑定实际 worktree/branch/owner；基线真实通过；T00.commit 与 integration.base_commit/validated_commit 使用已存在的实际提交 | 先确定已有提交 B，再 `checkpoint` 保存状态；不能要求状态提交引用它自己的 SHA |
+| 组激活 | 全部外部前置 completed；保存组首行为保护；组 status=in_progress、base_commit=B、checkpoint_commit=实际已保存点、active_group=GNN | 在首次成员业务改动之前单独 `checkpoint` |
+| 成员实施 | 本票 in_progress/current 先提交；批准的写集合实际改动后，用 `commit_only` 保存实现 C；`record_check` 在该实际业务树上执行检查并保存原件 | 实现 C → 独立证据提交 → 成员 awaiting_verification、implementation_commit=C、commit=null、tests=pending_group、evidence_paths 和组 checkpoint_commit=C → 独立 `checkpoint` |
+| 组验证 | 全员待验；每条批准检查都真实执行并 `record_check`；任一必需项失败按修复协议处理 | 全部通过后取得实际通过业务树的 V；保留组 base/checkpoint 和所有历史 evidence；成员/verify/组一次完成，verify 自己也有 evidence_paths，所有 commit=V → 独立 `checkpoint` |
+| 暂停 | 所有修正及提交都在 `held_lock` 内；运行 plan-state 并核对干净 | 离开正常上下文才经过维护门释放；异常保留锁/现场，不能继续执行下一阶段 |
+
+普通 v1 计划同样把状态写入和独立提交写全，但不能因此套用 v2 的强制持锁边界。临时 helper 如确需持久保存，创建、归属与清理均写进获批计划，不临时写到未授权目录。
+
+旧符号清零要按本次语法和源码精确匹配。例如只有命名 import/export 与 `export const/function trim` 的 ESM 夹具，可以匹配 `\b(?:import|export)\s*\{[^}]*\btrim\b` 或 `\bexport\s+(?:const|function)\s+trim\b`；`s.trim()` 是保留的运行行为，不应命中。复杂语法优先使用项目已有解析/静态检查器。测试命令的诊断可能在 stdout（例如 node:test 的 TAP），证据同时保存两个流；预期暂时失败依据实际回执与归因判断，不能只 grep stderr。
