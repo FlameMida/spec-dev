@@ -7,6 +7,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { parseParallelBlock } from "./lib/parallel-plan.mjs";
+import { validateIntegrationPlan } from "./lib/integration-plan.mjs";
 import { fileURLToPath } from "node:url";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -248,6 +249,7 @@ function validatePlanIndex(planDir) {
     errors.push({ path: "index.md#parallel", expected: "valid optional parallel declaration", actual: error.message });
   }
 
+  errors.push(...validateIntegrationPlan(planDir));
   if (errors.length) failAndExit();
   console.log(JSON.stringify({ ok: true, schema: "plan-index", file: planDir }, null, 2));
   process.exit(0);

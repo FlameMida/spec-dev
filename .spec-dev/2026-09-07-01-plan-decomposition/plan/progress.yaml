@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T01",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -8,7 +8,7 @@
       "commit": "46752f43af19e91ff00964785f9ac35fb80d33b7"
     },
     "T01": {
-      "status": "pending"
+      "status": "in_progress"
     },
     "T02": {
       "status": "pending"
@@ -49,6 +49,8 @@
     "spec activation: b49102e；source=/Users/maverick/feature-dev，branch=main；T00在未来执行时记录真实原始base_commit。",
     "本计划默认主线程串行，无组声明与并发声明，不使用待交付协议调度自身。",
     "progress.yaml以JSON子集书写但format_version保持1；全部任务pending，无未来测试/模型/完成SHA。",
-    "2026-09-07: 用户在计划执行交接问题后以ok确认开始执行；main干净，base_commit=46752f43af19e91ff00964785f9ac35fb80d33b7；本计划创建指定worktree，主线程串行。"
+    "2026-09-07: 用户在计划执行交接问题后以ok确认开始执行；main干净，base_commit=46752f43af19e91ff00964785f9ac35fb80d33b7；本计划创建指定worktree，主线程串行。",
+    "T01漂移守卫实际exit1：major-upgrade/portability/concurrent对validate-output及scripts通配covers交集；按已批准新增组切面单次trailer放行，旧编号/插件根/parallel行为保留；本地发版hook变更按原规则记录。",
+    "T01首次提交被git diff --check拒绝：Node原始失败日志含尾空格，代码未提交；进度完成准备已撤回，完成锚待实际提交成功后填。日志以gzip无损归档，未改原始字节。"
   ]
 }
