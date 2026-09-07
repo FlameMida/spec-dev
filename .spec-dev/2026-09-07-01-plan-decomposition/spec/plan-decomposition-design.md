@@ -522,3 +522,7 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 ## 开放问题
 
 无阻塞设计问题。实施阶段仅细化内部函数组织、夹具内容和命令路径；若改变状态/完成单位、授权门、并发方式或公共 CLI 合同，按契约偏差回到设计。
+
+## 实施记录
+
+- T00：用户已确认执行；建立计划自有隔离工作区，base_commit=46752f43af19e91ff00964785f9ac35fb80d33b7；相关基线61/61、skills与官方Codex插件校验通过，见execution/serial/T00。未把本机CLI版本视作模型已运行。

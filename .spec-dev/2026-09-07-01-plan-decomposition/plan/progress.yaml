@@ -3,7 +3,9 @@
   "current": null,
   "tasks": {
     "T00": {
-      "status": "pending"
+      "status": "completed",
+      "tests": "61/61 baseline; skills/plugin/official Codex validation pass",
+      "commit": "46752f43af19e91ff00964785f9ac35fb80d33b7"
     },
     "T01": {
       "status": "pending"
@@ -34,7 +36,7 @@
     }
   },
   "resources": [
-    "[预登记] worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-07-01-plan-decomposition；branch=plan/2026-09-07-01-plan-decomposition —— 仅本计划创建、已合入且干净时 git worktree remove，之后 git branch -d；T00记录实际所有权",
+    "[已创建/本计划拥有] worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-07-01-plan-decomposition；branch=plan/2026-09-07-01-plan-decomposition —— 仅本计划创建、已合入且干净时 git worktree remove，之后 git branch -d；T00记录实际所有权",
     "[预登记] evidence: 本特性 execution/serial/T00 至 T09 与 acceptance/（含 model-smoke、model-actions、归档bundle/diff/状态） —— 持久交付证据保留在来源分支；只回收已归档且登记的重复临时物",
     "[预登记] QA worktrees/repos: 本特性 acceptance/action-fixtures/r1、planning 与 repair；新run创建前追加名称 —— 逐manifest核验归属，归档bundle/原件后对子仓main执行git worktree remove其work，禁止force；失败现场保留",
     "[预登记] model/process: T04—T07 red/green，T08 model-smoke/model-actions/check-lock 两进程 —— 创建时记录真实PID/PGID/开始时间与run；只停止确认属于本次的活跃进程；全量测试前停止写者",
@@ -46,6 +48,7 @@
     "2026-09-07: 用户选择方案2并批准完整设计、spec及编写计划；尚未获执行授权，未创建实施worktree，未运行候选代码或模型验收。",
     "spec activation: b49102e；source=/Users/maverick/feature-dev，branch=main；T00在未来执行时记录真实原始base_commit。",
     "本计划默认主线程串行，无组声明与并发声明，不使用待交付协议调度自身。",
-    "progress.yaml以JSON子集书写但format_version保持1；全部任务pending，无未来测试/模型/完成SHA。"
+    "progress.yaml以JSON子集书写但format_version保持1；全部任务pending，无未来测试/模型/完成SHA。",
+    "2026-09-07: 用户在计划执行交接问题后以ok确认开始执行；main干净，base_commit=46752f43af19e91ff00964785f9ac35fb80d33b7；本计划创建指定worktree，主线程串行。"
   ]
 }
