@@ -7,7 +7,7 @@ tasks:
   T03: { status: completed, commit: "736dd1967e01510a7be408fc52fb67d35c5d9508", tests: "40 passed; skills/plugin passed; S24 decision fail to pass, green tools empty", evidence: "execution/serial/T03" }
   T04: { status: completed, commit: "2c662893ece18349a3c409fc8098562146241191", tests: "40 passed; skills/plugin passed; S14 existing pass to pass; S15 fail to pass; strict tools empty", evidence: "execution/serial/T04" }
   T05: { status: completed, commit: "c8068b139762a7d5ea420a67304899b5be5e5f90", tests: "128 passed/0 failed/0 skipped；34 controlled regressions；两复杂run第二段收口，独立核心判读通过；原始语义partial已处置；最终独立对账通过并归档", evidence: "acceptance" }
-  T06: { status: pending }
+  T06: { status: in_progress, evidence: "acceptance/delivery.json" }
 resources:
   - "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance —— rtk git worktree remove /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance；rtk git branch -d plan/2026-09-06-03-review-conformance"
   - "QA fixtures: /Users/maverick/feature-dev/.worktrees/plan-2026-09-06-03-review-conformance/.spec-dev/2026-09-06-03-review-conformance/acceptance/model-smoke/fixtures —— 确认无存活模型/子代理且证据归档后，随本特性 worktree 清理；拒绝时只清理本登记目录再普通 remove"
@@ -42,3 +42,4 @@ notes:
   - "T05 efficiency product commit: 6eb5253c0878950bfb87ea29d8460936d405a242; pre-commit passed; no merge/push/release."
   - "T05 long-budget: 产品129bbe2cf0329f92b36d12d1aedcf817aa912c0b；组合2010.801秒、机械2298.834秒两段完成，无第三段。57对象/14测试/189spool核验通过，停止写入后128项全量及静态通过。原始附属语义错误独立排除/收窄，未改写raw结果。"
   - "T05 completed: c8068b139762a7d5ea420a67304899b5be5e5f90归档218个任务自有文件；pre-commit通过，未发版。review_c最终完整性Approved，进入T06。"
+  - "T06准备：原始base不变；main后续7文件已识别，先合入隔离分支再验证并ff-only回来源；两组模型已全部终止，测试退役无双条件候选，supersedes为空。"
