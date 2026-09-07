@@ -85,6 +85,7 @@
     "T08收尾缺陷修复：独立反驳确认T03历史证据错绑当前业务树、checkpoint空白误报；新增3个真实Git回归先16/19红，再48/48相关绿。原模型锁后写入与规划证据路径/提交绑定失败保留；补原协议入口及模板路由，不扩展契约。B简洁性导航差异经独立对照为v1冻结/v2严格的批准格式差异，不作中级缺陷；去除runtimeFacts无意义空数组返回为局部同义清理。",
     "T08 r2：两次真实首票操作仍绕过维护门，宿主按PID/PGID终止并保留-15事实，禁止进入resume。planning-r2真实生成通过结构CLI但独立审计仍fail。补既有SHA-256/L.maintenance定位与逐步锁操作、恢复补验边界、规划前必读执行协议和准确符号检查。来源为既有concurrent受控replay实际路径，未新增锁API。S19/S26/S27的Read-only夹具缺精确文件清单，产生无效猜测读取；宿主停止并补目录穷举，不计产品失败。S21补真实spec片段；THEN均保持。",
     "r3实际init仍为kimi-k2；多数调用exit1返回403 five-hour usage limit，全部进程已结束，不继续尝试。S15/S19有完整结果待独立判读。测试permission_mode显式default（未改全局配置/模型），暴露rtk ls等未列入窄Bash白名单：后续harness扩为Bash(rtk *)并保留授权范围审计，此调整尚未运行。S独立审查及B/C反驳确认新增锁禁令误覆盖v1激活前请求，已按原契约限定parallel/v2，原v1先保存请求/H再取锁不变；待本地核对。T08保持blocked、T09不启动，无合并/推送/roadmap完成回写。",
-    "阻塞收尾本地完整测试165/165、0 fail/skip（88.29s），skills/plugin含官方Codex安装均exit0；仅在全部模型写者停止后跑，原始日志先/tmp再归档。八个QA仓库完整tar+Git bundle通过verify，dirty/锁现场保留；acceptance/.gitignore排除活体main/work避免gitlink，快照与日志可交付。S15 r3仅只读补验决定通过，S19完整产物仍fail；各历史不覆盖。"
+    "阻塞收尾本地完整测试165/165、0 fail/skip（88.29s），skills/plugin含官方Codex安装均exit0；仅在全部模型写者停止后跑，原始日志先/tmp再归档。八个QA仓库完整tar+Git bundle通过verify，dirty/锁现场保留；acceptance/.gitignore排除活体main/work避免gitlink，快照与日志可交付。S15 r3仅只读补验决定通过，S19完整产物仍fail；各历史不覆盖。",
+    "已保存阻塞检查点251e63f；本地165/165与A/S复审通过；T08状态blocked且无完成commit，主分支仍46752f43且干净，未合并/推送。恢复要从本worktree的T08重开新模型run，保留旧失败。"
   ]
 }

@@ -38,3 +38,7 @@ S12/S28补完整角色事实，S19/S26/S27补精确可读文件清单，S21补�
 ## Requirement Reconciliation
 
 见 requirements-reconciliation.md（未定稿）。本报告不将未完成必需项标为DELIVERED或自动豁免。
+
+## 独立覆盖检查
+
+原生独立critic已完成当前阻塞检查点核查，见 reviews/pd-completeness-interim/report.json。23/33枚举、审计报告与8组快照已核对；该结论不是最终completeness PASS。恢复除上述模型/动作链外，还须补S21具体审阅消息；S20现有证据仅普通expand候选，验收/组出口安全边应有界补查或明确适用边界。后续只补未完和受影响项，不重启已证实无变化的全部审查。
