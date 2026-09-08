@@ -9,16 +9,16 @@ spec_dev:
     - "skills/quick-fix/evals/**"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: null
+  sync_commit: 464666d7f1c3decd63c160814d8beab0af473d39
   supersedes: []
   superseded_by: null
 ---
 
 # Quick-fix 轻量诊断与修复收尾设计
 
-> 来源：[skill-ecosystem-absorption 路线图](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #6，AB-16/17/18/19。2026-09-08 用户选择“证据不足才升级”、选择方案 1（内嵌现有六步），随后以 `ok` 批准完整设计；spec review 已通过，[实施计划](../plan/index.md) 已保存，用户已于2026-09-08明确批准实施。
+> 来源：路线图 skill-ecosystem-absorption #6，AB-16/17/18/19。2026-09-08 用户批准设计、spec与计划流程；实施与必需验收已完成，已本地交付。
 
-> 独立审查 **Approved**，12 条 Requirement / 24 个 Scenario，无阻断问题，见 [design-review.md](design-review.md)。2026-09-08 用户以 `ok` 完成 spec review 并同意编写实施计划，漂移守卫已激活；计划为 T00—T06 七票，全部 pending。
+> 独立设计审查 Approved，12 条 Requirement / 24 个 Scenario；实施与验收证据见 ../acceptance/acceptance-report.md，真实进度见 ../plan/progress.yaml。
 
 ## 背景与目标
 

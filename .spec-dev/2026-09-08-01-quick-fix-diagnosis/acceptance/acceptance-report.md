@@ -41,3 +41,7 @@ nightly核心3trial未运行，按原矩阵非阻断；生产环境、真实DB�
 ## 交付待办
 
 T06最终全库179/179通过，接续本地来源合并，之后只清理登记且核验归档的资源，并锚定sync_commit。当前尚未push或发布。
+
+## 本地交付
+
+实际合并 464666d7f1c3decd63c160814d8beab0af473d39；源工作区 /Users/maverick/feature-dev。资源处置见progress.notes；未push或发布。本结论不改写历史模型失败和未运行nightly。
