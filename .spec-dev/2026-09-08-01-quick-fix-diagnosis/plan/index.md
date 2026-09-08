@@ -4,6 +4,8 @@
 >
 > **偏差处理**：路径/唯一锚点的小漂移先核对意图后就地修正并记录；行为、测试落点、授权门或证据等级变化返回设计，不猜着改。
 
+**交付状态（2026-09-08）**：T00—T06全部完成，必需24Scenario与最终179/179通过；已本地合并464666d并清理本计划资源。以下计划步骤与Self-Review保留为原编写时点档案，实际状态以progress.yaml及验收报告为准。
+
 **目标**：交付 skill-ecosystem-absorption 路线图第 6/8 项，在原六步内实现证据式诊断、真实故障覆盖和可回查收尾。
 
 **Spec**：[quick-fix-diagnosis-design.md](../spec/quick-fix-diagnosis-design.md)，active，12 Requirement / 24 Scenario；[设计审查](../spec/design-review.md) Approved。用户已批准 spec review 与编写计划，用户已于2026-09-08明确批准实施。

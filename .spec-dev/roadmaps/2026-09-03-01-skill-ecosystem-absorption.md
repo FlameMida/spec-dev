@@ -94,9 +94,9 @@ spec_dev_roadmap:
 ### #6 quick-fix-diagnosis
 
 - **历史设计与计划检查点（以下交付结论为准）**：用户选择“证据不足才升级”（偶发可比较则继续），选择方案 1（内嵌 quick-fix 六步），随后以 `ok` 批准完整设计。spec `.spec-dev/2026-09-08-01-quick-fix-diagnosis/spec/quick-fix-diagnosis-design.md`（active，12 条 Requirement / 24 个 Scenario，独立审查 Approved，无阻断问题；审查基线 `bc4e047`，记录同目录 `design-review.md`）；用户已以 `ok` 完成 spec review 并同意编写实施计划，守卫已激活（`ac54b75`）。
-- **实施计划已保存**：`.spec-dev/2026-09-08-01-quick-fix-diagnosis/plan/index.md`；T00—T06七票，普通串行/v1，无并发或集成组。顺序为隔离基线→诊断/升级/候选→seam与对象边界→收尾四项→公开说明同步→全矩阵验收→本地交付。覆盖全部12Req/24Scenario；具体公开CLI夹具、真实模型决策/动作、独立判读、来源/资源恢复命令已内嵌。全部任务pending，尚未批准实施。
+- **历史实施计划（已执行完成）**：`.spec-dev/2026-09-08-01-quick-fix-diagnosis/plan/index.md`；T00—T06七票，普通串行/v1，无并发或集成组。顺序为隔离基线→诊断/升级/候选→seam与对象边界→收尾四项→公开说明同步→全矩阵验收→本地交付。覆盖全部12Req/24Scenario；具体公开CLI夹具、真实模型决策/动作、独立判读、来源/资源恢复命令已内嵌。用户随后明确“开始吧”；全部任务已执行完成，以下交付结论为准。
 - **本轮边界与补查**：显然小修仅免诊断前置，不免 TDD；优先复用已有命令，seam 未定不提前写候选测试；“无 correct seam”需具体结构证据，不因缺标签或多个候选推定架构缺陷；同一根因链为修复对象，旁支记录后续入口。当前 quick-fix 命中 6 份 active spec covers，另有 4 份行为相关 spec，均按现行条款分面共存；不修改 ADR。openai.yaml 已改为 seam/TDD 摘要，旧“五处三信号”定位不可机械套用；现有 eval 的“三条 glob”需纠正为五条。
-- **验证方向**：至少一例真实可写诊断→修复→收尾，边界案例通过真实模型决策与独立动作/结果判读；借鉴 #5 特性内 CLI/夹具证据方式，不把 #4 review-runner 扩为通用执行器。静态、真实模型、实际动作证据分列；此时均未运行。
+- **历史验证方向**：至少一例真实可写诊断→修复→收尾，边界案例通过真实模型决策与独立动作/结果判读；借鉴 #5 特性内 CLI/夹具证据方式，不把 #4 review-runner 扩为通用执行器。静态、真实模型、实际动作证据分列；设计期此时尚未运行；现已完成必需验证，原始失败与未运行nightly边界详见验收报告。
 - **关键裁决**：不吸收 diagnosing-bugs 的十级 loop 与 3-5 假设完整 ranking（报告 §6 #3），只取 lite 红信号门槛、认知性升级信号、2-3 排序候选。
 - **探索指针**：报告 AB-16/17/18/19 与 §8.5 修正（quick-fix:39 列表外已有第 4 个升级信号"双 spec 矛盾"，认知性信号应并入列表成第 5 条；三信号枚举在 5 处需同步：SKILL.md :4/:18、openai.yaml、README 双语 :18/:42；eval qf-small-bug-triggers 步骤顺序需随红信号前置调整）。
 - **已扫范围**：quick-fix 全文结构（步骤 2 :36-40、2.5 :42-50、3 :52-58、5a/5b :64-82、6 :84-91）；flaky/插桩/止损等同义词全仓零命中；quick-fix/SKILL.md 命中 4 份 active spec covers。
