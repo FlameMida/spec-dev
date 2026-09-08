@@ -79,7 +79,14 @@
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-red/S12-decision —— 归档并核验后由T06按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-red/S13-decision —— 归档并核验后由T06按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-red/S14-decision —— 归档并核验后由T06按实际路径清理",
-    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-red-action/S05-diagnose —— 归档并核验后由T06按实际路径清理"
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-red-action/S05-diagnose —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-green/S08-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-green/S09-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-green/S10-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-green/S11-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-green/S12-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-green/S13-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-green/S14-decision —— 归档并核验后由T06按实际路径清理"
   ],
   "notes": [
     "2026-09-08: 用户已批准完整设计、spec review及编写计划；当前仅计划，尚未批准实施。",
@@ -90,6 +97,7 @@
     "T02: concrete decision facts supplied before baseline; SAME original GIVEN/WHEN/THEN semantics. Known red fixtures registered together before creation; probes still run serially.",
     "T02 five baseline decision cases already pass; approved rule clarification uses before/after behavior protection, not manufactured RED. See execution/serial/T02/baseline-disposition.md.",
     "T02 complete with pre/post decision protection and fixed-candidate diagnose; S05 reviewed correction PASS preserves first failure; full regression construction remains in T03.",
-    "T03 concrete closure facts provided before baseline; decision facts are not actual model actions."
+    "T03 concrete closure facts provided before baseline; decision facts are not actual model actions.",
+    "T03 actual baseline repair passed S01/S05/S10/S12/S14; S08 full report and S11 resource branch not inferred. Preserve observed classifications; closure clarification and reporting requirement verified after edit."
   ]
 }
