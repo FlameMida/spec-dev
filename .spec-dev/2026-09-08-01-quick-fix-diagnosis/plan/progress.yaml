@@ -38,7 +38,6 @@
   },
   "resources": [
     "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis —— git worktree remove; git branch -d plan/2026-09-08-01-quick-fix-diagnosis",
-    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S23-decision —— 归档并核验后由T06按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red-action/S01-diagnose —— 归档并核验后由T06按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red-detail/S21-decision —— 归档并核验后由T06按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red-detail/S22-decision —— 归档并核验后由T06按实际路径清理",
@@ -108,6 +107,7 @@
     "T06: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S19-decision",
     "T06: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S20-decision",
     "T06: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S21-decision",
-    "T06: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S22-decision"
+    "T06: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S22-decision",
+    "T06: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S23-decision"
   ]
 }
