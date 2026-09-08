@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T02",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -13,7 +13,7 @@
       "tests": "pass"
     },
     "T02": {
-      "status": "pending"
+      "status": "in_progress"
     },
     "T03": {
       "status": "pending"
@@ -56,13 +56,19 @@
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green/S21-decision —— 归档并核验后由T06按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green/S22-decision —— 归档并核验后由T06按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green/S23-decision —— 归档并核验后由T06按实际路径清理",
-    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green-action/S01-diagnose —— 归档并核验后由T06按实际路径清理"
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green-action/S01-diagnose —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-red/S05-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-red/S06-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-red/S07-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-red/S15-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-red/S16-decision —— 归档并核验后由T06按实际路径清理"
   ],
   "notes": [
     "2026-09-08: 用户已批准完整设计、spec review及编写计划；当前仅计划，尚未批准实施。",
     "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"249858eb755e5527a23c67ae7606af9daa623418\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis\", \"branch\": \"plan/2026-09-08-01-quick-fix-diagnosis\", \"owned\": true}",
     "2026-09-08: 用户明确“开始吧”，授权执行T00—T06、任务内提交、审查验收与本地交付；默认串行，不push/发布。",
     "T01: S21/S22 initial decision fixtures were insufficient per independent review; supplied concrete facts, retained original unverified runs, unchanged THEN; new baseline run t01-red-detail.",
-    "T01 complete: 4 independently confirmed behavior failures repaired; 11 selected scenario scopes pass, S01 uses actual diagnose; prior incomplete fixtures preserved. Decision-only execution boundaries remain explicit for final acceptance."
+    "T01 complete: 4 independently confirmed behavior failures repaired; 11 selected scenario scopes pass, S01 uses actual diagnose; prior incomplete fixtures preserved. Decision-only execution boundaries remain explicit for final acceptance.",
+    "T02: concrete decision facts supplied before baseline; SAME original GIVEN/WHEN/THEN semantics. Known red fixtures registered together before creation; probes still run serially."
   ]
 }
