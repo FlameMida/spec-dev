@@ -38,7 +38,8 @@
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S20-decision —— 归档并核验后由T06按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S21-decision —— 归档并核验后由T06按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S22-decision —— 归档并核验后由T06按实际路径清理",
-    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S23-decision —— 归档并核验后由T06按实际路径清理"
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S23-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red-action/S01-diagnose —— 归档并核验后由T06按实际路径清理"
   ],
   "notes": [
     "2026-09-08: 用户已批准完整设计、spec review及编写计划；当前仅计划，尚未批准实施。",
