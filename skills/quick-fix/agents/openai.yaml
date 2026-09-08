@@ -1,6 +1,6 @@
 interface:
   display_name: "Quick Fix"
-  short_description: "小修复：非显然根因先取证，证据不足提议升级；沿获批落点 TDD 修复，验收保持可选。"
+  short_description: "小修复：证据式诊断与升级，按同根因链收敛范围；沿获批公共落点覆盖真实故障，TDD 与可选验收沿原规则。"
   default_prompt: "Use $quick-fix to fix this small bug or adjustment end-to-end without the full design workflow. / 用 $quick-fix 直接修掉这个小 bug 或小调整，不走完整设计流程。"
 
 policy:
