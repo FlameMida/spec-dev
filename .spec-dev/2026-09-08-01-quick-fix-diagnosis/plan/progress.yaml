@@ -38,7 +38,6 @@
   },
   "resources": [
     "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis —— git worktree remove; git branch -d plan/2026-09-08-01-quick-fix-diagnosis",
-    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S03-decision —— 归档并核验后由T06按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S04-decision —— 归档并核验后由T06按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S17-decision —— 归档并核验后由T06按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S18-decision —— 归档并核验后由T06按实际路径清理",
@@ -108,6 +107,7 @@
     "T03 complete: actual public RED/GREEN and cleanup/replay; S08 final actual trials/report closed by feedback supplement. Metadata committed earlier at18b34f5; final sync hook exemption recorded, no metadata mismatch.",
     "T05 mandatory24Scenario/12Req acceptance complete with independent A/B/C/S and critic; C1 corrected/rechecked, S04 actual gap supplemented.57fixtures/60processes archived; nightly3trial not_run nonblocking.",
     "T06: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S01-decision",
-    "T06: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S02-decision"
+    "T06: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S02-decision",
+    "T06: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S03-decision"
   ]
 }
