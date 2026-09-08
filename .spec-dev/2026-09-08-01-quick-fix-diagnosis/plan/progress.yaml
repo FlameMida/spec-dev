@@ -70,6 +70,7 @@
     "2026-09-08: 用户明确“开始吧”，授权执行T00—T06、任务内提交、审查验收与本地交付；默认串行，不push/发布。",
     "T01: S21/S22 initial decision fixtures were insufficient per independent review; supplied concrete facts, retained original unverified runs, unchanged THEN; new baseline run t01-red-detail.",
     "T01 complete: 4 independently confirmed behavior failures repaired; 11 selected scenario scopes pass, S01 uses actual diagnose; prior incomplete fixtures preserved. Decision-only execution boundaries remain explicit for final acceptance.",
-    "T02: concrete decision facts supplied before baseline; SAME original GIVEN/WHEN/THEN semantics. Known red fixtures registered together before creation; probes still run serially."
+    "T02: concrete decision facts supplied before baseline; SAME original GIVEN/WHEN/THEN semantics. Known red fixtures registered together before creation; probes still run serially.",
+    "T02 five baseline decision cases already pass; approved rule clarification uses before/after behavior protection, not manufactured RED. See execution/serial/T02/baseline-disposition.md."
   ]
 }
