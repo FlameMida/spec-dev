@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T06",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -33,7 +33,7 @@
       "tests": "pass"
     },
     "T06": {
-      "status": "pending"
+      "status": "in_progress"
     }
   },
   "resources": [
