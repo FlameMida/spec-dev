@@ -43,8 +43,8 @@
       "commit": "0528a24bf063e6411b4fb5edff570f883bccde0f"
     },
     "T08": {
-      "status": "blocked",
-      "tests": "179/179 local source final PASS; S32 full artifact/continuous product chain/r13 repair PASS. S20/S27/writable complete artifacts still FAIL or incomplete; current provider401 account block, no timeout; all model processes ended."
+      "status": "in_progress",
+      "tests": "PASS required QA:23 DELIVERED/33Scenario/9PRmatrix;179 machine tests0fail0skip at frozen09e5019,178source unchanged;r26 S27 completeartifact PASS25controls; all model action/artifact lanes passed within boundaries; finalcritic no unresolvedhigh/medium. Historical FAIL/nonblockingRTK/nightly not_run retained. Completion checkpoint commit pending."
     },
     "T09": {
       "status": "pending"
@@ -94,7 +94,24 @@
     "[预登记] r16严格逐文件修复S20：acceptance/planning-file-repairs/r16、planning-file-feedback/r16、run-planning-file-repair-v2.py；r15 frozen原件不改，新增抽取标签唯一/无嵌套尾截断及最终SelfReview强门，/tmp/pd-r16-*审计。",
     "[预登记] r15-chain：新独立action-fixtures/r15-chain、model-actions/r15-chain及action-feedback/r15-chain-first.txt；原r14first完整FAIL不放行后继。仅从真实已完成状态选择当前票，逐段独立审查后续接；/tmp/pd-r15-chain-*审计。",
     "[预登记] r13-planning同夹具计划定向修订：model-actions/r13-planning/plan-r14、action-feedback/r14-planning-repair.txt；旧7文件已完整快照，模型只编辑generated/plan必要文件并静态检查，不执行生成任务。/tmp/pd-r14-planning-review只读复审。",
-    "[预登记] r13-planning/plan-r15定向T04终端恢复修订、action-feedback/r15-planning-repair.txt、/tmp/pd-r15-planning-review；plan-r14磁盘版本先完整快照r13-planning-after-r14，原版本和失败不覆盖，只改生成计划不执行。"
+    "[预登记] r13-planning/plan-r15定向T04终端恢复修订、action-feedback/r15-planning-repair.txt、/tmp/pd-r15-planning-review；plan-r14磁盘版本先完整快照r13-planning-after-r14，原版本和失败不覆盖，只改生成计划不执行。",
+    "[预登记] r17恢复：acceptance/provider-check-r17、planning-file-repairs/r17、planning-file-feedback/r17、model-actions/r13-planning/plan-r17、action-feedback/r17-planning-repair.txt、/tmp/pd-r17-*独立审查；先最小连接后未完产物，timeout0，旧原件保留。",
+    "[预登记] r18 S20仅T08模型修订：acceptance/planning-file-repairs/r18、r18-priors、planning-file-feedback/r18，沿用冻结v2 harness/原GIVEN；按r17真实skip退出缺陷与实际整稿SelfReview缺口反馈；/tmp/pd-r18-*只读审查，timeout0，原件保留。",
+    "[预登记] r18 S27根据r17整稿终审反馈的定向文件修订：acceptance/planning-file-repairs/r18/S27、r18-priors/S27、planning-file-feedback/r18/S27.txt；固定v2/原GIVEN、timeout0、全部实际model prior，/tmp/pd-r18-judge-s27独立审查。先完整终审再确定实际修订文件，不宿主补代码。",
+    "[预登记] r19 S27接续r18/T01空输出：planning-file-repairs/r19、r19-priors、planning-file-feedback/r19、/tmp/pd-r19-judge-s27；保留T00实际模型修复，T01/T03-T08依原反馈继续，timeout0/frozenv2。",
+    "[预登记] acceptance/provider-check-r19：当前T08发生4次unknown自动重试时的一次无工具READY检查，用于区分整体不可用与当前请求问题；原T08不停止、timeout0、不改模型/账号设置。",
+    "[预登记] r20 S27/T08一次相同只读请求诊断重试：planning-file-repairs/r20、r20-priors、planning-file-feedback/r20、run-planning-file-repair-v3.py；v3仅新增私有/tmp诊断日志CLI参数，v2严格守卫/输入/超时0保持。原r19T08不停止，不并行改同一产物；/tmp/pd-claude-r20-S27-* raw debug不提交，仅脱敏错误诊断。",
+    "[预登记] provider-check-r21：独立只读诊断观察到当前用户auth配置由AUTH_TOKEN变为非空API_KEY后的一次最小READY验证；未修改配置或输出凭据，timeout0，原r19仍保留。",
+    "[预登记] r21 S27三文件修订：planning-file-repairs/r21、planning-file-feedback/r21；复用r20-priors真实33行及r20失败调用中未改的稳定11文件seed，目标T03/T06/T08，v3私有诊断、timeout0；/tmp/pd-r21-judge-s27。r19原长调用独立目录保留，不写其文件。",
+    "[预登记] r22 S27按实际r21独立审查修订：acceptance/planning-file-repairs/r22-priors、r22及planning-file-feedback/r22；只组合实际模型原始行与完整11文件seed、不宿主修正文，调用timeout0，私有debug不入库；/tmp/pd-r22-judge-s27。/tmp/pd-r21-reconciliation-update为已有对账草稿有界更新。",
+    "[预登记] r23 S27仅T08：acceptance/planning-file-repairs/r23-priors、r23与planning-file-feedback/r23；r22 T06已PASS，T08自然HTTP524无替换后保留同一语义输入重试；timeout0，私有debug不归档；/tmp/pd-r23-judge-s27。r22调用已自然结束，/tmp/pd-r22-transport-review保存脱敏524诊断。",
+    "[owned evidence] /tmp/pd-r23-transport-review archived byte-identically in acceptance/reviews/pd-r23-transport-review; r23-checkpoint retains final blocked status. All r22/r23 model processes naturally exited; no private debug copied.",
+    "[owned/predeclared] r24 recovery: acceptance/provider-check-r24, planning-file-repairs/r24, planning-file-feedback/r24 and optional acceptance-only patch-transport harness; /tmp/pd-r24-harness-review, /tmp/pd-r24-judge-s27. User renewed repair/retry; current external model settings inherited unchanged; timeout0. Raw private debug stays outside repository.",
+    "[owned/predeclared] r25 patch continuation: acceptance/plan_seed_provenance.py, test_plan_seed_provenance.py, run-planning-patch-repair-v5.py; patch-transport-validation/r25, planning-file-repairs/r25-priors and r25, planning-file-feedback/r25; /tmp/pd-r25-seed-provenance-review and /tmp/pd-r25-judge-s27. Unit-test temporary pd-seed-proof-* directories are exclusively created and finally cleaned. Preserve actual prior model patches; never fabricate whole-file assistant replies.",
+    "[owned/predeclared] r26 T08 continuation if required by final r25 findings: acceptance/planning-file-repairs/r26-priors and r26, planning-file-feedback/r26; /tmp/pd-r26-prior-review and /tmp/pd-r26-judge-s27. Same frozen v5 strict patch transport, full actual prior/source audit required; timeout0. No new model launched before actual feedback finalizes.",
+    "[预登记] /tmp/pd-r26-reconciliation-preflight 与 acceptance/reviews/pd-r26-reconciliation-preflight：最终23/33对账续接和完整性检查，S27终审前保留4/4待定；仅独立只读审查，主线程归档。",
+    "[预登记] /tmp/pd-r26-final-critic、acceptance/reviews/pd-r26-final-critic 与 acceptance/r26-checkpoint：最终23/33对账与问题处置独立复核；旧状态原件先保存，主线程仅在定稿通过后更新T08。",
+    "[本计划拥有] acceptance/.gitattributes 与 r26-checkpoint/git-evidence-packaging.json：仅51原始证据空白文件与3 CRLF原件精确路径保留字节，禁止修改原始内容或放宽产品检查；/tmp/pd-r26-packaging-review 独立核对。"
   ],
   "notes": [
     "2026-09-07: 用户选择方案2并批准完整设计、spec及编写计划；尚未获执行授权，未创建实施worktree，未运行候选代码或模型验收。",
@@ -159,6 +176,21 @@
     "r15-chain/first完整PASS，可进入同夹具resume；C=bfe72579e42411729c89d0fedb7e8a27f20293f7，HEAD18b498eec02bbae6238980a6b71e283111a10aa2，T01待验/T02pending，锁释放。真实host基线与B/首改前树逐字同义独立复核通过，未虚称模型额外运行；历史r14 FAIL保留。",
     "r15-chain/resume产品完整动作PASS/can_verify=true，T01原状态/证据与B不变，T02真实b改名C2=e27c043004ffddeaa2fd8c58cfdd72f95b0df56c，HEADad8cbcd39c689c2da5092965e491c201a9eca15b。辅助裸echo的RTK格式FAIL保留，未谎称hook改写；独立确认不属于T08产品状态/锁/证据门，根单独判为非阻塞调用约定偏差，下一verify明确纠正，不改产品THEN。",
     "r15-chain同夹具first→resume→verify连续产品动作完整PASS。verify实际两项检查/5新提交/统一V=e27c043004ffddeaa2fd8c58cfdd72f95b0df56c、最终8739308be9efffee5df99b384d7c8d6b85d3cbff，B/原implementation/旧证据全保留，T04pending，锁释放。resume非阻塞RTK显示格式FAIL保留，整链不冒称全输入PASS。当前只剩S20/S27完整稿、可写planning终端恢复窗，T08仍in_progress。",
-    "r16阻塞检查点：当前deepseek-v4-flash[1m]服务自然401账户阻断，S27/T06和可写plan-r15都非timeout，根逐process.json核验无活跃PID。S27 8/11替换保留，T06无稿、T07/T08未调用；S20只剩T08两项恢复/销账缺陷；可写规划新Spec差异guard只查文件名不查正文仍FAIL。全部报告/下一轮具体反馈保存，31份完整fixture快照已verify，live保留。T08blocked/T09pending，不合并main、不push、不release；不把已通过链重复运行。"
+    "r16阻塞检查点：当前deepseek-v4-flash[1m]服务自然401账户阻断，S27/T06和可写plan-r15都非timeout，根逐process.json核验无活跃PID。S27 8/11替换保留，T06无稿、T07/T08未调用；S20只剩T08两项恢复/销账缺陷；可写规划新Spec差异guard只查文件名不查正文仍FAIL。全部报告/下一轮具体反馈保存，31份完整fixture快照已verify，live保留。T08blocked/T09pending，不合并main、不push、不release；不把已通过链重复运行。",
+    "用户明确已恢复；从7b10e73阻塞检查点恢复，先最小无工具调用确认实际模型，保持全部已通过证据，不重做前票。",
+    "r17最小无工具调用3.42秒正常READY，actual deepseek-v4-flash[1m]，exit0/is_errorfalse；当前401已解除，恢复三份未完产物，timeout0。",
+    "r17可写规划自然exit0/242.85s，独立语义复核中；同夹具第4版本r13-planning-after-r17完整tar+Git bundle验证，7文件逐字回环，累计32快照，live全保留。S27逐文件审查发现新失败路径提交锚缺陷，待终审反馈后修订，不把自然exit0计通过。",
+    "r17可写规划独立完整PASS：9/9 Spec内容guard正反例、其余6文件和178产品hash不变、实际静态CLI与整稿五查已核。报告acceptance/reviews/pd-r17-planning-review/report.json；plan-state checkpoint_uncommitted边界/历史FAIL保留，未执行生成任务。剩S20/S27完整稿。",
+    "r17 S20完整稿FAIL：旧恢复/branch失败守卫已修，新增清理skip exit0中断步骤6/7，实际SelfReview仅T08。61语法/plan-index与178hash通过不替语义；报告已归档。r18只修T08并全稿自查。",
+    "r17静态终对账PASS_STATIC_SCOPE_ONLY：33Scenario映射齐，31模型Scenario的34eval逐GIVEN/WHEN/THEN与Spec一致，S03/S04由既有公共CLI证据承接；6组skill/openai及双语README/RA/八原则/schema引用一致，34covers覆盖32产品改动，178hash固定。acceptance/reviews/pd-r17-static-reconciliation/report.json。23/33证据草稿已有18Requirement有界足够/5待S20,S27；不替整体验收或critic。",
+    "r18 S20完整稿独立PASS：7受控片段、58语法、11manifest/10旧文件不变、178hash、实际全稿SelfReview均核，报告acceptance/reviews/pd-r18-judge-s20/report.json。原S20失败保留，非首次无辅助成功/非生成任务执行。当前只剩S27完整稿及最终对账critic。",
+    "r17 S27已完成T01-T07，T08仍无超时运行；增量原件快照acceptance/reviews/pd-r17-s27-incremental-through-T07。已确认PV4 T01开工前HEAD断言阻断失败归档；PV5 T03/T04/T05将失败前输出配恢复后commit/tree；PV6 T06恢复驱动仅占位文字；PV7 T07要求全部历史记录成功导致正常失败修复后仍blocked。原PV1字段/PV2登记顺序/PV3no-diff当前HEAD已有相应修正；待T08和全稿终审后只修实际受影响文件，保留旧失败。",
+    "r17 S27整稿完整FAIL终审已归档acceptance/reviews/pd-r17-judge-s27，9项PV4-PV12确认；11文件/8wrapper/178hash/20合法Read/11Python块/plan-index0均独立核但不替语义。r18按真实反馈修T00,T01,T03-T08（T02/index/progress不动），包含原T00创建失败误ownership及T08锁交接/历史绑定/来源恢复/精确清理/真实移交回执；原规则引用可读，无新helper或schema。",
+    "r18 T00修订独立增量PASS；T01自然exit0/113.78s，is_errorfalse但无assistant text且result空串，wrapper0，严格提取拒绝，后续未调用；非401/非timeout，不算T01语义FAIL。r19从r18真实seed继续T01/T03-T08，T00/T02/index/progress保留。",
+    "r19 S27已完成T01/T03/T04/T05；T01旧HEAD缺陷修复PASS，T04/T05 PV5辅助失败归档与当前checkpoint恢复PASS。T03 PV5及record查找已修，但新增R19-PV13错误要求恢复后树等于组初始B，合法C3/T06后修复会在归档前异常，后续需只修实际恢复目标；T06仍无超时生成。增量快照acceptance/reviews/pd-r19-s27-incremental-through-T05。产品09e5019固定。",
+    "r19 S27 T07 PV7修复增量PASS：只读groups.G01当前evidence_paths，7控制中历史失败/旧树记录保留且不参与当前验收，缺失/失败/错误当前树拒绝。T06已补完整恢复代码，但R19-PV14双in_progress/currentnull违反串行形状，PV15失败返回要求T06blocked而真实T06pending；公开validator/原fail_task控制已证。当前需修T03,T06，T08活跃，快照acceptance/reviews/pd-r19-s27-incremental-through-T07。",
+    "r19/S27/T08当前发生CLI api_retry3，error unknown/statusnull，进程仍活，宿主timeout0。独立传输诊断acceptance/reviews/pd-r19-transport-review/report.json核现行CLI2.1.263：事件不能证明账号/额度/具体网络或SDK请求超时，根因unknown；未改配置或停进程。继续等自然结果，不把调用问题当计划语义FAIL。",
+    "用户询问当前卡点，已说明S27/T08长请求重试，以及已确认T03恢复目标和T06串行/返回入口缺陷。额外唯一最小provider-check-r19在3.6007秒READY/exit0，实际deepseek-v4-flash[1m]，证明当前最小请求可用，不推断长请求根因；当前T08已观察5次unknown/null自动重试，继续不设host时限。",
+    "认证诊断确认r20 init apiKeySource none/model无1m，与此前20次API_KEY源不同；当前本地配置又变为API_KEY非空/AUTH_TOKEN无，agent/根均未改配置。provider-check-r21实际2.229秒READY/API_KEY源/deepseek-v4-flash[1m]；r21从稳定r20 seed继续T03/T06/T08实际未完修订，不更改全局认证或模型，不把r20的401反推r19 unknown。"
   ]
 }
