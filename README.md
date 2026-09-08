@@ -16,7 +16,7 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 - **Optional parallel execution** — `executing-plans-parallel`: explicit selection, model declaration, task-boundary switching, exclusive progress, isolated implementation and interruption recovery; shared local/PR delivery.
 - **Engineering discipline** — `using-git-worktrees` (isolated workspaces, native tools first) and `test-driven-development` (no production code without a failing test) are standalone skills reusable from any workflow
 - **All-round acceptance** — `acceptance-qa` runs acceptance over the dimension × execution-nature matrix: unit/integration/API, Playwright E2E, visual regression, accessibility, performance (web CWV / k6 for APIs / client), AI autonomous acceptance (mandatory evidence + serial recheck + verify-assertions-first) and failure diagnosis
-- **Lightweight fix** — `quick-fix`, a fast path for already-decided fixes with no design space (small bugs, minor adjustments): root cause with spec back-lookup, one-question-at-a-time confirmation, TDD fix, optional acceptance; splits on contract impact to avoid spec drift and escalates to requirement-analysis on contract-crossing / cross-module / new-dependency signals
+- **Lightweight fix** — `quick-fix`, for decided fixes with no design space: evidence-backed diagnosis, one-question-at-a-time confirmation and TDD through the approved public seam. It offers escalation for contract scope, modules, dependencies, conflicting current specs or insufficient diagnostic evidence; comparable intermittent failures may stay in quick-fix. Closure checks reproduction rates, temporary instrumentation, the original symptom and root-cause evidence; acceptance-qa remains optional.
 - **Shared clarification** — `clarifying`, the grill-style questioning discipline (one question at a time down the decision tree, facts self-researched, each decision put to the user with a recommendation); referenced by requirement-analysis and quick-fix, and usable standalone with three exits (hand off to the main workflow / stop / write notes to md)
 - **Contract-driven orchestration** — subagent output goes through JSON Schema contracts, deterministically validated by `validate-output.mjs`, with one retry on failure
 - **Zero MCP dependency** — structured reasoning ships as a vendored skill (`sequential-thinking`); browser automation MCPs (playwright / chrome-devtools) are opt-in per project, see `skills/acceptance-qa/references/mcp-setup.md`
@@ -41,7 +41,7 @@ executing-plans (isolated execution + review + summary)
 
 quick-fix (already-decided small fix, no design space)  ── bypass fast path
    root cause + spec back-lookup → one-question confirm → TDD fix → optional acceptance
-        ↑ escalates to requirement-analysis on contract-crossing / cross-module / new-dependency signals
+        ↑ offers escalation on scope / current-contract conflict / insufficient-evidence signals
 
 roadmap continuation (oversized goals)  ── decomposition registered at .spec-dev/roadmaps/<project>.md ── outer loop
    requirement-analysis registers sub-projects → each runs the full pipeline independently → executing-plans marks delivery and offers the next one
@@ -231,7 +231,7 @@ For a bug or small adjustment you've already decided to make and that has no des
 
 > Use quick-fix to fix this small bug end-to-end.
 
-It locates the root cause (with a spec back-lookup aligned to the drift guard's `covers`), confirms root cause / fix / contract impact one question at a time, fixes under TDD, and splits on contract impact — syncing the owning spec when behavior changes, or committing with a `Spec-Guard: off` trailer when it does not — then optionally runs acceptance-qa. If the root cause turns out to cross a behavior contract across specs, span multiple modules, or need a new dependency, quick-fix stops and offers to escalate to requirement-analysis.
+It follows one evidenced root-cause chain, obtains a real failure signal before confirming a non-obvious cause, and fixes through the approved public seam. Escalation remains a user decision; intermittent behavior alone is insufficient when reproduction conditions are comparable. Existing contract synchronization, TDD and authorization rules remain. Closure compares intermittent failure counts where relevant, accounts for temporary instrumentation, replays the original symptom, and explains the supported cause and verification limits. Independent side issues are recorded for follow-up; acceptance-qa remains optional.
 
 ## No External MCP Service Required
 

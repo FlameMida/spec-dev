@@ -1,33 +1,113 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T06",
   "tasks": {
     "T00": {
-      "status": "pending"
+      "status": "completed",
+      "commit": "df568f3a9dde729d79a9b094571849a5ee0bf619",
+      "tests": "pass"
     },
     "T01": {
-      "status": "pending"
+      "status": "completed",
+      "commit": "2b660ff32a63098fe3c2f8dd292566629aa7b34a",
+      "tests": "pass"
     },
     "T02": {
-      "status": "pending"
+      "status": "completed",
+      "commit": "eb0a30797de39bb03e868581656c831adda0bb94",
+      "tests": "pass"
     },
     "T03": {
-      "status": "pending"
+      "status": "completed",
+      "commit": "b0e04c913505acab7dc0812acda771c8f3bd7066",
+      "tests": "pass"
     },
     "T04": {
-      "status": "pending"
+      "status": "completed",
+      "commit": "411f4c483cfd88a0a56d08b8e6c27333a6666a86",
+      "tests": "pass"
     },
     "T05": {
-      "status": "pending"
+      "status": "completed",
+      "commit": "3bd53774c3ce24be65f5f61f62d7160019bbf11a",
+      "tests": "pass"
     },
     "T06": {
-      "status": "pending"
+      "status": "in_progress"
     }
   },
   "resources": [
-    "planned-worktree: .worktrees/plan-2026-09-08-01-quick-fix-diagnosis —— T00核实后替换为实际所有权"
+    "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis —— git worktree remove; git branch -d plan/2026-09-08-01-quick-fix-diagnosis",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S01-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S02-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S03-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S04-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S17-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S18-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S19-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S20-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S21-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S22-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red/S23-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red-action/S01-diagnose —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red-detail/S21-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red-detail/S22-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-red-ranked/S22-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green/S01-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green/S02-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green/S03-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green/S04-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green/S17-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green/S18-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green/S19-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green/S20-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green/S21-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green/S22-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green/S23-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t01-green-action/S01-diagnose —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-red/S05-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-red/S06-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-red/S07-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-red/S15-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-red/S16-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-action/S05-diagnose —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-green/S05-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-green/S06-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-green/S07-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-green/S15-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-green/S16-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-green-action/S05-diagnose —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t02-reviewed/S05-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-red/S08-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-red/S09-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-red/S10-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-red/S11-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-red/S12-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-red/S13-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-red/S14-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-red-action/S05-diagnose —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-green/S08-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-green/S09-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-green/S10-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-green/S11-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-green/S12-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-green/S13-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-green/S14-decision —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t03-green-action/S05-diagnose —— 归档并核验后由T06按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis/.worktrees/qf-qa/t05-s04/S04-obvious-repair —— 归档并核验后由T06按实际路径清理"
   ],
   "notes": [
-    "2026-09-08: 用户已批准完整设计、spec review及编写计划；当前仅计划，尚未批准实施。"
+    "2026-09-08: 用户已批准完整设计、spec review及编写计划；当前仅计划，尚未批准实施。",
+    "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"249858eb755e5527a23c67ae7606af9daa623418\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis\", \"branch\": \"plan/2026-09-08-01-quick-fix-diagnosis\", \"owned\": true}",
+    "2026-09-08: 用户明确“开始吧”，授权执行T00—T06、任务内提交、审查验收与本地交付；默认串行，不push/发布。",
+    "T01: S21/S22 initial decision fixtures were insufficient per independent review; supplied concrete facts, retained original unverified runs, unchanged THEN; new baseline run t01-red-detail.",
+    "T01 complete: 4 independently confirmed behavior failures repaired; 11 selected scenario scopes pass, S01 uses actual diagnose; prior incomplete fixtures preserved. Decision-only execution boundaries remain explicit for final acceptance.",
+    "T02: concrete decision facts supplied before baseline; SAME original GIVEN/WHEN/THEN semantics. Known red fixtures registered together before creation; probes still run serially.",
+    "T02 five baseline decision cases already pass; approved rule clarification uses before/after behavior protection, not manufactured RED. See execution/serial/T02/baseline-disposition.md.",
+    "T02 complete with pre/post decision protection and fixed-candidate diagnose; S05 reviewed correction PASS preserves first failure; full regression construction remains in T03.",
+    "T03 concrete closure facts provided before baseline; decision facts are not actual model actions.",
+    "T03 actual baseline repair passed S01/S05/S10/S12/S14; S08 full report and S11 resource branch not inferred. Preserve observed classifications; closure clarification and reporting requirement verified after edit.",
+    "T03 complete: actual public RED/GREEN and cleanup/replay; S08 final actual trials/report closed by feedback supplement. Metadata committed earlier at18b34f5; final sync hook exemption recorded, no metadata mismatch.",
+    "T05 mandatory24Scenario/12Req acceptance complete with independent A/B/C/S and critic; C1 corrected/rechecked, S04 actual gap supplemented.57fixtures/60processes archived; nightly3trial not_run nonblocking."
   ]
 }

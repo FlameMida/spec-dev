@@ -6,7 +6,7 @@
 
 **目标**：交付 skill-ecosystem-absorption 路线图第 6/8 项，在原六步内实现证据式诊断、真实故障覆盖和可回查收尾。
 
-**Spec**：[quick-fix-diagnosis-design.md](../spec/quick-fix-diagnosis-design.md)，active，12 Requirement / 24 Scenario；[设计审查](../spec/design-review.md) Approved。用户已批准 spec review 与编写计划，尚未批准实施。
+**Spec**：[quick-fix-diagnosis-design.md](../spec/quick-fix-diagnosis-design.md)，active，12 Requirement / 24 Scenario；[设计审查](../spec/design-review.md) Approved。用户已批准 spec review 与编写计划，用户已于2026-09-08明确批准实施。
 
 **架构**：quick-fix 为唯一产品改动中心；现有 TDD/clarifying/止损单点继续引用。任务内真实模型通过特性专用 CLI 夹具验证，不新增公共运行器或私有 seam。
 
@@ -114,4 +114,4 @@ judge.json最小字段：case、mode、verdict(pass/fail/unverified)、reason、
 - 链接按所在文档目录解析，spec/审查指针存在；恢复路径核对实际binding、真实合并回执、资源先归档再清理及单独状态提交；已销账worktree恢复不再重复删除。
 - 只读决策夹具与真实CLI动作夹具分离，避免输入事实被无关源码污染；S01另有实际diagnose探针，S05/S08/S10/S11/S12/S14由真实修复链支持。静态/假设分支/宿主注入/模型动作不互相冒充。
 
-本轮只证明计划结构、语法和路径/锚点一致；真实模型、TDD与验收均未运行，所有任务保持pending，等待实施授权。
+本轮只证明计划结构、语法和路径/锚点一致；真实模型、TDD与验收均未运行，所有任务保持pending，已获得实施授权；实际状态见progress.yaml。

@@ -16,7 +16,7 @@ spec_dev:
 
 # Quick-fix 轻量诊断与修复收尾设计
 
-> 来源：[skill-ecosystem-absorption 路线图](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #6，AB-16/17/18/19。2026-09-08 用户选择“证据不足才升级”、选择方案 1（内嵌现有六步），随后以 `ok` 批准完整设计；spec review 已通过，[实施计划](../plan/index.md) 已保存，尚未批准实施。
+> 来源：[skill-ecosystem-absorption 路线图](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #6，AB-16/17/18/19。2026-09-08 用户选择“证据不足才升级”、选择方案 1（内嵌现有六步），随后以 `ok` 批准完整设计；spec review 已通过，[实施计划](../plan/index.md) 已保存，用户已于2026-09-08明确批准实施。
 
 > 独立审查 **Approved**，12 条 Requirement / 24 个 Scenario，无阻断问题，见 [design-review.md](design-review.md)。2026-09-08 用户以 `ok` 完成 spec review 并同意编写实施计划，漂移守卫已激活；计划为 T00—T06 七票，全部 pending。
 
