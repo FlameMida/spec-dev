@@ -36,7 +36,6 @@ spec_dev:
 
 # 公共测试落点与红绿纪律（tdd-seam）设计
 
-> **Superseded-pending (2026-09-07)** — 本 spec 的「Requirement: 红绿循环与重构分离」、「Requirement: 收尾纯重构的行为保护」将被 .spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 
 > roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #3；吸收报告 AB-01～05，并处理 #1 明确留给本项的纯文案例外归属。用户于 2026-09-06 批准推荐方案、完整设计及审查后的 spec，并同意编写实施计划；本 spec 已激活并完成本地交付；必需验收、取代回写与清理证据见 ../acceptance/acceptance-report.md。
 
@@ -236,6 +235,8 @@ TDD 完成清单与 code-reviewer SHALL 按获批 seam 的公共行为、相关 
 
 ### Requirement: 红绿循环与重构分离（改了什么：移除循环内重构并交收尾承接）
 
+> **Superseded (2026-09-08)** — 此 Requirement 由 .spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md 的 M04 取代；其余现行条款继续有效。
+
 TDD 及各执行入口 SHALL 将循环限定为失败测试、确认有效红、最小实现、确认绿，把额外结构清理候选交既有收尾机制处理。
 
 任务五步仍在上述四步后提交。串行/并发契约自检继续检查 over/under-building 与接口锚定，不扩大为每票风格审查。重构候选保留位置、理由和行为保护证据；有正式计划则进入现有收尾审查，quick-fix 则进入自身修复收尾，不因此强制开启可选 acceptance-qa 或整套 executing-plans。处置沿既有授权边界，禁止循环内顺手重构。
@@ -253,6 +254,8 @@ TDD 及各执行入口 SHALL 将循环限定为失败测试、确认有效红、
 - **THEN** 都没有循环内重构步骤，串并行每票仍保持五步；纯壳引用指向同一定义，元数据仍为中文。
 
 ### Requirement: 收尾纯重构的行为保护（改了什么：区分行为修复与不变行为的结构调整）
+
+> **Superseded (2026-09-08)** — 此 Requirement 由 .spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md 的 M05 取代；其余现行条款继续有效。
 
 收尾处理 SHALL 对行为缺陷使用复现失败测试，对纯重构使用公共行为保护测试验证前后保持通过，并复审受影响维度。
 

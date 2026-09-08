@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T09",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -48,7 +48,8 @@
       "commit": "bf13701579cfed18e1f771b3d1126104b81df222"
     },
     "T09": {
-      "status": "pending"
+      "status": "in_progress",
+      "tests": "Final full suite179/179,0fail0skip; skills/pluginofficial/plan-index/diff all0. No orphan tests.7 supersession markers written with3old specs active/sync preserved.39fixturesnapshots verified,7dirty archivalcommits preserve bytes; source main clean at46752f4. Local merge/cleanup/anchor pending."
     }
   },
   "resources": [
@@ -112,7 +113,10 @@
     "[owned/predeclared] r26 T08 continuation if required by final r25 findings: acceptance/planning-file-repairs/r26-priors and r26, planning-file-feedback/r26; /tmp/pd-r26-prior-review and /tmp/pd-r26-judge-s27. Same frozen v5 strict patch transport, full actual prior/source audit required; timeout0. No new model launched before actual feedback finalizes.",
     "[预登记] /tmp/pd-r26-reconciliation-preflight 与 acceptance/reviews/pd-r26-reconciliation-preflight：最终23/33对账续接和完整性检查，S27终审前保留4/4待定；仅独立只读审查，主线程归档。",
     "[预登记] /tmp/pd-r26-final-critic、acceptance/reviews/pd-r26-final-critic 与 acceptance/r26-checkpoint：最终23/33对账与问题处置独立复核；旧状态原件先保存，主线程仅在定稿通过后更新T08。",
-    "[本计划拥有] acceptance/.gitattributes 与 r26-checkpoint/git-evidence-packaging.json：仅51原始证据空白文件与3 CRLF原件精确路径保留字节，禁止修改原始内容或放宽产品检查；/tmp/pd-r26-packaging-review 独立核对。"
+    "[本计划拥有] acceptance/.gitattributes 与 r26-checkpoint/git-evidence-packaging.json：仅51原始证据空白文件与3 CRLF原件精确路径保留字节，禁止修改原始内容或放宽产品检查；/tmp/pd-r26-packaging-review 独立核对。",
+    "[预登记] /tmp/pd-t09-final-validation、pd-t09-resource-audit、pd-t09-retirement-review 与本特性execution/serial/T09：最终全量外置输出以停止工作树写者，之后原样归档；资源清单先独立只读核验，主线程清理。",
+    "[T09 owned archival] Exact7 dirty fixture archival commits and fixture-snapshots/t09-*-archival tar/bundle; original32 snapshots preserved. Model tasks not executed. Review-originals T09 exact owned audit roots archived without symlink dereference before cleanup.",
+    "[T09 disposition before merge]39 fixture snapshots cover29 live roots;11 extra owned review originals archived.5 external review roots of uncertain declaration and10 private diagnostic directories retained outside repo for forensic evidence, nonblocking/no deletion claim. Exact intended removals use T09 resource-audit plus archival facts, never unknown directories."
   ],
   "notes": [
     "2026-09-07: 用户选择方案2并批准完整设计、spec及编写计划；尚未获执行授权，未创建实施worktree，未运行候选代码或模型验收。",

@@ -40,7 +40,6 @@ spec_dev:
 
 # 可选并发执行（concurrent-execution）设计
 
-> **Superseded-pending (2026-09-07)** — 本 spec 的「Requirement: plan 单一形态」、「Requirement: 渐进执行与断点恢复」、「Requirement: 集成验证后才完成」将被 .spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 
 > roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #2；吸收报告 AB-44 / AB-10 / AB-11 / AB-33。用户于 2026-09-06 确认含模型声明、切换与恢复的修订稿；本 spec 已激活，用户已指示开始实施；实施与必需验收已完成，已合入本地 main 并清理本次临时资源。
 
@@ -98,6 +97,8 @@ spec_dev:
 
 ### Requirement: plan 单一形态（改了什么：增加可选并发声明，保留现有结构）
 
+> **Superseded (2026-09-08)** — 此 Requirement 由 .spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md 的 M01 取代；其余现行条款继续有效。
+
 writing-plans SHALL 始终生成 index.md + tasks/TNN.md + progress.yaml：index 含头部、全局约束、相关测试范围和四列导航表；任务正文含文件块、接口块、TDD 五步且无复选框；T00 为隔离工作区、最大号为最终任务、验收任务如有居其间；progress 为唯一状态源并预登记已知资源；生成后 plan-index 校验失败不得交付。依赖闭区间、无环与文件一一对应语义不变。具备可声明独立写集合的分文件计划额外生成下文 `parallel` 块，其他计划省略，不恢复阈值门控或单文件生成分支。
 
 #### Scenario: S01 普通计划保持串行可执行
@@ -111,6 +112,8 @@ writing-plans SHALL 始终生成 index.md + tasks/TNN.md + progress.yaml：index
 - **THEN** exit 1 并定位错误；不忽略损坏声明或派工。
 
 ### Requirement: 渐进执行与断点恢复（改了什么：增加 opt-in 认领与集成恢复）
+
+> **Superseded (2026-09-08)** — 此 Requirement 由 .spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md 的 M02 取代；其余现行条款继续有效。
 
 执行者 SHALL 启动只读 index、progress 与 spec，执行 TN 时只读该任务正文和依赖的产出接口行；串行每任务完成后原子更新 progress 并提交，恢复核对 worktree、分支、commit 与任务文件，从最小编号 ready 任务继续，不重跑已 completed 任务。用户明确要求串行转并发时，在当前任务完成并提交后按本 spec 的切换协议升级，保留已有完成记录，不重做 T00；不满足准入条件则保留串行语义。并发模式主线程依据入口声明派发，子代理按同一渐进纪律读自己的任务；代码与状态分开提交，完成判据及恢复以本 spec 的核验协议为准。存量单文件仍按复选框和 feat(TN) 提交恢复、不生成 progress、不新增并发条款。progressive 两个旧 reference 保持删除，定义留在现有 SKILL 本体。
 
@@ -254,6 +257,8 @@ implementer SHALL 在给定绝对 worktree 内核对仓库、分支和基线，�
 - **THEN** 该票不进入 implementer 并发集合，由主线程排空在途票后串行执行，分别记录授权例外或空基线原因，不伪造 tests: pass；其他具备完整测试条件的票仍可并发。空基线只豁免基线测试，本身不构成票内 TDD 例外。
 
 ### Requirement: 集成验证后才完成
+
+> **Superseded (2026-09-08)** — 此 Requirement 由 .spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md 的 M03 取代；其余现行条款继续有效。
 
 主线程 SHALL 先核对 schema、claim、真实 Git diff、提交 ancestry、干净工作区与测试证据，再以保留实现提交 ancestry 的 merge 集成到当前集成 tip，运行票的集成验证后才记录 completed；任何冲突停止合并并交用户裁决，测试失败保留受影响状态为 blocked，后继不得消费未验证接口。
 

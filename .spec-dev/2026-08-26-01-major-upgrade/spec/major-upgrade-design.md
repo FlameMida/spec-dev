@@ -1,7 +1,6 @@
 ---
 # —— spec-dev 漂移守卫锚点（机器可校验，勿删）——
 
-> **Superseded-pending (2026-09-07)** — 本 spec 的「Requirement: 设计原则声明块」、「Requirement: roadmap 上下文胶囊」将被 .spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 
 spec_dev:
   version: 1
@@ -192,6 +191,8 @@ session-context 注入链 SHALL 在每个跳过分支留下可事后查询的一
 
 ### Requirement: 设计原则声明块
 
+> **Superseded (2026-09-08)** — 此 Requirement 由 .spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md 的 M06 取代；其余现行条款继续有效。
+
 `skills/writing-plans/references/design-principles.md` SHALL 承载八条设计原则（默认不留向后兼容、最简实现、分层构建、不以未完成复杂性换可工作产品、模块化、优先成熟库、优先已有依赖、长期架构决策）及 spec-dev 语境注解；requirement-analysis 阶段 4 SHALL 将原则纳入方案评价维度、阶段 5 纳入设计检查；writing-plans 产出的计划头部 SHALL 含「设计原则」声明块。
 
 #### Scenario: 方案对比引用原则裁决
@@ -223,6 +224,8 @@ session-context 注入链 SHALL 在每个跳过分支留下可事后查询的一
 - **THEN** 顺延为 03 并同步修正自引路径
 
 ### Requirement: roadmap 上下文胶囊
+
+> **Superseded (2026-09-08)** — 此 Requirement 由 .spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md 的 M07 取代；其余现行条款继续有效。
 
 roadmap 模板 SHALL 新增「原始需求」节（登记时保存用户原话全文）与每子项目「上下文胶囊」小节（关键裁决、探索产物指针、已扫探索范围）；requirement-analysis 续接检查 SHALL 载入胶囊并读取前置子项目 spec 与验收报告结论，已登记的探索范围不重扫、阶段 2 只补缺口；executing-plans 交付回写 SHALL 在胶囊追加「留给后继的注意事项」。
 
