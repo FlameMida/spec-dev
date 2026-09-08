@@ -24,7 +24,7 @@ spec_dev_roadmap:
 | 3 | tdd-seam | seam 声明上游权威 + TDD 门兜底；测试反模式 6/7（同义反复、实现耦合）；mock 分层；重构移出红绿循环；typecheck 最便宜验证档（AB-01/02/03/04/05） | — | delivered | .spec-dev/2026-09-06-02-tdd-seam/ |
 | 4 | review-conformance | 收尾审查增加 Spec 符合性维度 S 三向核对；设计判据包单点定义；可选架构深化维度；审查微纪律；子代理派发词纪律（AB-12/09/14/13/32） | — | delivered | .spec-dev/2026-09-06-03-review-conformance/ |
 | 5 | plan-decomposition | expand–contract 宽面重构排序及多票集成组；Self-Review 第 5 查与产物 review 门三问；prefactor 最前槽位；正交约束预分配与「拒绝的解读」节；计划头部关联 skill 声明与胶囊 gist；需求完备性两则（测试先例模态、actor 枚举）（AB-06/07/08/30/35/29） | — | delivered | .spec-dev/2026-09-07-01-plan-decomposition/ |
-| 6 | quick-fix-diagnosis | 红信号门槛、认知性升级信号、排序候选根因；correct seam 判定；修复收尾四则；会话级止损（AB-16/17/18/19） | — | pending | — |
+| 6 | quick-fix-diagnosis | 红信号门槛、认知性升级信号、排序候选根因；correct seam 判定；修复收尾四则；会话级止损（AB-16/17/18/19） | — | in-progress | .spec-dev/2026-09-08-01-quick-fix-diagnosis/ |
 | 7 | exploring-clarifying | 结晶判据与冲动路由；spike 受控例外；探索笔记已排除节；explorer 一手来源追溯与后台调研通道；frontier 决策清单可见；HITL 不得自代红线；否决记忆与路由前置双查；仓库级 glossary（AB-20/21/22/26/23/25/31/27） | — | pending | — |
 | 8 | p2-watchlist | 报告 P2 六条留观：acceptance-qa HTML 汇总报告、同层小批提问阀门、status 状态面板、ADR 资格类型清单、guardrail 破坏性命令拦截层、description 触发词瘦身（AB-15/24/34/28/41/43）——前序全部交付后逐条评估启动或 dropped | #1-#7 | pending | — |
 
@@ -93,6 +93,9 @@ spec_dev_roadmap:
 
 ### #6 quick-fix-diagnosis
 
+- **2026-09-08 设计已批准并落盘**：用户选择“证据不足才升级”（偶发可比较则继续），选择方案 1（内嵌 quick-fix 六步），随后以 `ok` 批准完整设计。spec `.spec-dev/2026-09-08-01-quick-fix-diagnosis/spec/quick-fix-diagnosis-design.md`（draft，12 条 Requirement / 24 个 Scenario，独立审查待完成）；尚未编写实施计划或实施。
+- **本轮边界与补查**：显然小修仅免诊断前置，不免 TDD；优先复用已有命令，seam 未定不提前写候选测试；“无 correct seam”需具体结构证据，不因缺标签或多个候选推定架构缺陷；同一根因链为修复对象，旁支记录后续入口。当前 quick-fix 命中 6 份 active spec covers，另有 4 份行为相关 spec，均按现行条款分面共存；不修改 ADR。openai.yaml 已改为 seam/TDD 摘要，旧“五处三信号”定位不可机械套用；现有 eval 的“三条 glob”需纠正为五条。
+- **验证方向**：至少一例真实可写诊断→修复→收尾，边界案例通过真实模型决策与独立动作/结果判读；借鉴 #5 特性内 CLI/夹具证据方式，不把 #4 review-runner 扩为通用执行器。静态、真实模型、实际动作证据分列；此时均未运行。
 - **关键裁决**：不吸收 diagnosing-bugs 的十级 loop 与 3-5 假设完整 ranking（报告 §6 #3），只取 lite 红信号门槛、认知性升级信号、2-3 排序候选。
 - **探索指针**：报告 AB-16/17/18/19 与 §8.5 修正（quick-fix:39 列表外已有第 4 个升级信号"双 spec 矛盾"，认知性信号应并入列表成第 5 条；三信号枚举在 5 处需同步：SKILL.md :4/:18、openai.yaml、README 双语 :18/:42；eval qf-small-bug-triggers 步骤顺序需随红信号前置调整）。
 - **已扫范围**：quick-fix 全文结构（步骤 2 :36-40、2.5 :42-50、3 :52-58、5a/5b :64-82、6 :84-91）；flaky/插桩/止损等同义词全仓零命中；quick-fix/SKILL.md 命中 4 份 active spec covers。
