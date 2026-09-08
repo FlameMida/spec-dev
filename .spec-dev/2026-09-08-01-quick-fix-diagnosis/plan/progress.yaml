@@ -1,9 +1,9 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T00",
   "tasks": {
     "T00": {
-      "status": "pending"
+      "status": "in_progress"
     },
     "T01": {
       "status": "pending"
@@ -25,9 +25,10 @@
     }
   },
   "resources": [
-    "planned-worktree: .worktrees/plan-2026-09-08-01-quick-fix-diagnosis —— T00核实后替换为实际所有权"
+    "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis —— git worktree remove; git branch -d plan/2026-09-08-01-quick-fix-diagnosis"
   ],
   "notes": [
-    "2026-09-08: 用户已批准完整设计、spec review及编写计划；当前仅计划，尚未批准实施。"
+    "2026-09-08: 用户已批准完整设计、spec review及编写计划；当前仅计划，尚未批准实施。",
+    "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"249858eb755e5527a23c67ae7606af9daa623418\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis\", \"branch\": \"plan/2026-09-08-01-quick-fix-diagnosis\", \"owned\": true}"
   ]
 }
