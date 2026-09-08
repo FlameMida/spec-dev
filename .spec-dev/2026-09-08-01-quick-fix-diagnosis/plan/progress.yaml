@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T03",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -18,7 +18,9 @@
       "tests": "pass"
     },
     "T03": {
-      "status": "in_progress"
+      "status": "completed",
+      "commit": "b0e04c913505acab7dc0812acda771c8f3bd7066",
+      "tests": "pass"
     },
     "T04": {
       "status": "pending"
@@ -99,6 +101,7 @@
     "T02 five baseline decision cases already pass; approved rule clarification uses before/after behavior protection, not manufactured RED. See execution/serial/T02/baseline-disposition.md.",
     "T02 complete with pre/post decision protection and fixed-candidate diagnose; S05 reviewed correction PASS preserves first failure; full regression construction remains in T03.",
     "T03 concrete closure facts provided before baseline; decision facts are not actual model actions.",
-    "T03 actual baseline repair passed S01/S05/S10/S12/S14; S08 full report and S11 resource branch not inferred. Preserve observed classifications; closure clarification and reporting requirement verified after edit."
+    "T03 actual baseline repair passed S01/S05/S10/S12/S14; S08 full report and S11 resource branch not inferred. Preserve observed classifications; closure clarification and reporting requirement verified after edit.",
+    "T03 complete: actual public RED/GREEN and cleanup/replay; S08 final actual trials/report closed by feedback supplement. Metadata committed earlier at18b34f5; final sync hook exemption recorded, no metadata mismatch."
   ]
 }
