@@ -116,7 +116,8 @@
     "[本计划拥有] acceptance/.gitattributes 与 r26-checkpoint/git-evidence-packaging.json：仅51原始证据空白文件与3 CRLF原件精确路径保留字节，禁止修改原始内容或放宽产品检查；/tmp/pd-r26-packaging-review 独立核对。",
     "[预登记] /tmp/pd-t09-final-validation、pd-t09-resource-audit、pd-t09-retirement-review 与本特性execution/serial/T09：最终全量外置输出以停止工作树写者，之后原样归档；资源清单先独立只读核验，主线程清理。",
     "[T09 owned archival] Exact7 dirty fixture archival commits and fixture-snapshots/t09-*-archival tar/bundle; original32 snapshots preserved. Model tasks not executed. Review-originals T09 exact owned audit roots archived without symlink dereference before cleanup.",
-    "[T09 disposition before merge]39 fixture snapshots cover29 live roots;11 extra owned review originals archived.5 external review roots of uncertain declaration and10 private diagnostic directories retained outside repo for forensic evidence, nonblocking/no deletion claim. Exact intended removals use T09 resource-audit plus archival facts, never unknown directories."
+    "[T09 disposition before merge]39 fixture snapshots cover29 live roots;11 extra owned review originals archived.5 external review roots of uncertain declaration and10 private diagnostic directories retained outside repo for forensic evidence, nonblocking/no deletion claim. Exact intended removals use T09 resource-audit plus archival facts, never unknown directories.",
+    "[T09 archive adjustment]Plain review copies can omit fixture .git in Git tracking. Actual main-byte cleanup guard stopped at pd-r24-judge-s27 before deletion. Remaining exact owned roots archived whole to execution/serial/T09/review-originals-postmerge; commit and verify before resuming. Prior successful deletions verified main bytes."
   ],
   "notes": [
     "2026-09-07: 用户选择方案2并批准完整设计、spec及编写计划；尚未获执行授权，未创建实施worktree，未运行候选代码或模型验收。",
