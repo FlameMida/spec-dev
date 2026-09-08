@@ -93,7 +93,7 @@ spec_dev_roadmap:
 
 ### #6 quick-fix-diagnosis
 
-- **2026-09-08 设计已批准并落盘**：用户选择“证据不足才升级”（偶发可比较则继续），选择方案 1（内嵌 quick-fix 六步），随后以 `ok` 批准完整设计。spec `.spec-dev/2026-09-08-01-quick-fix-diagnosis/spec/quick-fix-diagnosis-design.md`（draft，12 条 Requirement / 24 个 Scenario，独立审查待完成）；尚未编写实施计划或实施。
+- **2026-09-08 设计已批准并落盘**：用户选择“证据不足才升级”（偶发可比较则继续），选择方案 1（内嵌 quick-fix 六步），随后以 `ok` 批准完整设计。spec `.spec-dev/2026-09-08-01-quick-fix-diagnosis/spec/quick-fix-diagnosis-design.md`（draft，12 条 Requirement / 24 个 Scenario，独立审查 Approved，无阻断问题；审查基线 `bc4e047`，记录同目录 `design-review.md`）；用户 review 与编写实施计划确认待完成，尚未实施。
 - **本轮边界与补查**：显然小修仅免诊断前置，不免 TDD；优先复用已有命令，seam 未定不提前写候选测试；“无 correct seam”需具体结构证据，不因缺标签或多个候选推定架构缺陷；同一根因链为修复对象，旁支记录后续入口。当前 quick-fix 命中 6 份 active spec covers，另有 4 份行为相关 spec，均按现行条款分面共存；不修改 ADR。openai.yaml 已改为 seam/TDD 摘要，旧“五处三信号”定位不可机械套用；现有 eval 的“三条 glob”需纠正为五条。
 - **验证方向**：至少一例真实可写诊断→修复→收尾，边界案例通过真实模型决策与独立动作/结果判读；借鉴 #5 特性内 CLI/夹具证据方式，不把 #4 review-runner 扩为通用执行器。静态、真实模型、实际动作证据分列；此时均未运行。
 - **关键裁决**：不吸收 diagnosing-bugs 的十级 loop 与 3-5 假设完整 ranking（报告 §6 #3），只取 lite 红信号门槛、认知性升级信号、2-3 排序候选。

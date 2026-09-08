@@ -18,6 +18,8 @@ spec_dev:
 
 > 来源：[skill-ecosystem-absorption 路线图](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #6，AB-16/17/18/19。2026-09-08 用户选择“证据不足才升级”、选择方案 1（内嵌现有六步），随后以 `ok` 批准完整设计。本文件处于设计审查阶段，尚未编写实施计划或实施。
 
+> 独立审查 **Approved**，12 条 Requirement / 24 个 Scenario，无阻断问题，见 [design-review.md](design-review.md)。用户 review 与编写实施计划确认待完成，spec 保持 draft。
+
 ## 背景与目标
 
 quick-fix 已有根因定位、spec 反查、升级门、逐题确认和 TDD；本项补上“根因认定有真实证据、修复覆盖真实故障、收尾能回查”的轻量约束。沿现有六步增强，不另建诊断循环。
