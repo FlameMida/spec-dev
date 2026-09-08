@@ -38,7 +38,7 @@ spec_dev:
     - "scripts/schemas/README.md"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: null
+  sync_commit: bc99e272165167159e7e3409e47fa90ee0d32022
   supersedes:
     - ".spec-dev/2026-09-06-01-concurrent-execution/spec/concurrent-execution-design.md"
     - ".spec-dev/2026-09-06-02-tdd-seam/spec/tdd-seam-design.md"
@@ -48,9 +48,9 @@ spec_dev:
 
 # 计划分解与集成组设计
 
-> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #5，吸收 AB-06/07/08/30/35/29。用户于 2026-09-07 选择“方案 2：多张小任务卡组成集成组”，并以 `ok` 批准整篇设计。本文件为批准设计的可执行化规格；2026-09-07用户确认执行后已完成T00—T07；T08必需验收及独立完整性审查已通过，当前执行T09本地交付，状态见plan/progress.yaml与实施记录。
+> roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #5，吸收 AB-06/07/08/30/35/29。用户于 2026-09-07 选择“方案 2：多张小任务卡组成集成组”，并以 `ok` 批准整篇设计。本文件为批准设计的可执行化规格；2026-09-07用户确认执行后已完成T00—T07；T08必需验收及独立完整性审查已通过，T09本地交付已完成，状态见plan/progress.yaml与实施记录。
 
-> 独立审查 **Approved**，23 条 Requirement / 33 个 Scenario，见 [design-review.md](design-review.md)。用户已 review 通过并于 2026-09-07 以 `ok` 同意编写实施计划；现已激活；[实施计划](../plan/index.md) 已保存（T00—T09），用户已明确确认执行；当前T00—T08完成，23条Requirement/33个Scenario必需证据齐备；T09正在执行本地交付。
+> 独立审查 **Approved**，23 条 Requirement / 33 个 Scenario，见 [design-review.md](design-review.md)。用户已 review 通过并于 2026-09-07 以 `ok` 同意编写实施计划；现已激活；[实施计划](../plan/index.md) 已保存（T00—T09），用户已明确确认执行；T00—T09均已完成，23条Requirement/33个Scenario必需证据齐备，已合入本地main。
 
 ## 背景与目标
 
@@ -557,3 +557,8 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 ## T09交付前实施记录
 
 2026-09-08：T08独立完整性审查通过，23条Requirement/33个Scenario、9项必需PR矩阵齐备。最终安全网179/179、0 fail/skip，skills/plugin官方与plan-index检查通过，详见 [验收报告](../acceptance/acceptance-report.md) 和 [T09原始验证](../execution/serial/T09/final-validation/facts.json)。七条部分取代按批准映射回写，旧三份spec保持active及原sync_commit。模型完整稿为反馈修订验收，生成任务未执行；非阻断RTK格式FAIL、nightly not_run和历史失败均保留。实际合并/清理/锚定待本票终态登记。
+
+
+### T09实际交付完成
+
+2026-09-08：实际快进合并main：bc99e272165167159e7e3409e47fa90ee0d32022，sync_commit锚定该真实合并点。178产品文件与最终179/179验收候选一致；29个live夹具、121个已验证外部审查副本、实施worktree与分支已清理，39份fixture快照保留。归档遗漏先由字节守卫拒绝，再补存完整tar、提交后续清。5个外部归属未明目录及10个私有诊断目录保留，不宣称删除。生成模型计划任务未执行；历史失败、非阻断RTK格式FAIL及nightly not_run保留。未push或发布。

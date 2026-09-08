@@ -1,6 +1,6 @@
 # 计划分解验收：必需矩阵通过
 
-候选产品源码：`09e50190069e59aa8cefb72b4344e6b2d563288d`。178个产品文件在全部后续模型修订与独立复核中保持相同。T08必需验收通过；T09最终全量、合并与清理尚未开始。本报告不表示已发布。
+候选产品源码：`09e50190069e59aa8cefb72b4344e6b2d563288d`。178个产品文件在全部后续模型修订与独立复核中保持相同。T08必需验收与T09最终全量、本地合并、清理均完成。实际合并点 bc99e272165167159e7e3409e47fa90ee0d32022；未push或发布。
 
 ## Requirement Reconciliation
 
@@ -10,7 +10,7 @@
 
 | 证据层 | 结论与范围 | 原始证据 |
 |---|---|---|
-| 当前源码机器回归 | 179/179，0 fail/skip；skills/plugin官方校验通过 | [r12最终安全网](r12-fix/full-final/)、[修复记录](r12-fix/report.md) |
+| 当前源码机器回归 | 179/179，0 fail/skip；skills/plugin官方校验通过 | [T09最终安全网](../execution/serial/T09/final-validation/facts.json)、[修复记录](r12-fix/report.md) |
 | S20完整计划稿 | r18独立PASS，覆盖普通expand与依赖最小性 | [报告](reviews/pd-r18-judge-s20/report.json) |
 | S27完整混合计划稿 | r26独立PASS；3处真实模型替换，25项有界控制；11文件来源及178产品哈希一致 | [报告](reviews/pd-r26-judge-s27/report.json) |
 | S32完整稿 | r15独立PASS | [逐条最终证据](reviews/pd-r26-final-critic/scenario-table.json) |
@@ -28,6 +28,10 @@ r26自然返回504.225秒，exit0/is_error=false、timeout0，使用用户当前
 
 历史模型语义FAIL、401/ECONNRESET/524调用错误及原始日志均保留，调用失败不算产品结论。resume辅助裸echo违反RTK格式，作为非阻断FAIL保留，因此不宣称chain-all-input通过。随机中断/竞争与核心模型3trial nightly为not_run、按原矩阵非阻断。
 
-32份fixture快照及现场在T08保留，待T09按台账核验清理。历史汇总逐字保存在 [r26前检查点](r26-checkpoint/manifest.json)；逐Scenario完整历史见 [scenario-results.json](scenario-results.json)。
+T09保留39份fixture快照；29个live现场、121个已归档审查副本、实施worktree及分支已正常清理。5个归属未定外部目录和10个私有诊断目录明确保留。历史汇总逐字保存在 [r26前检查点](r26-checkpoint/manifest.json)；逐Scenario完整历史见 [scenario-results.json](scenario-results.json)。
 
 原始证据的Git归档使用54条精确路径属性保留字节；51条原始空白、3条CRLF已独立复核，无产品路径或通配符，54个Git对象与原件哈希一致，格式检查通过。见 [归档审查](reviews/pd-r26-packaging-review/report.json)。
+
+## 本地交付
+
+实际合并 bc99e272165167159e7e3409e47fa90ee0d32022；最终179/179、0fail/skip；七条部分取代已回写，三份旧spec保持active和原sync_commit。清理守卫触发及恢复记录保留，补齐后正常完成，无force删除或原始证据丢失。见 [合并回执](../execution/serial/T09/merge.json)、[夹具清理](../execution/serial/T09/fixture-cleanup.json)、[审查副本清理](../execution/serial/T09/external-review-cleanup.json)、[实施清理](../execution/serial/T09/implementation-cleanup.json)。

@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T09",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -48,8 +48,9 @@
       "commit": "bf13701579cfed18e1f771b3d1126104b81df222"
     },
     "T09": {
-      "status": "in_progress",
-      "tests": "Final full suite179/179,0fail0skip; skills/pluginofficial/plan-index/diff all0. No orphan tests.7 supersession markers written with3old specs active/sync preserved.39fixturesnapshots verified,7dirty archivalcommits preserve bytes; source main clean at46752f4. Local merge/cleanup/anchor pending."
+      "status": "completed",
+      "tests": "Final179/179,0fail0skip; package/skills/plan-index/drift/diff0;23Req/33Scenario/9PRmatrix PASS;7 supersession markers. Actual local merge bc99e27;178product hashes equal;39snapshots,29fixtures and121external duplicates cleaned;implementation worktree/branch removed normally.5external uncertain roots+10private diagnostics retained; no required blockers.",
+      "commit": "bc99e272165167159e7e3409e47fa90ee0d32022"
     }
   },
   "resources": [
@@ -197,6 +198,31 @@
     "r19 S27 T07 PV7修复增量PASS：只读groups.G01当前evidence_paths，7控制中历史失败/旧树记录保留且不参与当前验收，缺失/失败/错误当前树拒绝。T06已补完整恢复代码，但R19-PV14双in_progress/currentnull违反串行形状，PV15失败返回要求T06blocked而真实T06pending；公开validator/原fail_task控制已证。当前需修T03,T06，T08活跃，快照acceptance/reviews/pd-r19-s27-incremental-through-T07。",
     "r19/S27/T08当前发生CLI api_retry3，error unknown/statusnull，进程仍活，宿主timeout0。独立传输诊断acceptance/reviews/pd-r19-transport-review/report.json核现行CLI2.1.263：事件不能证明账号/额度/具体网络或SDK请求超时，根因unknown；未改配置或停进程。继续等自然结果，不把调用问题当计划语义FAIL。",
     "用户询问当前卡点，已说明S27/T08长请求重试，以及已确认T03恢复目标和T06串行/返回入口缺陷。额外唯一最小provider-check-r19在3.6007秒READY/exit0，实际deepseek-v4-flash[1m]，证明当前最小请求可用，不推断长请求根因；当前T08已观察5次unknown/null自动重试，继续不设host时限。",
-    "认证诊断确认r20 init apiKeySource none/model无1m，与此前20次API_KEY源不同；当前本地配置又变为API_KEY非空/AUTH_TOKEN无，agent/根均未改配置。provider-check-r21实际2.229秒READY/API_KEY源/deepseek-v4-flash[1m]；r21从稳定r20 seed继续T03/T06/T08实际未完修订，不更改全局认证或模型，不把r20的401反推r19 unknown。"
-  ]
+    "认证诊断确认r20 init apiKeySource none/model无1m，与此前20次API_KEY源不同；当前本地配置又变为API_KEY非空/AUTH_TOKEN无，agent/根均未改配置。provider-check-r21实际2.229秒READY/API_KEY源/deepseek-v4-flash[1m]；r21从稳定r20 seed继续T03/T06/T08实际未完修订，不更改全局认证或模型，不把r20的401反推r19 unknown。",
+    "2026-09-08 local delivery completed at bc99e272165167159e7e3409e47fa90ee0d32022;23/33 acceptance and179/179 final tests. Original failures preserved; explicit private/external evidence retention is not deletion."
+  ],
+  "delivery": {
+    "channel": "local",
+    "state": "completed",
+    "merge_commit": "bc99e272165167159e7e3409e47fa90ee0d32022",
+    "source_branch": "main",
+    "source_path": "/Users/maverick/feature-dev",
+    "product_candidate": "09e50190069e59aa8cefb72b4344e6b2d563288d",
+    "worktree_removed": true,
+    "branch_removed": true,
+    "push_performed": false,
+    "release_performed": false
+  },
+  "resource_disposition": {
+    "state": "completed_with_explicit_evidence_retention",
+    "fixture_snapshots_preserved": 39,
+    "live_fixture_roots_removed": 29,
+    "external_review_duplicates_removed": 121,
+    "external_roots_without_resolved_ownership_retained": 5,
+    "private_diagnostic_directories_retained": 10,
+    "active_owned_model_processes": 0,
+    "implementation_worktree_and_branch_removed": true,
+    "historical_resources": "resources kept as history; actual terminal paths in execution/serial/T09/*cleanup.json and resource-audit",
+    "required_blockers": []
+  }
 }

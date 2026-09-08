@@ -23,7 +23,7 @@ spec_dev_roadmap:
 | 2 | concurrent-execution | 新建正式 skill `executing-plans-parallel`（进插件清单），executing-plans 在执行确认门满足条件时提议并分支调用：主线程编排与合并、implementer 子代理各占 worktree、每票 TDD 五步 + 契约自检、主线程唯一写 progress.yaml；含 PR 制交付通道、执行期探索分工与指针派发、认领键（AB-44/10/11/33） | #1 | delivered | .spec-dev/2026-09-06-01-concurrent-execution/ |
 | 3 | tdd-seam | seam 声明上游权威 + TDD 门兜底；测试反模式 6/7（同义反复、实现耦合）；mock 分层；重构移出红绿循环；typecheck 最便宜验证档（AB-01/02/03/04/05） | — | delivered | .spec-dev/2026-09-06-02-tdd-seam/ |
 | 4 | review-conformance | 收尾审查增加 Spec 符合性维度 S 三向核对；设计判据包单点定义；可选架构深化维度；审查微纪律；子代理派发词纪律（AB-12/09/14/13/32） | — | delivered | .spec-dev/2026-09-06-03-review-conformance/ |
-| 5 | plan-decomposition | expand–contract 宽面重构排序及多票集成组；Self-Review 第 5 查与产物 review 门三问；prefactor 最前槽位；正交约束预分配与「拒绝的解读」节；计划头部关联 skill 声明与胶囊 gist；需求完备性两则（测试先例模态、actor 枚举）（AB-06/07/08/30/35/29） | — | in-progress | .spec-dev/2026-09-07-01-plan-decomposition/ |
+| 5 | plan-decomposition | expand–contract 宽面重构排序及多票集成组；Self-Review 第 5 查与产物 review 门三问；prefactor 最前槽位；正交约束预分配与「拒绝的解读」节；计划头部关联 skill 声明与胶囊 gist；需求完备性两则（测试先例模态、actor 枚举）（AB-06/07/08/30/35/29） | — | delivered | .spec-dev/2026-09-07-01-plan-decomposition/ |
 | 6 | quick-fix-diagnosis | 红信号门槛、认知性升级信号、排序候选根因；correct seam 判定；修复收尾四则；会话级止损（AB-16/17/18/19） | — | pending | — |
 | 7 | exploring-clarifying | 结晶判据与冲动路由；spike 受控例外；探索笔记已排除节；explorer 一手来源追溯与后台调研通道；frontier 决策清单可见；HITL 不得自代红线；否决记忆与路由前置双查；仓库级 glossary（AB-20/21/22/26/23/25/31/27） | — | pending | — |
 | 8 | p2-watchlist | 报告 P2 六条留观：acceptance-qa HTML 汇总报告、同层小批提问阀门、status 状态面板、ADR 资格类型清单、guardrail 破坏性命令拦截层、description 触发词瘦身（AB-15/24/34/28/41/43）——前序全部交付后逐条评估启动或 dropped | #1-#7 | pending | — |
@@ -82,14 +82,14 @@ spec_dev_roadmap:
 
 ### #5 plan-decomposition
 
-- **2026-09-07 方案与完整设计已批准，spec 独立审查通过**：用户选择「方案2」——保留独立小票、集成组统一验证；随后以 `ok` 批准完整设计。spec `.spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md`（active，23 条 Requirement / 33 个 Scenario，独立审查 Approved；审查基线 `9a8bd71`，记录同目录 `design-review.md`），ADR-0008。用户已 review 并同意编写实施计划，现已激活并向三份旧 spec 写取代预告；实施计划 `.spec-dev/2026-09-07-01-plan-decomposition/plan/index.md` 已保存（10票，T00—T09；声明/状态/真实证据→串并行协议→分解与需求→全矩阵验收→本地交付），用户已于2026-09-07确认执行；隔离分支plan/2026-09-07-01-plan-decomposition完成T00—T03（最新53/53机器回归），T04六例默认glm-5.3-flash模型探针均provider429，保留blocked检查点且未写T04规则实现。T05—T09待续，未验收/合并/推送；真实状态在该worktree的plan/progress.yaml。
+- **历史设计与早期实施检查点（2026-09-07，已由下述交付结果取代）**：用户选择「方案2」——保留独立小票、集成组统一验证；随后以 `ok` 批准完整设计。spec `.spec-dev/2026-09-07-01-plan-decomposition/spec/plan-decomposition-design.md`（active，23 条 Requirement / 33 个 Scenario，独立审查 Approved；审查基线 `9a8bd71`，记录同目录 `design-review.md`），ADR-0008。用户已 review 并同意编写实施计划，现已激活并向三份旧 spec 写取代预告；实施计划 `.spec-dev/2026-09-07-01-plan-decomposition/plan/index.md` 已保存（10票，T00—T09；声明/状态/真实证据→串并行协议→分解与需求→全矩阵验收→本地交付），用户已于2026-09-07确认执行；隔离分支plan/2026-09-07-01-plan-decomposition完成T00—T03（最新53/53机器回归），T04六例默认glm-5.3-flash模型探针均provider429，保留blocked检查点且未写T04规则实现。T05—T09待续，未验收/合并/推送；真实状态在该worktree的plan/progress.yaml。
 - **本轮补充裁决**：不可逐批绿时引入 awaiting_verification，只有同组依赖可消费，组外经唯一验证票等待；组员/验证票由主线程独占现有隔离集成工作区，进入前收拢在途普通任务，整组通过后同次原子完成并推进已验证基线。保留原始审查基线、每票实现提交和失败证据；状态/代码分开提交，中断核对事实、不重复施工。无组旧计划原样读取；组数据升级及校验 CLI 必须明确支持协议。review 三问以 2–3 个检查点加一次整体确认呈现。
 - **本轮补查结果**：#2 的计划形态/恢复/完成条款、#3 的红绿时序/纯重构保护、major-upgrade 的设计原则/胶囊需部分取代；普通 implementer 五步、结果 schema、ADR-0005/0007 与 S/critic 保持。新组协议的复杂度由用户明确选择承担，不采用最初推荐的单张原子大票。
 - **新增探索指针**：spec 解释完整状态与恢复设计；`skills/executing-plans/SKILL.md:56` 是原 completed 判据、`:61` 是原 ready 判据；`skills/test-driven-development/SKILL.md:135` 是纯重构保护原定义；`scripts/validate-output.mjs:175` 起的 plan-index 是现有公共结构校验入口。前置 #4 的验收报告仅说明已交付边界，不构成本项模型证据。
 - **关键裁决**：expand–contract 取第一轮完整版含两级降级（§5.4 #4）；prefactor"识别 + 固化为最前槽位"一步（§5.4 #8，实际槽位为 T01，T00 固定为隔离工作区）；产物 review 门"呈现产物 + 2-3 个目标化检查问题"通用形态、RA 阶段 7 与 writing-plans 交接各自落地（§5.4 #5）；AB-29 测试先例模态 deep 档已有（exploration-patterns:37），只需向 standard 档开放，actor 枚举落 spec-template。
 - **探索指针**：报告 AB-06/07/08/30/35/29 与 §8.5 修正（Self-Review 现为四查，"第 5 查"编号吻合；README 双语 :171 "四查"只列三项由 #1 修；design-principles:7 第 1 条与 expand 阶段新旧并存存在张力需补注解；胶囊指针现为纯路径无 gist；关联 skill 声明在头部 :86/:98/:122 已有部分）。
 - **已扫范围**：writing-plans 全文结构（任务粒度 :52-66、头部 :79-116、Self-Review :316-325）、design-principles.md 全文、roadmap-template、RA 阶段 2 探索模态定义。
-- **留给后继的注意事项**：（交付回写时追加）
+- **留给后继的注意事项**：2026-09-08完成T00—T09并合入本地main，实际merge bc99e272165167159e7e3409e47fa90ee0d32022。入口：.spec-dev/2026-09-07-01-plan-decomposition/ 下 spec/plan-decomposition-design.md、plan/index.md、acceptance/acceptance-report.md。23Req/33Scenario必需验收及最终179/179通过，七条部分取代生效；复用v2组状态、单点恢复与第五查，不把awaiting_verification当completed。模型完整稿为反馈修订后独立验收，真实执行链产品通过但resume辅助RTK格式FAIL保留；nightly三trial未运行，未push/发布。#6沿现有quick-fix契约扩充lite诊断，不重建十级loop；保持Spec/TDD和真实证据边界。
 
 ### #6 quick-fix-diagnosis
 
