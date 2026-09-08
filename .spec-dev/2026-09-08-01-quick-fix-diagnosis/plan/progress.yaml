@@ -1,0 +1,33 @@
+{
+  "format_version": 1,
+  "current": null,
+  "tasks": {
+    "T00": {
+      "status": "pending"
+    },
+    "T01": {
+      "status": "pending"
+    },
+    "T02": {
+      "status": "pending"
+    },
+    "T03": {
+      "status": "pending"
+    },
+    "T04": {
+      "status": "pending"
+    },
+    "T05": {
+      "status": "pending"
+    },
+    "T06": {
+      "status": "pending"
+    }
+  },
+  "resources": [
+    "planned-worktree: .worktrees/plan-2026-09-08-01-quick-fix-diagnosis —— T00核实后替换为实际所有权"
+  ],
+  "notes": [
+    "2026-09-08: 用户已批准完整设计、spec review及编写计划；当前仅计划，尚未批准实施。"
+  ]
+}
