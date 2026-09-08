@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: quick-fix-diagnosis
-  status: draft
+  status: active
   covers:
     - "skills/quick-fix/SKILL.md"
     - "skills/quick-fix/agents/openai.yaml"
@@ -18,7 +18,7 @@ spec_dev:
 
 > 来源：[skill-ecosystem-absorption 路线图](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #6，AB-16/17/18/19。2026-09-08 用户选择“证据不足才升级”、选择方案 1（内嵌现有六步），随后以 `ok` 批准完整设计。本文件处于设计审查阶段，尚未编写实施计划或实施。
 
-> 独立审查 **Approved**，12 条 Requirement / 24 个 Scenario，无阻断问题，见 [design-review.md](design-review.md)。用户 review 与编写实施计划确认待完成，spec 保持 draft。
+> 独立审查 **Approved**，12 条 Requirement / 24 个 Scenario，无阻断问题，见 [design-review.md](design-review.md)。2026-09-08 用户以 `ok` 完成 spec review 并同意编写实施计划，漂移守卫已激活；尚未批准实施。
 
 ## 背景与目标
 
