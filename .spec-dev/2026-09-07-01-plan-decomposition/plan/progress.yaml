@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T08",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -43,8 +43,9 @@
       "commit": "0528a24bf063e6411b4fb5edff570f883bccde0f"
     },
     "T08": {
-      "status": "in_progress",
-      "tests": "PASS required QA:23 DELIVERED/33Scenario/9PRmatrix;179 machine tests0fail0skip at frozen09e5019,178source unchanged;r26 S27 completeartifact PASS25controls; all model action/artifact lanes passed within boundaries; finalcritic no unresolvedhigh/medium. Historical FAIL/nonblockingRTK/nightly not_run retained. Completion checkpoint commit pending."
+      "status": "completed",
+      "tests": "PASS required QA:23 DELIVERED/33Scenario/9PRmatrix;179 machine tests0fail0skip at frozen09e5019,178source unchanged;r26 S27 completeartifact PASS25controls; all model action/artifact lanes passed within boundaries; finalcritic no unresolvedhigh/medium. Historical FAIL/nonblockingRTK/nightly not_run retained. Evidence committed; package/skills/openai-sync/staged-whitespace hooks passed.",
+      "commit": "bf13701579cfed18e1f771b3d1126104b81df222"
     },
     "T09": {
       "status": "pending"
