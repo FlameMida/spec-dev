@@ -4,7 +4,7 @@
     {
       "id": "qf-small-bug-triggers",
       "prompt": "修一下这个 bug：列表分页翻到第 0 页会崩溃",
-      "expected_output": "进入 quick-fix：入口分诊判定为无设计空间的小修，定位根因并对嫌疑文件做 spec 反查（三条 glob 对齐守卫）；逐题确认根因/方案/是否改变契约；强制 TDD 先写复现失败测试再修；按契约影响分流提交；收尾询问是否触发 acceptance-qa"
+      "expected_output": "进入quick-fix：定位并按现行五条glob反查spec；非显然根因确认前取得针对原症状的诊断红，显然单点仅免诊断前置、不免TDD；证据不足或其他影响信号交用户裁决，偶发可比较可继续；沿获批公共落点逐题校对并TDD修复；收尾核对适用复现率、插桩、原场景及根因证据，acceptance-qa可选。"
     },
     {
       "id": "qf-escalate-cross-module",
@@ -170,6 +170,11 @@
       "id": "qf-diagnosis-s14",
       "prompt": "叙事指向证据而不自动提交\nGIVEN 缓存键遗漏维度已由实际回放及修复后结果支持，用户未授权提交或发布\nWHEN 给出交付说明",
       "expected_output": "说明遗漏如何造成症状、修复改变了什么以及对应证据和未验证项；工作成果可保持未提交，不为写根因叙事自动 commit/PR/push。"
+    },
+    {
+      "id": "qf-diagnosis-s24",
+      "prompt": "同步摘要与既有边界\nGIVEN 本项候选产物\nWHEN 核对公开说明及 qf-small-bug-triggers、现有 seam/TDD/清理/契约分支 eval",
+      "expected_output": "不再以旧三种升级信号作为穷尽列表；原流程 eval 表达条件式红前置，五条 glob 数量正确；openai.yaml 摘要同步，既有可选验收和授权复用未消失，不在 triage 命令新增清单副本。"
     }
   ]
 }

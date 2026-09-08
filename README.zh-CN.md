@@ -16,7 +16,7 @@
 - **可选并发执行** — `executing-plans-parallel`: 显式选择；模型声明、任务边界切换、独占进度、隔离实现和中断恢复；共用本地/PR 交付闭环。
 - **工程纪律** — `using-git-worktrees`（原生工具优先的隔离工作区）与 `test-driven-development`（没有失败测试就没有生产代码）独立成 skill，可被任何工作流复用
 - **全能验收** — `acceptance-qa` 按「验收维度 × 执行性质」矩阵验收：单元/集成/API、Playwright E2E、视觉回归、可访问性、性能（前端 CWV / 后端 k6 / 客户端）、AI 自主验收（证据强制 + 串行复核 + verify 断言优先）与失败诊断
-- **轻量修复** — `quick-fix`，已决定、无设计空间的小修复（小 bug、小调整）的快路径：定位根因（含 spec 反查）、逐题校对、TDD 修复、可选验收；按契约影响分流以规避 spec 漂移，涉及跨 spec 契约/跨模块/新依赖时升级 requirement-analysis
+- **轻量修复** — `quick-fix`，用于已决定、无设计空间的小修：按证据诊断、逐题校对，沿获批公共落点 TDD 修复。范围、依赖、现行契约冲突或诊断证据不足时提议升级；偶发但可比较可继续。收尾核对复现率、临时插桩、原症状和根因证据，acceptance-qa 保持可选。
 - **共享澄清** — `clarifying`，grill 式提问纪律（沿决策树一次一题、事实自查、每个决策带推荐交用户裁决）；被 requirement-analysis 与 quick-fix 引用，也可独立调用，以三出口收束（转主流程/就此结束/写入 md）
 - **契约化编排** — 子代理输出走 JSON Schema 契约，`validate-output.mjs` 确定性校验，失败退回补全
 - **零 MCP 依赖** — 结构化推理以内嵌 skill 提供（`sequential-thinking`，vendored）；浏览器自动化 MCP（playwright / chrome-devtools）按项目自配，见 `skills/acceptance-qa/references/mcp-setup.md`
@@ -41,7 +41,7 @@ executing-plans（隔离执行 + 审查 + 总结）
 
 quick-fix（已决定、无设计空间的小修复）  ── 旁路快车道
    根因 + spec 反查 → 逐题校对 → TDD 修复 → 可选验收
-        ↑ 命中跨 spec 契约 / 跨模块 / 新依赖信号时升级回 requirement-analysis
+        ↑ 命中范围 / 现行契约冲突 / 诊断证据不足信号时提议升级
 
 roadmap 续接（大目标）  ── 分解登记 .spec-dev/roadmaps/<project>.md ── 外环
    requirement-analysis 分解登记子项目 → 每个子项目独立走完整管线 → executing-plans 交付后回写状态并提示续接下一个
@@ -231,7 +231,7 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-des
 
 > 用 quick-fix 直接把这个小 bug 修好。
 
-它会定位根因（含与漂移守卫 `covers` 对齐的 spec 反查），逐题确认根因/修复方案/契约影响，在 TDD 下修复，并按契约影响分流——行为改变则同步对应 spec，不变则以 `Spec-Guard: off` trailer 提交——最后可选触发 acceptance-qa。若根因涉及跨 spec 的行为契约、跨多个模块或需要新依赖，quick-fix 会停下并提议升级到 requirement-analysis。
+它沿同一证据支持的根因链修复，非显然根因确认前先取得真实失败信号，再沿获批公共落点修复。升级仍由用户裁决；偶发但复现条件可比较时，不仅因偶发而升级。契约同步、TDD 与既有授权规则保持。收尾按适用性比较偶发失败次数，核对临时插桩，回放原始症状，并说明根因证据与验证边界；独立旁支记录后续入口，acceptance-qa 保持可选。
 
 ## 无外部 MCP 服务依赖
 
