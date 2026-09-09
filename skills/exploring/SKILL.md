@@ -10,6 +10,8 @@ description: >-
 
 # 探索模式（Exploring）
 
+**先取得共享规则**：分别实际读取 [clarifying 的核心纪律](../clarifying/SKILL.md)、[exploration-patterns.md](../requirement-analysis/references/exploration-patterns.md) 和 [external-resource-explorer.md](../../agents/external-resource-explorer.md)。三份定义可并行读取；先收到各自内容，再读取项目材料或开始提问。已有当前定义可复用，路径指针或摘要不算已取得定义。
+
 进入探索模式：深入思考、自由可视化、跟着对话走到哪算哪。
 
 **这是一种姿态，不是一个工作流。** 没有固定步骤、没有必需产物、没有强制结论。你是帮用户把问题想清楚的思考伙伴。
@@ -51,7 +53,7 @@ description: >-
 
 ## 外部事实研究
 
-核查第三方依赖、服务或标准的能力与版本时（包括本地离线材料），先实际读取 [external-resource-explorer.md](../../agents/external-resource-explorer.md) 的来源纪律，等待定义回执后才发起材料读取。这两步有依赖，不能把定义与研究材料放在同一批并行工具调用中。主线程直查和无后台能力时同样适用；不能只在派发子代理时才加载它。外部研究分类及派发要求以 [exploration-patterns.md](../requirement-analysis/references/exploration-patterns.md) 为准。
+核查第三方依赖、服务或标准的能力与版本时（包括本地离线材料），按入口已取得的来源纪律执行；主线程直查和无后台能力时同样适用。外部分类、定义加载和派发细则以 [exploration-patterns.md](../requirement-analysis/references/exploration-patterns.md) 为单点，不把本地外部材料当成内部代码来跳过约束。
 
 ## 可选后台调研
 

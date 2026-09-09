@@ -1,6 +1,6 @@
 interface:
   display_name: "Clarifying"
-  short_description: "共享澄清纪律：未决清单可见，每轮用同一决策维度的互斥选项只问一题；用户裁决不可自代，已有决定直接复用。独立会话三出口，被引用后归还控制权。"
+  short_description: "共享澄清纪律：未决清单可见，范围扩展先二分，每轮用互斥选项只问一题；用户裁决不可自代，已有决定直接复用。独立会话三出口，被引用后归还控制权。"
   default_prompt: "Use $clarifying to grill this idea, plan or decision into shared understanding, one question at a time. / 用 $clarifying 逐题把这个想法、计划或决定磨到共识。"
 
 policy:

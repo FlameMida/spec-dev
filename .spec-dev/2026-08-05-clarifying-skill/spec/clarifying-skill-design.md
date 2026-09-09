@@ -207,3 +207,7 @@ quick-fix 步骤 3 SHALL 声明提问纪律遵循 clarifying skill，三类核�
 ### exploring-clarifying T06 验收修复同步
 
 本次在既有获批切面内修正历史数值/条件与现行/拟议语义区分、RA 入口的澄清权威及首次外部材料前置、澄清互斥选项，并将 exploring 展开的恢复细则收回 exploration-patterns 单点，相关元数据同步。原门、TDD、契约生命周期和未取代条款不变；不新增公共 runner/schema。真实反例、独立反驳及修复前保护见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/reviews/disposition-r1.json` 和 `execution/serial/T06/`；当前仍待统一最终候选验收和本地交付，不以任务期或静态通过宣称全部 DELIVERED。
+
+### exploring-clarifying T06 范围题整改
+
+在同一澄清权威内细化包含关系的范围问题：先以保持当前边界或必须扩展两项裁决，后续实现维度仍依赖该裁决；普通分类题继续允许适当的互斥选项，不全局限制为两项。原单题、推荐、披露、已有决定复用与角色出口边界不变。当前干净范围分岔证据见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t06-range-direct/S09-scope/`；统一 final-r2 仍待执行，不宣称全部交付。

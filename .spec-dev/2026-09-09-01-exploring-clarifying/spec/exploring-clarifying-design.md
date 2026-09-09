@@ -452,3 +452,11 @@ PR 是所属执行通道，不承诺全部真实模型场景十分钟内完成�
 ### exploring-clarifying T06 验收修复同步
 
 本次在既有获批切面内修正历史数值/条件与现行/拟议语义区分、RA 入口的澄清权威及首次外部材料前置、澄清互斥选项，并将 exploring 展开的恢复细则收回 exploration-patterns 单点，相关元数据同步。原门、TDD、契约生命周期和未取代条款不变；不新增公共 runner/schema。真实反例、独立反驳及修复前保护见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/reviews/disposition-r1.json` 和 `execution/serial/T06/`；当前仍待统一最终候选验收和本地交付，不以任务期或静态通过宣称全部 DELIVERED。
+
+### exploring-clarifying T06 普通入口与验收隔离修复
+
+统一验收发现普通 exploring 仍可能先读外部资料后取来源权威，因此在探索入口明确先取得三份共享规则；探索姿态、授权实验与零必填工件的现行边界不变，元数据同步。另修任务内 harness 的字段误用，宿主实验与私有验收判据分离，污染原件在本特性 acceptance/invalidated-results.json 逐项撤出可采信证据，需干净重跑。该修复不新增公共 runner/schema；既有未取代条款保持。本段不宣称最终矩阵或交付已经通过。
+
+### exploring-clarifying T06 范围题整改
+
+在同一澄清权威内细化包含关系的范围问题：先以保持当前边界或必须扩展两项裁决，后续实现维度仍依赖该裁决；普通分类题继续允许适当的互斥选项，不全局限制为两项。原单题、推荐、披露、已有决定复用与角色出口边界不变。当前干净范围分岔证据见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t06-range-direct/S09-scope/`；统一 final-r2 仍待执行，不宣称全部交付。
