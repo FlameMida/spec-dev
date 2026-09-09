@@ -95,6 +95,11 @@
       "id": "ec-s31",
       "prompt": "用户只想讨论一个未定想法，无关键分岔、无运行必要、未授权保存；探索继续或结束",
       "expected_output": "不强制清单、spike、后台代理、glossary 或笔记；允许没有结论。"
+    },
+    {
+      "id": "ec-s30",
+      "prompt": "加载 exploring 的 SKILL、openai 摘要或 README 任一语言版本；判断可做行为",
+      "expected_output": "均表达默认只读探索和授权 spike 例外，不承诺任意写码，不把已承诺交付请求误导成探索。"
     }
   ]
 }

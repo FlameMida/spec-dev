@@ -94,7 +94,7 @@ rtk proxy node --test scripts/tests/*.test.mjs
 | 后台研究与一手来源派发 | S14、S15、S16、S17 | 本票red/green及收尾final当前候选 |
 | 公开说明与迁移保护 | S26、S30 | 本票red/green及收尾final当前候选 |
 
-probe.py RUN CASE --timeout SECONDS：RUN只能含字母数字下划线连字符，CASE在cases.json；默认600秒，上限值由运行参数记录。每例目录禁止覆盖，前置用户上下文与oracle分离。共53个具名输入（含P00能力预检、S26宿主CLI和多轮/入口/来源变体）。S09-next/S09-storage消费真实前轮回复、同候选及同一fixture，要求前轮独立judge通过；这是真实回复的续接回放，不伪称常驻会话。
+probe.py RUN CASE --timeout SECONDS：RUN只能含字母数字下划线连字符，CASE在cases.json；默认600秒，上限值由运行参数记录。每例目录禁止覆盖，前置用户上下文与oracle分离。共54个具名输入（含P00能力预检、S26宿主CLI和多轮/入口/来源变体）。S09-next/S09-storage消费真实前轮回复、同候选及同一fixture，要求前轮独立judge通过；这是真实回复的续接回放，不伪称常驻会话。
 
 judge.json由独立检查者填写：case、scenario、verdict(pass/fail/unverified)、reason、evidence（run内可回查相对路径数组）、checks（每个THEN子条件、verdict和evidence）。输入与预期都在执行时物化的cases.json，模型只能看到input和fixture事实；测试宿主不替模型补行为。模型身份从实际init记录，不写死历史默认值。
 
@@ -107,3 +107,5 @@ T01现状证据揭示路径输入歧义及S32缺夹具合同，已在execution/s
 主线程五查已完成，实际结果见 [self-review.json](self-review.json) 与 [自检说明](self-review.md)：Spec/Scenario覆盖、无占位步骤、完整代码与接口一致、导航文件/校验、依赖最小性。检查在内存中解析代码与顺序模拟替换，未执行未来任务；静态检查和路径校验不等于产品验收。状态全部pending；获得明确实施指令后才从T00开始。
 
 T03校准：S03补明确运行性p95问题，S02-agent补明确目标，S28-mixed补真实混合原型交接覆盖，THEN未变。T01另加S32-repair实际修复回归，现共53个具名输入。路由与问题记录的真实失败/修正见execution/serial/T03/，不将多版本任务期证据称作最终候选验收。
+
+T05修正最终交付目标的报告/开发路由后，补S30-report现有非开发报告保护；当前execution/cases.json共54个具名输入。T06按实际注册表汇聚，不把新增变体当新Requirement。

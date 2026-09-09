@@ -190,3 +190,7 @@ executing-plans 载入计划时 SHALL 按格式嗅探分流：`plan/tasks/` 子�
 ### exploring-clarifying T04 切面同步
 
 T04在共享的requirement-analysis入口增加外部事实研究的定义读取可达性、依赖顺序与来源边界；不修改本spec的plan分文件形态、导航或progress契约，现行条款保持。7项分版本任务贡献及验证边界见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T04/green-selection.json；统一最终候选验收仍在T06，不从任务期记录推定交付完成。
+
+### exploring-clarifying T05 切面同步
+
+本次T05更新skills/requirement-analysis/SKILL.md、skills/requirement-analysis/agents/openai.yaml、README.md、README.zh-CN.md、guardrail/migrate-to-spec-dev.mjs、skills/requirement-analysis/evals/evals.json、skills/exploring/evals/evals.json、skills/exploring/evals/trigger-evals.json、scripts/tests/exploring-clarifying.test.mjs的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。6项分版本行为贡献及边界见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T05/green-selection.json；S26公共命令回归前后通过但不冒称四份独立哈希回执，原始失败及T06关注项分别保留；行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t05-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t05-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T05/；这些任务期结果不替代最终候选验收。

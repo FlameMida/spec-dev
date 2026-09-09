@@ -8,7 +8,7 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 
 ## Features
 
-- **Exploration mode** — `exploring`, a thinking partner: no-commitment exploration while an idea is unsettled — read-only, no code (HARD-GATE), opens side threads instead of interrogating, ASCII visualization, opt-in exploration notes under `.spec-dev/explorations/`; hands off to requirement-analysis once the idea crystallizes, and executing-plans can drop back into it when stuck
+- **Exploration mode** — `exploring` keeps unsettled ideas open: read-only by default, with explicitly authorized throwaway spikes for questions that require running code. Optional background research traces material claims to primary sources. Decision lists remain one question at a time; notes can retain rejected options and their conditions. Handoff is proposed once the delivery question is precise, even when its answer is unknown.
 - **Requirement design** — `requirement-analysis`, an 8-phase design workflow: triage (light / standard / deep tiers), parallel internal+external exploration (no subagent cap), one-question-at-a-time clarification, sequential-thinking adversarial validation + 2-3 option comparison, spec writing with double review (structured behavior requirements: Requirement + Scenario); a HARD-GATE guarantees zero implementation before the design is approved
 - **Visual preview** — `visual-preview`, a browser companion: JIT-proposed during design conversations, renders mockups, wireframes and layout comparisons, and collects click-through choices
 - **Implementation plans** — `writing-plans` decomposes specs into bite-sized tasks executable with zero context: exact file paths, complete code, embedded 5-step TDD, consume/produce interface contracts, no placeholders allowed
@@ -168,7 +168,7 @@ Skill discovery has four paths and all of them point at `skills/` only: Claude C
 /exploring I'm wondering whether to build real-time collaboration — help me think it through
 ```
 
-Thinking-partner posture: read-only code walks, side-by-side option threads, ASCII diagrams; no code, no files, no forced conclusions ("not worth building" is a valid outcome). When conclusions are worth keeping it offers to save `.spec-dev/explorations/<topic>.md`; once the idea crystallizes it hands off to requirement-analysis (the exploration notes feed its phase 1).
+Thinking-partner posture: read code, compare directions and keep discussion open. A narrowly authorized spike may answer a question that requires execution; retain observations and an explicit resource disposition. Notes remain opt-in. Relevant implementations, prior rejections and shared terms in `.spec-dev/glossary.md` are reused without automatic decisions; shared terms are saved with approved specs.
 
 ## Using requirement-analysis
 

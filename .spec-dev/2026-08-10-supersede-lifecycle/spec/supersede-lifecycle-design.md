@@ -313,3 +313,7 @@ ADR 数量增长后是否需要索引文件（`adr/README.md` 状态列表）—
 ### exploring-clarifying T04 切面同步
 
 本次T04更新skills/requirement-analysis/SKILL.md、skills/requirement-analysis/agents/openai.yaml、skills/exploring/SKILL.md、agents/external-resource-explorer.md、skills/requirement-analysis/references/exploration-patterns.md、skills/requirement-analysis/references/codex-compat.md、skills/exploring/agents/openai.yaml、skills/requirement-analysis/evals/evals.json的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。各候选切面7项有效贡献及边界见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T04/green-selection.json；原始失败、配置缺口及异常CLI会话的后续宿主清理分别保留；行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t04-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t04-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T04/；这些任务期结果不替代最终候选验收。
+
+### exploring-clarifying T05 切面同步
+
+T05仅澄清共享RA入口按最终交付目标区分报告与开发流程，并同步公开摘要；本spec的取代分类、状态转换和标注形制保持不变，开发流程仍按原生命周期处理spec。对应分版本行为贡献见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T05/green-selection.json；整体最终验收仍在T06。

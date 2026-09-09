@@ -8,7 +8,7 @@
 
 ## 特性
 
-- **探索模式** — `exploring` 思考伙伴：想法未定型时的无承诺探索——只读不写码（HARD-GATE）、开支线而非审讯、ASCII 可视化、探索笔记提议制落盘 `.spec-dev/explorations/`；结晶后交接 requirement-analysis，executing-plans 卡壳时也可回探
+- **探索模式** — `exploring` 保持未定想法的发散讨论：默认只读，授权受控 spike 回答必须运行的问题；可选后台调研追溯一手来源。关键分岔清单可见但每轮仍只问一题；可选笔记记录已排除选项及条件，交付问题明确后提议正式设计。
 - **需求设计** — `requirement-analysis` 8 阶段设计工作流：需求分诊（light / standard / deep 三档）、内外部并行探索（不设子代理上限）、逐题澄清、sequential-thinking 对抗验证 + 2-3 方案对比、spec 落盘与双重 review（行为规范结构化：Requirement + Scenario）；HARD-GATE 保证设计获批前零实施动作
 - **可视化预览** — `visual-preview` 浏览器伴侣：设计对话中 JIT 提议，展示 mockup、线框、布局对比并回收点击选择
 - **实施计划** — `writing-plans` 把 spec 拆成零上下文可执行的 bite-sized 任务：精确文件路径、完整代码、TDD 五步内嵌、接口消费/产出契约、禁止占位符
@@ -168,7 +168,7 @@ skill 的发现路径有四条，全部只指向 `skills/`：Claude Code 读 `.c
 /exploring 我在考虑要不要做实时协作，帮我想想
 ```
 
-思考伙伴姿态：只读代码、开支线对比方向、ASCII 图梳理，不写码、不建档、不强制结论（探索出"不值得做"也是有效出口）；结论有价值时提议落盘 `.spec-dev/explorations/<topic>.md`，想法结晶后交接 requirement-analysis（探索结论作为其阶段 1 输入）。
+思考伙伴姿态：读代码、比较方向、保持发散；获授权的受控 spike 可回答运行性问题，并保留实际观察和资源去向。笔记仍为可选。入口复用已有实现、历史否决及 `.spec-dev/glossary.md` 中的共享术语，不自动代用户裁决；共享术语随获批 spec 保存。
 
 ## requirement-analysis 使用方法
 
