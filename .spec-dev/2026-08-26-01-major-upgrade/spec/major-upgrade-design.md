@@ -498,3 +498,9 @@ Agent plugins 1.0.0 字段细节以官方 schema 为准，探索结论若与 sch
 既有选项互斥检查作用于最终题目及每个答案落实的用户裁决，保持一次一题等待、范围扩展二分、推荐理由和下游未决状态；不新增对外问题、工件或批准门。历史排除背景与本轮是否重开讨论分别核对，最终摘要不能把新的重开条件归于旧记录；用户要求讨论时，历史条件未变也可继续，但不等于批准实施。
 
 依据见 exploring-clarifying 的 acceptance/reviews/rebuttal-final-r5-range-options.json、rebuttal-final-r5-handoff-history.json、rebuttal-final-r5-proposed-history.json。S09 原确定性重叠判断已撤为许可边界歧义，judge.initial.json 保留。Requirement/Scenario 数量及验收门槛不变；最新验证与交付状态见该特性的 acceptance-report.md 和 plan/progress.yaml。
+
+### T06 首题披露语义核对（2026-09-10）
+
+第 0 条的原有三类披露纳入首题最终消息的内部核对，检查实际表达含义，不能由编号/段落数量或假设、排序、推荐理由推定缺失信息的影响已经说明。原选项互斥和下游未决边界核对保持；不新增用户问题、工件、固定标题或每轮重复披露要求。
+
+依据为 final-r6/S09-ra 的实际缺项与 acceptance/reviews/rebuttal-final-r6-disclosure.json；同轮 S09-next、S09-storage 的两步真实回复续接已经独立通过，RA-next 仍因前置失败未解锁。原失败及通过面保留，新候选须重新完成统一矩阵。当前验证与交付状态见 exploring-clarifying 的 acceptance-report.md 和 plan/progress.yaml。
