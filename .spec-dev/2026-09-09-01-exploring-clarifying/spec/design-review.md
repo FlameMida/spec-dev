@@ -1,5 +1,7 @@
 # Exploring-clarifying 设计审查记录
 
+> 这是设计审查时点记录。后续进展（2026-09-09）：用户已review并同意编写计划，spec激活提交019c17b；实施计划见 ../plan/index.md，尚未实施。下文基线哈希和审查结论保留原时点含义。
+
 ## 结论与边界
 
 **Approved（首轮 1 项发现已修正，独立增量复审通过）**。
@@ -35,4 +37,4 @@
 
 ## 下一步
 
-spec 保持 `draft`，`sync_commit: null`。等待用户 review 并同意开始编写实施计划；之后激活 spec、按生命周期写旧条款 pending，再交接 writing-plans。本次未进入实施流程。
+设计审查当时 spec 保持 `draft`、`sync_commit: null`。用户现已完成 review 并同意编写计划，spec 已激活并写旧条款 pending；计划已保存，等待明确实施指令。审查不等于产品验收，仍未进入实施流程。

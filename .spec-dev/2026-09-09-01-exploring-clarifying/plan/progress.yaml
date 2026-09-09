@@ -1,0 +1,37 @@
+{
+  "format_version": 1,
+  "current": null,
+  "tasks": {
+    "T00": {
+      "status": "pending"
+    },
+    "T01": {
+      "status": "pending"
+    },
+    "T02": {
+      "status": "pending"
+    },
+    "T03": {
+      "status": "pending"
+    },
+    "T04": {
+      "status": "pending"
+    },
+    "T05": {
+      "status": "pending"
+    },
+    "T06": {
+      "status": "pending"
+    },
+    "T07": {
+      "status": "pending"
+    }
+  },
+  "resources": [
+    "planned-worktree: .worktrees/plan-2026-09-09-01-exploring-clarifying —— T00核实后替换为实际所有权",
+    "planned-fixtures: .worktrees/ec-qa —— T00绑定后登记独占夹具目录；每个RUN/CASE创建前另登记"
+  ],
+  "notes": [
+    "2026-09-09: 用户已批准spec review及编写计划；尚无实施授权。默认串行、普通v1；执行值由T00核实，不预填SHA/owner/model。"
+  ]
+}

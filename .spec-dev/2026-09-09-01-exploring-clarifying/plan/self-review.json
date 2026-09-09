@@ -1,0 +1,18 @@
+{
+  "checks": "Spec/Scenario mapping, placeholders, syntax/interfaces, navigation, dependency safety; no generated task executed",
+  "syntax": {
+    "python": 21,
+    "javascript": 22,
+    "shell": 78,
+    "json_assets": 1,
+    "fixtures": 51
+  },
+  "sequentialEditOperations": 50,
+  "replacementAnchors": 49,
+  "newProductFilesInEditBlocks": 1,
+  "pendingTasks": 8,
+  "scenarioCount": 32,
+  "errors": [],
+  "caseCount": 51,
+  "implementationExecuted": false
+}

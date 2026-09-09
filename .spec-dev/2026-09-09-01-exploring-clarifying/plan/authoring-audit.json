@@ -1,0 +1,255 @@
+{
+  "sourceHead": "019c17b",
+  "anchors": [
+    {
+      "task": "T01",
+      "path": "skills/requirement-analysis/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T01",
+      "path": "skills/quick-fix/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T01",
+      "path": "commands/triage.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T01",
+      "path": "skills/clarifying/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T01",
+      "path": "skills/requirement-analysis/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T01",
+      "path": "skills/requirement-analysis/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T01",
+      "path": "skills/requirement-analysis/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T01",
+      "path": "skills/requirement-analysis/assets/spec-template.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T01",
+      "path": "skills/requirement-analysis/agents/openai.yaml",
+      "occurrences": 1
+    },
+    {
+      "task": "T01",
+      "path": "skills/quick-fix/agents/openai.yaml",
+      "occurrences": 1
+    },
+    {
+      "task": "T01",
+      "path": "skills/clarifying/agents/openai.yaml",
+      "occurrences": 1
+    },
+    {
+      "task": "T02",
+      "path": "skills/clarifying/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T02",
+      "path": "skills/clarifying/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T02",
+      "path": "skills/clarifying/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T02",
+      "path": "skills/clarifying/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T02",
+      "path": "skills/clarifying/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T02",
+      "path": "skills/requirement-analysis/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T02",
+      "path": "skills/clarifying/agents/openai.yaml",
+      "occurrences": 1
+    },
+    {
+      "task": "T02",
+      "path": "skills/requirement-analysis/agents/openai.yaml",
+      "occurrences": 1
+    },
+    {
+      "task": "T03",
+      "path": "skills/exploring/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T03",
+      "path": "skills/exploring/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T03",
+      "path": "skills/exploring/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T03",
+      "path": "skills/exploring/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T03",
+      "path": "skills/exploring/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T03",
+      "path": "skills/exploring/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T03",
+      "path": "skills/exploring/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T03",
+      "path": "skills/requirement-analysis/assets/spec-template.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T03",
+      "path": "skills/exploring/agents/openai.yaml",
+      "occurrences": 1
+    },
+    {
+      "task": "T04",
+      "path": "skills/exploring/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T04",
+      "path": "skills/exploring/SKILL.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T04",
+      "path": "agents/external-resource-explorer.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T04",
+      "path": "skills/requirement-analysis/references/exploration-patterns.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T04",
+      "path": "skills/requirement-analysis/references/codex-compat.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T04",
+      "path": "skills/exploring/agents/openai.yaml",
+      "occurrences": 1
+    },
+    {
+      "task": "T05",
+      "path": "README.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T05",
+      "path": "README.zh-CN.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T05",
+      "path": "README.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T05",
+      "path": "README.zh-CN.md",
+      "occurrences": 1
+    },
+    {
+      "task": "T05",
+      "path": "guardrail/migrate-to-spec-dev.mjs",
+      "occurrences": 1
+    },
+    {
+      "task": "T01",
+      "path": "skills/exploring/evals/evals.json",
+      "occurrences": 1
+    },
+    {
+      "task": "T01",
+      "path": "skills/requirement-analysis/evals/evals.json",
+      "occurrences": 1
+    },
+    {
+      "task": "T01",
+      "path": "skills/quick-fix/evals/evals.json",
+      "occurrences": 1
+    },
+    {
+      "task": "T02",
+      "path": "skills/clarifying/evals/evals.json",
+      "occurrences": 1
+    },
+    {
+      "task": "T03",
+      "path": "skills/exploring/evals/evals.json",
+      "occurrences": 1
+    },
+    {
+      "task": "T03",
+      "path": "skills/requirement-analysis/evals/evals.json",
+      "occurrences": 1
+    },
+    {
+      "task": "T04",
+      "path": "skills/requirement-analysis/evals/evals.json",
+      "occurrences": 1
+    },
+    {
+      "task": "T05",
+      "path": "skills/requirement-analysis/evals/evals.json",
+      "occurrences": 1
+    },
+    {
+      "task": "T05",
+      "path": "skills/exploring/evals/evals.json",
+      "occurrences": 1
+    },
+    {
+      "task": "T05",
+      "path": "skills/exploring/evals/trigger-evals.json",
+      "occurrences": 1
+    }
+  ],
+  "requirements": 14,
+  "scenarios": 32,
+  "caseInputs": 51,
+  "implementationWritten": false,
+  "scope": "Plan text generation and in-memory anchor simulation only"
+}

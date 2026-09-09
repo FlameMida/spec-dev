@@ -107,7 +107,8 @@ spec_dev_roadmap:
 
 ### #7 exploring-clarifying
 
-- **2026-09-09 完整设计批准并落盘**：spec `.spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md`（draft；14 条 Requirement / 32 个 Scenario，独立审查修正后 Approved；待用户 spec review，尚未编写计划或实施）。初始提交 `c53cc1b`。用户依次确认邻近独立 spike 文件、增量 skill + 共享 reference 方案，并在完整设计与流程对比后回复 ok。
+- **2026-09-09 实施计划已保存**：入口 `.spec-dev/2026-09-09-01-exploring-clarifying/plan/index.md`，T00—T07 共8任务：隔离/共享上下文/澄清/实验/调研/公开说明/验收/交付。覆盖14Requirement、32Scenario，51个具名输入含后台预检、宿主迁移检查和入口/多轮变体；普通v1、默认串行，所有任务pending，尚未获实施指令。主线程五查、plan-index、49替换锚点+1新文件的内存模拟、内嵌代码静态语法通过；未执行任务、模型或产品验收。
+- **2026-09-09 完整设计批准并落盘**：spec `.spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md`（active；14 条 Requirement / 32 个 Scenario，独立审查修正后 Approved；用户已review并同意编写计划）。初始提交 `c53cc1b`，独立审查闭合 `b72bdfd`，激活及旧条款pending提交 `019c17b`。用户依次确认邻近独立 spike 文件、增量 skill + 共享 reference 方案，并在完整设计与流程对比后回复 ok。
 - **独立审查修正**：新代理名额满后使用全新只读 Codex CLI 两轮审查，原始输入/工具回执/结论见特性 `spec/design-review.md`；首轮指出 Codex 不自动加载 agent 定义，一手追溯可能漏传。已补 RA/exploring 非自动加载环境的解析路径派发及先读取要求，S16/S17 验收必须走真实派发，不以宿主预加载替代；独立增量复审 Approved。不是产品行为验收通过。
 - **本轮裁决**：spike 只为获授权的运行性决策实验，按需升级隔离，资源去向可追溯；否决复用可选探索笔记；共享术语随获批 spec 保存。新增 `context-reuse.md` 单点定义双查与词汇表，入口以引用消费；migrate 仅登记新 `.spec-dev/glossary.md` 约定，不自动认领 `docs/glossary.md`。一手不可得保持缺口，后台为可选只读调研，不新增 skill/schema/公共 runner。
 - **本轮补查**：major-upgrade 的「澄清核心纪律（新增第 0 条自我披露）」写死七条和引用方枚举，需 Requirement 级部分取代，保留原纪律语义；当前 TDD 原型授权和资源总则为引用权威。prototype 上游允许运行必需错误处理、邻近文件，不自动删除材料。migrate 当前仅遍历历史目录；glossary 是新增位置而非已确认历史文件。现有 evals 是意图清单，必需验收另取真实模型、工具回执和实际写入/运行证据。

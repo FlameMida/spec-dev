@@ -1,0 +1,34 @@
+{
+  "checks": "Spec/Scenario mapping, placeholders, syntax/interfaces, navigation, dependency safety; no generated task executed",
+  "syntax": {
+    "python": 20,
+    "javascript": 22,
+    "shell": 77,
+    "json_assets": 1,
+    "fixtures": 51
+  },
+  "sequentialEditAnchors": 50,
+  "pendingTasks": 8,
+  "scenarioCount": 32,
+  "errors": [
+    "T00:navigation 消费 differs",
+    "T00:navigation 产出 differs",
+    "T06:navigation 消费 differs",
+    "/Users/maverick/feature-dev/.spec-dev/2026-09-09-01-exploring-clarifying/plan/tasks/T01.md:link references/context-reuse.md",
+    "/Users/maverick/feature-dev/.spec-dev/2026-09-09-01-exploring-clarifying/plan/tasks/T01.md:link ../requirement-analysis/references/context-reuse.md",
+    "/Users/maverick/feature-dev/.spec-dev/2026-09-09-01-exploring-clarifying/plan/tasks/T01.md:link ../skills/requirement-analysis/references/context-reuse.md",
+    "/Users/maverick/feature-dev/.spec-dev/2026-09-09-01-exploring-clarifying/plan/tasks/T01.md:link ../requirement-analysis/references/context-reuse.md",
+    "/Users/maverick/feature-dev/.spec-dev/2026-09-09-01-exploring-clarifying/plan/tasks/T01.md:link references/context-reuse.md",
+    "/Users/maverick/feature-dev/.spec-dev/2026-09-09-01-exploring-clarifying/plan/tasks/T01.md:link references/context-reuse.md",
+    "/Users/maverick/feature-dev/.spec-dev/2026-09-09-01-exploring-clarifying/plan/tasks/T04.md:link ../requirement-analysis/references/exploration-patterns.md",
+    "/Users/maverick/feature-dev/.spec-dev/2026-09-09-01-exploring-clarifying/plan/tasks/T04.md:link exploration-patterns.md",
+    "/Users/maverick/feature-dev/.spec-dev/2026-09-09-01-exploring-clarifying/plan/tasks/T03.md:link ../test-driven-development/SKILL.md",
+    "/Users/maverick/feature-dev/.spec-dev/2026-09-09-01-exploring-clarifying/plan/tasks/T03.md:link ../writing-plans/SKILL.md",
+    "/Users/maverick/feature-dev/.spec-dev/2026-09-09-01-exploring-clarifying/plan/tasks/T03.md:link ../requirement-analysis/references/context-reuse.md",
+    "/Users/maverick/feature-dev/.spec-dev/2026-09-09-01-exploring-clarifying/plan/tasks/T03.md:link ../requirement-analysis/references/context-reuse.md",
+    "/Users/maverick/feature-dev/.spec-dev/2026-09-09-01-exploring-clarifying/plan/tasks/T02.md:link references/codex-compat.md",
+    "/Users/maverick/feature-dev/.spec-dev/2026-09-09-01-exploring-clarifying/plan/tasks/T02.md:link references/codex-compat.md"
+  ],
+  "caseCount": 51,
+  "implementationExecuted": false
+}
