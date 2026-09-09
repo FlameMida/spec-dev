@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T02",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -13,7 +13,9 @@
       "tests": "pass"
     },
     "T02": {
-      "status": "in_progress"
+      "status": "completed",
+      "commit": "a7b81ab6c72b95a8a53c0b359e83cae14a62c528",
+      "tests": "pass"
     },
     "T03": {
       "status": "pending"
@@ -88,6 +90,7 @@
     "T00 completed: related 30/30; actual P00 approved run t00-preflight-r2. T06 must consume execution/serial/T00/preflight-approved.json; original run is retained FAIL.",
     "T01校准：保留S22/S25 invalid_scope，补实际路径清单；S32补缺失的空id夹具合同；S29按T01双查、T02枚举、T06全量归属。THEN不降级，规则未改，复跑S23红。",
     "绿色批次在S25结束处停止（batch exit143为主动调度，非case失败）。新短fixture根已登记，旧夹具不移动，剩余及invalid_scope用新run续跑；T06/T07消费两处实际归属。",
-    "T01 completed: 14 selected case contributions verified; S23 valid red-green. S29 whole scenario still needs T02 enumeration and T06 final assembly. Short root and input corrections retained with original failures."
+    "T01 completed: 14 selected case contributions verified; S23 valid red-green. S29 whole scenario still needs T02 enumeration and T06 final assembly. Short root and input corrections retained with original failures.",
+    "T02 10 case contributions independently pass; three real S09 turns prove list update. Raw reply whitespace preserved via invocation-only git whitespace setting, other hooks passed."
   ]
 }
