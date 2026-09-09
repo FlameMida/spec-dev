@@ -4,7 +4,7 @@
 
 ## 候选与证据边界
 
-统一运行 `final-r9` 冻结产品提交 `5f3dbc1cc4a2f3e3edd5ce7619d07a62c16123e1`。完整 180 项产品映射、固定 6 项 harness 映射见 [final-candidate-r9.json](final-candidate-r9.json)。每次调用核对运行前后完整映射，不能以单个文件相同或旧候选的 PASS 替代当前候选证据。
+统一运行 `final-r10` 冻结产品提交 `397cc818b596bd56851272bf59cb00c5e8b4c95e`。完整 180 项产品映射、固定 6 项 harness 映射见 [final-candidate-r10.json](final-candidate-r10.json)。每次调用核对运行前后完整映射，不能以单个文件相同或旧候选的 PASS 替代当前候选证据。
 
 注册表共 61 项：59 个必需模型用例（56 个独立用例与 3 个真实回复续接）、S26 宿主迁移 CLI、P00 工具预检。模型用例对应 32 个 Scenario；P00 不计作产品行为验收。判断读取原始用户输入、工具调用及返回、前后文件状态和归档，并逐项记录 GIVEN/WHEN/THEN，不以模型自报完成推断通过。
 
@@ -16,9 +16,9 @@
 
 | 项目 | 当前事实 | 证据 |
 |---|---|---|
-| 统一 59 个模型用例 | 进行中，尚不能聚合 PASS | `model/final-r9/` 与各组 progress |
+| 统一 59 个模型用例 | 进行中，尚不能聚合 PASS | `model/final-r10/` 与各组 progress |
 | 14 Requirement / 32 Scenario | 待统一矩阵与最终独立完整性对账 | `requirements-reconciliation.md` |
-| 相关静态回归 | 31/31，exit 0 | `../execution/serial/T06/worker-authority-related-final/` |
+| 相关静态回归 | 31/31，exit 0 | `../execution/serial/T06/recovery-order-related-final/` |
 | S26 迁移 CLI | 4 次实际调用，独立 PASS；目标存在/不存在 × dry-run/实际 | `cli26/` |
 | harness 完整性 | 9 项确定性测试通过，61 项注册表校验 exit 0 | `../execution/serial/T06/question-history-harness/`、`question-history-registry/` |
 | 全库最终测试 | T07 待运行；不借用局部回归冒充全库 | `../plan/tasks/T07.md` |
@@ -65,11 +65,15 @@ r4 诊断后的四处集中修正提交为 `be7016c7`，内容与依据见 `../e
 
 针对该缺口，外部新派发/缩域重试前置两份规则依赖，保持预算、范围、规则单点和当前定义复用。C/S 复核见 `reviews/worker-authority-C.json`、`worker-authority-S.json`，末版 31 项回归、技能、插件和漂移检查 exit 0，完整映射及命令见 `../execution/serial/T06/worker-authority-validation.json`。新模型效果以 `final-r9` 原件为准。
 
+`final-r9` 五项自然结束、批次暂停 exit 75，独立判读四项 PASS、一项 FAIL。S17-ex 的双规则前置取得已通过，三个首轮澄清均通过；S15-failure 主线程先读取同题材料再派缩域重试，最终反述顺序，独立核定见 `reviews/rebuttal-final-r9-recovery-order.json`。真实重试、每次预算、来源资格及零写入仍通过，续接未运行。
+
+后续仅重组公共失败隔离段，以真实重试回执区分两步，保留标准措辞、独立工作和能力缺失分支；C/S 复核见 `reviews/recovery-order-options.json`、`recovery-order-S.json`。初次相关回归 30/31 是 canonical 字面定位失配，恢复原措辞后 31/31，测试未改；原 stdout 保留。末版技能、插件、漂移检查均 exit 0，映射及命令见 `../execution/serial/T06/recovery-order-validation.json`。模型行为仍以新统一候选原件为准。
+
 ## 本任务模型配置诊断
 
 只读配置发现默认及子代理别名均映射到 `gpt-5.6-luna`。三次无工具诊断均自然 exit 0：原始模型名显式 xhigh、供应方兼容模型名显式 xhigh，以及未指定模型/effort 的现有默认。实际请求三者均为 adaptive thinking / xhigh；原始和默认请求 max_tokens 32000，兼容名请求 64000，响应报告模型均为 Luna。模型名警告不能据此解释语义失败，也未证实缺失推理档位。未修改全局配置，物理后端路由和模型质量未由此证明。
 
-脱敏元数据、原命令和关闭回执见 `../execution/serial/T06/model-configuration-assessment.json`、`model-compat-diagnostic/`、`model-configured-default/`；临时代理监听器、子进程和临时目录均已关闭/移除。这些只属配置诊断，不计产品场景 PASS。模型选择仍待用户答复，`final-r9` 沿用现有 Luna。
+脱敏元数据、原命令和关闭回执见 `../execution/serial/T06/model-configuration-assessment.json`、`model-compat-diagnostic/`、`model-configured-default/`；临时代理监听器、子进程和临时目录均已关闭/移除。这些只属配置诊断，不计产品场景 PASS。模型选择仍待用户答复，`final-r10` 沿用现有 Luna。
 
 ## 资源与交付待办
 
