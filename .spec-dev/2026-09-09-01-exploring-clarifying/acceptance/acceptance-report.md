@@ -4,7 +4,7 @@
 
 ## 候选与证据边界
 
-统一运行 `final-r4` 冻结产品提交 `93baa9a9d9d25a70078c8c968b43daa5be5c22b0`。完整 180 项产品映射、固定 6 项 harness 映射见 [final-candidate-r4.json](final-candidate-r4.json)。每次调用核对运行前后完整映射，不能以单个文件相同或旧候选的 PASS 替代当前候选证据。
+统一运行 `final-r5` 冻结产品提交 `be7016c79f98475af439327d2248f6f373ec4cab`。完整 180 项产品映射、固定 6 项 harness 映射见 [final-candidate-r5.json](final-candidate-r5.json)。每次调用核对运行前后完整映射，不能以单个文件相同或旧候选的 PASS 替代当前候选证据。
 
 注册表共 61 项：59 个必需模型用例（56 个独立用例与 3 个真实回复续接）、S26 宿主迁移 CLI、P00 工具预检。模型用例对应 32 个 Scenario；P00 不计作产品行为验收。判断读取原始用户输入、工具调用及返回、前后文件状态和归档，并逐项记录 GIVEN/WHEN/THEN，不以模型自报完成推断通过。
 
@@ -16,7 +16,7 @@
 
 | 项目 | 当前事实 | 证据 |
 |---|---|---|
-| 统一 59 个模型用例 | 进行中，尚不能聚合 PASS | `model/final-r4/` 与各组 progress |
+| 统一 59 个模型用例 | 进行中，尚不能聚合 PASS | `model/final-r5/` 与各组 progress |
 | 14 Requirement / 32 Scenario | 待统一矩阵与最终独立完整性对账 | `requirements-reconciliation.md` |
 | 相关静态回归 | 31/31，exit 0 | `../execution/serial/T06/related-dispatch-fields-fixed/` |
 | S26 迁移 CLI | 4 次实际调用，独立 PASS；目标存在/不存在 × dry-run/实际 | `cli26/` |
