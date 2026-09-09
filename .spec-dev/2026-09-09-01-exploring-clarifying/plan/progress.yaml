@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T05",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -28,7 +28,9 @@
       "tests": "pass"
     },
     "T05": {
-      "status": "in_progress"
+      "status": "completed",
+      "commit": "e6704101cf7e864126fd97af885507758171649b",
+      "tests": "pass"
     },
     "T06": {
       "status": "pending"
@@ -185,6 +187,7 @@
     "T01 completed: 14 selected case contributions verified; S23 valid red-green. S29 whole scenario still needs T02 enumeration and T06 final assembly. Short root and input corrections retained with original failures.",
     "T02 10 case contributions independently pass; three real S09 turns prove list update. Raw reply whitespace preserved via invocation-only git whitespace setting, other hooks passed.",
     "15 selected T03 contributions independently verified across incremental rule fixes; source hashes and historical boundaries recorded; full final candidate rerun remains T06.",
-    "T04 seven independent passing task contributions selected with source hashes; original failures/setup gaps retained. CLI sessions stopped by host with separate evidence; final T06 uniform candidate and resource audit remain mandatory."
+    "T04 seven independent passing task contributions selected with source hashes; original failures/setup gaps retained. CLI sessions stopped by host with separate evidence; final T06 uniform candidate and resource audit remain mandatory.",
+    "Public README red-green, six selected model contributions and S26 migration protection verified. T06 focus observations for history conditions and canonical clarifying load remain explicitly unresolved; no uniform final acceptance claimed."
   ]
 }
