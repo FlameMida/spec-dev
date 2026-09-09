@@ -14,6 +14,8 @@ description: >-
 
 **纪律定义以本 skill 为准**：requirement-analysis 阶段 3 与 quick-fix 步骤 3 引用本纪律；引用方文本与本文冲突时以本文为准。
 
+相关术语与历史否决按 [context-reuse.md](../requirement-analysis/references/context-reuse.md) 读取并处理冲突；保存仍沿本角色已有出口与授权，不自动建立知识文件。
+
 ## 两种角色
 
 | 角色 | 进入方式 | 流程控制权 | 终点 |

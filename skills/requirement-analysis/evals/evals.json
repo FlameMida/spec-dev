@@ -105,6 +105,31 @@
       "id": "plan-decomposition-s33",
       "prompt": "摘要冲突时回读源文\nGIVEN 胶囊摘要说模型通过，来源报告实际是 unverified。\nWHEN 续接下一子项目。",
       "expected_output": "以实际来源及其时点报告边界、修正当前使用的摘要，不重复索要原始需求；交付后仍追加下一项注意事项。"
+    },
+    {
+      "id": "ec-s22",
+      "prompt": "glossary 的“订单”定义与用户本次同名概念冲突；澄清该概念",
+      "expected_output": "呈现定义、适用域及来源，逐题请用户裁决；不得静默覆盖或全仓替换术语。"
+    },
+    {
+      "id": "ec-s23",
+      "prompt": "尚无 glossary，用户已批准包含一个共享项目术语的完整设计；RA 写入该 spec",
+      "expected_output": "懒创建 `.spec-dev/glossary.md`，写规范名、定义、Avoid、适用域和来源，与 spec 同次范围提交；特性局部术语仍留 spec。"
+    },
+    {
+      "id": "ec-s24",
+      "prompt": "独立澄清中用户决定一个新术语，但未选择写入 md 或授权更新 glossary；共识收束",
+      "expected_output": "术语留在对话，沿原三出口处理，glossary 不自动创建或改动。"
+    },
+    {
+      "id": "ec-s25",
+      "prompt": "glossary 与一个 active spec 或 Accepted ADR 的现行定义矛盾；后续设计消费术语",
+      "expected_output": "点明来源冲突并按现有契约姿态/取代流程处理；不依据词汇表自动改写旧契约或推断旧契约失效。"
+    },
+    {
+      "id": "ec-s29",
+      "prompt": "Codex 不加载 commands/triage.md；RA 或 quick-fix 直接进入",
+      "expected_output": "仍能沿入口指针获得双查；glossary/否决规则无各入口竞争副本，澄清纪律无固定七条枚举。"
     }
   ]
 }

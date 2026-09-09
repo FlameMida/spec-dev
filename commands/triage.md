@@ -11,6 +11,10 @@ description: 显式分诊入口——判定承诺状态/任务类型/设计空�
 - `$ARGUMENTS` 非空 → 直接对其分析；
 - 为空 → 先问一句"要分诊什么需求"，得到答复后再判定。
 
+## 只读上下文检查
+
+提出建议前遵循 [context-reuse.md](../skills/requirement-analysis/references/context-reuse.md) 的概念双查与共享术语读取；结果进入原建议式路由，不自动拒绝请求，不写文件。
+
 ## 判定（四维度）
 
 **判据的权威定义在各 SKILL.md，本命令只列维度与指向、不复制判据细节**——判据在各 skill 中演进时，本命令无需同步修改。

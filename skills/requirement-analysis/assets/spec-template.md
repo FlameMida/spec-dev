@@ -40,6 +40,8 @@ spec_dev:
 
 ## 术语表
 
+[共享术语引用仓库 .spec-dev/glossary.md 的规范名、适用域与来源；局部术语定义在本 spec。冲突与保存规则以 requirement-analysis/references/context-reuse.md 为准；不因模板存在此节创建空词汇表。]
+
 [阶段 3 澄清中确定的规范术语；全篇（含 Requirement/Scenario）统一使用规范名。定义只说它"是什么"，一两句为限。无术语分歧时删除本节 / Canonical terms from clarification; one-line definitions; delete this section if no ambiguity]
 
 - **[规范术语 / canonical term]**：[一句话定义 / one-line definition]。_Avoid_：[别名 1、别名 2 / aliases]
