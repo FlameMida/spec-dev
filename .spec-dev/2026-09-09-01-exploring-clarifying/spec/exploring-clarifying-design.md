@@ -474,3 +474,9 @@ PR 是所属执行通道，不承诺全部真实模型场景十分钟内完成�
 依据 r4 四份有效失败及独立反驳，集中修正授权复用的应用、最终派发参数实值、最终 spec/glossary 对批准范围的核对、最终交接摘要的来源资格。14 Requirement / 32 Scenario 与原 THEN 不变。S21 的 D4 数值角色存在输入歧义，旧 judge.initial 与 unverified 保留，新 GIVEN 明确报价和本次预算上限，不注入判断预期。
 
 相关 31 项回归、9 项任务内 harness 测试及 61 项注册表校验已通过；静态结果不作为模型修复证明。证据、独立反驳与最终统一候选结果以 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/acceptance-report.md 及 plan/progress.yaml 为准。原 r4 失败、判读纠正与宿主故障原件保持，不降低必需门槛或以挑选重试 PASS 关闭未修复失败。
+
+### T06 最终题目与历史归因修正（2026-09-10）
+
+既有选项互斥检查作用于最终题目及每个答案落实的用户裁决，保持一次一题等待、范围扩展二分、推荐理由和下游未决状态；不新增对外问题、工件或批准门。历史排除背景与本轮是否重开讨论分别核对，最终摘要不能把新的重开条件归于旧记录；用户要求讨论时，历史条件未变也可继续，但不等于批准实施。
+
+依据见 exploring-clarifying 的 acceptance/reviews/rebuttal-final-r5-range-options.json、rebuttal-final-r5-handoff-history.json、rebuttal-final-r5-proposed-history.json。S09 原确定性重叠判断已撤为许可边界歧义，judge.initial.json 保留。Requirement/Scenario 数量及验收门槛不变；最新验证与交付状态见该特性的 acceptance-report.md 和 plan/progress.yaml。

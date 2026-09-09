@@ -215,3 +215,9 @@ quick-fix 步骤 3 SHALL 声明提问纪律遵循 clarifying skill，三类核�
 ### exploring-clarifying T06 范围答案不绑定未决机制
 
 范围裁决仅约定需支持的对象或场景；可以解释实现代价，但不得把未决存储或协调机制变成选择该范围的附带承诺。该细化仍在澄清单点，无新增用户门。final-r2 两项判读经独立反驳：身份政策上限的确定性失败被推翻，范围题仅保留机制绑定缺陷；初始 judge 已保存。干净修复证据见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t06-scope-mechanism/`，全矩阵转 final-r3，尚不声明全部验收或交付。
+
+### T06 最终题目与历史归因修正（2026-09-10）
+
+既有选项互斥检查作用于最终题目及每个答案落实的用户裁决，保持一次一题等待、范围扩展二分、推荐理由和下游未决状态；不新增对外问题、工件或批准门。历史排除背景与本轮是否重开讨论分别核对，最终摘要不能把新的重开条件归于旧记录；用户要求讨论时，历史条件未变也可继续，但不等于批准实施。
+
+依据见 exploring-clarifying 的 acceptance/reviews/rebuttal-final-r5-range-options.json、rebuttal-final-r5-handoff-history.json、rebuttal-final-r5-proposed-history.json。S09 原确定性重叠判断已撤为许可边界歧义，judge.initial.json 保留。Requirement/Scenario 数量及验收门槛不变；最新验证与交付状态见该特性的 acceptance-report.md 和 plan/progress.yaml。

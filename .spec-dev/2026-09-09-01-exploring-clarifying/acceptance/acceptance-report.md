@@ -18,9 +18,9 @@
 |---|---|---|
 | 统一 59 个模型用例 | 进行中，尚不能聚合 PASS | `model/final-r5/` 与各组 progress |
 | 14 Requirement / 32 Scenario | 待统一矩阵与最终独立完整性对账 | `requirements-reconciliation.md` |
-| 相关静态回归 | 31/31，exit 0 | `../execution/serial/T06/related-dispatch-fields-fixed/` |
+| 相关静态回归 | 31/31，exit 0 | `../execution/serial/T06/consolidated-related/` |
 | S26 迁移 CLI | 4 次实际调用，独立 PASS；目标存在/不存在 × dry-run/实际 | `cli26/` |
-| harness 完整性 | 7 项确定性测试通过，61 项注册表校验 exit 0 | `../execution/serial/T06/harness-integrity-green/`、`registry-integrity/` |
+| harness 完整性 | 9 项确定性测试通过，61 项注册表校验 exit 0 | `../execution/serial/T06/consolidated-harness/`、`consolidated-registry/` |
 | 全库最终测试 | T07 待运行；不借用局部回归冒充全库 | `../plan/tasks/T07.md` |
 | 进程与资源最终审计 | 待所有运行结束后重算；当前 resources.json 为旧预审快照 | `../execution/serial/T06/fixture-preflight/` |
 | nightly 多 trial 组 | NOT_RUN，按批准矩阵非阻塞；不推断模型成功率 | `../plan/tasks/T06.md` |
@@ -29,7 +29,11 @@
 
 完整初审 A/B/C/S 基于原始 base 到当时候选。C 指出入口重复完整恢复知识后追加有具体原因的 D；A/S 同因发现保留契约出处并合并处置。修复后执行一次受影响维度复审。原件、独立反驳和处置见 `reviews/disposition-r1.json`；后续只做实际验收缺陷和 harness 问题的有界复核，没有以重复广扫取代完整矩阵。
 
-来源保证与返回形态混同、实际项目文档分支未承接时效规则、派发重试漏掉合法类型/预算/真实 CLI 路径均已修正。聚焦原件保留于 `model/t06-source-boundaries/` 与 `model/t06-dispatch-fields/`；最后静态文本修正发生于聚焦运行之后，不能称这些聚焦结果与最终候选全文同 hash。当前两份来源文档的独立差异复核见 `reviews/source-boundary-delta-check.json`，无新增发现；最终行为仍由 `final-r4` 证明。
+r4 之前的来源支持、项目文档时效承接和派发恢复修正，保留于 `model/t06-source-boundaries/` 与 `model/t06-dispatch-fields/`。最后静态文本修正发生于这些聚焦运行之后，不能称其与最终候选全文同 hash；对应的有界差异复核见 `reviews/source-boundary-delta-check.json`。这些仅作为历史诊断，最新修正与统一验证见下。
+
+r4 诊断后的四处集中修正已提交为 `be7016c7`，内容与依据见 `../execution/serial/T06/consolidated-fix-plan.md`。受影响范围的 C/S 复核和 S21 输入隔离复核分别见 `reviews/consolidated-C.json`、`consolidated-S.json`、`consolidated-input-check.json`；均无新增发现。当前生效的统一行为验证是 `final-r5`，此前诊断结果不替代它。结构、插件与静态验证的完整产品/harness 映射及实际命令见 `../execution/serial/T06/consolidated-validation.json`。
+
+提交时 exploring 正文改动触发元数据成对暂存检查。已验证 SKILL frontmatter 和既有 Codex 元数据均未变，按 `scripts/check-openai-sync.mjs` 明确提供的正文改动例外，仅该提交使用 `SKIP_OPENAI_SYNC_CHECK=1`；14 项结构仍校验通过，未改变全局配置。原失败、依据和例外验证见 `../execution/serial/T06/consolidated-openai-sync-original/`、`openai-sync-body-only.json`、`consolidated-openai-sync-body/`。
 
 ## 原失败、失效与判读纠正
 
@@ -44,6 +48,10 @@
 - 4 个历史运行曾把判断文本误作宿主脚本路径，污染模型可读观察文件。全部通过 `invalidated-results.json` 及每例 `invalidation.json` 撤出验收，最终有效状态为 unverified；原始输出与原 judge 未覆盖。旧 A-r2/S-r2/critic 中引用这些 PASS 的部分也撤回，不能复用为最终验收证据。
 
 独立判读允许根据完整原件纠正；不以固定措辞、编号数量、任务 ID 数量或未执行的被拒调用替代语义事实。官方文档可以支持明确归属于文档的声明，代码是否实现该声明须分别判断。
+
+`final-r5` 的 12 例自然结束后调度器退出 75，未中止模型。8 例通过；S28 与 S25-proposed 的最终历史段落把排除背景误归为原记录设定的重审条件，S30-committed 的最终范围选项重复并绑定未决机制，均保留实际 FAIL。没有据此声称已观察到运行时拒绝用户重开。S09 初始确定性重叠判断经独立反驳撤为许可边界歧义 unverified，原 judge.initial.json 保留。证据见 `final-r5-paused.json` 及 `reviews/rebuttal-final-r5-*.json`。
+
+后续两处修正将互斥检查应用到最终题目的用户裁决，并分开核对历史排除背景与本轮重新讨论。C/S 有界复核见 `reviews/question-history-C.json`、`question-history-S.json`；当前只有 31 项相关回归、9 项宿主测试与结构检查通过，下一统一模型候选仍须实际验证。Codex 元数据仍由 `question-history-metadata-check.json` 确认触发描述未变，正文改动例外仅作用于本次成对暂存检查。
 
 有限复现规则核对见 `reviews/acceptance-retry-policy-check.json`：批准门槛未要求首试成功或历史 trial 全过，但未修复的有效语义失败不能仅靠挑后续 PASS 关闭，也不能临时发明 pass@k 门槛。`reviews/dispatch-reliability-options.json` 提出的最终参数核对重组尚是待验证改进；所有确认缺陷将在本批独立检查完成后集中处置，再验证实际改动后的候选。
 
