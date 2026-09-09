@@ -429,3 +429,9 @@ Claude Code：加载 SKILL.md → 平台替换声明行 → 会话持有插件�
 每次外部派发和缩域重试均传入公共执行约定与来源定义的已解析绝对路径；非自动加载环境中的 worker 在研究材料前取得两份规则，可并行读取两份规则，不能与材料同批。已有当前定义可复用，主线程或前一个 worker 已读不替代新 worker 自身取得。规则仍各自单点维护，不因相互引用循环读取；用户预算、研究范围和既有时效分类不变。
 
 依据为 exploring-clarifying 的 final-r8/S17-ex 缺少 worker 时效规则获取动作，以及 reviews/rebuttal-final-r8-temporal-acquisition.json。当前材料本身为 active，未判定历史误升格。新候选需重新完成统一矩阵，静态审查不替代模型遵循证据；交付状态见该特性 acceptance-report.md 与 plan/progress.yaml。
+
+### T06 失败恢复的动作顺序（2026-09-10）
+
+失败隔离的原有一次缩域重试与主线程接管，按实际回执分成两个步骤：先发起并取得重试结果，再在仍未完成时接管剩余研究；同题取证不能提前完成后补发重试。独立事项不受影响，真实能力不可用仍走既有接管分支，预算、模型、访问范围和重试次数不变。汇报保留实际时序及各自完成范围，不增设用户门或回执工件。
+
+依据为 exploring-clarifying 的 final-r9/S15-failure 实际提前接管及 reviews/rebuttal-final-r9-recovery-order.json；其双规则取得、真实重试、来源结论和零写入仍通过。r9 共五例自然结束，四项独立 PASS、一项 FAIL，原件保留；新候选仍需统一矩阵，状态以该特性的 acceptance-report.md 和 plan/progress.yaml 为准。

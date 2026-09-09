@@ -31,7 +31,7 @@
 
 r4 之前的来源支持、项目文档时效承接和派发恢复修正，保留于 `model/t06-source-boundaries/` 与 `model/t06-dispatch-fields/`。最后静态文本修正发生于这些聚焦运行之后，不能称其与最终候选全文同 hash；对应的有界差异复核见 `reviews/source-boundary-delta-check.json`。这些仅作为历史诊断，最新修正与统一验证见下。
 
-r4 诊断后的四处集中修正提交为 `be7016c7`，内容与依据见 `../execution/serial/T06/consolidated-fix-plan.md`。对应的 C/S 复核和 S21 输入隔离复核分别见 `reviews/consolidated-C.json`、`consolidated-S.json`、`consolidated-input-check.json`；均无新增发现。其结构与静态证据见 `../execution/serial/T06/consolidated-validation.json`。随后最终题目与历史归因修正提交为 `9e6a8951`，当前统一行为验证为 `final-r6`，对应完整映射和实际命令见 `../execution/serial/T06/question-history-validation.json`；此前各轮结果均不替代它。
+r4 诊断后的四处集中修正提交为 `be7016c7`，内容与依据见 `../execution/serial/T06/consolidated-fix-plan.md`。对应的 C/S 复核和 S21 输入隔离复核分别见 `reviews/consolidated-C.json`、`consolidated-S.json`、`consolidated-input-check.json`；均无新增发现。其结构与静态证据见 `../execution/serial/T06/consolidated-validation.json`。随后最终题目与历史归因修正提交为 `9e6a8951`，当时统一行为验证为 `final-r6`，对应完整映射和实际命令见 `../execution/serial/T06/question-history-validation.json`；各轮结果均保留自身候选边界。
 
 提交时 exploring 正文改动触发元数据成对暂存检查。已验证 SKILL frontmatter 和既有 Codex 元数据均未变，按 `scripts/check-openai-sync.mjs` 明确提供的正文改动例外，仅该提交使用 `SKIP_OPENAI_SYNC_CHECK=1`；14 项结构仍校验通过，未改变全局配置。原失败、依据和例外验证见 `../execution/serial/T06/consolidated-openai-sync-original/`、`openai-sync-body-only.json`、`consolidated-openai-sync-body/`。
 
@@ -51,7 +51,7 @@ r4 诊断后的四处集中修正提交为 `be7016c7`，内容与依据见 `../e
 
 `final-r5` 的 12 例自然结束后调度器退出 75，未中止模型。8 例通过；S28 与 S25-proposed 的最终历史段落把排除背景误归为原记录设定的重审条件，S30-committed 的最终范围选项重复并绑定未决机制，均保留实际 FAIL。没有据此声称已观察到运行时拒绝用户重开。S09 初始确定性重叠判断经独立反驳撤为许可边界歧义 unverified，原 judge.initial.json 保留。证据见 `final-r5-paused.json` 及 `reviews/rebuttal-final-r5-*.json`。
 
-后续两处修正将互斥检查应用到最终题目的用户裁决，并分开核对历史排除背景与本轮重新讨论。C/S 有界复核见 `reviews/question-history-C.json`、`question-history-S.json`；当前只有 31 项相关回归、9 项宿主测试与结构检查通过，下一统一模型候选仍须实际验证。Codex 元数据仍由 `question-history-metadata-check.json` 确认触发描述未变，正文改动例外仅作用于本次成对暂存检查。
+后续两处修正将互斥检查应用到最终题目的用户裁决，并分开核对历史排除背景与本轮重新讨论。C/S 有界复核见 `reviews/question-history-C.json`、`question-history-S.json`；该修正当时的 31 项相关回归、9 项宿主测试与结构检查通过，后续模型证据分轮记录。Codex 元数据仍由 `question-history-metadata-check.json` 确认触发描述未变，正文改动例外仅作用于本次成对暂存检查。
 
 `final-r6` 在 8 例独立调用自然结束后安全暂停，并串行完成 S09-next/storage 两轮真实回复续接；共 9 PASS、1 FAIL。S09-ra 确认缺少“哪些缺失信息会改变答案或方案”的前置披露，选项、等待、依赖和零写入仍通过；未用这些通过面解锁 RA-next。实际定义首问被完整带入下一轮，用户随后禁止收集的新增裁决得到消费，持久化裁决也解锁了存储选型。证据见 `final-r6-continuation-checkpoint.json`、`model/final-r6/` 和 `reviews/rebuttal-final-r6-disclosure.json`。
 
@@ -60,6 +60,16 @@ r4 诊断后的四处集中修正提交为 `be7016c7`，内容与依据见 `../e
 `final-r7` 的 6 个独立用例与三项真实续接均自然结束，共 8 PASS、1 FAIL。首题披露、三个首轮和三项续接已独立通过；S25-proposed 确认将新增联网/权威确认前提称为保留现有 `held` 含义，错误在归称现行语义，提出新方案本身仍允许。反驳见 `reviews/rebuttal-final-r7-proposed-semantics.json`。后续仅在 context-reuse 单点核对原/拟议成立条件与保证，并将选项标题及最终推荐纳入；不新增工件、用户门或普遍续接检查。C/S 复核见 `proposal-semantics-C.json`、`proposal-semantics-S.json`，最终静态映射见 `../execution/serial/T06/proposal-semantics-validation.json`；统一新模型验证仍待完成。
 
 有限复现规则核对见 `reviews/acceptance-retry-policy-check.json`：批准门槛未要求首试成功或历史 trial 全过，但未修复的有效语义失败不能仅靠挑后续 PASS 关闭，也不能临时发明 pass@k 门槛。`reviews/dispatch-reliability-options.json` 提出的最终参数核对重组尚是待验证改进；所有确认缺陷将在本批独立检查完成后集中处置，再验证实际改动后的候选。
+
+`final-r8` 共 8 个独立用例自然结束，当前独立判读为 7 PASS、1 FAIL，调度器安全暂停 exit 75。S09-ra 的来源断言、S09 的许可边界、S30-committed 的披露初判均经独立反驳纠正，原 `judge.initial.json` 保留；不按固定句式或同一实现可能满足两个许可上限推定失败。S17-ex 确认 worker 未取得时效规则内容就读取并引用项目文档，主线程已读不能抵销；实际文档为 active，不扩大判为历史升格。详见 `final-r8-paused.json` 与四份 `reviews/rebuttal-final-r8-*.json`。
+
+针对该缺口，外部新派发/缩域重试前置两份规则依赖，保持预算、范围、规则单点和当前定义复用。C/S 复核见 `reviews/worker-authority-C.json`、`worker-authority-S.json`，末版 31 项回归、技能、插件和漂移检查 exit 0，完整映射及命令见 `../execution/serial/T06/worker-authority-validation.json`。新模型效果以 `final-r9` 原件为准。
+
+## 本任务模型配置诊断
+
+只读配置发现默认及子代理别名均映射到 `gpt-5.6-luna`。三次无工具诊断均自然 exit 0：原始模型名显式 xhigh、供应方兼容模型名显式 xhigh，以及未指定模型/effort 的现有默认。实际请求三者均为 adaptive thinking / xhigh；原始和默认请求 max_tokens 32000，兼容名请求 64000，响应报告模型均为 Luna。模型名警告不能据此解释语义失败，也未证实缺失推理档位。未修改全局配置，物理后端路由和模型质量未由此证明。
+
+脱敏元数据、原命令和关闭回执见 `../execution/serial/T06/model-configuration-assessment.json`、`model-compat-diagnostic/`、`model-configured-default/`；临时代理监听器、子进程和临时目录均已关闭/移除。这些只属配置诊断，不计产品场景 PASS。模型选择仍待用户答复，`final-r9` 沿用现有 Luna。
 
 ## 资源与交付待办
 
