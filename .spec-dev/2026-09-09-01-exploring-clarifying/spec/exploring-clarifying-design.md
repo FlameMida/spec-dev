@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: exploring-clarifying
-  status: draft
+  status: active
   covers:
     - "skills/exploring/SKILL.md"
     - "skills/exploring/agents/openai.yaml"
@@ -34,7 +34,7 @@ spec_dev:
 
 # 探索、澄清与上下文复用设计
 
-> Roadmap skill-ecosystem-absorption #7，覆盖 AB-20/21/22/26/23/25/31/27。2026-09-09 用户依次批准 spike 边界、增量组织方案，并在查看完整设计及流程对比后确认。此文是设计产物，尚未实施；待独立审查和用户 spec review 后进入计划阶段。
+> Roadmap skill-ecosystem-absorption #7，覆盖 AB-20/21/22/26/23/25/31/27。2026-09-09 用户依次批准 spike 边界、增量组织方案，并在查看完整设计及流程对比后确认。独立审查修正后 Approved，用户已 review 当前 spec 并同意编写计划；现激活守卫，尚未实施。
 
 ## 背景与目标
 

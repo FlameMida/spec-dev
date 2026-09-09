@@ -50,6 +50,8 @@ spec_dev:
 
 # spec-dev 重大升级（多平台适配 · MCP 清零 · 工作流增强）设计
 
+> **Superseded-pending (2026-09-09)** — 本 spec 的「Requirement: 澄清核心纪律（新增第 0 条自我披露）」将被 .spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
+
 ## 背景与目标
 
 spec-dev 现为 Claude Code + Codex 双平台 skill 插件（v7.21.1）。本次升级一次性解决 12 项问题：适配 Agent plugins 1.0.0 开放标准与 grok build / pi 两个新平台；修复"CLAUDE.md/AGENTS.md 注入不可观测"；anysearch 统一搜索入口失效的六个根因；roadmap 续接丢上下文；同日产物无顺序编号；澄清纪律缺自我披露且 exploring/quick-fix 覆盖不全；visual-preview 产物游离于特性目录外；设计原则与测试策略缺规范载体；plan 单文件在大计划下的上下文峰值与断点恢复缺失；以及以 vendored skill 替代 sequential-thinking MCP 实现插件零 MCP 依赖。
