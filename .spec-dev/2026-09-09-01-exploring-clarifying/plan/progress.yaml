@@ -55,7 +55,8 @@
     "fixture-scope: /Users/maverick/feature-dev/.worktrees/ec7-qa —— 子夹具逐项销账后仅清理空目录",
     "fixture: /Users/maverick/feature-dev/.worktrees/ec7-qa/t01-short/S18 —— 归档并核验后由T07按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/ec7-qa/t01-short/S22 —— 归档并核验后由T07按实际路径清理",
-    "fixture: /Users/maverick/feature-dev/.worktrees/ec7-qa/t01-short/S29 —— 归档并核验后由T07按实际路径清理"
+    "fixture: /Users/maverick/feature-dev/.worktrees/ec7-qa/t01-short/S29 —— 归档并核验后由T07按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/ec7-qa/t01-short/S32 —— 归档并核验后由T07按实际路径清理"
   ],
   "notes": [
     "2026-09-09: 用户已批准spec review及编写计划；尚无实施授权。默认串行、普通v1；执行值由T00核实，不预填SHA/owner/model。",
