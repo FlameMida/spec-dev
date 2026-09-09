@@ -120,6 +120,10 @@ deep     — 跨层架构变更、新技术栈、用户使用"彻底/全面/审�
 - **standard**：按架构层次或功能模块拆 3-5 个 `code-explorer`；阶段 1 标记了外部探索时，同波次加 1-2 个 `external-resource-explorer`
 - **deep**：multi-modal sweep——每个模态一个 `code-explorer` 彼此盲扫，模态数由项目形态决定、不设上限；外部按主题拆多个 `external-resource-explorer` 同波次发起
 
+外部研究的来源纪律先实际读取 [external-resource-explorer.md](../../agents/external-resource-explorer.md)，等待定义回执后才发起材料读取；不能把两者放在同一批并行工具调用中。主线程直查或接管也适用。
+
+开始外部研究（包括本地保存的第三方依赖材料，以及主线程直接接管）前，先实际读取 [exploration-patterns.md](references/exploration-patterns.md) 的外部研究分类、定义加载与派发要求，按该单点执行；非自动加载环境不能省略定义读取。
+
 外部探索工具优先级：AnySearch（通用/垂直/批量，插件内嵌）优先 → `WebSearch` / `WebFetch` 兜底；**派发外部探索子代理时须在派发词中主动重申此优先级**（不依赖 agent 定义文件生效，Codex 端尤其如此）；降级链与模态定义、契约校验、失败隔离规则见 [exploration-patterns.md](references/exploration-patterns.md)。
 
 **每个子代理必须给定**：有界主题、来源线索、可判定的完成条件、显式排除项、期望输出及适用的工具优先级/文档时效提醒；按 [exploration-patterns.md](references/exploration-patterns.md)「完成条件与排除项」和派发要求校准，不复制定义。失败先缩小范围重试 1 次，再失败主线程接管（定义见 exploration-patterns「派发要求与失败隔离」）。

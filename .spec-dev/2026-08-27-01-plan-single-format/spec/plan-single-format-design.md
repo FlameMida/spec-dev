@@ -186,3 +186,7 @@ executing-plans 载入计划时 SHALL 按格式嗅探分流：`plan/tasks/` 子�
 ### exploring-clarifying T02 切面同步
 
 本次T02更新skills/clarifying/SKILL.md、skills/requirement-analysis/SKILL.md、skills/clarifying/agents/openai.yaml、skills/requirement-analysis/agents/openai.yaml、skills/clarifying/evals/evals.json的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t02-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t02-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T02/；这些任务期结果不替代最终候选验收。
+
+### exploring-clarifying T04 切面同步
+
+T04在共享的requirement-analysis入口增加外部事实研究的定义读取可达性、依赖顺序与来源边界；不修改本spec的plan分文件形态、导航或progress契约，现行条款保持。7项分版本任务贡献及验证边界见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T04/green-selection.json；统一最终候选验收仍在T06，不从任务期记录推定交付完成。
