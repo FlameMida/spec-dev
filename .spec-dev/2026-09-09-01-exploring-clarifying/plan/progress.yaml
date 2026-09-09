@@ -50,6 +50,7 @@
     "2026-09-09 用户明确指令：开始吧；执行计划全部范围，默认串行，本地交付不push/发布。",
     "P00时序FAIL；实际后台可用；仅修正预检输入顺序与30秒窗口，新run t00-preflight-r2；THEN不变。",
     "恢复T00预检；有界重试输入修正已提交。",
-    "T00 completed: related 30/30; actual P00 approved run t00-preflight-r2. T06 must consume execution/serial/T00/preflight-approved.json; original run is retained FAIL."
+    "T00 completed: related 30/30; actual P00 approved run t00-preflight-r2. T06 must consume execution/serial/T00/preflight-approved.json; original run is retained FAIL.",
+    "T01校准：保留S22/S25 invalid_scope，补实际路径清单；S32补缺失的空id夹具合同；S29按T01双查、T02枚举、T06全量归属。THEN不降级，规则未改，复跑S23红。"
   ]
 }
