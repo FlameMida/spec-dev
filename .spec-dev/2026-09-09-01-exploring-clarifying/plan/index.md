@@ -98,6 +98,10 @@ probe.py RUN CASE --timeout SECONDS：RUN只能含字母数字下划线连字符
 
 judge.json由独立检查者填写：case、scenario、verdict(pass/fail/unverified)、reason、evidence（run内可回查相对路径数组）、checks（每个THEN子条件、verdict和evidence）。输入与预期都在执行时物化的cases.json，模型只能看到input和fixture事实；测试宿主不替模型补行为。模型身份从实际init记录，不写死历史默认值。
 
+## 执行期校准
+
+T01现状证据揭示路径输入歧义及S32缺夹具合同，已在execution/serial/T01/input-calibration.md记录；不更改产品THEN。S29由T01提供双查/共享引用贡献、T02提供去枚举静态贡献，T06以当前候选多入口证据完成全Scenario，不提前报全通过。T00已独立通过的后台预检路径从execution/serial/T00/preflight-approved.json读取，原P00时序失败保留。
+
 ## Self-Review
 
 主线程五查已完成，实际结果见 [self-review.json](self-review.json) 与 [自检说明](self-review.md)：Spec/Scenario覆盖、无占位步骤、完整代码与接口一致、导航文件/校验、依赖最小性。检查在内存中解析代码与顺序模拟替换，未执行未来任务；静态检查和路径校验不等于产品验收。状态全部pending；获得明确实施指令后才从T00开始。
