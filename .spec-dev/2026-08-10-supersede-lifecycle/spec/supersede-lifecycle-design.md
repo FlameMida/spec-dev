@@ -317,3 +317,7 @@ ADR 数量增长后是否需要索引文件（`adr/README.md` 状态列表）—
 ### exploring-clarifying T05 切面同步
 
 T05仅澄清共享RA入口按最终交付目标区分报告与开发流程，并同步公开摘要；本spec的取代分类、状态转换和标注形制保持不变，开发流程仍按原生命周期处理spec。对应分版本行为贡献见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T05/green-selection.json；整体最终验收仍在T06。
+
+### exploring-clarifying T06 验收修复同步
+
+本次在既有获批切面内修正历史数值/条件与现行/拟议语义区分、RA 入口的澄清权威及首次外部材料前置、澄清互斥选项，并将 exploring 展开的恢复细则收回 exploration-patterns 单点，相关元数据同步。原门、TDD、契约生命周期和未取代条款不变；不新增公共 runner/schema。真实反例、独立反驳及修复前保护见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/reviews/disposition-r1.json` 和 `execution/serial/T06/`；当前仍待统一最终候选验收和本地交付，不以任务期或静态通过宣称全部 DELIVERED。

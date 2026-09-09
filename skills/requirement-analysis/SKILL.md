@@ -14,6 +14,10 @@ description: >-
 
 先理解项目现状，再逐题澄清打磨想法；理解到位后做对抗验证、给出多方案对比；用户批准设计后落盘 spec，最终交接 writing-plans 生成实施计划。
 
+**进入本流程先取得共享规则**：分别实际读取 [clarifying 的核心纪律](../clarifying/SKILL.md)、[exploration-patterns.md](references/exploration-patterns.md) 和 [external-resource-explorer.md](../../agents/external-resource-explorer.md)。这三份定义可并行读取；先收到各自内容，再开始项目材料读取或提问。已有当前定义可复用，但路径指针或另一份规则里的摘要不等于已取得定义。澄清按被引用模式消费，不另起独立流程。
+
+**首次材料读取前分类**：区分项目自身实现与第三方依赖、服务或标准的资料；本地存放不改变事实归属。分类、定义加载、派发与接管按已取得的共享规则执行，不把外部材料混入内部代码扫描来跳过其约束。
+
 <HARD-GATE>
 在设计展示给用户并获得批准之前，不得调用任何实施类 skill、不得编写任何代码、不得搭建任何脚手架、不得采取任何实施动作。此门槛适用于所有项目，无论看起来多简单。
 </HARD-GATE>
@@ -120,9 +124,7 @@ deep     — 跨层架构变更、新技术栈、用户使用"彻底/全面/审�
 - **standard**：按架构层次或功能模块拆 3-5 个 `code-explorer`；阶段 1 标记了外部探索时，同波次加 1-2 个 `external-resource-explorer`
 - **deep**：multi-modal sweep——每个模态一个 `code-explorer` 彼此盲扫，模态数由项目形态决定、不设上限；外部按主题拆多个 `external-resource-explorer` 同波次发起
 
-外部研究的来源纪律先实际读取 [external-resource-explorer.md](../../agents/external-resource-explorer.md)，等待定义回执后才发起材料读取；不能把两者放在同一批并行工具调用中。主线程直查或接管也适用。
-
-开始外部研究（包括本地保存的第三方依赖材料，以及主线程直接接管）前，先实际读取 [exploration-patterns.md](references/exploration-patterns.md) 的外部研究分类、定义加载与派发要求，按该单点执行；非自动加载环境不能省略定义读取。
+外部研究沿入口的首次材料分类和规则取得要求执行；分类、定义加载与派发细则以 [exploration-patterns.md](references/exploration-patterns.md) 为单点。
 
 外部探索工具优先级：AnySearch（通用/垂直/批量，插件内嵌）优先 → `WebSearch` / `WebFetch` 兜底；**派发外部探索子代理时须在派发词中主动重申此优先级**（不依赖 agent 定义文件生效，Codex 端尤其如此）；降级链与模态定义、契约校验、失败隔离规则见 [exploration-patterns.md](references/exploration-patterns.md)。
 
