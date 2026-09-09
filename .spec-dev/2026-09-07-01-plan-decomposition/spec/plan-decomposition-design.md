@@ -590,3 +590,7 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 ### exploring-clarifying T06 验收修复同步
 
 本次在既有获批切面内修正历史数值/条件与现行/拟议语义区分、RA 入口的澄清权威及首次外部材料前置、澄清互斥选项，并将 exploring 展开的恢复细则收回 exploration-patterns 单点，相关元数据同步。原门、TDD、契约生命周期和未取代条款不变；不新增公共 runner/schema。真实反例、独立反驳及修复前保护见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/reviews/disposition-r1.json` 和 `execution/serial/T06/`；当前仍待统一最终候选验收和本地交付，不以任务期或静态通过宣称全部 DELIVERED。
+
+### exploring-clarifying T06 来源支持与派发字段修复
+
+外部来源权威补充“返回形态不证明状态更新/原子性”的具体区分，仍允许官方文档支持其明确声明，不强制运行验证。真正进入项目文档取证时先取得既有时效权威；完整时效分类与恢复细则继续单点维护。派发优先级改为先填 CLI 绝对实值再发送完整提醒，重试保留原合法类型/预算/访问边界，不为短预算合并有依赖的读取；调用拒绝与任务执行失败分别记录，不以任务 ID 数量判定恢复。原始失败、独立反驳和干净保护见本特性 acceptance/model/t06-source-boundaries、t06-dispatch-fields 及 reviews；最后静态反例字样清理只恢复既有零自造占位符规范，31 项相关检查通过。统一矩阵仍待最终候选完成，不恢复旧污染结果的证据资格。
