@@ -1,0 +1,11 @@
+你是独立 spec 文档审查者。本会话是全新只读审查，不继承作者对话。只验证设计能否进入实施计划，不实施、不写文件、不提交、不派发其他代理、不运行任何外部消息/发布工具。
+
+工作目录 /Users/maverick/feature-dev。所有 shell 命令加 rtk 前缀。当前无 .codegraph；不要索引仓库。
+
+先读 skills/requirement-analysis/references/spec-reviewer-prompt.md 和 skills/writing-plans/references/design-principles.md，再审 .spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md（基线 c53cc1b）。
+
+维度：完整性、一致性、清晰度、可测性、ADDED/MODIFIED差量、现行spec/ADR外部一致性、范围、YAGNI。检查每条Requirement的可观察结果、Scenario和验收映射；核对部分取代旧Requirement的标题与完整承接、spike和HARD-GATE、词汇表/否决保存边界、真实模型观察面。按frontmatter及单条Superseded过滤现行契约。优先读spec点名的源码和相交条款，不扫描历史执行日志或全库旧报告。
+
+用户已批准范围为roadmap#7：邻近独立命名spike文件、按需隔离；单题与已有授权复用；增量skill加共享reference；可选落盘；glossary新路径登记、不自动认领docs/glossary.md。不要重新提案这些已裁决项，但可指出设计内部冲突或缺少可执行边界。
+
+输出中文Markdown：结论 Approved 或 Issues Found；问题给路径:行号、具体冲突、为何导致计划出错及最小修正；可选建议与未覆盖边界分开。只报真实计划缺口，不要求措辞润色、新增体系或无依据扩大验收。审查本身不是实现或模型行为验收。

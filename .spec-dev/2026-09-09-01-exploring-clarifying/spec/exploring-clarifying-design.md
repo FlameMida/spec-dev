@@ -15,6 +15,8 @@ spec_dev:
     - "skills/requirement-analysis/evals/**"
     - "skills/requirement-analysis/assets/spec-template.md"
     - "skills/requirement-analysis/references/context-reuse.md"
+    - "skills/requirement-analysis/references/exploration-patterns.md"
+    - "skills/requirement-analysis/references/codex-compat.md"
     - "skills/quick-fix/SKILL.md"
     - "skills/quick-fix/agents/openai.yaml"
     - "skills/quick-fix/evals/**"
@@ -86,11 +88,14 @@ spec_dev:
 | RA、quick-fix、triage 入口 | 指针引用并消费双查结果；RA 在设计批准后保存 glossary 与 spec |
 | RA spec-template | 共享/局部术语、来源指针及已验证决策表达的窄交接格式 |
 | `agents/external-resource-explorer.md` | 承重结论逐条绑定一手证据，二手来源仅作线索 |
+| `exploration-patterns.md`、`codex-compat.md` | 非自动加载环境的外部调研派发携带已解析 agent 定义路径并要求读取；新增纪律仍以 agent 文件为单点 |
 | `guardrail/migrate-to-spec-dev.mjs` | 仅更新迁移范围说明，明确 glossary 新路径和不自动认领旧同名文件；算法不改 |
 | 各对应 openai.yaml、evals、README 双语 | 摘要、入口触发和正反场景随实际规则同步 |
 | `scripts/tests/exploring-clarifying.test.mjs` | 可观察的装配/文档契约回归，不以关键词存在代替模型行为验收 |
 
 引用的既有权威保持不变：TDD 的例外清单及可追溯授权；writing-plans 的资源台账总则；exploration-patterns 的派发、失败隔离、插件根与工具降级。资源总则在无计划探索中的承载为对话记录，不创建 progress.yaml；若用户已授权保存探索笔记，可将记录纳入该笔记。
+
+**外部调研派发承接**：RA 与 exploring 在 Codex 等不自动加载 agent 定义的环境中，按既有插件根解析规则取得 `agents/external-resource-explorer.md` 的绝对路径，在有界派发词中传入并要求子代理先读取后执行；不能假定 `spawn_agent` 自动加载该文件。兼容说明引用这一派发要求，来源纪律本身不复制。路径不可解析/定义不可读时报告缺口并按既有规则由主线程接管，主线程同样须取得规则后执行；未取得规则不得宣称该通道已满足来源纪律。
 
 ## 约束归属与拒绝的解读
 
@@ -273,12 +278,12 @@ clarifying SHALL 在两种角色中执行三段披露、单题推荐、事实自
 external-resource-explorer SHALL 将每条承重事实结论绑定可核查的一手依据，无法核实时明确证据缺口。
 
 #### Scenario: S16 二手线索回溯到一手依据
-- **GIVEN** 二手材料声称某接口支持一种行为，并链接官方文档或源码
+- **GIVEN** 二手材料声称某接口支持一种行为，并链接官方文档或源码；RA 或 exploring 在不自动加载 agent 定义的环境派发调研
 - **WHEN** 该行为将影响方案
-- **THEN** 实际读取相应一手材料并核对支持范围，返回结论与出处的对应关系；事实、引用和推断分开。
+- **THEN** 实际派发携带已解析 agent 路径并要求读取，子代理取得规则后实际读取相应一手材料并核对支持范围，返回结论与出处的对应关系；事实、引用和推断分开。
 
 #### Scenario: S17 一手不可得保持未核实
-- **GIVEN** 二手声称存在但一手页面无法读取或内容不支持该声称
+- **GIVEN** 子代理经实际派发取得来源纪律，但二手声称的一手页面无法读取或内容不支持该声称
 - **WHEN** 汇总研究
 - **THEN** 报告访问/证据缺口和实际检索链，不能把二手转述标作一手确认；主线程不把它当确定事实解锁依赖决策。
 
@@ -385,7 +390,7 @@ RA SHALL 以结论和来源指针消费探索产物，仅将经实验支持的�
 | S09、S10、S11 | 清单、单题、引用模式 | 任务内行为基线 + 验收任务，PR | 多轮真实对话，单题等待与回归发散 |
 | S12、S13 | 沉默/挂起/授权复用 | 验收任务，PR | 依赖动作未执行及已有决定直接消费对照 |
 | S14、S15 | 后台未完成/失败降级 | 验收任务，PR | 一例实际可观察后台派发/回收，能力不足与失败可控对照；独立核查未覆盖声明 |
-| S16、S17 | 来源支持/不可得 | 任务内行为基线 + 验收任务，PR | 模型读取一手材料的工具回执、逐结论支持性判读及缺口对照 |
+| S16、S17 | 来源支持/不可得及派发承接 | 任务内行为基线 + 验收任务，PR | RA/exploring 两入口真实派发覆盖；非自动加载环境由主线程派发词传递 agent 路径、子代理实际读取规则与一手材料的回执；不可由测试宿主直接预加载 agent 文件替代派发；逐结论支持性判读及缺口对照 |
 | S18、S19、S20、S21 | 概念双查与否决保存 | 验收任务，PR | 同义能力查证、条件变化重开、缺失上下文、实际笔记写入与未决分离 |
 | S22、S23、S24、S25 | 术语读取/冲突/保存 | 验收任务，PR | 实际 glossary+spec 保存、未授权零写入、同名跨域及现行契约冲突对照 |
 | S26 | 迁移公开命令与说明 | 任务内回归 + 验收任务，PR | 隔离目录中执行原命令，旧/目标文件前后哈希与退出码 |

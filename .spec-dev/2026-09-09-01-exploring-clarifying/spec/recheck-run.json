@@ -1,0 +1,21 @@
+{
+  "reviewMethod": "fresh codex exec; read-only sandbox; ephemeral; incremental recheck",
+  "model": "CLI default; not explicitly overridden; actual model not exposed by current JSONL init event",
+  "status": "completed",
+  "exitCode": 0,
+  "verdict": "Approved",
+  "threadId": "01a08398-3029-7e21-aa80-72b16ca2c047",
+  "completion": {
+    "type": "turn.completed",
+    "usage": {
+      "input_tokens": 123869,
+      "cached_input_tokens": 79104,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 847,
+      "reasoning_output_tokens": 47
+    }
+  },
+  "specificationSha256": "fa98777110ec19c9ee9f8d273f64dcef481b1644e08f37faa2cfcb893beb150c",
+  "sourceHashesUnchanged": true,
+  "command": "codex exec -C /Users/maverick/feature-dev --sandbox read-only --ephemeral --json --color never --output-last-message <recheck-output.md> - < <recheck-input.txt> > <recheck-events.jsonl> 2> <recheck-stderr.log>"
+}

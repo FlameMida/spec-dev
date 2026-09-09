@@ -1,0 +1,31 @@
+{
+  "reviewMethod": "fresh codex exec; read-only sandbox; ephemeral; no conversation fork",
+  "fallbackReason": "spawn_agent rejected: agent thread limit reached; no close-agent tool exposed",
+  "model": "CLI default; not explicitly overridden; actual model not exposed by current JSONL init event",
+  "command": "codex exec -C /Users/maverick/feature-dev --sandbox read-only --ephemeral --json --color never --output-last-message <review-output.md> - < <review-input.txt> > <review-events.jsonl> 2> <review-stderr.log>",
+  "baseline": "c53cc1b5b5b224b8dbd76197ee3325c08028c837",
+  "sourceHashes": {
+    "skills/exploring/SKILL.md": "5b829ec59f28b05e3f611f1d3787e3822a649421e59f87cc42ad5571c0ff7735",
+    "skills/clarifying/SKILL.md": "4bf42fc2b061a74ca21217992d5926873c18357326b9ed7e436dafed7e690009",
+    "skills/requirement-analysis/SKILL.md": "527eb1a9634ec0cd844a99a0b9ea7d131f3ec2393c0a381072baddf032bb0c57",
+    "skills/quick-fix/SKILL.md": "99bb4b1ad112b4d9cc0cfacfa9fd0b4f7c1c0a1b2c5046bc544e3cf4f6825869",
+    "agents/external-resource-explorer.md": "1b2449b5a4e991e2f134ebadb6091209d3102c471b3a7a97d4b48dfb0378dff0",
+    "commands/triage.md": "ee947aca8d7454a57cf0883c78e0d75b838a35e4a9f062e80c035b99df50e9e4",
+    "guardrail/migrate-to-spec-dev.mjs": "8de71763e50afc9fa5f9612cfe4addb5943e89614298a5dc533b68510c672c88"
+  },
+  "status": "completed",
+  "exitCode": 0,
+  "verdict": "Issues Found",
+  "threadId": "01a08395-17de-7082-b5cc-e3e6efdbe15b",
+  "completion": {
+    "type": "turn.completed",
+    "usage": {
+      "input_tokens": 607824,
+      "cached_input_tokens": 515200,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 3134,
+      "reasoning_output_tokens": 596
+    }
+  },
+  "sourceHashesUnchanged": true
+}

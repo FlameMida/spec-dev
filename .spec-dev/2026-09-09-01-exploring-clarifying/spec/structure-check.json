@@ -1,0 +1,14 @@
+{
+  "scope": "Design structure only; not product or model behavior PASS",
+  "requirements": 14,
+  "scenarios": 32,
+  "existingReferencePaths": 14,
+  "plannedOutputsNotRequiredToExist": [
+    ".spec-dev/glossary.md"
+  ],
+  "errors": [],
+  "sha256": "fa98777110ec19c9ee9f8d273f64dcef481b1644e08f37faa2cfcb893beb150c",
+  "firstReviewBaseline": "c53cc1b",
+  "reviewedRevision": "worktree after source-dispatch fix",
+  "initialScannerCorrection": "Initial broad scan incorrectly required lazy-created glossary; see structure-check-initial.json"
+}

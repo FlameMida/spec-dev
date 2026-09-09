@@ -1,0 +1,11 @@
+你是独立 spec 增量复审者，全新只读会话，不继承作者对话。工作目录 /Users/maverick/feature-dev；shell 命令前缀 rtk。不得改文件、提交、派发其他代理、联网或运行产品验收。
+
+只复审本次唯一发现及其修正是否闭合、是否引入新冲突。读：
+1. .spec-dev/2026-09-09-01-exploring-clarifying/spec/review-output.md
+2. git diff c53cc1b -- .spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md
+3. 同一spec现行全文，重点规则归属、外部调研派发承接、S16/S17及验收矩阵。
+4. skills/requirement-analysis/references/codex-compat.md 与 exploration-patterns.md 中派发/路径/降级条款，以及 agents/external-resource-explorer.md（核对设计可实施性，不期望当前源码已经实现新增规则）。
+
+首轮独立审查其余维度已完成，只发现“Codex不自动加载agent定义，新的一手纪律可能漏传”。不要重扫全仓active spec、历史证据或泛化改进。确认是否已明确 RA/exploring 两入口实际派发携带可解析路径并要求读取、规则单点不复制、不可取得时的处理、测试不以宿主预加载掩盖漏传。
+
+输出中文Markdown：Approved 或 Issues Found；发现须会导致计划出错，给准确位置、影响、最小修正。说明这是增量复审、未实施/未验收。只给结论和必要依据，不写工作计划。
