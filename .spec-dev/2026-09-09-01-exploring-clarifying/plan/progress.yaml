@@ -1,9 +1,11 @@
 {
   "format_version": 1,
-  "current": "T00",
+  "current": null,
   "tasks": {
     "T00": {
-      "status": "in_progress"
+      "status": "completed",
+      "commit": "ba36bd26ff2acfde507339e8cd4284fb90294c42",
+      "tests": "pass"
     },
     "T01": {
       "status": "pending"
@@ -38,6 +40,7 @@
     "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"988acdf6a5ebccd235fd1db11161959dd52d12da\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying\", \"branch\": \"plan/2026-09-09-01-exploring-clarifying\", \"owned\": true}",
     "2026-09-09 用户明确指令：开始吧；执行计划全部范围，默认串行，本地交付不push/发布。",
     "P00时序FAIL；实际后台可用；仅修正预检输入顺序与30秒窗口，新run t00-preflight-r2；THEN不变。",
-    "恢复T00预检；有界重试输入修正已提交。"
+    "恢复T00预检；有界重试输入修正已提交。",
+    "T00 completed: related 30/30; actual P00 approved run t00-preflight-r2. T06 must consume execution/serial/T00/preflight-approved.json; original run is retained FAIL."
   ]
 }
