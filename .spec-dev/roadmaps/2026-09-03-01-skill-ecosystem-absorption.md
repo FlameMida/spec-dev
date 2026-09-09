@@ -25,7 +25,7 @@ spec_dev_roadmap:
 | 4 | review-conformance | 收尾审查增加 Spec 符合性维度 S 三向核对；设计判据包单点定义；可选架构深化维度；审查微纪律；子代理派发词纪律（AB-12/09/14/13/32） | — | delivered | .spec-dev/2026-09-06-03-review-conformance/ |
 | 5 | plan-decomposition | expand–contract 宽面重构排序及多票集成组；Self-Review 第 5 查与产物 review 门三问；prefactor 最前槽位；正交约束预分配与「拒绝的解读」节；计划头部关联 skill 声明与胶囊 gist；需求完备性两则（测试先例模态、actor 枚举）（AB-06/07/08/30/35/29） | — | delivered | .spec-dev/2026-09-07-01-plan-decomposition/ |
 | 6 | quick-fix-diagnosis | 红信号门槛、认知性升级信号、排序候选根因；correct seam 判定；修复收尾四则；会话级止损（AB-16/17/18/19） | — | delivered | .spec-dev/2026-09-08-01-quick-fix-diagnosis/ |
-| 7 | exploring-clarifying | 结晶判据与冲动路由；spike 受控例外；探索笔记已排除节；explorer 一手来源追溯与后台调研通道；frontier 决策清单可见；HITL 不得自代红线；否决记忆与路由前置双查；仓库级 glossary（AB-20/21/22/26/23/25/31/27） | — | pending | — |
+| 7 | exploring-clarifying | 结晶判据与冲动路由；spike 受控例外；探索笔记已排除节；explorer 一手来源追溯与后台调研通道；frontier 决策清单可见；HITL 不得自代红线；否决记忆与路由前置双查；仓库级 glossary（AB-20/21/22/26/23/25/31/27） | — | in-progress | .spec-dev/2026-09-09-01-exploring-clarifying/ |
 | 8 | p2-watchlist | 报告 P2 六条留观：acceptance-qa HTML 汇总报告、同层小批提问阀门、status 状态面板、ADR 资格类型清单、guardrail 破坏性命令拦截层、description 触发词瘦身（AB-15/24/34/28/41/43）——前序全部交付后逐条评估启动或 dropped | #1-#7 | pending | — |
 
 ## 原始需求
@@ -107,6 +107,9 @@ spec_dev_roadmap:
 
 ### #7 exploring-clarifying
 
+- **2026-09-09 完整设计批准并落盘**：spec `.spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md`（draft；待独立审查及用户 spec review，尚未编写计划或实施）。用户依次确认邻近独立 spike 文件、增量 skill + 共享 reference 方案，并在完整设计与流程对比后回复 ok。
+- **本轮裁决**：spike 只为获授权的运行性决策实验，按需升级隔离，资源去向可追溯；否决复用可选探索笔记；共享术语随获批 spec 保存。新增 `context-reuse.md` 单点定义双查与词汇表，入口以引用消费；migrate 仅登记新 `.spec-dev/glossary.md` 约定，不自动认领 `docs/glossary.md`。一手不可得保持缺口，后台为可选只读调研，不新增 skill/schema/公共 runner。
+- **本轮补查**：major-upgrade 的「澄清核心纪律（新增第 0 条自我披露）」写死七条和引用方枚举，需 Requirement 级部分取代，保留原纪律语义；当前 TDD 原型授权和资源总则为引用权威。prototype 上游允许运行必需错误处理、邻近文件，不自动删除材料。migrate 当前仅遍历历史目录；glossary 是新增位置而非已确认历史文件。现有 evals 是意图清单，必需验收另取真实模型、工具回执和实际写入/运行证据。
 - **关键裁决**：一次一题铁律与红线主句不变，frontier 批问不引入（roadmap 2026-08-05 备注、clarifying spec 非目标 :22）——AB-23 只加"可见的未决决策清单"不改交互形态，落地时须对表这两处既有裁决；spike 规则来源取 prototype 成型四纪律（§5.4 #2）；glossary 为仓库级 `.spec-dev/glossary.md`（守卫不解析，需在 migrate 清单登记）。
 - **探索指针**：报告 AB-20/21/22/26/23/25/31/27 与 §8.5 修正（AB-20 用户侧冲动路由已在 exploring:83 + eval ex-hard-gate，仅 agent 侧 :82 缺；AB-21 内部近义锚点 TDD:28 "一次性原型"例外，README 双语 :11/:146 "no code/只读不写码"与受控例外冲突需改；AB-22 "已排除"承接位是「考察过的选项与取舍」而非「未决问题」；AB-23 结构性终止已由 clarifying:43 共识态定义；AB-25 原则已在 clarifying:14/:30/:43，缺反向 Red Flag）。
 - **已扫范围**：exploring/clarifying 全文结构；RA:139 逐条枚举七条纪律（新增即陈旧）；clarifying evals cl-one-question（清单展示不得被判为多题）、cl-referenced-mode-no-exits；commands/triage.md 判据指针。
