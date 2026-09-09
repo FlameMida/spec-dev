@@ -4,7 +4,7 @@
 
 ## 候选与证据边界
 
-统一运行 `final-r8` 冻结产品提交 `6f6196a33232f8d340e57c949f045293d1e6132b`。完整 180 项产品映射、固定 6 项 harness 映射见 [final-candidate-r8.json](final-candidate-r8.json)。每次调用核对运行前后完整映射，不能以单个文件相同或旧候选的 PASS 替代当前候选证据。
+统一运行 `final-r9` 冻结产品提交 `5f3dbc1cc4a2f3e3edd5ce7619d07a62c16123e1`。完整 180 项产品映射、固定 6 项 harness 映射见 [final-candidate-r9.json](final-candidate-r9.json)。每次调用核对运行前后完整映射，不能以单个文件相同或旧候选的 PASS 替代当前候选证据。
 
 注册表共 61 项：59 个必需模型用例（56 个独立用例与 3 个真实回复续接）、S26 宿主迁移 CLI、P00 工具预检。模型用例对应 32 个 Scenario；P00 不计作产品行为验收。判断读取原始用户输入、工具调用及返回、前后文件状态和归档，并逐项记录 GIVEN/WHEN/THEN，不以模型自报完成推断通过。
 
@@ -16,9 +16,9 @@
 
 | 项目 | 当前事实 | 证据 |
 |---|---|---|
-| 统一 59 个模型用例 | 进行中，尚不能聚合 PASS | `model/final-r8/` 与各组 progress |
+| 统一 59 个模型用例 | 进行中，尚不能聚合 PASS | `model/final-r9/` 与各组 progress |
 | 14 Requirement / 32 Scenario | 待统一矩阵与最终独立完整性对账 | `requirements-reconciliation.md` |
-| 相关静态回归 | 31/31，exit 0 | `../execution/serial/T06/proposal-semantics-related-final/` |
+| 相关静态回归 | 31/31，exit 0 | `../execution/serial/T06/worker-authority-related-final/` |
 | S26 迁移 CLI | 4 次实际调用，独立 PASS；目标存在/不存在 × dry-run/实际 | `cli26/` |
 | harness 完整性 | 9 项确定性测试通过，61 项注册表校验 exit 0 | `../execution/serial/T06/question-history-harness/`、`question-history-registry/` |
 | 全库最终测试 | T07 待运行；不借用局部回归冒充全库 | `../plan/tasks/T07.md` |
