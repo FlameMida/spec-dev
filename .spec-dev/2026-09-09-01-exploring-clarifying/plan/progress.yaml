@@ -1,9 +1,9 @@
 {
   "format_version": 1,
-  "current": "T00",
+  "current": null,
   "tasks": {
     "T00": {
-      "status": "in_progress"
+      "status": "blocked"
     },
     "T01": {
       "status": "pending"
@@ -35,6 +35,7 @@
   "notes": [
     "2026-09-09: 用户已批准spec review及编写计划；尚无实施授权。默认串行、普通v1；执行值由T00核实，不预填SHA/owner/model。",
     "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"988acdf6a5ebccd235fd1db11161959dd52d12da\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying\", \"branch\": \"plan/2026-09-09-01-exploring-clarifying\", \"owned\": true}",
-    "2026-09-09 用户明确指令：开始吧；执行计划全部范围，默认串行，本地交付不push/发布。"
+    "2026-09-09 用户明确指令：开始吧；执行计划全部范围，默认串行，本地交付不push/发布。",
+    "P00时序FAIL；实际后台可用；仅修正预检输入顺序与30秒窗口，新run t00-preflight-r2；THEN不变。"
   ]
 }
