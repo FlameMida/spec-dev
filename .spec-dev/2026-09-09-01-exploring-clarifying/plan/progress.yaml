@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T04",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -23,7 +23,9 @@
       "tests": "pass"
     },
     "T04": {
-      "status": "in_progress"
+      "status": "completed",
+      "commit": "60e1c2e82322268cb4f22565b1c8371e819e0426",
+      "tests": "pass"
     },
     "T05": {
       "status": "pending"
@@ -170,6 +172,7 @@
     "绿色批次在S25结束处停止（batch exit143为主动调度，非case失败）。新短fixture根已登记，旧夹具不移动，剩余及invalid_scope用新run续跑；T06/T07消费两处实际归属。",
     "T01 completed: 14 selected case contributions verified; S23 valid red-green. S29 whole scenario still needs T02 enumeration and T06 final assembly. Short root and input corrections retained with original failures.",
     "T02 10 case contributions independently pass; three real S09 turns prove list update. Raw reply whitespace preserved via invocation-only git whitespace setting, other hooks passed.",
-    "15 selected T03 contributions independently verified across incremental rule fixes; source hashes and historical boundaries recorded; full final candidate rerun remains T06."
+    "15 selected T03 contributions independently verified across incremental rule fixes; source hashes and historical boundaries recorded; full final candidate rerun remains T06.",
+    "T04 seven independent passing task contributions selected with source hashes; original failures/setup gaps retained. CLI sessions stopped by host with separate evidence; final T06 uniform candidate and resource audit remain mandatory."
   ]
 }
