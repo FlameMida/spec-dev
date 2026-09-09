@@ -1,9 +1,9 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T00",
   "tasks": {
     "T00": {
-      "status": "pending"
+      "status": "in_progress"
     },
     "T01": {
       "status": "pending"
@@ -28,10 +28,11 @@
     }
   },
   "resources": [
-    "planned-worktree: .worktrees/plan-2026-09-09-01-exploring-clarifying —— T00核实后替换为实际所有权",
-    "planned-fixtures: .worktrees/ec-qa —— T00绑定后登记独占夹具目录；每个RUN/CASE创建前另登记"
+    "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying —— git worktree remove; git branch -d plan/2026-09-09-01-exploring-clarifying",
+    "fixture-scope: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa —— 子夹具逐项销账后仅清理空目录"
   ],
   "notes": [
-    "2026-09-09: 用户已批准spec review及编写计划；尚无实施授权。默认串行、普通v1；执行值由T00核实，不预填SHA/owner/model。"
+    "2026-09-09: 用户已批准spec review及编写计划；尚无实施授权。默认串行、普通v1；执行值由T00核实，不预填SHA/owner/model。",
+    "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"988acdf6a5ebccd235fd1db11161959dd52d12da\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying\", \"branch\": \"plan/2026-09-09-01-exploring-clarifying\", \"owned\": true}"
   ]
 }
