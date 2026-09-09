@@ -478,3 +478,7 @@ Agent plugins 1.0.0 字段细节以官方 schema 为准，探索结论若与 sch
 ### exploring-clarifying T06 范围题整改
 
 在同一澄清权威内细化包含关系的范围问题：先以保持当前边界或必须扩展两项裁决，后续实现维度仍依赖该裁决；普通分类题继续允许适当的互斥选项，不全局限制为两项。原单题、推荐、披露、已有决定复用与角色出口边界不变。当前干净范围分岔证据见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t06-range-direct/S09-scope/`；统一 final-r2 仍待执行，不宣称全部交付。
+
+### exploring-clarifying T06 范围答案不绑定未决机制
+
+范围裁决仅约定需支持的对象或场景；可以解释实现代价，但不得把未决存储或协调机制变成选择该范围的附带承诺。该细化仍在澄清单点，无新增用户门。final-r2 两项判读经独立反驳：身份政策上限的确定性失败被推翻，范围题仅保留机制绑定缺陷；初始 judge 已保存。干净修复证据见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t06-scope-mechanism/`，全矩阵转 final-r3，尚不声明全部验收或交付。
