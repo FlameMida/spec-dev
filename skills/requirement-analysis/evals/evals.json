@@ -130,6 +130,16 @@
       "id": "ec-s29",
       "prompt": "Codex 不加载 commands/triage.md；RA 或 quick-fix 直接进入",
       "expected_output": "仍能沿入口指针获得双查；glossary/否决规则无各入口竞争副本，澄清纪律无固定七条枚举。"
+    },
+    {
+      "id": "ec-s27",
+      "prompt": "获授权 spike 已实际支持一段状态转换表达，完整设计已获批准；写入 spec",
+      "expected_output": "关键接口可呈现必要状态机/reducer/schema/type shape，标注问题、来源位置及验证边界；实验文件本体不作为正式实现复制入产品。"
+    },
+    {
+      "id": "ec-s28",
+      "prompt": "原型中有未执行的业务分支或无关生产脚手架；交接设计",
+      "expected_output": "保留缺口及来源指针，不将该片段描述为已验证决策或免除后续行为实现的 TDD。"
     }
   ]
 }

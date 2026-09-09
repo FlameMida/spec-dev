@@ -107,6 +107,8 @@ spec_dev:
 
 ### 关键接口
 
+[探索交接以结论和位置指针为主。完整设计获批后，可附来源呈现经过实际实验支持的状态机/reducer/schema/type shape，标出所回答问题与验证边界；不复制实验本体或未验证业务分支作为正式实现。]
+
 [API 端点 / 函数签名 / 事件契约——后续任务将依赖的形态 / Endpoints, signatures, event contracts later tasks depend on]
 
 ### 错误处理
