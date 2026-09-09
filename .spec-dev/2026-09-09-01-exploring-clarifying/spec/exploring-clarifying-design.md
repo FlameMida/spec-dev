@@ -486,3 +486,9 @@ PR 是所属执行通道，不承诺全部真实模型场景十分钟内完成�
 第 0 条的原有三类披露纳入首题最终消息的内部核对，检查实际表达含义，不能由编号/段落数量或假设、排序、推荐理由推定缺失信息的影响已经说明。原选项互斥和下游未决边界核对保持；不新增用户问题、工件、固定标题或每轮重复披露要求。
 
 依据为 final-r6/S09-ra 的实际缺项与 acceptance/reviews/rebuttal-final-r6-disclosure.json；同轮 S09-next、S09-storage 的两步真实回复续接已经独立通过，RA-next 仍因前置失败未解锁。原失败及通过面保留，新候选须重新完成统一矩阵。当前验证与交付状态见 exploring-clarifying 的 acceptance-report.md 和 plan/progress.yaml。
+
+### T06 方案语义保持判断的最终核对（2026-09-10）
+
+方案比较中声称概念或状态的语义保持不变时，对照已读现行契约与拟议方案的成立条件、适用保证；选项标题和最终推荐也保留这一差异。仅名称或返回形状不变时据实说明该层，不能把新增联网/外部确认前提归称为旧契约。此检查仅作用于方案语义比较，不新增工件、用户门或运行证明要求。
+
+依据为 final-r7/S25-proposed 的实际错误归称及 acceptance/reviews/rebuttal-final-r7-proposed-semantics.json；提出新方案、正确描述现状/历史及零写入仍为通过面。r7 的三个首轮澄清和三项真实续接均独立通过，原件保留。新候选仍须完整统一矩阵，交付状态以 acceptance-report.md 与 plan/progress.yaml 为准。

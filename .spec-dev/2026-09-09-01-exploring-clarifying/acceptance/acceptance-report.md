@@ -57,6 +57,8 @@ r4 诊断后的四处集中修正提交为 `be7016c7`，内容与依据见 `../e
 
 后续仅在 clarifying 的最终消息内部核对中承接第 0 条已有三类披露语义，不固定标题或段落数量、不要求续接重复披露。C/S 复核见 `reviews/disclosure-C.json`、`disclosure-S.json`；静态与未改动 harness 的映射见 `../execution/serial/T06/disclosure-validation.json`。新候选的实际模型结果仍是完成验收的必要条件。
 
+`final-r7` 的 6 个独立用例与三项真实续接均自然结束，共 8 PASS、1 FAIL。首题披露、三个首轮和三项续接已独立通过；S25-proposed 确认将新增联网/权威确认前提称为保留现有 `held` 含义，错误在归称现行语义，提出新方案本身仍允许。反驳见 `reviews/rebuttal-final-r7-proposed-semantics.json`。后续仅在 context-reuse 单点核对原/拟议成立条件与保证，并将选项标题及最终推荐纳入；不新增工件、用户门或普遍续接检查。C/S 复核见 `proposal-semantics-C.json`、`proposal-semantics-S.json`，最终静态映射见 `../execution/serial/T06/proposal-semantics-validation.json`；统一新模型验证仍待完成。
+
 有限复现规则核对见 `reviews/acceptance-retry-policy-check.json`：批准门槛未要求首试成功或历史 trial 全过，但未修复的有效语义失败不能仅靠挑后续 PASS 关闭，也不能临时发明 pass@k 门槛。`reviews/dispatch-reliability-options.json` 提出的最终参数核对重组尚是待验证改进；所有确认缺陷将在本批独立检查完成后集中处置，再验证实际改动后的候选。
 
 ## 资源与交付待办
