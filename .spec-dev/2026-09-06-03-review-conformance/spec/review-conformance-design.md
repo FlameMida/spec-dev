@@ -425,3 +425,7 @@ PR 五组的分组用于组织夹具，不将组数宣称为只有五次模型�
 ### exploring-clarifying T01 切面同步
 
 本次T01更新skills/requirement-analysis/references/context-reuse.md、skills/requirement-analysis/SKILL.md、skills/quick-fix/SKILL.md、commands/triage.md、skills/clarifying/SKILL.md、skills/requirement-analysis/assets/spec-template.md、skills/requirement-analysis/agents/openai.yaml、skills/quick-fix/agents/openai.yaml、skills/clarifying/agents/openai.yaml、skills/exploring/evals/evals.json、skills/requirement-analysis/evals/evals.json、skills/quick-fix/evals/evals.json的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。最终有效用例选择见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T01/green-selection.json（S29仅本票贡献）；原行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t01-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t01-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T01/；这些任务期结果不替代最终候选验收。
+
+### exploring-clarifying T02 切面同步
+
+本次T02更新skills/clarifying/SKILL.md、skills/requirement-analysis/SKILL.md、skills/clarifying/agents/openai.yaml、skills/requirement-analysis/agents/openai.yaml、skills/clarifying/evals/evals.json的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t02-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t02-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T02/；这些任务期结果不替代最终候选验收。
