@@ -383,3 +383,7 @@ quick-fix 的 SKILL、openai.yaml、双语 README 和相关 eval SHALL 对新诊
 ## 开放问题
 
 无待用户裁决的设计问题。实施计划需给出具体夹具、命令和证据目录，沿本测试落点声明选择当前可用 CLI 配置；这不是重新选择产品行为或放宽验收边界的授权。
+
+## 与 exploring-clarifying 的分面共存
+
+现行未取代条款继续有效；.spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md 负责概念双查、共享术语、可见清单及受控探索/来源交接切面，双方covers按各自行为声明。仅major-upgrade中被明确点名的澄清核心纪律走部分取代，其他条款不因同文件被触碰而失效。triage可读取相关上下文，但仍零自动落盘；历史“不读产物”的范围解释不再用于本切面。

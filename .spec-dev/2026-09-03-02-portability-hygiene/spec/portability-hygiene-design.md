@@ -389,3 +389,7 @@ Claude Code：加载 SKILL.md → 平台替换声明行 → 会话持有插件�
 
 - "纯文案"是否并入 TDD 例外 canonical（子项目 #3 裁决）。
 - 成熟度分区节是否同步在 `.codex-plugin/plugin.json` 的 `defaultPrompt` 加一条提示（实施时按篇幅裁决，非阻塞）。
+
+## 与 exploring-clarifying 的分面共存
+
+现行未取代条款继续有效；.spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md 负责概念双查、共享术语、可见清单及受控探索/来源交接切面，双方covers按各自行为声明。仅major-upgrade中被明确点名的澄清核心纪律走部分取代，其他条款不因同文件被触碰而失效。triage可读取相关上下文，但仍零自动落盘；历史“不读产物”的范围解释不再用于本切面。

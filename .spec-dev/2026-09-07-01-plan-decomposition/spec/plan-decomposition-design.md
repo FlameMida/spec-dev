@@ -562,3 +562,7 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 ### T09实际交付完成
 
 2026-09-08：实际快进合并main：bc99e272165167159e7e3409e47fa90ee0d32022，sync_commit锚定该真实合并点。178产品文件与最终179/179验收候选一致；29个live夹具、121个已验证外部审查副本、实施worktree与分支已清理，39份fixture快照保留。归档遗漏先由字节守卫拒绝，再补存完整tar、提交后续清。5个外部归属未明目录及10个私有诊断目录保留，不宣称删除。生成模型计划任务未执行；历史失败、非阻断RTK格式FAIL及nightly not_run保留。未push或发布。
+
+## 与 exploring-clarifying 的分面共存
+
+现行未取代条款继续有效；.spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md 负责概念双查、共享术语、可见清单及受控探索/来源交接切面，双方covers按各自行为声明。仅major-upgrade中被明确点名的澄清核心纪律走部分取代，其他条款不因同文件被触碰而失效。triage可读取相关上下文，但仍零自动落盘；历史“不读产物”的范围解释不再用于本切面。

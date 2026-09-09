@@ -462,3 +462,7 @@ awaiting_merge 可以结束当前执行会话，但不是“全部任务完成�
 - T08 合并前核对：产品实现与 T07 91/91 回归对应代码一致，后续仅补 blocked 协议与静态输入并通过 skill/openai 检查；计划校验、差异空白检查通过。四条旧 Requirement 按批准范围部分取代，旧 spec 保持 active；无测试退役候选。
 
 - T08 完成：本地 main 快进到 d9428058cfd485c09b72700fb321ffac5871b67d，两份旧 spec 四条 Requirement 部分取代回写已合入；临时夹具、实施 worktree 与分支按台账清理，所有跟踪 worker 已退出。仅文档锚定提交，未 push、未访问真实 PR；下一项 roadmap #3 tdd-seam 保持 pending。
+
+## 与 exploring-clarifying 的分面共存
+
+现行未取代条款继续有效；.spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md 负责概念双查、共享术语、可见清单及受控探索/来源交接切面，双方covers按各自行为声明。仅major-upgrade中被明确点名的澄清核心纪律走部分取代，其他条款不因同文件被触碰而失效。triage可读取相关上下文，但仍零自动落盘；历史“不读产物”的范围解释不再用于本切面。

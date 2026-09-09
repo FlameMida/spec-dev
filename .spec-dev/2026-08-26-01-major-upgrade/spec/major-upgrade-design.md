@@ -442,3 +442,7 @@ Agent plugins 1.0.0 字段细节以官方 schema 为准，探索结论若与 sch
 ## 开放问题
 
 根级 manifest 是否须同时提供标准命名的 `mcp.json`（MCP 清零后倾向不提供，以官方 schema 必填性为准）；think.ts 的状态文件路径是否需要按项目隔离（实施时按上游实现定）；doctor 是否顺带检测 Codex 端插件缓存版本滞后（低成本则做）。
+
+## 与 exploring-clarifying 的分面共存
+
+现行未取代条款继续有效；.spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md 负责概念双查、共享术语、可见清单及受控探索/来源交接切面，双方covers按各自行为声明。仅major-upgrade中被明确点名的澄清核心纪律走部分取代，其他条款不因同文件被触碰而失效。triage可读取相关上下文，但仍零自动落盘；历史“不读产物”的范围解释不再用于本切面。

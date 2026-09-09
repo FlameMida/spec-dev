@@ -191,3 +191,7 @@ quick-fix 步骤 3 SHALL 声明提问纪律遵循 clarifying skill，三类核�
 
 - eval 用例的具体断言形式（对话脚本 vs 检查清单）——plan 阶段按套件现有 evals 形态对齐；
 - defaultPrompt 双语措辞的最终文案——plan 阶段定稿。
+
+## 与 exploring-clarifying 的分面共存
+
+现行未取代条款继续有效；.spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md 负责概念双查、共享术语、可见清单及受控探索/来源交接切面，双方covers按各自行为声明。仅major-upgrade中被明确点名的澄清核心纪律走部分取代，其他条款不因同文件被触碰而失效。triage可读取相关上下文，但仍零自动落盘；历史“不读产物”的范围解释不再用于本切面。
