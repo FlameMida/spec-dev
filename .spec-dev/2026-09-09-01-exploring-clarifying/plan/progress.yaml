@@ -45,7 +45,8 @@
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t01-red/S32 —— 归档并核验后由T07按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t01-red-r2/S23 —— 归档并核验后由T07按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t01-red-r2/S32-repair —— 归档并核验后由T07按实际路径清理",
-    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t01-green/S18 —— 归档并核验后由T07按实际路径清理"
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t01-green/S18 —— 归档并核验后由T07按实际路径清理",
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t01-green/S19 —— 归档并核验后由T07按实际路径清理"
   ],
   "notes": [
     "2026-09-09: 用户已批准spec review及编写计划；尚无实施授权。默认串行、普通v1；执行值由T00核实，不预填SHA/owner/model。",
