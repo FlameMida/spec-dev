@@ -492,3 +492,9 @@ PR 是所属执行通道，不承诺全部真实模型场景十分钟内完成�
 方案比较中声称概念或状态的语义保持不变时，对照已读现行契约与拟议方案的成立条件、适用保证；选项标题和最终推荐也保留这一差异。仅名称或返回形状不变时据实说明该层，不能把新增联网/外部确认前提归称为旧契约。此检查仅作用于方案语义比较，不新增工件、用户门或运行证明要求。
 
 依据为 final-r7/S25-proposed 的实际错误归称及 acceptance/reviews/rebuttal-final-r7-proposed-semantics.json；提出新方案、正确描述现状/历史及零写入仍为通过面。r7 的三个首轮澄清和三项真实续接均独立通过，原件保留。新候选仍须完整统一矩阵，交付状态以 acceptance-report.md 与 plan/progress.yaml 为准。
+
+### T06 外部 worker 规则依赖前置（2026-09-10）
+
+每次外部派发和缩域重试均传入公共执行约定与来源定义的已解析绝对路径；非自动加载环境中的 worker 在研究材料前取得两份规则，可并行读取两份规则，不能与材料同批。已有当前定义可复用，主线程或前一个 worker 已读不替代新 worker 自身取得。规则仍各自单点维护，不因相互引用循环读取；用户预算、研究范围和既有时效分类不变。
+
+依据为 exploring-clarifying 的 final-r8/S17-ex 缺少 worker 时效规则获取动作，以及 reviews/rebuttal-final-r8-temporal-acquisition.json。当前材料本身为 active，未判定历史误升格。新候选需重新完成统一矩阵，静态审查不替代模型遵循证据；交付状态见该特性 acceptance-report.md 与 plan/progress.yaml。

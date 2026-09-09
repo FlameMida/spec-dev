@@ -504,3 +504,9 @@ Agent plugins 1.0.0 字段细节以官方 schema 为准，探索结论若与 sch
 第 0 条的原有三类披露纳入首题最终消息的内部核对，检查实际表达含义，不能由编号/段落数量或假设、排序、推荐理由推定缺失信息的影响已经说明。原选项互斥和下游未决边界核对保持；不新增用户问题、工件、固定标题或每轮重复披露要求。
 
 依据为 final-r6/S09-ra 的实际缺项与 acceptance/reviews/rebuttal-final-r6-disclosure.json；同轮 S09-next、S09-storage 的两步真实回复续接已经独立通过，RA-next 仍因前置失败未解锁。原失败及通过面保留，新候选须重新完成统一矩阵。当前验证与交付状态见 exploring-clarifying 的 acceptance-report.md 和 plan/progress.yaml。
+
+### T06 外部 worker 规则依赖前置（2026-09-10）
+
+每次外部派发和缩域重试均传入公共执行约定与来源定义的已解析绝对路径；非自动加载环境中的 worker 在研究材料前取得两份规则，可并行读取两份规则，不能与材料同批。已有当前定义可复用，主线程或前一个 worker 已读不替代新 worker 自身取得。规则仍各自单点维护，不因相互引用循环读取；用户预算、研究范围和既有时效分类不变。
+
+依据为 exploring-clarifying 的 final-r8/S17-ex 缺少 worker 时效规则获取动作，以及 reviews/rebuttal-final-r8-temporal-acquisition.json。当前材料本身为 active，未判定历史误升格。新候选需重新完成统一矩阵，静态审查不替代模型遵循证据；交付状态见该特性 acceptance-report.md 与 plan/progress.yaml。

@@ -600,3 +600,9 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 有界主题、完成条件、合法类型/预算/访问范围及一次缩域恢复均保持；最终发送值承接已解析路径，收拢重复检查，不改变覆盖范围或新增任务状态协议。
 
 相关 31 项回归、9 项任务内 harness 测试及 61 项注册表校验已通过；静态结果不作为模型修复证明。证据、独立反驳与最终统一候选结果以 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/acceptance-report.md 及 plan/progress.yaml 为准。原 r4 失败、判读纠正与宿主故障原件保持，不降低必需门槛或以挑选重试 PASS 关闭未修复失败。
+
+### T06 外部 worker 规则依赖前置（2026-09-10）
+
+每次外部派发和缩域重试均传入公共执行约定与来源定义的已解析绝对路径；非自动加载环境中的 worker 在研究材料前取得两份规则，可并行读取两份规则，不能与材料同批。已有当前定义可复用，主线程或前一个 worker 已读不替代新 worker 自身取得。规则仍各自单点维护，不因相互引用循环读取；用户预算、研究范围和既有时效分类不变。
+
+依据为 exploring-clarifying 的 final-r8/S17-ex 缺少 worker 时效规则获取动作，以及 reviews/rebuttal-final-r8-temporal-acquisition.json。当前材料本身为 active，未判定历史误升格。新候选需重新完成统一矩阵，静态审查不替代模型遵循证据；交付状态见该特性 acceptance-report.md 与 plan/progress.yaml。
