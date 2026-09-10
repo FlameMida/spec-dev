@@ -144,7 +144,6 @@
     "fixture: /Users/maverick/feature-dev/.worktrees/ec7-qa/t04-source-r2/S15-failure —— 归档并核验后由T07按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/ec7-qa/t04-source-r2/S15 —— 归档并核验后由T07按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/ec7-qa/t04-source-r2/S16 —— 归档并核验后由T07按实际路径清理",
-    "cli-session: 8032e222 —— t04-source-r2/S16实际创建；按回执停止、归档并核实后仅清理该会话",
     "cli-session: 31fd2ece —— t04-source-r2/S16实际创建；按回执停止、归档并核实后仅清理该会话",
     "fixture: /Users/maverick/feature-dev/.worktrees/ec7-qa/t04-source-r3/S15-failure —— 归档并核验后由T07按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/ec7-qa/t04-source-r4/S15-failure —— 归档并核验后由T07按实际路径清理",
@@ -410,6 +409,7 @@
     "T02 10 case contributions independently pass; three real S09 turns prove list update. Raw reply whitespace preserved via invocation-only git whitespace setting, other hooks passed.",
     "15 selected T03 contributions independently verified across incremental rule fixes; source hashes and historical boundaries recorded; full final candidate rerun remains T06.",
     "T04 seven independent passing task contributions selected with source hashes; original failures/setup gaps retained. CLI sessions stopped by host with separate evidence; final T06 uniform candidate and resource audit remain mandatory.",
-    "Public README red-green, six selected model contributions and S26 migration protection verified. T06 focus observations for history conditions and canonical clarifying load remain explicitly unresolved; no uniform final acceptance claimed."
+    "Public README red-green, six selected model contributions and S26 migration protection verified. T06 focus observations for history conditions and canonical clarifying load remain explicitly unresolved; no uniform final acceptance claimed.",
+    "T07: CLI active resource discharged after fresh query: 8032e222-a853-4073-9be5-910977841482; host stop, client history retained; evidence .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T07/cli-recheck.json"
   ]
 }
