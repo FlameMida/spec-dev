@@ -1,0 +1,37 @@
+{
+  "format_version": 1,
+  "current": null,
+  "tasks": {
+    "T00": {
+      "status": "pending"
+    },
+    "T01": {
+      "status": "pending"
+    },
+    "T02": {
+      "status": "pending"
+    },
+    "T03": {
+      "status": "pending"
+    },
+    "T04": {
+      "status": "pending"
+    },
+    "T05": {
+      "status": "pending"
+    },
+    "T06": {
+      "status": "pending"
+    },
+    "T07": {
+      "status": "pending"
+    }
+  },
+  "resources": [
+    "planned-worktree: .worktrees/plan-2026-09-10-01-status-overview —— T00核实实际绑定后替换；仅本计划拥有时删除",
+    "planned-fixtures: .worktrees/status-overview-qa —— 位于实际实施工作区内，测试/模型目录创建前登记，T07仅清理本计划所属资源"
+  ],
+  "notes": [
+    "2026-09-10: 用户已通过spec review并以ok同意编写实施计划；spec激活提交7d8d4a87。尚无实施授权；普通v1、默认串行，无parallel/integration声明。"
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "recorded_at": "2026-09-10T06:01:09.393848+00:00",
+  "syntax_blocks": {
+    "python": 13,
+    "javascript": 13,
+    "bash": 28
+  },
+  "assembled_modules": [
+    "scripts/lib/status-parse.mjs",
+    "scripts/lib/status.mjs",
+    "scripts/status.mjs",
+    ".spec-dev/2026-09-10-01-status-overview/execution/qa.mjs"
+  ],
+  "import_edges": [
+    {
+      "from": "scripts/lib/status-parse.mjs",
+      "ref": "./integration-plan.mjs",
+      "resolved": "scripts/lib/integration-plan.mjs"
+    },
+    {
+      "from": "scripts/lib/status-parse.mjs",
+      "ref": "./integration-plan.mjs",
+      "resolved": "scripts/lib/integration-plan.mjs"
+    },
+    {
+      "from": "scripts/lib/status-parse.mjs",
+      "ref": "./parallel-plan.mjs",
+      "resolved": "scripts/lib/parallel-plan.mjs"
+    },
+    {
+      "from": "scripts/lib/status.mjs",
+      "ref": "./status-parse.mjs",
+      "resolved": "scripts/lib/status-parse.mjs"
+    },
+    {
+      "from": "scripts/status.mjs",
+      "ref": "./lib/status.mjs",
+      "resolved": "scripts/lib/status.mjs"
+    },
+    {
+      "from": ".spec-dev/2026-09-10-01-status-overview/execution/qa.mjs",
+      "ref": "../../../scripts/lib/status.mjs",
+      "resolved": "scripts/lib/status.mjs"
+    }
+  ],
+  "public_entry_anchors": "pass",
+  "plan_index": {
+    "exit": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"schema\": \"plan-index\",\n  \"file\": \".spec-dev/2026-09-10-01-status-overview/plan\"\n}\n"
+  },
+  "requirements": 13,
+  "scenarios": 26,
+  "machine_cases": 25,
+  "model_cases": [
+    "normal",
+    "divergent",
+    "partial"
+  ],
+  "tasks": [
+    "T00",
+    "T01",
+    "T02",
+    "T03",
+    "T04",
+    "T05",
+    "T06",
+    "T07"
+  ],
+  "all_pending": true,
+  "errors": [],
+  "product_code_executed": false,
+  "implementation_started": false,
+  "files": {
+    ".spec-dev/2026-09-10-01-status-overview/plan/index.md": "f552316464dfcfd936c7255535f1ed98b4c8e4e1889d0a1ee987e45f0d7be63c",
+    ".spec-dev/2026-09-10-01-status-overview/plan/self-review.md": "18b282ce08a26cfbd5e6a0fe6c0804795ed6b3c86212bc131ae252ae9db342bc",
+    ".spec-dev/2026-09-10-01-status-overview/plan/tasks/T00.md": "e766b83df4265e18e711806980d4214c3dfbc360e5bc58a00cf78936ed7c1b0f",
+    ".spec-dev/2026-09-10-01-status-overview/plan/tasks/T01.md": "6c22fa7e8997d6253524abaa995e1776d4e1b8890909b7268e5636d9f3867813",
+    ".spec-dev/2026-09-10-01-status-overview/plan/tasks/T02.md": "208f34fbd34e010f51b9325110d67c6f709d29cc3312a79ba306d27420b1a62a",
+    ".spec-dev/2026-09-10-01-status-overview/plan/tasks/T03.md": "4a730fb92f46f6ba1ef1c44cfb406e3443d8340ae876dae054ed1a54d7c2f950",
+    ".spec-dev/2026-09-10-01-status-overview/plan/tasks/T04.md": "78136787c20f6205256a7c6cdae3d7593dda34bee65baba4fb742c278f06673d",
+    ".spec-dev/2026-09-10-01-status-overview/plan/tasks/T05.md": "cb9a270449ade8ee8ed863c9b6d1f0e6d5dc72fca68c35ac1cd9f0d0518fd3a8",
+    ".spec-dev/2026-09-10-01-status-overview/plan/tasks/T06.md": "bd6a35d9d8ddb53ecd89da3b68bc93c5564db0f2273bf1065fb581c4369c2e73",
+    ".spec-dev/2026-09-10-01-status-overview/plan/tasks/T07.md": "16a6f35666cb6b9c8ee7c471a5c262804f630378c42816cdafc518a615fc0ffc"
+  }
+}

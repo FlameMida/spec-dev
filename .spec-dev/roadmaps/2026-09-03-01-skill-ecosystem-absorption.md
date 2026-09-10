@@ -26,7 +26,7 @@ spec_dev_roadmap:
 | 5 | plan-decomposition | expand–contract 宽面重构排序及多票集成组；Self-Review 第 5 查与产物 review 门三问；prefactor 最前槽位；正交约束预分配与「拒绝的解读」节；计划头部关联 skill 声明与胶囊 gist；需求完备性两则（测试先例模态、actor 枚举）（AB-06/07/08/30/35/29） | — | delivered | .spec-dev/2026-09-07-01-plan-decomposition/ |
 | 6 | quick-fix-diagnosis | 红信号门槛、认知性升级信号、排序候选根因；correct seam 判定；修复收尾四则；会话级止损（AB-16/17/18/19） | — | delivered | .spec-dev/2026-09-08-01-quick-fix-diagnosis/ |
 | 7 | exploring-clarifying | 结晶判据与冲动路由；spike 受控例外；探索笔记已排除节；explorer 一手来源追溯与后台调研通道；frontier 决策清单可见；HITL 不得自代红线；否决记忆与路由前置双查；仓库级 glossary（AB-20/21/22/26/23/25/31/27） | — | delivered | .spec-dev/2026-09-09-01-exploring-clarifying/ |
-| 8 | p2-watchlist | 六条 P2 逐项评估；本轮仅启动 AB-34 多 worktree 只读状态概览（CLI 表格 + JSON），其余处置见胶囊，不将 AB-34 交付等同全部留观项交付 | #1-#7 | in-progress | AB-34：.spec-dev/2026-09-10-01-status-overview/ |
+| 8 | p2-watchlist | 六条 P2 逐项评估；本轮仅启动 AB-34 多 worktree 只读状态概览（CLI 表格 + JSON），其余处置见胶囊，不将 AB-34 交付等同全部留观项交付 | #1-#7 | in-progress | .spec-dev/2026-09-10-01-status-overview/ |
 
 ## 原始需求
 
@@ -122,7 +122,8 @@ spec_dev_roadmap:
 
 ### #8 p2-watchlist
 
-- **2026-09-10 AB-34 完整设计获批并落盘**：用户依次确认同一 Git 仓库所有登记 worktree、展示记录并提示格式/缺失/分歧且不重新验收、独立 CLI 表格 + JSON；六部分完整设计经通俗解释后用户回复 `ok`。spec `.spec-dev/2026-09-10-01-status-overview/spec/status-overview-design.md`（draft，13 Requirement / 26 Scenario）；独立审查两处修订后 Approved，初稿提交 `87c8c683`，记录见同目录 `design-review.md`。待用户 spec review 与编写计划同意，未编写计划或实施。
+- **2026-09-10 AB-34 实施计划已保存**：入口 `.spec-dev/2026-09-10-01-status-overview/plan/index.md`；T00—T07共8任务，隔离/文档语法/计划状态/多worktree采集/CLI/公开入口/验收/交付，普通v1、默认串行。覆盖13Req/26Scenario、25机器场景和3真实模型入口场景；全部pending，尚无实施指令。主线程五查、plan-index、代码块及累计模块语法/路径检查通过，详见plan/self-review.md和validation.json；没有产品或模型验收通过结论。
+- **2026-09-10 AB-34 完整设计获批并落盘**：用户依次确认同一 Git 仓库所有登记 worktree、展示记录并提示格式/缺失/分歧且不重新验收、独立 CLI 表格 + JSON；六部分完整设计经通俗解释后用户回复 `ok`。spec `.spec-dev/2026-09-10-01-status-overview/spec/status-overview-design.md`（active，13 Requirement / 26 Scenario）；独立审查两处修订后 Approved，初稿提交 `87c8c683`，记录见同目录 `design-review.md`。用户已以 `ok` 通过 spec review 并同意编写计划，激活提交 `7d8d4a87`；本项尚未实施。
 - **当前 P2 处置**：AB-34 启动；AB-15/28/41 继续留观；AB-24 保留原一次一题并等待实际反馈；AB-43 原全量瘦身任务取消，当前14项 description 折叠文本均值约234字符，原双语长度前提已变化，触发准确率若有新证据另评。本轮不自动交付或实现其余项。
 - **AB-34 新探索指针与边界**：`scripts/lib/integration-plan.mjs` 有纯 JSON/导航解析，但 `inspectPlanState` 包含真实 Git/证据核验，不能当记录概览；`guardrail/check-spec-drift.mjs` 顶层执行不可直接 import；`commands/doctor.md` 是独立脚本入口先例。新脚本留插件中，Codex 使用 defaultPrompt/README 入口，不向用户项目复制。不改守卫或执行状态协议。
 - **AB-34 已补查**：CLI/manifest/测试先例、v1 YAML与JSON/v2/旧单文件结构、现行相交spec与ADR、多worktree来源分歧、嵌套acceptance夹具误扫描；三只读子代理完成分工，主线程核对关键源码。没有产品验证结论。正式扫描边界、只读/诊断/退出码、26场景与真实模型入口验证已写入spec。

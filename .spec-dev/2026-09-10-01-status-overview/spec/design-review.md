@@ -37,4 +37,4 @@
 
 ## 用户 review 与实施边界
 
-spec 保持 draft；复审已 Approved，仍需向用户展示修订并取得 spec review 及编写实施计划的同意，再激活并交接 writing-plans。没有实施、合并、推送或产品验收结论。
+用户随后以 `ok` 通过修订后的 spec review 并同意编写实施计划，spec 已在 `7d8d4a87` 激活为 active。实施计划现保存于 `../plan/index.md`；没有实施、合并、推送或产品验收结论，执行仍待明确指令。
