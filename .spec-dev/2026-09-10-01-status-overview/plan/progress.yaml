@@ -47,7 +47,8 @@
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r1/normal —— T07归档核验后清理本目录",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r1/divergent —— T07归档核验后清理本目录",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r1/partial —— T07归档核验后清理本目录",
-    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r2/partial —— T07归档核验后清理本目录"
+    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r2/partial —— T07归档核验后清理本目录",
+    "process-group: 44281 —— 当前model.py所创建，运行器结束并核验后销账"
   ],
   "notes": [
     "2026-09-10: 用户已通过spec review并以ok同意编写实施计划；spec激活提交7d8d4a87。尚无实施授权；普通v1、默认串行，无parallel/integration声明。",
