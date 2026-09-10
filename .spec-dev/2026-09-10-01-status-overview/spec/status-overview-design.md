@@ -366,3 +366,7 @@ JSON 顶层固定：`schema_version: 1`、`verification: "not_performed"`、`rep
 ### T02 实施记录
 
 本票实现与验证回执位于 execution/serial/T02/；原失败保留，整体交付仍需T06与T07。
+
+### T03 实施记录
+
+本票实现与验证回执位于 execution/serial/T03/；原失败保留，整体交付仍需T06与T07。
