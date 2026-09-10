@@ -41,9 +41,7 @@
       "status": "in_progress"
     }
   },
-  "resources": [
-    "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying —— git worktree remove; git branch -d plan/2026-09-09-01-exploring-clarifying"
-  ],
+  "resources": [],
   "notes": [
     "2026-09-09: 用户已批准spec review及编写计划；尚无实施授权。默认串行、普通v1；执行值由T00核实，不预填SHA/owner/model。",
     "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"988acdf6a5ebccd235fd1db11161959dd52d12da\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying\", \"branch\": \"plan/2026-09-09-01-exploring-clarifying\", \"owned\": true}",
@@ -410,6 +408,7 @@
     "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/ec7-qa/final-astra/S19-unchanged",
     "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/ec7-qa/final-astra/S19-user-reopen",
     "T07: empty owned fixture scope removed or verified absent",
-    "T07: empty owned fixture scope removed or verified absent"
+    "T07: empty owned fixture scope removed or verified absent",
+    "T07: owned implementation worktree and branch cleaned"
   ]
 }
