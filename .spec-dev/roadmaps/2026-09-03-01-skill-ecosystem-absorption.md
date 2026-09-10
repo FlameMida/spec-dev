@@ -26,7 +26,7 @@ spec_dev_roadmap:
 | 5 | plan-decomposition | expand–contract 宽面重构排序及多票集成组；Self-Review 第 5 查与产物 review 门三问；prefactor 最前槽位；正交约束预分配与「拒绝的解读」节；计划头部关联 skill 声明与胶囊 gist；需求完备性两则（测试先例模态、actor 枚举）（AB-06/07/08/30/35/29） | — | delivered | .spec-dev/2026-09-07-01-plan-decomposition/ |
 | 6 | quick-fix-diagnosis | 红信号门槛、认知性升级信号、排序候选根因；correct seam 判定；修复收尾四则；会话级止损（AB-16/17/18/19） | — | delivered | .spec-dev/2026-09-08-01-quick-fix-diagnosis/ |
 | 7 | exploring-clarifying | 结晶判据与冲动路由；spike 受控例外；探索笔记已排除节；explorer 一手来源追溯与后台调研通道；frontier 决策清单可见；HITL 不得自代红线；否决记忆与路由前置双查；仓库级 glossary（AB-20/21/22/26/23/25/31/27） | — | delivered | .spec-dev/2026-09-09-01-exploring-clarifying/ |
-| 8 | p2-watchlist | 报告 P2 六条留观：acceptance-qa HTML 汇总报告、同层小批提问阀门、status 状态面板、ADR 资格类型清单、guardrail 破坏性命令拦截层、description 触发词瘦身（AB-15/24/34/28/41/43）——前序全部交付后逐条评估启动或 dropped | #1-#7 | pending | — |
+| 8 | p2-watchlist | 六条 P2 逐项评估；本轮仅启动 AB-34 多 worktree 只读状态概览（CLI 表格 + JSON），其余处置见胶囊，不将 AB-34 交付等同全部留观项交付 | #1-#7 | in-progress | AB-34：.spec-dev/2026-09-10-01-status-overview/ |
 
 ## 原始需求
 
@@ -121,6 +121,12 @@ spec_dev_roadmap:
 - **本地交付结论**：T00—T07完成，14Req/32Scenario必需验收与全库验证通过；实际合并 2f6f7c8603ee6f2595cc4102c2032065592b49f2。资源/来源见execution/serial/T07/merge.json及progress.notes。原模型失败及nightly状态保留，未push/发布。下一项#8按原留观清单评估，不自动启动全部P2。
 
 ### #8 p2-watchlist
+
+- **2026-09-10 AB-34 完整设计获批并落盘**：用户依次确认同一 Git 仓库所有登记 worktree、展示记录并提示格式/缺失/分歧且不重新验收、独立 CLI 表格 + JSON；六部分完整设计经通俗解释后用户回复 `ok`。spec `.spec-dev/2026-09-10-01-status-overview/spec/status-overview-design.md`（draft，13 Requirement / 26 Scenario）；待独立设计审查与用户 spec review，未编写计划或实施。
+- **当前 P2 处置**：AB-34 启动；AB-15/28/41 继续留观；AB-24 保留原一次一题并等待实际反馈；AB-43 原全量瘦身任务取消，当前14项 description 折叠文本均值约234字符，原双语长度前提已变化，触发准确率若有新证据另评。本轮不自动交付或实现其余项。
+- **AB-34 新探索指针与边界**：`scripts/lib/integration-plan.mjs` 有纯 JSON/导航解析，但 `inspectPlanState` 包含真实 Git/证据核验，不能当记录概览；`guardrail/check-spec-drift.mjs` 顶层执行不可直接 import；`commands/doctor.md` 是独立脚本入口先例。新脚本留插件中，Codex 使用 defaultPrompt/README 入口，不向用户项目复制。不改守卫或执行状态协议。
+- **AB-34 已补查**：CLI/manifest/测试先例、v1 YAML与JSON/v2/旧单文件结构、现行相交spec与ADR、多worktree来源分歧、嵌套acceptance夹具误扫描；三只读子代理完成分工，主线程核对关键源码。没有产品验证结论。正式扫描边界、只读/诊断/退出码、26场景与真实模型入口验证已写入spec。
+- **以下为历史评估背景**，与当前处置冲突时以上述2026-09-10记录为准：
 
 - **关键裁决**：六条均"空白属实"但报告判为可选；AB-43 数字前提已修正（原始文本口径，YAML 真值均 643.6），论据仍成立但改动面 13 SKILL.md + 13 openai.yaml + 6 trigger-evals；AB-24 等真实"用户嫌慢"反馈再上。
 - **探索指针**：报告 §5.3 与 §8.5（AB-34 parseFrontmatter 未导出、session-context.mjs:43-48 已有副本；AB-15 仓库唯一 .html 是 visual-preview 模板）。
