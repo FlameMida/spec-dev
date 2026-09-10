@@ -68,3 +68,7 @@ S09最终公开查询包含块/行内映射、单双引号、注释、非空note
 ## 资源与后续状态
 
 实际合并 40eb7a10e9c02cb4e11e986089935c36cdd80b13，来源main；11项自有资源已处置，resources为空，自有worktree与分支已删除。原始失败与fixture归档均保留；台账外数据与全局客户端历史保持，未push/发布。实际回执见 ../execution/serial/T07/merge.json、cleanup.json、archive.json。
+
+## 交付后实际复核
+
+main上实际运行CLI：仅余1个工作区，本特性8/8任务完成，资源0，开发worktree/分支均不存在，七产品哈希仍匹配最终候选。退出1仅对应五份旧计划的无复选框验收票，按S13保持未知；原始退出码不改记0。见[最终调用与核对](../execution/serial/T07/final-smoke/verification.json)。
