@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: status-overview
-  status: draft
+  status: active
   covers:
     - "scripts/status.mjs"
     - "scripts/lib/status.mjs"
@@ -353,4 +353,4 @@ JSON 顶层固定：`schema_version: 1`、`verification: "not_performed"`、`rep
 
 ## 当前交付状态
 
-本文件为获批设计的 draft，尚未实施、未运行产品测试。独立设计审查首轮发现两处问题，修订后增量复审 Approved；详见同目录 `design-review.md`。用户 review 同意编写计划后才激活并交接 writing-plans。
+用户已通过 spec review 并同意编写实施计划，现激活为 active；尚未实施、未运行产品测试。独立设计审查首轮发现两处问题，修订后增量复审 Approved；详见同目录 `design-review.md`。用户以 `ok` 批准 review 及编写计划，已交接 writing-plans；执行仍需后续明确指令。
