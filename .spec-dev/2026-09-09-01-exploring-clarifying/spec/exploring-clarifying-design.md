@@ -26,7 +26,7 @@ spec_dev:
     - "scripts/tests/exploring-clarifying.test.mjs"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: null
+  sync_commit: 2f6f7c8603ee6f2595cc4102c2032065592b49f2
   supersedes:
     - ".spec-dev/2026-08-26-01-major-upgrade/spec/major-upgrade-design.md"
   superseded_by: null
@@ -34,7 +34,7 @@ spec_dev:
 
 # 探索、澄清与上下文复用设计
 
-> Roadmap skill-ecosystem-absorption #7，覆盖 AB-20/21/22/26/23/25/31/27。2026-09-09 用户依次批准 spike 边界、增量组织方案，并在查看完整设计及流程对比后确认。独立审查修正后 Approved，用户已 review 当前 spec 并同意编写计划；现激活守卫，尚未实施。
+> Roadmap skill-ecosystem-absorption #7，AB-20/21/22/26/23/25/31/27；用户已批准设计与实施流程，必需验收和本地交付已完成，证据见本特性acceptance及plan/progress.yaml。
 
 ## 背景与目标
 

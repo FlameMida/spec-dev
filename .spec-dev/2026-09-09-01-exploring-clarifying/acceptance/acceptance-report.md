@@ -73,3 +73,7 @@
 已本地合并到来源 main，实际合并为 `2f6f7c8603ee6f2595cc4102c2032065592b49f2`，产品 180 项和 harness 6 项映射仍与冻结候选一致。见 [合并回执](../execution/serial/T07/merge.json)。未 push、未发布，也未启动 roadmap #8。
 
 收尾发现全局 CLI 模型配置在 Astra 矩阵完成后改为 GLM，保留当前设置，没有回退或写入该配置。矩阵前后原哈希核对与各次 Astra 响应身份仍有效；最终检查的“全局文件始终同哈希”假设不适用于后续配置变更，原失败与限定说明见 [后续配置观察](../execution/serial/T07/post-acceptance-settings-observation.json)。不推断变更操作者。
+
+## 本地交付
+
+实际合并 2f6f7c8603ee6f2595cc4102c2032065592b49f2；源工作区 /Users/maverick/feature-dev。资源处置见progress.notes；未push或发布。本结论不改写历史模型失败和未运行nightly。
