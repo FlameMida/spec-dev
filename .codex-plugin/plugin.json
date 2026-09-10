@@ -55,7 +55,8 @@
       "Use quick-fix to fix a small bug without the full design workflow / 使用 quick-fix 直接修小 bug，不走完整设计流程",
       "Use clarifying to grill this idea into shared understanding, one question at a time / 使用 clarifying 逐题把这个想法磨到共识",
       "Triage this request to the right workflow lane (quick-fix / requirement-analysis / exploring / report) / 把这个需求分诊到正确的工作流通道（quick-fix / requirement-analysis / exploring / 报告通道）",
-      "Run spec-dev doctor to diagnose this workspace / 运行 spec-dev doctor 诊断当前工作区健康态"
+      "Run spec-dev doctor to diagnose this workspace / 运行 spec-dev doctor 诊断当前工作区健康态",
+      "Run spec-dev status using this plugin's absolute scripts/status.mjs path from the project directory; keep all worktree sources without re-verification / 从项目目录调用本插件绝对路径下的 scripts/status.mjs，查看全部工作区进度记录，标明来源且不重新验收"
     ],
     "brandColor": "#2563EB"
   }

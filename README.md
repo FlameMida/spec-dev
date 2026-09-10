@@ -242,6 +242,14 @@ Check plugin health across six domains (platform / guardrail / markers / injecti
 
 Triage a request to the right lane: `/triage <request>`
 
+### Recorded project progress
+
+Run `node "<absolute-plugin-directory>/scripts/status.mjs"` from any project subdirectory to read all registered worktrees of the same repository, or select a project with `--repo "/project/path"`. Use `--json` for the same snapshot as JSON and `--help` for usage.
+
+The output includes roadmap records, spec lifecycles, plan completion/waiting/blocked records, and their sources. It preserves differing worktree records without selecting a winner. This does not re-run acceptance or verify delivery. Exit 0 means reading completed (blocked tasks and differences are allowed), 1 means partial/invalid input, and 2 means an invocation error. Current v1 template YAML/JSON, v2 JSON, and legacy plan checkboxes are supported; unsupported syntax is diagnosed without migration. The command is read-only, offline, and one-shot, separate from doctor and execution recovery.
+
+Hosts supporting commands can use the status command instructions. Codex uses the plugin prompt entry or the same CLI above; it does not depend on commands being loaded. The script remains in the plugin directory and is not copied into the project.
+
 ## Specialized Agents
 
 The main thread implements by default. With explicit executing-plans-parallel selection, implementer writes claimed files in its own worktree; the main thread owns progress and integration, while other agents retain analysis roles:
