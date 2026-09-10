@@ -42,8 +42,7 @@
     }
   },
   "resources": [
-    "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying —— git worktree remove; git branch -d plan/2026-09-09-01-exploring-clarifying",
-    "fixture-scope: /Users/maverick/feature-dev/.worktrees/ec7-qa —— 子夹具逐项销账后仅清理空目录"
+    "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying —— git worktree remove; git branch -d plan/2026-09-09-01-exploring-clarifying"
   ],
   "notes": [
     "2026-09-09: 用户已批准spec review及编写计划；尚无实施授权。默认串行、普通v1；执行值由T00核实，不预填SHA/owner/model。",
@@ -410,6 +409,7 @@
     "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/ec7-qa/final-astra/S19-price-change",
     "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/ec7-qa/final-astra/S19-unchanged",
     "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/ec7-qa/final-astra/S19-user-reopen",
+    "T07: empty owned fixture scope removed or verified absent",
     "T07: empty owned fixture scope removed or verified absent"
   ]
 }
