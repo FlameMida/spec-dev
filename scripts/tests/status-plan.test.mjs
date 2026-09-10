@@ -14,6 +14,8 @@ test('S11 v2 集成组待验',()=>{
  const index='| 任务 | 依赖 | 消费接口 | 产出接口 |\n|---|---|---|---|\n| T00 | — | a | b |\n| T01 | T00 | a | b |\n| T02 | T01 | a | b |\n| T03 | T01-T02 | a | b |\n| T04 | T03 | a | b |\n```json spec-dev-integration\n'+JSON.stringify({protocol_version:1,task_roles:{T00:'isolation',T04:'delivery'},groups:{G01:{members:['T01','T02'],verify:'T03',reason:'atomic behavior'}}})+'\n```';
  const state={format_version:2,current:'T02',tasks:{T00:{status:'completed',commit:a},T01:{status:'awaiting_verification',tests:'pending_group',implementation_commit:b,commit:null,evidence_paths:['e']},T02:{status:'blocked'},T03:{status:'pending'},T04:{status:'pending'}},resources:[],notes:[],integration:{owner:'o',worktree:'/fixture',branch:'b',base_commit:a,validated_commit:a,active_group:'G01',groups:{G01:{status:'blocked',base_commit:a,checkpoint_commit:b,validated_commit:null,evidence_paths:[]}}}};
  const r=parsePlanFiles({index,progress:JSON.stringify(state),taskNames:ids.map(id=>id+'.md')});assert.equal(r.counts.total,5);assert.equal(r.counts.completed,1);assert.equal(r.counts.awaiting_verification,1);assert.equal(r.counts.blocked,1);
+ const bad={...state,unexpected:true};assert.throws(()=>parsePlanFiles({index,progress:JSON.stringify(bad),taskNames:ids.map(id=>id+'.md')}),/unknown/);
+ const yaml=Object.entries(state).map(([k,v])=>k+': '+JSON.stringify(v)).join('\n');assert.throws(()=>parsePlanFiles({index,progress:yaml,taskNames:ids.map(id=>id+'.md')}),/v2 requires JSON/);
 });
 test('S12 旧任务与代码块中的复选框',()=>{
  const r=parsePlanFiles({legacy:[['old-plan.md','### 任务 0：one\n- [x] done\n```md\n### 任务 99\n- [x] fake\n```\n### Task 1: two\n- [ ] open']]});

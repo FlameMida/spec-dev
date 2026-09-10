@@ -66,3 +66,13 @@ test('S04/S24 扫描期间worktree消失保留诊断及其他来源',()=>fixture
  const r=await collectStatus(root,{git:async(cwd,args)=>{const result=git(cwd,...args);if(cwd===other&&args.includes('--git-common-dir'))gone=true;return result;},stat:async p=>{if(gone&&(p===other||p.startsWith(other+path.sep)))throw Object.assign(new Error('worktree disappeared'),{code:'ENOENT'});return fs.lstat(p);}});
  assert.equal(r.worktrees.find(w=>w.path===other).read_status,'error');assert.ok(r.diagnostics.some(d=>d.worktree===other));assert.ok(r.features[0].sources.some(s=>s.worktree===root&&s.plan.counts.total===1));
 }));
+
+test('S25 重读使用完整第二批跨文件语义值',()=>fixture(async(root)=>{
+ await plan(root);let changed=false;
+ const r=await collectStatus(root,{read:async p=>{
+  const text=await fs.readFile(p,'utf8');
+  if(!changed&&p.endsWith('/plan/index.md')){changed=true;await write(root,'.spec-dev/F/spec/f-design.md',spec.replace('active','superseded'));const file=path.join(root,'.spec-dev/F/plan/progress.yaml');const value=JSON.parse(await fs.readFile(file,'utf8'));value.tasks.T00.status='blocked';await fs.writeFile(file,JSON.stringify(value));}
+  return text;
+ }});
+ assert.equal(r.diagnostics.length,0);const s=r.features[0].sources[0];assert.equal(s.specs[0].status,'superseded');assert.equal(s.plan.counts.blocked,1);assert.equal(s.plan.counts.pending,0);
+}));

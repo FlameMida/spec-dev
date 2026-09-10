@@ -382,3 +382,5 @@ JSON 顶层固定：`schema_version: 1`、`verification: "not_performed"`、`rep
 ### T06 边界修复记录
 
 独立A/B/S审查及独立反驳确认三项同范围缺陷：旧任务区域未结束、worktree中途消失未诊断、补充平面字符未按码点排序。新增公共CLI/collectStatus反例先红，修复后33项相关测试通过；仍待复审与统一最终验收，不改变R06/R02/R12/R09合同。证据见acceptance/reviews/disposition.json和execution/serial/T06/review-boundaries-*。
+
+T06另补现有行为保护：重读后的生命周期与任务状态来自同一第二批文件、v2拒绝未知字段与非JSON；首次即绿，不伪造RED。相关验证34/34，后续统一候选验收保留这些检查。
