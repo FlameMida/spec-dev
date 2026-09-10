@@ -44,7 +44,6 @@
   "resources": [
     "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview —— git worktree remove; git branch -d plan/2026-09-10-01-status-overview",
     "fixture-scope: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa —— 本计划独占目录；T07归档后核对并清理",
-    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r1/divergent —— T07归档核验后清理本目录",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r1/partial —— T07归档核验后清理本目录",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r2/partial —— T07归档核验后清理本目录",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r2/normal —— T07归档核验后清理本目录",
@@ -61,6 +60,7 @@
     "Final full 215/215, machine-r3 25/25, model-r2 3/3 independently judged; critic eligible for T07. Original failures retained.",
     "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/acceptance-machine-r1",
     "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/acceptance-machine-r2",
-    "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r1/normal"
+    "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r1/normal",
+    "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r1/divergent"
   ]
 }
