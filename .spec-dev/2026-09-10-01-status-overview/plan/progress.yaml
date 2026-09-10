@@ -1,9 +1,11 @@
 {
   "format_version": 1,
-  "current": "T00",
+  "current": null,
   "tasks": {
     "T00": {
-      "status": "in_progress"
+      "status": "completed",
+      "commit": "5b24c6fa52e43e396726d07f34f93bbef090548c",
+      "tests": "pass"
     },
     "T01": {
       "status": "pending"
@@ -33,6 +35,9 @@
   ],
   "notes": [
     "2026-09-10: 用户已通过spec review并以ok同意编写实施计划；spec激活提交7d8d4a87。尚无实施授权；普通v1、默认串行，无parallel/integration声明。",
-    "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"44d9c351d024f2e5fd002604a2e3a7a87b5ab5f2\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview\", \"branch\": \"plan/2026-09-10-01-status-overview\", \"owned\": true}"
+    "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"44d9c351d024f2e5fd002604a2e3a7a87b5ab5f2\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview\", \"branch\": \"plan/2026-09-10-01-status-overview\", \"owned\": true}",
+    "2026-09-10 用户在开始实施询问后回复ok：执行T00—T07全部范围，默认串行，本地交付不push/发布。",
+    "T00 inherited baseline failure reproduced on source: README layout omitted ddd-lifecycle from af57f444. Applied only two directory entries; original failure retained, rerun required.",
+    "T00 actual binding and related baseline verified; no product behavior claimed"
   ]
 }
