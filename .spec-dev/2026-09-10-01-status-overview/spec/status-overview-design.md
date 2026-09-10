@@ -156,9 +156,9 @@ CLI SHALL 对同一 Git 仓库登记的 worktree 分别建立带来源的读取�
 - **THEN** 同时列出两个进行中任务，current 空不被解释为全局空闲。
 
 #### Scenario: S11 v2 集成组待验
-- **GIVEN** 导航三票，其中一个 completed、一个 awaiting_verification、一个 blocked，组状态 blocked。
+- **GIVEN** 合法 v2 五票计划：T00 隔离票 completed、两名组员分别 awaiting_verification/blocked、独立验证票与最终交付票 pending，组状态 blocked。
 - **WHEN** 查询。
-- **THEN** 显示完成 1/3、待验与阻塞各一及组记录状态，不把实现 SHA 当完成，不输出 ready 结论。
+- **THEN** 显示完成 1/5、待验与阻塞各一及组记录状态，不把实现 SHA 当完成，不输出 ready 结论。
 
 ### Requirement: R06 旧单文件复选框记录
 
@@ -179,7 +179,7 @@ CLI SHALL 对同一 Git 仓库登记的 worktree 分别建立带来源的读取�
 概览 SHALL 对识别出的无效或不完整记录返回可定位诊断并保留其他可用记录。
 
 #### Scenario: S14 缺配套文件与任务不一致
-- **GIVEN** 分文件计划缺 index 或 progress，或导航与 tasks 状态键不一致，或 current 指向不存在的任务。
+- **GIVEN** 分文件计划缺 index 或 progress（包括无 spec/index/progress、仅剩 plan/tasks/ 的特性），或导航与 tasks 状态键不一致，或 current 指向不存在的任务。
 - **WHEN** 查询。
 - **THEN** 对应计划显示不完整，具体缺口可定位，不生成可信完成比例；同工作区其他完整计划仍显示。
 
@@ -285,7 +285,7 @@ CLI SHALL 用 0/1/2 区分完成读取、结果不完整及调用错误。
 
 1. 参数先严格校验，`--repo` 解析为绝对路径；支持工作区子目录。只读 Git 调用设置 `GIT_OPTIONAL_LOCKS=0`；不执行 fetch、checkout、worktree prune、status 的刷新写入或任何修复。
 2. 从目标工作区查 common-dir 及 `git worktree list --porcelain -z`，安全解析含空格路径。对可访问来源核实 common-dir 相同；锁定标记不等于不可读，detached 可读。裸仓库或不能定位工作区返回 2；枚举运行失败返回 1 的结构化诊断。
-3. 每个来源仅探测：`.spec-dev/roadmaps/*.md`、`.spec-dev/<特性>/spec/*-design.md`、`.spec-dev/<特性>/*-design.md`、`.spec-dev/<特性>/plan/{index.md,progress.yaml,*-plan.md}`。历史 docs 的日期特性目录按相同 spec/plan 布局读取；历史 `.specs/*.md` 只展示独立 spec，不猜测其计划位置。隐藏目录、reserved 容器目录（roadmaps/reports/explorations/adr）不当特性。候选特性需命中上述 spec 或 plan 文件之一。
+3. 每个来源仅探测：`.spec-dev/roadmaps/*.md`、`.spec-dev/<特性>/spec/*-design.md`、`.spec-dev/<特性>/*-design.md`、`.spec-dev/<特性>/plan/{index.md,progress.yaml,*-plan.md}`。历史 docs 的日期特性目录按相同 spec/plan 布局读取；历史 `.specs/*.md` 只展示独立 spec，不猜测其计划位置。隐藏目录、reserved 容器目录（roadmaps/reports/explorations/adr）不当特性。候选特性需命中上述 spec 或 plan 文件之一，或存在正式位置的 plan/tasks/ 目录；tasks/ 单独存在也必须进入损坏计划诊断，不读取其正文补状态。
 4. 非递归进入 acceptance/execution/tasks 正文；分文件任务文件只核对存在性，禁止用其中的步骤文本补状态。符号链接候选不跟随；候选间接父目录同样检查。读未提交/未跟踪的正式记录；不依赖 git ls-files 限定全部候选。
 5. 原始路径作为身份：不把 docs 与 .spec-dev 的同名目录自动当同一特性，不按 spec.feature 合并。多个 spec 文件逐个保留。一个计划目录含多个旧计划或两种计划信号矛盾时诊断歧义，不任取一个。
 6. 采集一次特性的相关文件集合，记录各文件采集前后 stat 身份/大小/mtime；发现变化或集合增删，丢弃该次特性采集并整体重读一次。仍变化标 unstable。worktree 中途消失同样是来源读取诊断；不因无锁而承诺检测所有同尺寸/同时间戳写入。
@@ -353,4 +353,4 @@ JSON 顶层固定：`schema_version: 1`、`verification: "not_performed"`、`rep
 
 ## 当前交付状态
 
-本文件为获批设计的 draft，尚未实施、未运行产品测试、未通过独立设计审查。设计审查结果单独记录于同目录 `design-review.md`；用户 review 同意编写计划后才激活并交接 writing-plans。
+本文件为获批设计的 draft，尚未实施、未运行产品测试。独立设计审查首轮发现两处问题，修订后增量复审 Approved；详见同目录 `design-review.md`。用户 review 同意编写计划后才激活并交接 writing-plans。
