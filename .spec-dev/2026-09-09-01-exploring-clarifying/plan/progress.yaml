@@ -45,7 +45,6 @@
     "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying —— git worktree remove; git branch -d plan/2026-09-09-01-exploring-clarifying",
     "fixture-scope: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa —— 子夹具逐项销账后仅清理空目录",
     "fixture-scope: /Users/maverick/feature-dev/.worktrees/ec7-qa —— 子夹具逐项销账后仅清理空目录",
-    "fixture: /Users/maverick/feature-dev/.worktrees/ec7-qa/final-r6/S30-committed —— 归档并核验后由T07按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/ec7-qa/final-r6/S09 —— 归档并核验后由T07按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/ec7-qa/final-r6/S28 —— 归档并核验后由T07按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/ec7-qa/final-r6/S25-proposed —— 归档并核验后由T07按实际路径清理",
@@ -410,6 +409,7 @@
     "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/ec7-qa/final-r5/S09",
     "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/ec7-qa/final-r5/S09-ra",
     "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/ec7-qa/final-r5/S25-proposed",
-    "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/ec7-qa/final-r5/S15-failure"
+    "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/ec7-qa/final-r5/S15-failure",
+    "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/ec7-qa/final-r6/S30-committed"
   ]
 }
