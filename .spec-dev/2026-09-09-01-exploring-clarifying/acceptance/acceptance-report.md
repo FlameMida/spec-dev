@@ -1,6 +1,6 @@
 # exploring-clarifying 验收记录
 
-状态：T06 必需矩阵与最终独立完整性复核已通过；T07 全库验证、本地合并和资源清理尚未执行。本文不将模型进程退出或静态检查单独当作行为通过。
+状态：T06 必需矩阵与最终独立完整性复核已通过；T07 全库 180 项测试、技能及插件校验已通过，本地合并和资源清理待执行。本文不将模型进程退出或静态检查单独当作行为通过。
 
 ## 当前候选与结论
 
@@ -33,7 +33,7 @@
 | 夹具归档 | 349 个自有夹具实时内容、tar、bundle 与 HEAD 核验通过，exit 0 | [清单](resources.json)、[回执](../execution/serial/T06/astra-fixture-audit/facts.json) |
 | 进程与 CLI | 363 个历史模型进程记录闭合，0 个未解决项；两条旧 CLI 会话均不再活动 | [进程](process-audit.json)、[CLI 查询](cli-resources.json) |
 | 最终完整性 critic | PASS，无新增必需覆盖缺口，validator exit 0 | [回执](reviews/final-completeness.json)、[覆盖表](reviews/final-completeness-coverage.json) |
-| 最终全库测试与交付 | T07 待执行，不以局部测试代替 | [T07](../plan/tasks/T07.md) |
+| 最终全库测试 | 180/180，0 fail、0 skip，exit 0；技能和插件校验通过 | [全库回执](../execution/serial/T07/full/facts.json)、[收尾检查](../execution/serial/T07/closure-checks.json) |
 | nightly 多 trial 组 | NOT_RUN，按批准矩阵非阻塞 | [T06](../plan/tasks/T06.md) |
 
 ## 审查覆盖与本轮判读校准
