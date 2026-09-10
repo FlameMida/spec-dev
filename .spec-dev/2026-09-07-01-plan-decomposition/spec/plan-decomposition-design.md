@@ -612,3 +612,7 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 失败隔离的原有一次缩域重试与主线程接管，按实际回执分成两个步骤：先发起并取得重试结果，再在仍未完成时接管剩余研究；同题取证不能提前完成后补发重试。独立事项不受影响，真实能力不可用仍走既有接管分支，预算、模型、访问范围和重试次数不变。汇报保留实际时序及各自完成范围，不增设用户门或回执工件。
 
 依据为 exploring-clarifying 的 final-r9/S15-failure 实际提前接管及 reviews/rebuttal-final-r9-recovery-order.json；其双规则取得、真实重试、来源结论和零写入仍通过。r9 共五例自然结束，四项独立 PASS、一项 FAIL，原件保留；新候选仍需统一矩阵，状态以该特性的 acceptance-report.md 和 plan/progress.yaml 为准。
+
+## 与 status-overview 的分面共存
+
+.spec-dev/2026-09-10-01-status-overview/spec/status-overview-design.md 负责同一仓库多 worktree 的只读记录投影及独立 CLI。本文现行未取代条款、状态写入/恢复/验收/守卫/诊断行为保持，双方 covers 按各自切面声明；status 的完成仅表示记录，不替代本文要求的事实核验。本项不修改既有守卫执行入口。

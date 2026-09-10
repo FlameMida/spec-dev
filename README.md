@@ -273,6 +273,7 @@ spec-dev/                            # repo root is the plugin root (flat layout
 ├── commands/                        # /doctor, /triage commands
 ├── guardrail/                       # spec drift guard (installable into target repos)
 ├── skills/
+│   ├── ddd-lifecycle/               # DDD lifecycle workflow
 │   ├── exploring/                   # exploration mode (thinking partner)
 │   ├── clarifying/                  # shared clarification discipline (grill-style)
 │   ├── requirement-analysis/        # 8-phase requirement design workflow

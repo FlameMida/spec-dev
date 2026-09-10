@@ -354,3 +354,7 @@ JSON 顶层固定：`schema_version: 1`、`verification: "not_performed"`、`rep
 ## 当前交付状态
 
 用户已通过 spec review 并同意编写实施计划，现激活为 active；尚未实施、未运行产品测试。独立设计审查首轮发现两处问题，修订后增量复审 Approved；详见同目录 `design-review.md`。用户以 `ok` 批准 review 及编写计划，已交接 writing-plans；执行仍需后续明确指令。
+
+### T00 基线修正
+
+来源提交af57f444新增ddd-lifecycle后README目录表遗漏，来源main与隔离工作区同一计数测试均失败。本轮仅补双语目录条目以恢复既有检查，未改变该技能行为；原件见execution/serial/T00/source-counter与related。

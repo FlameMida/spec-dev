@@ -272,6 +272,7 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 ├── commands/                        # /doctor、/triage 命令
 ├── guardrail/                       # spec 漂移守护（可装入目标仓库）
 ├── skills/
+│   ├── ddd-lifecycle/               # DDD 全流程开发规范
 │   ├── exploring/                   # 探索模式（思考伙伴）
 │   ├── clarifying/                  # 共享澄清纪律（grill 式）
 │   ├── requirement-analysis/        # 8 阶段需求设计工作流
