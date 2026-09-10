@@ -43,8 +43,7 @@
   },
   "resources": [
     "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview —— git worktree remove; git branch -d plan/2026-09-10-01-status-overview",
-    "fixture-scope: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa —— 本计划独占目录；T07归档后核对并清理",
-    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/acceptance-machine-r3 —— T07归档核验后清理本目录"
+    "fixture-scope: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa —— 本计划独占目录；T07归档后核对并清理"
   ],
   "notes": [
     "2026-09-10: 用户已通过spec review并以ok同意编写实施计划；spec激活提交7d8d4a87。尚无实施授权；普通v1、默认串行，无parallel/integration声明。",
@@ -61,6 +60,7 @@
     "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r1/partial",
     "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r2/partial",
     "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r2/normal",
-    "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r2/divergent"
+    "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r2/divergent",
+    "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/acceptance-machine-r3"
   ]
 }
