@@ -41,9 +41,7 @@
       "status": "in_progress"
     }
   },
-  "resources": [
-    "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview —— git worktree remove; git branch -d plan/2026-09-10-01-status-overview"
-  ],
+  "resources": [],
   "notes": [
     "2026-09-10: 用户已通过spec review并以ok同意编写实施计划；spec激活提交7d8d4a87。尚无实施授权；普通v1、默认串行，无parallel/integration声明。",
     "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"44d9c351d024f2e5fd002604a2e3a7a87b5ab5f2\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview\", \"branch\": \"plan/2026-09-10-01-status-overview\", \"owned\": true}",
@@ -62,6 +60,7 @@
     "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r2/divergent",
     "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/acceptance-machine-r3",
     "T07 owned fixture scope archived and disposed",
-    "T07 worktree removed; branch cleanup pending"
+    "T07 worktree removed; branch cleanup pending",
+    "T07 branch disposed"
   ]
 }
