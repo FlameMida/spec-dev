@@ -50,7 +50,6 @@ spec_dev:
 
 # spec-dev 重大升级（多平台适配 · MCP 清零 · 工作流增强）设计
 
-> **Superseded-pending (2026-09-09)** — 本 spec 的「Requirement: 澄清核心纪律（新增第 0 条自我披露）」将被 .spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 
 ## 背景与目标
 
@@ -282,6 +281,8 @@ executing-plans 对分文件形态 SHALL：启动只读 index 与 progress；执
 ## MODIFIED Requirements
 
 ### Requirement: 澄清核心纪律（新增第 0 条自我披露）
+
+> **Superseded (2026-09-10)** — by .spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md#requirement-澄清核心纪律与可见清单 — 原文保留仅作历史参考。
 
 clarifying 的核心纪律 SHALL 为七条且两种角色共用：**第 0 条——开出第一题前先输出三段自我披露（我默认了哪些未说出口的假设；哪些信息会显著改变方案；这类问题最容易犯什么错）**；其余六条不变（一次一题、选择题优先且推荐项放首位、事实自查决策交用户、按决策依赖排序、术语挑战、不编造问题）。引用方（requirement-analysis 阶段 3、quick-fix 步骤 3）的锚定语列举 SHALL 同步新条目。
 
