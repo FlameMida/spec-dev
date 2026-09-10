@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T01",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -8,7 +8,9 @@
       "tests": "pass"
     },
     "T01": {
-      "status": "in_progress"
+      "status": "completed",
+      "commit": "a6a72a82c4ff62a761b5d0412b3bf043d5803e42",
+      "tests": "pass"
     },
     "T02": {
       "status": "pending"
@@ -38,6 +40,7 @@
     "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"44d9c351d024f2e5fd002604a2e3a7a87b5ab5f2\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview\", \"branch\": \"plan/2026-09-10-01-status-overview\", \"owned\": true}",
     "2026-09-10 用户在开始实施询问后回复ok：执行T00—T07全部范围，默认串行，本地交付不push/发布。",
     "T00 inherited baseline failure reproduced on source: README layout omitted ddd-lifecycle from af57f444. Applied only two directory entries; original failure retained, rerun required.",
-    "T00 actual binding and related baseline verified; no product behavior claimed"
+    "T00 actual binding and related baseline verified; no product behavior claimed",
+    "T01 6/6 behavior checks and related regression pass; log whitespace commit failure retained and feature-local attributes preserve raw evidence."
   ]
 }
