@@ -1,9 +1,9 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T00",
   "tasks": {
     "T00": {
-      "status": "pending"
+      "status": "in_progress"
     },
     "T01": {
       "status": "pending"
@@ -28,10 +28,11 @@
     }
   },
   "resources": [
-    "planned-worktree: .worktrees/plan-2026-09-10-01-status-overview —— T00核实实际绑定后替换；仅本计划拥有时删除",
-    "planned-fixtures: .worktrees/status-overview-qa —— 位于实际实施工作区内，测试/模型目录创建前登记，T07仅清理本计划所属资源"
+    "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview —— git worktree remove; git branch -d plan/2026-09-10-01-status-overview",
+    "fixture-scope: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa —— 本计划独占目录；T07归档后核对并清理"
   ],
   "notes": [
-    "2026-09-10: 用户已通过spec review并以ok同意编写实施计划；spec激活提交7d8d4a87。尚无实施授权；普通v1、默认串行，无parallel/integration声明。"
+    "2026-09-10: 用户已通过spec review并以ok同意编写实施计划；spec激活提交7d8d4a87。尚无实施授权；普通v1、默认串行，无parallel/integration声明。",
+    "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"44d9c351d024f2e5fd002604a2e3a7a87b5ab5f2\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview\", \"branch\": \"plan/2026-09-10-01-status-overview\", \"owned\": true}"
   ]
 }
