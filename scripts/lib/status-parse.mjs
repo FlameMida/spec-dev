@@ -219,6 +219,7 @@ function parsePlanInput(files){
  for(const line of outsideFences(text).split('\n')){
   const h=/^###\s+(?:任务|Task)\s+(\d+)\s*(?:[:：]\s*)?(.*)$/i.exec(line);
   if(h){need(!tasks.some(t=>t.id===h[1]),'duplicate legacy task','inconsistent');current={id:h[1],title:h[2],checked:0,total:0};tasks.push(current);continue;}
+  if(/^ {0,3}#{1,3}(?:\s|$)/.test(line)){current=null;continue;}
   const box=/^\s*-\s+\[([ xX])\]\s/.exec(line);if(box&&current){current.total++;if(box[1]!==' ')current.checked++;}
  }
  need(tasks.length,'legacy task headings not recognized','unsupported_syntax');

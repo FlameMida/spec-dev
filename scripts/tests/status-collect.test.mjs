@@ -60,3 +60,9 @@ test('S16 notes差异不构成进度分歧 / S18 路径身份',()=>{
  const s={key:'.spec-dev/F',worktree:'/a',specs:[],plan:null,roadmaps:[],read_status:'ok',notes:['a']};
  const r=groupSources([s,{...s,worktree:'/b',notes:['b']},{...s,key:'.spec-dev/G'}]);assert.equal(r.length,2);assert.equal(r[0].divergence.different,false);
 });
+
+test('S04/S24 扫描期间worktree消失保留诊断及其他来源',()=>fixture(async(root,dir)=>{
+ await plan(root);const other=path.join(dir,'other');git(root,'worktree','add','-qb','other',other);await plan(other);let gone=false;
+ const r=await collectStatus(root,{git:async(cwd,args)=>{const result=git(cwd,...args);if(cwd===other&&args.includes('--git-common-dir'))gone=true;return result;},stat:async p=>{if(gone&&(p===other||p.startsWith(other+path.sep)))throw Object.assign(new Error('worktree disappeared'),{code:'ENOENT'});return fs.lstat(p);}});
+ assert.equal(r.worktrees.find(w=>w.path===other).read_status,'error');assert.ok(r.diagnostics.some(d=>d.worktree===other));assert.ok(r.features[0].sources.some(s=>s.worktree===root&&s.plan.counts.total===1));
+}));

@@ -4,7 +4,14 @@ import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {parseRecord,parseMeta,parseRoadmap,parsePlanFiles,fault} from './status-parse.mjs';
 const execute=promisify(execFile);
-const sort=(a,b)=>a<b?-1:a>b?1:0;
+const sort=(a,b)=>{
+ const left=Array.from(a),right=Array.from(b);
+ for(let i=0;i<Math.min(left.length,right.length);i++){
+  const difference=left[i].codePointAt(0)-right[i].codePointAt(0);
+  if(difference)return difference;
+ }
+ return left.length-right.length;
+};
 const stable=x=>JSON.stringify(x);
 const fingerprint=s=>s?[s.dev,s.ino,s.size,s.mtimeMs,s.ctimeMs].join(':'):'absent';
 const defaults={
@@ -127,6 +134,13 @@ export async function collectStatus(repoPath,overrides={}){
     }
    }catch(e){record.read_status='partial';diagnostic(wt.path,file,e);}
    roadmaps.push(record);
+  }
+  try{
+   const state=await io.stat(wt.path);
+   if(!state.isDirectory())throw fault('unreadable','worktree root is no longer a directory');
+  }catch(e){
+   wt.read_status='error';diagnostic(wt.path,'',e);
+   for(const source of sources)if(source.worktree===wt.path)source.read_status='partial';
   }
  }
  for(const source of sources){

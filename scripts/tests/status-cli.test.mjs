@@ -44,3 +44,18 @@ test('S23 查询前后文件、index、refs、配置不变',()=>fixture(root=>{
  plan(root,{tasks:{T00:{status:'completed',commit:'f'.repeat(40)},T01:{status:'completed',commit:'e'.repeat(40)}}});git(root,'add','.');git(root,'-c','user.name=Status Test','-c','user.email=status@example.invalid','-c','core.hooksPath=/dev/null','commit','-qm','records');write(root,'dirty.txt','untracked');
  const before=digest(root),r=call(root);assert.equal(r.exit,0);assert.equal(r.data.verification,'not_performed');assert.deepEqual(digest(root),before);
 }));
+
+test('S12/S13 旧任务区域结束后不消费附录复选框',()=>fixture(root=>{
+ const file='.spec-dev/Old/plan/old-plan.md';
+ for(const heading of ['## 后续候选','### 独立附录']){
+  write(root,file,'### 任务 1：已完成\n#### 子步骤\n- [x] done\n'+heading+'\n- [ ] optional');
+  let r=call(root);assert.equal(r.exit,0);assert.equal(r.data.features[0].sources[0].plan.counts.checked,1);assert.equal(r.data.features[0].sources[0].plan.tasks[0].total,1);
+  write(root,file,'### 任务 1：没有步骤\n'+heading+'\n- [x] appendix');
+  r=call(root);assert.equal(r.exit,1);assert.equal(r.data.features[0].sources[0].plan.counts,null);assert.equal(r.data.features[0].sources[0].plan.tasks[0].status,'unknown');
+ }
+}));
+
+test('S20 BMP与补充平面路径按Unicode码点排序',()=>fixture(root=>{
+ for(const name of ['Ａ','𠀀'])write(root,`.spec-dev/${name}/spec/f-design.md`,'---\nspec_dev:\n  status: draft\n---');
+ const r=call(root);assert.equal(r.exit,0);assert.deepEqual(r.data.features.map(f=>f.key),['.spec-dev/Ａ','.spec-dev/𠀀']);
+}));
