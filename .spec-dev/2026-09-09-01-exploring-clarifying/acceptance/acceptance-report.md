@@ -1,96 +1,71 @@
 # exploring-clarifying 验收记录
 
-状态：T06 验收进行中，尚未交付。T00—T05 已完成；下文已核事实不替代尚未闭合的统一矩阵、最终完整性对账和 T07 本地合并。
+状态：T06 必需矩阵与最终独立完整性复核已通过；T07 全库验证、本地合并和资源清理尚未执行。本文不将模型进程退出或静态检查单独当作行为通过。
 
-## 候选与证据边界
+## 当前候选与结论
 
-统一运行 `final-astra` 冻结产品提交 `a1a2ce3423dd6b4d68e1f5830724e003e4960754`。完整 180 项产品映射、固定 6 项 harness 映射见 [final-candidate-astra.json](final-candidate-astra.json)。每次调用核对运行前后完整映射，不能以单个文件相同或旧候选的 PASS 替代当前候选证据。
+用户明确选择 GPT-6 Astra 继续完整验收。统一运行 `final-astra` 冻结于 `a1a2ce3423dd6b4d68e1f5830724e003e4960754`，产品内容与 `397cc818b596bd56851272bf59cb00c5e8b4c95e` 的 180 项映射相同。固定 6 项 harness 的完整哈希见 [候选清单](final-candidate-astra.json)；切换模型只修改任务内 `probe.py` 配置和一致性检查，未改产品或全局设置。
 
-注册表共 61 项：59 个必需模型用例（56 个独立用例与 3 个真实回复续接）、S26 宿主迁移 CLI、P00 工具预检。模型用例对应 32 个 Scenario；P00 不计作产品行为验收。判断读取原始用户输入、工具调用及返回、前后文件状态和归档，并逐项记录 GIVEN/WHEN/THEN，不以模型自报完成推断通过。
+- **59/59 必需行为用例独立 PASS**：56 个独立用例和 3 个真实回复续接；当前各组 actions 19、clarification 13、research 7、context 20 全部通过。
+- **32/32 Scenario 映射完整**，包括独立通过的 S26 四次真实迁移 CLI 调用。注册表总数 61，另一个 P00 只作通道预检，不计产品通过。
+- 每例核对真实输入、工具调用与返回、文件前后状态、归档、起止回执、完整 180/6 映射和实际模型响应；各 `judge.json` 是独立语义依据，聚合器只做机械对账。
+- 续接使用同候选、同夹具的真实上一轮回复；属于新进程回放，不声称保存了模型隐藏状态。
 
-入口白名单不是强隔离沙箱。违规读取 oracle、evals、候选 spec/plan，或改动候选根会使该运行失效。验收断言只进入 oracle；`host_scripts` 仅允许夹具中已声明的相对 JavaScript 文件。旧 `checks` 字段在创建输出、资源或调用模型之前拒绝。
+证据：[60 次 Astra 调用闭合记录](final-astra-completion.json)、[32 场景结果](scenario-results.json)、[14 项 Requirement 对账](requirements-reconciliation.md)、[聚合命令回执](../execution/serial/T06/astra-aggregate/facts.json)。初始串行批次在续接检查点安全退出 75，三个续接自然退出 0，恢复后剩余独立批次退出 0。
 
-本次独立审查使用原生代理，不声称具有 controlled review-runner 的隔离保证。模型配置以原始 CLI 配置和 `assistant.message.model` 为准；请求 alias 与供应方报告模型分别记录，物理路由未独立验证。
+## 配置与验证边界
 
-## 当前验证
+主线程和 worker 的别名在本任务调用内固定为 `claude-fable-5-dd-artsa-6-tpg`，effort 为 `xhigh`。实际每条有模型字段的 assistant 响应由独立判读核对为 `gpt-6-astra`；研究用例按真实父子上下文分别核对。身份缺失、错模型或混合模型会阻止通过；续接也必须匹配父例的 harness 与模型配置。
 
-| 项目 | 当前事实 | 证据 |
+[Astra 无工具预检](../execution/serial/T06/model-astra-diagnostic/receipt.json) 实际请求为 adaptive thinking/xhigh，max_tokens 64000，响应报告 Astra，exit 0；[P00](model/final-astra/P00/judge.json) 验证了真实父子 Astra、后台启动后的独立讨论、结果回收和终态。请求别名与供应方报告身份分别保留，物理后端路由未独立证明。全局配置哈希在完整矩阵前后保持相同。
+
+入口白名单不是 OS 沙箱。模型不得读取 oracle、evals、候选 spec/plan 或其他夹具；真实输入不含验收断言。仅 S27/S28-mixed 运行注册的宿主脚本，观察归因于宿主。全套测试未改变原 GIVEN/THEN、工具权限、每次 worker turn 预算或源码以迎合 Astra；未以 Luna 的 PASS 拼接当前结果。
+
+## 已执行检查与待执行项
+
+| 检查 | 实际结果 | 证据 |
 |---|---|---|
-| 统一 59 个模型用例 | 进行中，尚不能聚合 PASS | `model/final-astra/` 与各组 progress |
-| 14 Requirement / 32 Scenario | 待统一矩阵与最终独立完整性对账 | `requirements-reconciliation.md` |
-| 相关静态回归 | 31/31，exit 0 | `../execution/serial/T06/recovery-order-related-final/` |
-| S26 迁移 CLI | 4 次实际调用，独立 PASS；目标存在/不存在 × dry-run/实际 | `cli26/` |
-| harness 完整性 | 9 项确定性测试通过，61 项注册表校验 exit 0 | `../execution/serial/T06/question-history-harness/`、`question-history-registry/` |
-| 全库最终测试 | T07 待运行；不借用局部回归冒充全库 | `../plan/tasks/T07.md` |
-| 进程与资源最终审计 | 待所有运行结束后重算；当前 resources.json 为旧预审快照 | `../execution/serial/T06/fixture-preflight/` |
-| nightly 多 trial 组 | NOT_RUN，按批准矩阵非阻塞；不推断模型成功率 | `../plan/tasks/T06.md` |
+| 相关产品回归 | 31/31，exit 0；产品 180 映射此后不变 | [回执](../execution/serial/T06/recovery-order-related-final/facts.json) |
+| 技能、插件及漂移 | exit 0 | [技能](../execution/serial/T06/recovery-order-skills-final/facts.json)、[官方 CLI 插件检查](../execution/serial/T06/recovery-order-plugin-final/facts.json)、[漂移](../execution/serial/T06/recovery-order-drift-final/facts.json) |
+| 当前 harness 与输入注册 | 9 项通过、61 项合法，exit 0；独立复跑及错模型/旧续接拒绝核查通过 | [测试](../execution/serial/T06/astra-harness-final/facts.json)、[注册表](../execution/serial/T06/astra-registry-final/facts.json)、[独立检查](reviews/astra-harness-check.json) |
+| S26 公共迁移 CLI | 4 次真实调用独立 PASS，目标存在/不存在 × dry-run/实际 | [判读与原件](cli26/judge.json) |
+| 模型矩阵聚合 | 59 行为例 + S26，共 32 场景，exit 0 | [回执](../execution/serial/T06/astra-aggregate/facts.json) |
+| 夹具归档 | 349 个自有夹具实时内容、tar、bundle 与 HEAD 核验通过，exit 0 | [清单](resources.json)、[回执](../execution/serial/T06/astra-fixture-audit/facts.json) |
+| 进程与 CLI | 363 个历史模型进程记录闭合，0 个未解决项；两条旧 CLI 会话均不再活动 | [进程](process-audit.json)、[CLI 查询](cli-resources.json) |
+| 最终完整性 critic | PASS，无新增必需覆盖缺口，validator exit 0 | [回执](reviews/final-completeness.json)、[覆盖表](reviews/final-completeness-coverage.json) |
+| 最终全库测试与交付 | T07 待执行，不以局部测试代替 | [T07](../plan/tasks/T07.md) |
+| nightly 多 trial 组 | NOT_RUN，按批准矩阵非阻塞 | [T06](../plan/tasks/T06.md) |
 
-## 审查与缺陷处置
+## 审查覆盖与本轮判读校准
 
-完整初审 A/B/C/S 基于原始 base 到当时候选。C 指出入口重复完整恢复知识后追加有具体原因的 D；A/S 同因发现保留契约出处并合并处置。修复后执行一次受影响维度复审。原件、独立反驳和处置见 `reviews/disposition-r1.json`；后续只做实际验收缺陷和 harness 问题的有界复核，没有以重复广扫取代完整矩阵。
+完整初审 A/B/C/S 基于最初 base `988acdf6a5ebccd235fd1db11161959dd52d12da`；具体结构摩擦触发 D，修复后执行一次受影响维度复审。见 [处置记录](reviews/disposition-r1.json)。后续只针对实际行为缺口和 harness 变更有界复核，没有重启广域扫查；主要增量见 `consolidated-C/S.json`、`question-history-C/S.json`、`disclosure-C/S.json`、`proposal-semantics-C/S.json`、`worker-authority-C/S.json`、`recovery-order-options.json`、`recovery-order-S.json` 和 `astra-harness-check.json`。使用原生独立代理，不声称 controlled review-runner 的隔离保证。
 
-r4 之前的来源支持、项目文档时效承接和派发恢复修正，保留于 `model/t06-source-boundaries/` 与 `model/t06-dispatch-fields/`。最后静态文本修正发生于这些聚焦运行之后，不能称其与最终候选全文同 hash；对应的有界差异复核见 `reviews/source-boundary-delta-check.json`。这些仅作为历史诊断，最新修正与统一验证见下。
+本轮仅 S11-qf 有判读校准：[独立覆盖反驳](reviews/rebuttal-final-astra-qf-reference.json) 确认它贡献 quick-fix 的被引用角色行为。输入只确认根因和修法，不能补造契约影响答案；模型由 quick-fix 原规则决定继续询问该项，未重问已决内容或添加独立 clarifying 出口。因此该入口角色 PASS；**不声称本例步骤 3 已全部结束或已进入步骤 4**。完整分岔结束后的返回由 S11 与 S11-ra 的当前实际证据覆盖。初始 unverified 原字节保留在 `model/final-astra/S11-qf/judge.initial.json`，没有改输入或豁免原流程。
 
-r4 诊断后的四处集中修正提交为 `be7016c7`，内容与依据见 `../execution/serial/T06/consolidated-fix-plan.md`。对应的 C/S 复核和 S21 输入隔离复核分别见 `reviews/consolidated-C.json`、`consolidated-S.json`、`consolidated-input-check.json`；均无新增发现。其结构与静态证据见 `../execution/serial/T06/consolidated-validation.json`。随后最终题目与历史归因修正提交为 `9e6a8951`，当时统一行为验证为 `final-r6`，对应完整映射和实际命令见 `../execution/serial/T06/question-history-validation.json`；各轮结果均保留自身候选边界。
+## 历史失败与证据资格
 
-提交时 exploring 正文改动触发元数据成对暂存检查。已验证 SKILL frontmatter 和既有 Codex 元数据均未变，按 `scripts/check-openai-sync.mjs` 明确提供的正文改动例外，仅该提交使用 `SKIP_OPENAI_SYNC_CHECK=1`；14 项结构仍校验通过，未改变全局配置。原失败、依据和例外验证见 `../execution/serial/T06/consolidated-openai-sync-original/`、`openai-sync-body-only.json`、`consolidated-openai-sync-body/`。
+历史过程快照见 [当时的验收记录](acceptance-history-snapshot.md)，其中的“等待/当前”仅指各自记录时点；哈希见 [快照记录](acceptance-history-snapshot.json)。所有旧输入、输出、FAIL、UNVERIFIED 和纠正前 judge 保留。
 
-## 原失败、失效与判读纠正
+| 运行 | 保留的实际结果或边界 |
+|---|---|
+| final / r2 / r3 | 分别 6/5/11 例自然闭合；入口顺序、范围绑定、来源支持或规则承接的实际缺口保留；部分过强的措辞/选项判断经独立反驳纠正 |
+| r4 | 51 例正常闭合，S28-mixed 发生宿主字符串消息解析故障；最初退出码和初始映射未保存，恢复仍为 null/UNVERIFIED，不补造成功；S04/S17-ex/S23/S28 语义失败保留 |
+| r4-tail | 5 项诊断 PASS，harness 已变，不拼接为 r4 统一通过 |
+| r5 | 8 PASS、3 FAIL、1 UNVERIFIED；历史归因/范围选项问题及输入歧义分别处理 |
+| r6 | 9 PASS、1 FAIL；包括 2 项真实续接，缺失披露的 RA 父例未解锁续接 |
+| r7 | 8 PASS、1 FAIL，3 项真实续接已通过；当前/拟议语义归称错误保留 |
+| r8 | 7 PASS、1 FAIL；实际 worker 时效规则取得缺口成立，不扩大判为历史文档升格 |
+| r9 | 4 PASS、1 FAIL；主线程在重试前接管并反述顺序，修正后另行冻结 |
+| r10 | 8 PASS、1 FAIL；新服务端确认前提归称旧保证的错误未靠挑选重试关闭，用户随后明确选择 Astra |
 
-- `final` 的 6 例均自然结束。普通 exploring 入口读取规则过晚；宿主调度器最终退出 143 的过程见 `final-paused.json`，不归因为模型失败或强行中止这 6 例。
-- `final-r2` 的 5 例自然结束后按暂停标记退出 75。S30 实际保留缺陷为范围答案绑定尚未裁决的实现机制；编号数量本身不证明多题。S09-ra 初始 FAIL 被独立反驳推翻：权限政策上限不同，不按实际数据集合包含关系机械认定重叠。原 `judge.initial.json` 保留。
-- `final-r3` 的 11 例自然结束后退出 75。S09-scope 推荐理由可由完整上下文支持，S15-failure 限定于文档声明的支持不要求运行证明，两个初始 FAIL 被独立反驳推翻并保留原判断。S16 的实现保证扩张和 S17-ex 的实际时效承接缺口维持，修复后另冻 r4。
-- `final-r4/S17-ex` 的原始判定为 FAIL：实际派发未填入 AnySearch CLI 绝对目录。来源支持边界、定义读取、后台闭合均通过；本例显式排除项目 `.spec-dev`，不追加文档时效失败。独立反驳确认当前规则已明确且实际取得，未发现具体规则缺项。13 例自然结束后调度器退出 75，最后一例为已先行派发的 S02；同一冻结候选随后恢复剩余独立用例。后续复现只能记录新一次行为，不能自动关闭未修复失败；本次失败未被覆盖、降级或豁免。证据见 `reviews/rebuttal-final-r4-cli-path.json`、`final-r4-paused.json`。
-- `final-r4/S04` 的原始判定为 FAIL：D2 已批准指定路径的独立内存实验，模型却把它收窄成只运行已有文件；确认文件缺失后执行仍报缺文件，随后再次要求同范围重建授权。独立反驳确认该批准包含必要原型的创建，不要求冒称恢复了旧原件。诚实报告失败与生产保护仍通过，目标实验未完成，不能仅凭 Node 报错归为环境阻塞。证据见 `reviews/rebuttal-final-r4-authorization.json`。
-- `final-r4/S21` 初始数值 FAIL 被独立反驳撤回，现为 unverified，原 `judge.initial.json` 保留。D4 的“每月 1000 元超预算 100 元”有角色歧义，D1 离线同步的预算上限不能无条件用于 D4 远程数据库；不能从假设的数字角色推导确定错误。实际保存、A 已排除/B 未决及来源保留成立。后续以报价与预算上限分开写明的 GIVEN 消除输入歧义，不把判断预期注入模型，也不反改历史输入。证据见 `reviews/rebuttal-final-r4-exclusion-values.json`。
-- `final-r4/S23` 确认 FAIL：D5 仅批准术语定义，实际提交的 spec 却新增 `waitlisted`、容量计数、FIFO 晋级、批窗口和错误处理契约，并登记取代旧预留契约。共享词汇表形状与同次范围提交仍成立，不能用这些通过面代替批准范围检查。证据见 `reviews/rebuttal-final-r4-term-scope.json`。
-- `final-r4/S28` 确认 FAIL：最终摘要把文档与仅返回对象的源码并列为状态更新保证的明确依据；此前正文的正确分层不能修复摘要中的新断言。未验证原型隔离仍成立，不要求运行验证才允许报告官方文档的明确声明。证据见 `reviews/rebuttal-final-r4-handoff-support.json`。
-- 4 个历史运行曾把判断文本误作宿主脚本路径，污染模型可读观察文件。全部通过 `invalidated-results.json` 及每例 `invalidation.json` 撤出验收，最终有效状态为 unverified；原始输出与原 judge 未覆盖。旧 A-r2/S-r2/critic 中引用这些 PASS 的部分也撤回，不能复用为最终验收证据。
+另外 4 个旧运行把判断文字误作宿主脚本路径，污染模型可读观察；见 [失效清单](invalidated-results.json)。这些结果及引用它们的旧审查/critic 部分撤出验收，原件不覆盖。原 S21 的数值角色歧义后来只修正 GIVEN 的报价/预算表述，未经证实的数值失败没有变成产品缺陷。
 
-独立判读允许根据完整原件纠正；不以固定措辞、编号数量、任务 ID 数量或未执行的被拒调用替代语义事实。官方文档可以支持明确归属于文档的声明，代码是否实现该声明须分别判断。
+本次是使用明确获批的新模型配置完成完整统一矩阵，不宣称 Luna 的有效失败已被修复、首次执行成功或获得通用模型可靠率。此前模型名诊断证明 Luna 默认也发送 xhigh，不能把语义错误归咎于缺失 effort。历史正文元数据成对暂存例外及原始证据空白格式例外均为单次命令、原文保留，未改全局配置。
 
-`final-r5` 的 12 例自然结束后调度器退出 75，未中止模型。8 例通过；S28 与 S25-proposed 的最终历史段落把排除背景误归为原记录设定的重审条件，S30-committed 的最终范围选项重复并绑定未决机制，均保留实际 FAIL。没有据此声称已观察到运行时拒绝用户重开。S09 初始确定性重叠判断经独立反驳撤为许可边界歧义 unverified，原 judge.initial.json 保留。证据见 `final-r5-paused.json` 及 `reviews/rebuttal-final-r5-*.json`。
+## 资源与交付边界
 
-后续两处修正将互斥检查应用到最终题目的用户裁决，并分开核对历史排除背景与本轮重新讨论。C/S 有界复核见 `reviews/question-history-C.json`、`question-history-S.json`；该修正当时的 31 项相关回归、9 项宿主测试与结构检查通过，后续模型证据分轮记录。Codex 元数据仍由 `question-history-metadata-check.json` 确认触发描述未变，正文改动例外仅作用于本次成对暂存检查。
+模型写者已经停止。初次进程审计因旧 PID 40812 无可见性而 exit 1，原 [审计快照](process-audit.initial.json) 和 stderr 保留；[身份复核](process-identity-resolution.json) 证明原进程在 05:15 启动且自然结束，当前是 10:46 启动的另一 `cfprefsd` 系统进程。没有向该进程发信号，最终无未解决项。
 
-`final-r6` 在 8 例独立调用自然结束后安全暂停，并串行完成 S09-next/storage 两轮真实回复续接；共 9 PASS、1 FAIL。S09-ra 确认缺少“哪些缺失信息会改变答案或方案”的前置披露，选项、等待、依赖和零写入仍通过；未用这些通过面解锁 RA-next。实际定义首问被完整带入下一轮，用户随后禁止收集的新增裁决得到消费，持久化裁决也解锁了存储选型。证据见 `final-r6-continuation-checkpoint.json`、`model/final-r6/` 和 `reviews/rebuttal-final-r6-disclosure.json`。
+两条旧 CLI 会话按实际宿主停止回执与最新精确 UUID 查询记录，客户端历史保留，不改称模型自然结束。三个配置诊断目录的进程、临时监听器及目录均已关闭/移除，证据在最终进程审计中登记。
 
-后续仅在 clarifying 的最终消息内部核对中承接第 0 条已有三类披露语义，不固定标题或段落数量、不要求续接重复披露。C/S 复核见 `reviews/disclosure-C.json`、`disclosure-S.json`；静态与未改动 harness 的映射见 `../execution/serial/T06/disclosure-validation.json`。新候选的实际模型结果仍是完成验收的必要条件。
-
-`final-r7` 的 6 个独立用例与三项真实续接均自然结束，共 8 PASS、1 FAIL。首题披露、三个首轮和三项续接已独立通过；S25-proposed 确认将新增联网/权威确认前提称为保留现有 `held` 含义，错误在归称现行语义，提出新方案本身仍允许。反驳见 `reviews/rebuttal-final-r7-proposed-semantics.json`。后续仅在 context-reuse 单点核对原/拟议成立条件与保证，并将选项标题及最终推荐纳入；不新增工件、用户门或普遍续接检查。C/S 复核见 `proposal-semantics-C.json`、`proposal-semantics-S.json`，最终静态映射见 `../execution/serial/T06/proposal-semantics-validation.json`；统一新模型验证仍待完成。
-
-有限复现规则核对见 `reviews/acceptance-retry-policy-check.json`：批准门槛未要求首试成功或历史 trial 全过，但未修复的有效语义失败不能仅靠挑后续 PASS 关闭，也不能临时发明 pass@k 门槛。`reviews/dispatch-reliability-options.json` 提出的最终参数核对重组尚是待验证改进；所有确认缺陷将在本批独立检查完成后集中处置，再验证实际改动后的候选。
-
-`final-r8` 共 8 个独立用例自然结束，当前独立判读为 7 PASS、1 FAIL，调度器安全暂停 exit 75。S09-ra 的来源断言、S09 的许可边界、S30-committed 的披露初判均经独立反驳纠正，原 `judge.initial.json` 保留；不按固定句式或同一实现可能满足两个许可上限推定失败。S17-ex 确认 worker 未取得时效规则内容就读取并引用项目文档，主线程已读不能抵销；实际文档为 active，不扩大判为历史升格。详见 `final-r8-paused.json` 与四份 `reviews/rebuttal-final-r8-*.json`。
-
-针对该缺口，外部新派发/缩域重试前置两份规则依赖，保持预算、范围、规则单点和当前定义复用。C/S 复核见 `reviews/worker-authority-C.json`、`worker-authority-S.json`，末版 31 项回归、技能、插件和漂移检查 exit 0，完整映射及命令见 `../execution/serial/T06/worker-authority-validation.json`。新模型效果以 `final-r9` 原件为准。
-
-`final-r9` 五项自然结束、批次暂停 exit 75，独立判读四项 PASS、一项 FAIL。S17-ex 的双规则前置取得已通过，三个首轮澄清均通过；S15-failure 主线程先读取同题材料再派缩域重试，最终反述顺序，独立核定见 `reviews/rebuttal-final-r9-recovery-order.json`。真实重试、每次预算、来源资格及零写入仍通过，续接未运行。
-
-后续仅重组公共失败隔离段，以真实重试回执区分两步，保留标准措辞、独立工作和能力缺失分支；C/S 复核见 `reviews/recovery-order-options.json`、`recovery-order-S.json`。初次相关回归 30/31 是 canonical 字面定位失配，恢复原措辞后 31/31，测试未改；原 stdout 保留。末版技能、插件、漂移检查均 exit 0，映射及命令见 `../execution/serial/T06/recovery-order-validation.json`。模型行为仍以新统一候选原件为准。
-
-## 本任务模型配置诊断
-
-只读配置发现默认及子代理别名均映射到 `gpt-5.6-luna`。三次无工具诊断均自然 exit 0：原始模型名显式 xhigh、供应方兼容模型名显式 xhigh，以及未指定模型/effort 的现有默认。实际请求三者均为 adaptive thinking / xhigh；原始和默认请求 max_tokens 32000，兼容名请求 64000，响应报告模型均为 Luna。模型名警告不能据此解释语义失败，也未证实缺失推理档位。未修改全局配置，物理后端路由和模型质量未由此证明。
-
-脱敏元数据、原命令和关闭回执见 `../execution/serial/T06/model-configuration-assessment.json`、`model-compat-diagnostic/`、`model-configured-default/`；临时代理监听器、子进程和临时目录均已关闭/移除。这些只属配置诊断，不计产品场景 PASS。模型选择仍待用户答复，`final-r10` 沿用现有 Luna。
-
-## 资源与交付待办
-
-两个异常旧运行产生的自有 CLI 会话已有宿主停止回执；其历史保留，不改写成模型自然结束。T06/T07 将重新查询精确 UUID，按实际不再活动作非删除式销账。全部自有 fixture 必须先核对实时文件、归档、Git bundle 与 HEAD，再于 T07 逐项清理并保存台账。来源 main 当前仍未合并。
-
-本任务只完成 roadmap #7；未 push、未发布，不自动实施 #8。
-
-## final-r10 暂停记录
-
-本轮 6 个独立场景及 3 项实际回复续接均自然 exit 0，独立结果为 8 PASS、1 FAIL，尚未完成统一 59 例。三个首轮与三个真实续接全部通过；S17-ex 双规则取得通过，S15-failure 接管顺序通过，其‘实际读两份规则’的低影响描述错误保留初判与独立纠正，未把研究未完成包装为完成。
-
-S25-proposed 在正确说明旧 `held` 仅本进程成立后，将新增联网及服务端裁决后的状态称为保持当前保证。独立反驳确认中等影响的语义归称错误，见 `reviews/rebuttal-final-r10-proposed-semantics.json`；原初判和实际输出均保留。提出新方案本身、现状读取及零写入仍为通过面。既有相关规则已经明确且实际取得，没有依据继续叠加同类提醒或挑选同版本重试 PASS 来关闭该缺口。
-
-当前停止新模型派发，等待此前提出的验收模型选择答复；全局配置未改。若选择 Astra，须先记录任务内显式模型配置和真实预检，再冻结新统一候选，不能混用 Luna 与新模型结果。T06 保持进行中，T07 未开始；主分支未合并，自有夹具与全部原件保留，未执行发布或推送。
-
-## Astra 完整验收授权
-
-用户明确选择 GPT-6 Astra 继续完整验收。产品保持 `397cc818` 的 180 项映射不变，仅调整任务内模型配置与一致性检查；统一运行改为 `final-astra`。主线程和 worker 的模型别名都指向供应方 Astra 标识，推理档位显式为 xhigh，不修改全局设置。
-
-实际无工具调用预检 exit 0，响应报告 `gpt-6-astra`，请求元数据为 adaptive/xhigh；证据见 `../execution/serial/T06/model-astra-diagnostic/`。固定六项 harness 中只有 `probe.py` 改变，九项宿主测试和 61 项注册表检查通过。实际后台 P00 预检及全部 59 项行为验证仍需在新配置下完成，不能复用 Luna 的 PASS 作为新模型验收结果。既往失败、原初判和纠正说明保持原证据边界。
+349 个夹具尚未删除。T07 会重新核对实际文件、Git HEAD 和归档后逐项清理，并保存每项台账；随后处理自有 worktree/分支。当前尚未合并到来源 main，未 push、未发布，也不启动 roadmap #8。
