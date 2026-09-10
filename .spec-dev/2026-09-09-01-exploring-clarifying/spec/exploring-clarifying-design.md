@@ -428,3 +428,79 @@ PR 是所属执行通道，不承诺全部真实模型场景十分钟内完成�
 ## 开放问题
 
 无阻塞设计问题。具体夹具名称、命令参数与可用模型配置在计划中按当前环境落实，不改变上述必需观察面或授权边界。
+
+### exploring-clarifying T01 切面同步
+
+本次T01更新skills/requirement-analysis/references/context-reuse.md、skills/requirement-analysis/SKILL.md、skills/quick-fix/SKILL.md、commands/triage.md、skills/clarifying/SKILL.md、skills/requirement-analysis/assets/spec-template.md、skills/requirement-analysis/agents/openai.yaml、skills/quick-fix/agents/openai.yaml、skills/clarifying/agents/openai.yaml、skills/exploring/evals/evals.json、skills/requirement-analysis/evals/evals.json、skills/quick-fix/evals/evals.json的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。最终有效用例选择见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T01/green-selection.json（S29仅本票贡献）；原行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t01-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t01-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T01/；这些任务期结果不替代最终候选验收。
+
+### exploring-clarifying T02 切面同步
+
+本次T02更新skills/clarifying/SKILL.md、skills/requirement-analysis/SKILL.md、skills/clarifying/agents/openai.yaml、skills/requirement-analysis/agents/openai.yaml、skills/clarifying/evals/evals.json的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t02-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t02-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T02/；这些任务期结果不替代最终候选验收。
+
+### exploring-clarifying T03 切面同步
+
+本次T03更新skills/exploring/SKILL.md、skills/requirement-analysis/assets/spec-template.md、skills/exploring/agents/openai.yaml、skills/exploring/evals/evals.json、skills/requirement-analysis/evals/evals.json的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。各候选切面有效贡献选择及边界见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T03/green-selection.json；行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t03-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t03-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T03/；这些任务期结果不替代最终候选验收。
+
+### exploring-clarifying T04 切面同步
+
+本次T04更新skills/requirement-analysis/SKILL.md、skills/requirement-analysis/agents/openai.yaml、skills/exploring/SKILL.md、agents/external-resource-explorer.md、skills/requirement-analysis/references/exploration-patterns.md、skills/requirement-analysis/references/codex-compat.md、skills/exploring/agents/openai.yaml、skills/requirement-analysis/evals/evals.json的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。各候选切面7项有效贡献及边界见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T04/green-selection.json；原始失败、配置缺口及异常CLI会话的后续宿主清理分别保留；行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t04-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t04-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T04/；这些任务期结果不替代最终候选验收。
+
+### exploring-clarifying T05 切面同步
+
+本次T05更新skills/requirement-analysis/SKILL.md、skills/requirement-analysis/agents/openai.yaml、README.md、README.zh-CN.md、guardrail/migrate-to-spec-dev.mjs、skills/requirement-analysis/evals/evals.json、skills/exploring/evals/evals.json、skills/exploring/evals/trigger-evals.json、scripts/tests/exploring-clarifying.test.mjs的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。6项分版本行为贡献及边界见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T05/green-selection.json；S26公共命令回归前后通过但不冒称四份独立哈希回执，原始失败及T06关注项分别保留；行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t05-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t05-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T05/；这些任务期结果不替代最终候选验收。
+
+### exploring-clarifying T06 验收修复同步
+
+本次在既有获批切面内修正历史数值/条件与现行/拟议语义区分、RA 入口的澄清权威及首次外部材料前置、澄清互斥选项，并将 exploring 展开的恢复细则收回 exploration-patterns 单点，相关元数据同步。原门、TDD、契约生命周期和未取代条款不变；不新增公共 runner/schema。真实反例、独立反驳及修复前保护见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/reviews/disposition-r1.json` 和 `execution/serial/T06/`；当前仍待统一最终候选验收和本地交付，不以任务期或静态通过宣称全部 DELIVERED。
+
+### exploring-clarifying T06 普通入口与验收隔离修复
+
+统一验收发现普通 exploring 仍可能先读外部资料后取来源权威，因此在探索入口明确先取得三份共享规则；探索姿态、授权实验与零必填工件的现行边界不变，元数据同步。另修任务内 harness 的字段误用，宿主实验与私有验收判据分离，污染原件在本特性 acceptance/invalidated-results.json 逐项撤出可采信证据，需干净重跑。该修复不新增公共 runner/schema；既有未取代条款保持。本段不宣称最终矩阵或交付已经通过。
+
+### exploring-clarifying T06 范围题整改
+
+在同一澄清权威内细化包含关系的范围问题：先以保持当前边界或必须扩展两项裁决，后续实现维度仍依赖该裁决；普通分类题继续允许适当的互斥选项，不全局限制为两项。原单题、推荐、披露、已有决定复用与角色出口边界不变。当前干净范围分岔证据见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t06-range-direct/S09-scope/`；统一 final-r2 仍待执行，不宣称全部交付。
+
+### exploring-clarifying T06 范围答案不绑定未决机制
+
+范围裁决仅约定需支持的对象或场景；可以解释实现代价，但不得把未决存储或协调机制变成选择该范围的附带承诺。该细化仍在澄清单点，无新增用户门。final-r2 两项判读经独立反驳：身份政策上限的确定性失败被推翻，范围题仅保留机制绑定缺陷；初始 judge 已保存。干净修复证据见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t06-scope-mechanism/`，全矩阵转 final-r3，尚不声明全部验收或交付。
+
+### exploring-clarifying T06 来源支持与派发字段修复
+
+外部来源权威补充“返回形态不证明状态更新/原子性”的具体区分，仍允许官方文档支持其明确声明，不强制运行验证。真正进入项目文档取证时先取得既有时效权威；完整时效分类与恢复细则继续单点维护。派发优先级改为先填 CLI 绝对实值再发送完整提醒，重试保留原合法类型/预算/访问边界，不为短预算合并有依赖的读取；调用拒绝与任务执行失败分别记录，不以任务 ID 数量判定恢复。原始失败、独立反驳和干净保护见本特性 acceptance/model/t06-source-boundaries、t06-dispatch-fields 及 reviews；最后静态反例字样清理只恢复既有零自造占位符规范，31 项相关检查通过。统一矩阵仍待最终候选完成，不恢复旧污染结果的证据资格。
+
+### T06 集中修正记录（2026-09-10）
+
+依据 r4 四份有效失败及独立反驳，集中修正授权复用的应用、最终派发参数实值、最终 spec/glossary 对批准范围的核对、最终交接摘要的来源资格。14 Requirement / 32 Scenario 与原 THEN 不变。S21 的 D4 数值角色存在输入歧义，旧 judge.initial 与 unverified 保留，新 GIVEN 明确报价和本次预算上限，不注入判断预期。
+
+相关 31 项回归、9 项任务内 harness 测试及 61 项注册表校验已通过；静态结果不作为模型修复证明。证据、独立反驳与最终统一候选结果以 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/acceptance-report.md 及 plan/progress.yaml 为准。原 r4 失败、判读纠正与宿主故障原件保持，不降低必需门槛或以挑选重试 PASS 关闭未修复失败。
+
+### T06 最终题目与历史归因修正（2026-09-10）
+
+既有选项互斥检查作用于最终题目及每个答案落实的用户裁决，保持一次一题等待、范围扩展二分、推荐理由和下游未决状态；不新增对外问题、工件或批准门。历史排除背景与本轮是否重开讨论分别核对，最终摘要不能把新的重开条件归于旧记录；用户要求讨论时，历史条件未变也可继续，但不等于批准实施。
+
+依据见 exploring-clarifying 的 acceptance/reviews/rebuttal-final-r5-range-options.json、rebuttal-final-r5-handoff-history.json、rebuttal-final-r5-proposed-history.json。S09 原确定性重叠判断已撤为许可边界歧义，judge.initial.json 保留。Requirement/Scenario 数量及验收门槛不变；最新验证与交付状态见该特性的 acceptance-report.md 和 plan/progress.yaml。
+
+### T06 首题披露语义核对（2026-09-10）
+
+第 0 条的原有三类披露纳入首题最终消息的内部核对，检查实际表达含义，不能由编号/段落数量或假设、排序、推荐理由推定缺失信息的影响已经说明。原选项互斥和下游未决边界核对保持；不新增用户问题、工件、固定标题或每轮重复披露要求。
+
+依据为 final-r6/S09-ra 的实际缺项与 acceptance/reviews/rebuttal-final-r6-disclosure.json；同轮 S09-next、S09-storage 的两步真实回复续接已经独立通过，RA-next 仍因前置失败未解锁。原失败及通过面保留，新候选须重新完成统一矩阵。当前验证与交付状态见 exploring-clarifying 的 acceptance-report.md 和 plan/progress.yaml。
+
+### T06 方案语义保持判断的最终核对（2026-09-10）
+
+方案比较中声称概念或状态的语义保持不变时，对照已读现行契约与拟议方案的成立条件、适用保证；选项标题和最终推荐也保留这一差异。仅名称或返回形状不变时据实说明该层，不能把新增联网/外部确认前提归称为旧契约。此检查仅作用于方案语义比较，不新增工件、用户门或运行证明要求。
+
+依据为 final-r7/S25-proposed 的实际错误归称及 acceptance/reviews/rebuttal-final-r7-proposed-semantics.json；提出新方案、正确描述现状/历史及零写入仍为通过面。r7 的三个首轮澄清和三项真实续接均独立通过，原件保留。新候选仍须完整统一矩阵，交付状态以 acceptance-report.md 与 plan/progress.yaml 为准。
+
+### T06 外部 worker 规则依赖前置（2026-09-10）
+
+每次外部派发和缩域重试均传入公共执行约定与来源定义的已解析绝对路径；非自动加载环境中的 worker 在研究材料前取得两份规则，可并行读取两份规则，不能与材料同批。已有当前定义可复用，主线程或前一个 worker 已读不替代新 worker 自身取得。规则仍各自单点维护，不因相互引用循环读取；用户预算、研究范围和既有时效分类不变。
+
+依据为 exploring-clarifying 的 final-r8/S17-ex 缺少 worker 时效规则获取动作，以及 reviews/rebuttal-final-r8-temporal-acquisition.json。当前材料本身为 active，未判定历史误升格。新候选需重新完成统一矩阵，静态审查不替代模型遵循证据；交付状态见该特性 acceptance-report.md 与 plan/progress.yaml。
+
+### T06 失败恢复的动作顺序（2026-09-10）
+
+失败隔离的原有一次缩域重试与主线程接管，按实际回执分成两个步骤：先发起并取得重试结果，再在仍未完成时接管剩余研究；同题取证不能提前完成后补发重试。独立事项不受影响，真实能力不可用仍走既有接管分支，预算、模型、访问范围和重试次数不变。汇报保留实际时序及各自完成范围，不增设用户门或回执工件。
+
+依据为 exploring-clarifying 的 final-r9/S15-failure 实际提前接管及 reviews/rebuttal-final-r9-recovery-order.json；其双规则取得、真实重试、来源结论和零写入仍通过。r9 共五例自然结束，四项独立 PASS、一项 FAIL，原件保留；新候选仍需统一矩阵，状态以该特性的 acceptance-report.md 和 plan/progress.yaml 为准。

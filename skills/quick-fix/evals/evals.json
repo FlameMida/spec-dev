@@ -175,6 +175,11 @@
       "id": "qf-diagnosis-s24",
       "prompt": "同步摘要与既有边界\nGIVEN 本项候选产物\nWHEN 核对公开说明及 qf-small-bug-triggers、现有 seam/TDD/清理/契约分支 eval",
       "expected_output": "不再以旧三种升级信号作为穷尽列表；原流程 eval 表达条件式红前置，五条 glob 数量正确；openai.yaml 摘要同步，既有可选验收和授权复用未消失，不在 triage 命令新增清单副本。"
+    },
+    {
+      "id": "ec-s32",
+      "prompt": "quick-fix 双查完成且仍为当前症状的小修；继续定位与修复",
+      "expected_output": "按原真实红信号、契约检查、TDD 和收场规则推进，历史记录不代替原症状证据。"
     }
   ]
 }

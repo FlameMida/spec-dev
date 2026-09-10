@@ -382,3 +382,31 @@ T04 修复验证：元数据恢复既有分文件入口和历史读取说明；�
 - T05 模型回归修复：S11 两次实测把收尾全量前置为解锁条件，独立审计/反驳确认；test-strategy 澄清保留票内与收尾时机，相关回归不人为造红。属于既有五步/集成判据解释，不新增调度规则。
 
 T05 最终验证：S11 原输入拒绝仅快检完成，票内条件全满足的对照正确解锁且收尾全量保持待执行，独立审计通过。五例必需模型及 S07 可写动作已具备证据；最终全量 91/91，0 fail/skip。nightly 多轮未运行，不作稳定性声明。
+
+## 与 exploring-clarifying 的分面共存
+
+现行未取代条款继续有效；.spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md 负责概念双查、共享术语、可见清单及受控探索/来源交接切面，双方covers按各自行为声明。仅major-upgrade中被明确点名的澄清核心纪律走部分取代，其他条款不因同文件被触碰而失效。triage可读取相关上下文，但仍零自动落盘；历史“不读产物”的范围解释不再用于本切面。
+
+### exploring-clarifying T01 切面同步
+
+本次T01更新skills/requirement-analysis/references/context-reuse.md、skills/requirement-analysis/SKILL.md、skills/quick-fix/SKILL.md、commands/triage.md、skills/clarifying/SKILL.md、skills/requirement-analysis/assets/spec-template.md、skills/requirement-analysis/agents/openai.yaml、skills/quick-fix/agents/openai.yaml、skills/clarifying/agents/openai.yaml、skills/exploring/evals/evals.json、skills/requirement-analysis/evals/evals.json、skills/quick-fix/evals/evals.json的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。最终有效用例选择见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T01/green-selection.json（S29仅本票贡献）；原行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t01-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t01-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T01/；这些任务期结果不替代最终候选验收。
+
+### exploring-clarifying T02 切面同步
+
+本次T02更新skills/clarifying/SKILL.md、skills/requirement-analysis/SKILL.md、skills/clarifying/agents/openai.yaml、skills/requirement-analysis/agents/openai.yaml、skills/clarifying/evals/evals.json的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t02-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t02-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T02/；这些任务期结果不替代最终候选验收。
+
+### exploring-clarifying T03 切面同步
+
+本次T03更新skills/exploring/SKILL.md、skills/requirement-analysis/assets/spec-template.md、skills/exploring/agents/openai.yaml、skills/exploring/evals/evals.json、skills/requirement-analysis/evals/evals.json的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。各候选切面有效贡献选择及边界见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T03/green-selection.json；行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t03-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t03-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T03/；这些任务期结果不替代最终候选验收。
+
+### exploring-clarifying T04 切面同步
+
+本次T04更新skills/requirement-analysis/SKILL.md、skills/requirement-analysis/agents/openai.yaml、skills/exploring/SKILL.md、agents/external-resource-explorer.md、skills/requirement-analysis/references/exploration-patterns.md、skills/requirement-analysis/references/codex-compat.md、skills/exploring/agents/openai.yaml、skills/requirement-analysis/evals/evals.json的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。各候选切面7项有效贡献及边界见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T04/green-selection.json；原始失败、配置缺口及异常CLI会话的后续宿主清理分别保留；行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t04-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t04-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T04/；这些任务期结果不替代最终候选验收。
+
+### exploring-clarifying T05 切面同步
+
+本次T05更新skills/requirement-analysis/SKILL.md、skills/requirement-analysis/agents/openai.yaml、README.md、README.zh-CN.md、guardrail/migrate-to-spec-dev.mjs、skills/requirement-analysis/evals/evals.json、skills/exploring/evals/evals.json、skills/exploring/evals/trigger-evals.json、scripts/tests/exploring-clarifying.test.mjs的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。6项分版本行为贡献及边界见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T05/green-selection.json；S26公共命令回归前后通过但不冒称四份独立哈希回执，原始失败及T06关注项分别保留；行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t05-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t05-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T05/；这些任务期结果不替代最终候选验收。
+
+### exploring-clarifying T06 验收修复同步
+
+本次在既有获批切面内修正历史数值/条件与现行/拟议语义区分、RA 入口的澄清权威及首次外部材料前置、澄清互斥选项，并将 exploring 展开的恢复细则收回 exploration-patterns 单点，相关元数据同步。原门、TDD、契约生命周期和未取代条款不变；不新增公共 runner/schema。真实反例、独立反驳及修复前保护见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/reviews/disposition-r1.json` 和 `execution/serial/T06/`；当前仍待统一最终候选验收和本地交付，不以任务期或静态通过宣称全部 DELIVERED。

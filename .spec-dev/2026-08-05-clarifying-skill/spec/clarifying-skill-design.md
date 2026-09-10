@@ -191,3 +191,39 @@ quick-fix 步骤 3 SHALL 声明提问纪律遵循 clarifying skill，三类核�
 
 - eval 用例的具体断言形式（对话脚本 vs 检查清单）——plan 阶段按套件现有 evals 形态对齐；
 - defaultPrompt 双语措辞的最终文案——plan 阶段定稿。
+
+## 与 exploring-clarifying 的分面共存
+
+现行未取代条款继续有效；.spec-dev/2026-09-09-01-exploring-clarifying/spec/exploring-clarifying-design.md 负责概念双查、共享术语、可见清单及受控探索/来源交接切面，双方covers按各自行为声明。仅major-upgrade中被明确点名的澄清核心纪律走部分取代，其他条款不因同文件被触碰而失效。triage可读取相关上下文，但仍零自动落盘；历史“不读产物”的范围解释不再用于本切面。
+
+### exploring-clarifying T01 切面同步
+
+本次T01更新skills/requirement-analysis/references/context-reuse.md、skills/requirement-analysis/SKILL.md、skills/quick-fix/SKILL.md、commands/triage.md、skills/clarifying/SKILL.md、skills/requirement-analysis/assets/spec-template.md、skills/requirement-analysis/agents/openai.yaml、skills/quick-fix/agents/openai.yaml、skills/clarifying/agents/openai.yaml、skills/exploring/evals/evals.json、skills/requirement-analysis/evals/evals.json、skills/quick-fix/evals/evals.json的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。最终有效用例选择见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T01/green-selection.json（S29仅本票贡献）；原行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t01-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t01-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T01/；这些任务期结果不替代最终候选验收。
+
+### exploring-clarifying T02 切面同步
+
+本次T02更新skills/clarifying/SKILL.md、skills/requirement-analysis/SKILL.md、skills/clarifying/agents/openai.yaml、skills/requirement-analysis/agents/openai.yaml、skills/clarifying/evals/evals.json的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t02-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t02-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T02/；这些任务期结果不替代最终候选验收。
+
+### exploring-clarifying T06 验收修复同步
+
+本次在既有获批切面内修正历史数值/条件与现行/拟议语义区分、RA 入口的澄清权威及首次外部材料前置、澄清互斥选项，并将 exploring 展开的恢复细则收回 exploration-patterns 单点，相关元数据同步。原门、TDD、契约生命周期和未取代条款不变；不新增公共 runner/schema。真实反例、独立反驳及修复前保护见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/reviews/disposition-r1.json` 和 `execution/serial/T06/`；当前仍待统一最终候选验收和本地交付，不以任务期或静态通过宣称全部 DELIVERED。
+
+### exploring-clarifying T06 范围题整改
+
+在同一澄清权威内细化包含关系的范围问题：先以保持当前边界或必须扩展两项裁决，后续实现维度仍依赖该裁决；普通分类题继续允许适当的互斥选项，不全局限制为两项。原单题、推荐、披露、已有决定复用与角色出口边界不变。当前干净范围分岔证据见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t06-range-direct/S09-scope/`；统一 final-r2 仍待执行，不宣称全部交付。
+
+### exploring-clarifying T06 范围答案不绑定未决机制
+
+范围裁决仅约定需支持的对象或场景；可以解释实现代价，但不得把未决存储或协调机制变成选择该范围的附带承诺。该细化仍在澄清单点，无新增用户门。final-r2 两项判读经独立反驳：身份政策上限的确定性失败被推翻，范围题仅保留机制绑定缺陷；初始 judge 已保存。干净修复证据见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t06-scope-mechanism/`，全矩阵转 final-r3，尚不声明全部验收或交付。
+
+### T06 最终题目与历史归因修正（2026-09-10）
+
+既有选项互斥检查作用于最终题目及每个答案落实的用户裁决，保持一次一题等待、范围扩展二分、推荐理由和下游未决状态；不新增对外问题、工件或批准门。历史排除背景与本轮是否重开讨论分别核对，最终摘要不能把新的重开条件归于旧记录；用户要求讨论时，历史条件未变也可继续，但不等于批准实施。
+
+依据见 exploring-clarifying 的 acceptance/reviews/rebuttal-final-r5-range-options.json、rebuttal-final-r5-handoff-history.json、rebuttal-final-r5-proposed-history.json。S09 原确定性重叠判断已撤为许可边界歧义，judge.initial.json 保留。Requirement/Scenario 数量及验收门槛不变；最新验证与交付状态见该特性的 acceptance-report.md 和 plan/progress.yaml。
+
+### T06 首题披露语义核对（2026-09-10）
+
+第 0 条的原有三类披露纳入首题最终消息的内部核对，检查实际表达含义，不能由编号/段落数量或假设、排序、推荐理由推定缺失信息的影响已经说明。原选项互斥和下游未决边界核对保持；不新增用户问题、工件、固定标题或每轮重复披露要求。
+
+依据为 final-r6/S09-ra 的实际缺项与 acceptance/reviews/rebuttal-final-r6-disclosure.json；同轮 S09-next、S09-storage 的两步真实回复续接已经独立通过，RA-next 仍因前置失败未解锁。原失败及通过面保留，新候选须重新完成统一矩阵。当前验证与交付状态见 exploring-clarifying 的 acceptance-report.md 和 plan/progress.yaml。

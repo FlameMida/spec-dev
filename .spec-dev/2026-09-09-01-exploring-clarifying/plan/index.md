@@ -94,10 +94,22 @@ rtk proxy node --test scripts/tests/*.test.mjs
 | 后台研究与一手来源派发 | S14、S15、S16、S17 | 本票red/green及收尾final当前候选 |
 | 公开说明与迁移保护 | S26、S30 | 本票red/green及收尾final当前候选 |
 
-probe.py RUN CASE --timeout SECONDS：RUN只能含字母数字下划线连字符，CASE在cases.json；默认600秒，上限值由运行参数记录。每例目录禁止覆盖，前置用户上下文与oracle分离。共51个具名输入（含P00能力预检、S26宿主CLI和多轮/入口/来源变体）。S09-next/S09-storage消费真实前轮回复、同候选及同一fixture，要求前轮独立judge通过；这是真实回复的续接回放，不伪称常驻会话。
+probe.py RUN CASE --timeout SECONDS：RUN只能含字母数字下划线连字符，CASE在cases.json；默认600秒，上限值由运行参数记录。每例目录禁止覆盖，前置用户上下文与oracle分离。共61个具名输入（含P00能力预检、S26宿主CLI和多轮/入口/来源变体）。S09-next/S09-storage消费真实前轮回复、同候选及同一fixture，要求前轮独立judge通过；这是真实回复的续接回放，不伪称常驻会话。
 
 judge.json由独立检查者填写：case、scenario、verdict(pass/fail/unverified)、reason、evidence（run内可回查相对路径数组）、checks（每个THEN子条件、verdict和evidence）。输入与预期都在执行时物化的cases.json，模型只能看到input和fixture事实；测试宿主不替模型补行为。模型身份从实际init记录，不写死历史默认值。
+
+## 执行期校准
+
+T01现状证据揭示路径输入歧义及S32缺夹具合同，已在execution/serial/T01/input-calibration.md记录；不更改产品THEN。S29由T01提供双查/共享引用贡献、T02提供去枚举静态贡献，T06以当前候选多入口证据完成全Scenario，不提前报全通过。T00已独立通过的后台预检路径从execution/serial/T00/preflight-approved.json读取，原P00时序失败保留。
 
 ## Self-Review
 
 主线程五查已完成，实际结果见 [self-review.json](self-review.json) 与 [自检说明](self-review.md)：Spec/Scenario覆盖、无占位步骤、完整代码与接口一致、导航文件/校验、依赖最小性。检查在内存中解析代码与顺序模拟替换，未执行未来任务；静态检查和路径校验不等于产品验收。状态全部pending；获得明确实施指令后才从T00开始。
+
+T03校准：S03补明确运行性p95问题，S02-agent补明确目标，S28-mixed补真实混合原型交接覆盖，THEN未变。T01另加S32-repair实际修复回归，现共53个具名输入。路由与问题记录的真实失败/修正见execution/serial/T03/，不将多版本任务期证据称作最终候选验收。
+
+T05修正最终交付目标的报告/开发路由后，补S30-report现有非开发报告保护；当前execution/cases.json共54个具名输入。T06按实际注册表汇聚，不把新增变体当新Requirement。
+
+T06先增加5个既有S19/S09边界变体，再增加S25-proposed检查讨论备选时的现行/拟议语义区别，均源于真实观察；当前注册表60输入。其余当前版本验收条件与32Scenario/14Requirement不变。
+
+T06 后续补充 S09-scope 直接观察范围扩展分岔，当前共 61 输入（59 模型例及 P00/S26）。宿主脚本与私有判据字段隔离已修复；四份污染证据见 acceptance/invalidated-results.json。最终统一验收切换到 final-r2，不复用旧 final 的局部结果，仍按 T06/T07 完成全部必需工作。

@@ -8,6 +8,7 @@
 //                                                                       避免误搬用户自己的日期命名文档）
 //   docs/explorations/           → .spec-dev/explorations/
 //   docs/adr/                    → .spec-dev/adr/
+//   .spec-dev/glossary.md 是新增产物约定，无已确认的历史位置；不自动迁移 docs/glossary.md。
 //
 // 行为：
 //   · git 仓库优先 `git mv`（保留历史），失败或非 git 环境降级为文件系统 rename；

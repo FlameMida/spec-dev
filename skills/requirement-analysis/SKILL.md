@@ -14,6 +14,10 @@ description: >-
 
 先理解项目现状，再逐题澄清打磨想法；理解到位后做对抗验证、给出多方案对比；用户批准设计后落盘 spec，最终交接 writing-plans 生成实施计划。
 
+**进入本流程先取得共享规则**：分别实际读取 [clarifying 的核心纪律](../clarifying/SKILL.md)、[exploration-patterns.md](references/exploration-patterns.md) 和 [external-resource-explorer.md](../../agents/external-resource-explorer.md)。这三份定义可并行读取；先收到各自内容，再开始项目材料读取或提问。已有当前定义可复用，但路径指针或另一份规则里的摘要不等于已取得定义。澄清按被引用模式消费，不另起独立流程。
+
+**首次材料读取前分类**：区分项目自身实现与第三方依赖、服务或标准的资料；本地存放不改变事实归属。分类、定义加载、派发与接管按已取得的共享规则执行，不把外部材料混入内部代码扫描来跳过其约束。
+
 <HARD-GATE>
 在设计展示给用户并获得批准之前，不得调用任何实施类 skill、不得编写任何代码、不得搭建任何脚手架、不得采取任何实施动作。此门槛适用于所有项目，无论看起来多简单。
 </HARD-GATE>
@@ -95,9 +99,10 @@ deep     — 跨层架构变更、新技术栈、用户使用"彻底/全面/审�
 **目标**：理解意图，给流程定参。
 
 - 理解核心功能、业务实体、约束与成功标准；描述模糊或多模块时用 sequential-thinking skill（插件内嵌）分解
+- **上下文复用**：提出路由建议前按 [context-reuse.md](references/context-reuse.md) 双查相关实现与历史否决，并读取适用共享术语；已有有效决定直接消费。
 - **意图承诺检查**：用户仍在"要不要做"的犹豫期（探索性措辞、无交付承诺）→ 建议切换 exploring skill，不硬拉八阶段；存在相关的 `.spec-dev/explorations/` 探索笔记时作为本阶段输入，已探索过的部分阶段 2 不重做
 - **小修检查**：需求其实是"已决定要修、无设计空间"的小 bug 修复/小调整（单点 bug、单常量、单文案，无方案取舍、不跨模块、不引入新依赖）→ 建议切换 quick-fix skill，不硬拉八阶段；这是意图承诺检查的对偶——那边挡"还没决定要不要做"，这边挡"决定了但不值得走完整设计"。建议式（不自动切换），由用户裁决。大小/设计空间拿不准的已承诺开发请求，同样建议先走 quick-fix——其步骤 2.5 基于根因证据的升级门（含上下文交接）比入口猜测更准，升级便宜、降级浪费
-- **任务类型检查（报告通道权威定义）**：需求已承诺交付、但交付物不是代码变更（调研报告、方案对比、日志分析等非开发交付）→ 建议走报告通道，不硬拉八阶段：不建特性目录、不写 spec/plan；需要时按 clarifying 纪律澄清关注点；主线程产出结论后**问一次**「落盘为 `.spec-dev/reports/YYYY-MM-DD-NN-<topic>.md` 吗」（结构从轻：问题、结论、依据来源；目录随首个报告创建；同一 NN 序列全 `.spec-dev/` 日期前缀产物共用），用户婉拒则只留对话、零落盘。建议式，由用户裁决。结论要落地成代码时回归正常分诊——报告通道不是实施后门
+- **任务类型检查（报告通道权威定义）**：按用户最终交付目标判断。已明确交付功能、组件或 API 时，本轮只做澄清、方案设计或 spec 仍属于开发流程，保留方案与设计的用户裁决门，不能因本轮暂不写代码而转为报告通道；开发流程中的研究子题可以返回研究摘要，但不改变主流程。只有最终交付物本身是调研报告、方案对比、日志分析等非开发成果，且未要求功能落地时 → 建议走报告通道，不硬拉八阶段：不建特性目录、不写 spec/plan；需要时按 clarifying 纪律澄清关注点；主线程产出结论后**问一次**「落盘为 `.spec-dev/reports/YYYY-MM-DD-NN-<topic>.md` 吗」（结构从轻：问题、结论、依据来源；目录随首个报告创建；同一 NN 序列全 `.spec-dev/` 日期前缀产物共用），用户婉拒则只留对话、零落盘。建议式，由用户裁决。结论要落地成代码时回归正常分诊——报告通道不是实施后门
 - **范围分解检查**：需求的意图必须能用一句话说清——说不清就该拆。出现过大信号（范围读起来像不相关功能清单、审查一份 spec 要一下午、两人同时做会撞车、一半任务可独立交付）或描述了多个独立子系统（如"做一个带聊天、文件存储、计费、分析的平台"）时立即指出，先帮用户分解为子项目（各自独立的 spec → plan → 实施周期）——不要在一个需要分解的项目上浪费澄清轮次。分解说完不算完，两个配套动作：
   - **分解登记（roadmap）**：拆分方案（子项目清单、一句话范围、依赖顺序）经用户确认后，按 [roadmap-template.md](assets/roadmap-template.md) 落盘 `.spec-dev/roadmaps/YYYY-MM-DD-NN-<project>.md`（同一 NN 序列全 `.spec-dev/` 日期前缀产物共用）并 git commit（登记时同步填写「原始需求」节——用户原话全文，与每子项目「上下文胶囊」——关键裁决/探索指针/已扫范围），然后只对第一个（或用户指定的）子项目走本流程。roadmap 是分解决策唯一的持久化位置——不落盘，其余子项目就只活在本次对话里，会话一结束静默蒸发
   - **续接检查**：需求命中某 active roadmap 的既有子项目时（用户点名"继续 <项目>"，或 `.spec-dev/roadmaps/` 下某 active roadmap 的 pending 子项目与本需求对得上）→ 载入该 roadmap 的目标/分解边界/备注，**并读取该子项目上下文胶囊指向的前置产物**（前置子项目 spec 的「背景与目标」与验收报告结论、探索指针文件），以此为阶段 1-2 输入直接走本流程、不重新分解、**不要求用户重新提供原始需求**；阶段 2 探索对胶囊「已扫范围」登记过的模态不重扫、只补缺口；依赖的前置子项目未交付时先向用户指出。roadmap 目录不存在或无命中 → 本条零动作，正常走流程
@@ -119,6 +124,8 @@ deep     — 跨层架构变更、新技术栈、用户使用"彻底/全面/审�
 - **standard**：按架构层次或功能模块拆 3-5 个 `code-explorer`；阶段 1 标记了外部探索时，同波次加 1-2 个 `external-resource-explorer`
 - **deep**：multi-modal sweep——每个模态一个 `code-explorer` 彼此盲扫，模态数由项目形态决定、不设上限；外部按主题拆多个 `external-resource-explorer` 同波次发起
 
+外部研究沿入口的首次材料分类和规则取得要求执行；分类、定义加载与派发细则以 [exploration-patterns.md](references/exploration-patterns.md) 为单点。
+
 外部探索工具优先级：AnySearch（通用/垂直/批量，插件内嵌）优先 → `WebSearch` / `WebFetch` 兜底；**派发外部探索子代理时须在派发词中主动重申此优先级**（不依赖 agent 定义文件生效，Codex 端尤其如此）；降级链与模态定义、契约校验、失败隔离规则见 [exploration-patterns.md](references/exploration-patterns.md)。
 
 **每个子代理必须给定**：有界主题、来源线索、可判定的完成条件、显式排除项、期望输出及适用的工具优先级/文档时效提醒；按 [exploration-patterns.md](references/exploration-patterns.md)「完成条件与排除项」和派发要求校准，不复制定义。失败先缩小范围重试 1 次，再失败主线程接管（定义见 exploration-patterns「派发要求与失败隔离」）。
@@ -127,10 +134,10 @@ deep     — 跨层架构变更、新技术栈、用户使用"彻底/全面/审�
 
 **目标**：解决所有模糊、歧义与多解取舍。
 
-**提问纪律遵循 clarifying skill 的核心纪律（被引用模式，纪律定义以 clarifying 为准）**：提问前自我披露（假设/关键信息/易犯错三段先行）、一次只问一个问题、选择题优先且推荐项放首位（Claude Code 用 `AskUserQuestion`）、事实自查决策交用户、按决策依赖排序、术语挑战、不编造问题——无疑点则明确记录"需求已清晰，无需澄清"后进入阶段 4。本阶段是引用方：澄清完成后直接进入阶段 4，不触发 clarifying 的共识摘要与三出口。Codex 逐题提问规范见 clarifying 内嵌的 Codex 规范节；三道门的对话呈现要求见 [codex-compat.md](references/codex-compat.md)。
+**提问纪律遵循 clarifying skill（被引用模式，纪律定义以 clarifying 为准）**：用单题澄清与可见清单处理当前范围，不在此复述核心纪律枚举。澄清后直接进入阶段 4，不触发独立共识摘要或三出口；Codex 逐题规则见 clarifying，三道门呈现见 [codex-compat.md](references/codex-compat.md)。
 
 - 优先覆盖：目的、约束、成功标准；阶段 1-2 暴露的歧义、约束冲突、隐含假设、边缘场景
-- 术语挑战裁决出的规范术语全程沿用，并在 spec 术语表中记录规范名、一句话定义与 Avoid 别名（挑战动作属 clarifying 纪律，术语表落盘是本阶段职责）
+- 术语挑战裁决出的规范术语全程沿用；共享术语及冲突处理遵循 [context-reuse.md](references/context-reuse.md)，特性局部术语留在 spec，完整设计批准后再按该约定保存词汇表。
 
 **可视化预览（JIT 提议）**：不要在开场提议。当某个问题**用看的比用说的更清楚**时（真实的 mockup/布局/图示问题，而不只是"话题涉及 UI"），首次出现的那一刻单独发一条消息提议使用 visual-preview skill——该消息只含提议、不夹带其他问题。用户接受则按 visual-preview skill 执行；拒绝则继续纯文字，不再重复提议。逐题判断浏览器 vs 终端：内容本身是视觉的（线框、布局对比、架构图）用浏览器，内容是文字的（需求、取舍、概念选择）留在终端。
 
@@ -179,6 +186,7 @@ standard 档在既有有界探索主题内核对相邻测试、公共行为入�
 ## 阶段 6: 写 spec 并提交
 
 - 为本需求创建特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/`（所有 spec-dev 产物统一收纳在项目根目录 `.spec-dev/` 下；NN 为当日两位序号——扫描 `.spec-dev/` 下当日已有的日期前缀产物（特性目录，及 `reports/`、`roadmaps/` 下的文件名）取最大加一、01 起步，**落盘前重扫一次防并发撞号**：发现同号已被占则顺延并同步修正自引路径；feature 取需求主题的短语义名，跟随项目语言；存量旧命名 `YYYY-MM-DD-<feature>` 目录不改名（grandfather）；同一 NN 序列由全部 `.spec-dev/` 日期前缀产物共用），将批准的设计写入其 `spec/<feature>-design.md`（用户对 spec 位置的偏好优先于此默认值）
+- 按 [context-reuse.md](references/context-reuse.md) 将本次获批共享术语与 spec 同次保存和范围提交；无共享术语不创建空 glossary，特性局部术语只留 spec。
 - spec 与后续 writing-plans 的计划（同目录 `plan/` 分文件形态：index.md + tasks/ + progress.yaml）共用这一个特性目录——一个需求的全部产物收纳在一处
 - **决策分流（ADR）**：检查"已确认的关键决策"中是否有同时满足三判据的决策——**难以逆转**（事后改主意成本高）、**缺上下文会费解**（未来读者会问"当初为什么这么做"）、**真实取舍**（存在真正的备选且因具体理由选定其一）——满足者每条沉淀为仓库级 `.spec-dev/adr/NNNN-<slug>.md`（全项目共用一个目录、统一编号：扫描现有最高编号递增，目录不存在时随首个 ADR 创建；**落盘前重扫一次目录防撞号**——并行会话可能已用掉同号，发现同号文件已存在则顺延取下一号并同步修正正文与链接中的自引编号；正文 1-3 句写清背景、决定与理由即可，值得记住的被否方案附一行），spec 决策节保留一行摘要并链接过去；三判据缺一即不建 ADR——ADR 泛滥和没有 ADR 一样没用。**ADR 状态纪律**：每条 ADR 标题下带状态行，封闭三态——`**Status**: Accepted (YYYY-MM-DD)` / `**Status**: Deprecated (YYYY-MM-DD) — <一句原因，强制>` / `**Status**: Superseded by [ADR-NNNN](NNNN-<slug>.md) (YYYY-MM-DD)`（同目录文件名相对链接，编号强制；缺状态行的历史 ADR 视同 Accepted）。判据一句话：有替代决策用 Superseded，无替代者且决策语境消失用 Deprecated。Accepted 后正文不可变（仅 status 行、错别字、坏链可改）；**不做部分推翻**——推翻既有 ADR 的任何部分时，新 ADR 完整重述仍有效的结论并整体取代，标题下声明 `**Supersedes**: ADR-NNNN` 行，且在本阶段同一提交把旧 ADR 状态行回写为 Superseded by（ADR 取代随裁决即时生效，不等实施交付）
 - **取代分流（supersede triage）**：对阶段 2 探索命中的每份行为相交 active spec 做三分类判定并写入 spec——**完全取代**（新 spec 整体替换旧特性）与**部分取代**（替换旧 spec 的部分 Requirement）登记进 frontmatter `supersedes`（仓库根相对路径）与正文「取代与共存」节（部分取代必须列出被取代的具体 Requirement 标题清单，每条附一句取代理由）；**分面共存**（同文件不同行为切面、无冲突）不登记 supersedes，记一行判定理由并各自声明 covers。节模板与标注形制见 [spec-template.md](assets/spec-template.md)。用户要求删除整个特性且无新行为承接时，产出仅含 REMOVED Requirements 的轻量 spec 作为后继（记录删除理由，交付时按完全取代回写旧 spec）。spec 的取代回写随交付生效（executing-plans 最终任务），与 ADR 的即时回写构成双轨
@@ -186,7 +194,7 @@ standard 档在既有有界探索主题内核对相邻测试、公共行为入�
 - **漂移守卫锚点（必填）**：落盘时保留模板顶部的 `spec_dev` frontmatter，填写 `feature` 与 `covers`（本特性拥有的代码路径 glob；纯文档特性留空数组 `[]`）——此阶段 `status` 保持 `draft`。该 frontmatter 是 pre-commit / CI 漂移守卫的锚点，缺失或永停 draft 意味着该特性代码不受"改了代码却没同步 spec"的拦截保护
 - 新建/本次更新胶囊指针时使用一句用途/适用边界摘要 + 精确来源路径；摘要不能替代续接读取原文，旧胶囊没有摘要仍正常读，不全库回填。
 - **roadmap 回填（仅当本特性是某 active roadmap 的子项目）**：把特性目录路径回填至 roadmap 对应子项目行、状态置 `in-progress`；不属于任何 roadmap 则无此步
-- git commit 该 spec 文件、本次新增的 ADR 文件与 roadmap 回填（仅这些文件；非 git 仓库则跳过并向用户说明）
+- git commit 该 spec、本次按获批设计更新的 glossary、新增 ADR 与 roadmap 回填（仅本次实际修改的这些文件；非 git 仓库则跳过并向用户说明）
 
 ## 阶段 7: Spec self-review + 对抗验证
 
