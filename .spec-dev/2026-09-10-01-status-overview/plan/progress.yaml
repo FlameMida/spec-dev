@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T04",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -23,7 +23,9 @@
       "tests": "pass"
     },
     "T04": {
-      "status": "in_progress"
+      "status": "completed",
+      "commit": "3695c8bf0dd13bcb360ed9cdf7714968bdaa4352",
+      "tests": "pass"
     },
     "T05": {
       "status": "pending"
