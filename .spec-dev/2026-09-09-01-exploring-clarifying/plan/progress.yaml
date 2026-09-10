@@ -44,7 +44,6 @@
   "resources": [
     "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying —— git worktree remove; git branch -d plan/2026-09-09-01-exploring-clarifying",
     "fixture-scope: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa —— 子夹具逐项销账后仅清理空目录",
-    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t00-preflight/P00 —— 归档并核验后由T07按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t00-preflight-r2/P00 —— 归档并核验后由T07按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t01-red/S18 —— 归档并核验后由T07按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t01-red/S19 —— 归档并核验后由T07按实际路径清理",
@@ -410,6 +409,7 @@
     "T04 seven independent passing task contributions selected with source hashes; original failures/setup gaps retained. CLI sessions stopped by host with separate evidence; final T06 uniform candidate and resource audit remain mandatory.",
     "Public README red-green, six selected model contributions and S26 migration protection verified. T06 focus observations for history conditions and canonical clarifying load remain explicitly unresolved; no uniform final acceptance claimed.",
     "T07: CLI active resource discharged after fresh query: 8032e222-a853-4073-9be5-910977841482; host stop, client history retained; evidence .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T07/cli-recheck.json",
-    "T07: CLI active resource discharged after fresh query: 31fd2ece-a420-4ee4-9bf2-988e21eb084e; host stop, client history retained; evidence .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T07/cli-recheck.json"
+    "T07: CLI active resource discharged after fresh query: 31fd2ece-a420-4ee4-9bf2-988e21eb084e; host stop, client history retained; evidence .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T07/cli-recheck.json",
+    "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t00-preflight/P00"
   ]
 }
