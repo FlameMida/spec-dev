@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T06",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -33,7 +33,9 @@
       "tests": "pass"
     },
     "T06": {
-      "status": "in_progress"
+      "status": "completed",
+      "commit": "8cc4bf56d2b1ea2f20d994c9cb970b875a193c4e",
+      "tests": "pass"
     },
     "T07": {
       "status": "pending"
@@ -58,6 +60,7 @@
     "2026-09-10 用户在开始实施询问后回复ok：执行T00—T07全部范围，默认串行，本地交付不push/发布。",
     "T00 inherited baseline failure reproduced on source: README layout omitted ddd-lifecycle from af57f444. Applied only two directory entries; original failure retained, rerun required.",
     "T00 actual binding and related baseline verified; no product behavior claimed",
-    "T01 6/6 behavior checks and related regression pass; log whitespace commit failure retained and feature-local attributes preserve raw evidence."
+    "T01 6/6 behavior checks and related regression pass; log whitespace commit failure retained and feature-local attributes preserve raw evidence.",
+    "Final full 215/215, machine-r3 25/25, model-r2 3/3 independently judged; critic eligible for T07. Original failures retained."
   ]
 }
