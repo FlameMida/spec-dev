@@ -358,3 +358,7 @@ JSON 顶层固定：`schema_version: 1`、`verification: "not_performed"`、`rep
 ### T00 基线修正
 
 来源提交af57f444新增ddd-lifecycle后README目录表遗漏，来源main与隔离工作区同一计数测试均失败。本轮仅补双语目录条目以恢复既有检查，未改变该技能行为；原件见execution/serial/T00/source-counter与related。
+
+### T01 实施记录
+
+本票实现与验证回执位于 execution/serial/T01/；原失败保留，整体交付仍需T06与T07。
