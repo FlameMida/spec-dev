@@ -7,6 +7,87 @@
 
 ---
 
+## [8.5.0] - 2026-09-10
+
+### ✨ 新增 (Added)
+
+- **T05**：implement status overview slice
+- **T04**：implement status overview slice
+- **T03**：implement status overview slice
+- **T02**：implement plan state projection
+- **T01**：implement status overview parser
+
+### 🔧 修复 (Fixed)
+
+- **T06**：prevent unknown task states being summarized as absent
+- **T06**：close legacy region source loss and Unicode boundaries
+
+### 📝 文档 (Docs)
+
+- **status**：backfill legacy progress from delivery and later verification evidence
+- plan status overview implementation and acceptance
+
+### 🧹 其他 (Misc)
+
+- seal delivered status overview verification
+- **T07**：save final completion
+- **T07**：anchor status local delivery
+- **T07**：record resource disposition
+- **T07**：record resource disposition
+- **T07**：record resource disposition
+- **T07**：record resource disposition
+- **T07**：record resource disposition
+- **T07**：record resource disposition
+- **T07**：record resource disposition
+- **T07**：record resource disposition
+- **T07**：record resource disposition
+- **T07**：record resource disposition
+- **T07**：record resource disposition
+- **T07**：record resource disposition
+- **T07**：save actual merge receipt
+- **T07**：preserve status acceptance resources
+- **T07**：start verified delivery
+- **T06**：save completed acceptance checkpoint
+- **T06**：seal verified status acceptance and independent review
+- **T06**：complete public CLI acceptance variants
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **qa**：record status model resource
+- **T06**：save full regression and register final matrix
+- **T06**：protect cross-file retry and v2 input boundaries
+- **T06**：save verification harness and full regression
+- **T06**：register machine fixture
+- **T06**：start status acceptance
+- **T05**：save completion checkpoint
+- **T05**：start recorded task
+- **T04**：save completion checkpoint
+- **T04**：start recorded task
+- **T03**：save completion checkpoint
+- **T03**：start recorded task
+- **T02**：save completion checkpoint
+- **T02**：start recorded task
+- **T01**：save completion checkpoint
+- **T01**：start recorded task
+- **T00**：save completion checkpoint
+- **T00**：save status baseline and coexistence
+- **T00**：bind actual isolated workspace
+
+
 ## [8.4.0] - 2026-09-10
 
 ### ✨ 新增 (Added)

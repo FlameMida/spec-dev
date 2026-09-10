@@ -26,19 +26,21 @@
 
 ### 任务 0：建立隔离工作区
 
-- [ ] **步骤 1：检测已有隔离**
+> 2026-09-10 历史状态补记：历史验收/审查报告中的 worktree 对象；test-scoping 另有 `8a1146e7` 分支合并记录。按用户裁决，以历史隔离工作区记录和后续相关验证支持任务结果；原始隔离检测与开工基线过程记录缺失，不追认当时执行顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
+- [x] **步骤 1：检测已有隔离** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 运行：`git rev-parse --git-dir` 与 `git rev-parse --git-common-dir`
 两者不同、且 `git rev-parse --show-superproject-working-tree` 无输出（排除 submodule）
 → 已在隔离工作区，跳过本任务。
 
-- [ ] **步骤 2：建立 worktree**
+- [x] **步骤 2：建立 worktree**
 
 有原生 worktree 工具（如 EnterWorktree）或 using-git-worktrees skill 时优先使用（Codex 无原生 worktree 工具，直接走下面的手工路径）；否则手工降级：
 确认 `.worktrees/` 已被忽略（`git check-ignore -q .worktrees`，未忽略先加入 `.gitignore` 并提交），然后
 `git worktree add .worktrees/plan/2026-08-08-triage-routing -b plan/2026-08-08-triage-routing` 并切换到该目录。
 
-- [ ] **步骤 3：安装依赖并验证基线**
+- [x] **步骤 3：安装依赖并验证基线** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 本仓库无依赖安装步骤（根目录无 package.json），基线即三校验：
 
@@ -54,6 +56,8 @@ node scripts/check-plugin.mjs --codex-validate && node scripts/validate-skills.m
 
 ### 任务 1：创建 commands/triage.md
 
+> 2026-09-10 历史状态补记：实施提交 `4bd9c86c` 的文件差异及历史验收报告。无；按最终交付和静态检查记录回填，不追认逐任务校验时序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 创建：`commands/triage.md`
 
@@ -61,7 +65,7 @@ node scripts/check-plugin.mjs --codex-validate && node scripts/validate-skills.m
 - 消费：无（首任务）
 - 产出：命令名 `/triage`；正文中"四维度判定""四出口""报告通道指向 requirement-analysis 阶段 1 任务类型检查"的表述，任务 2/3/4 的引用方文本与之同向。
 
-- [ ] **步骤 1：写命令文件**
+- [x] **步骤 1：写命令文件**
 
 写入 `commands/triage.md`，完整内容：
 
@@ -110,7 +114,7 @@ description: Explicit triage entry - judge commitment / task type / design space
 Codex 端 `commands/` 不随插件加载、本命令不可见：同等分诊行为由各 SKILL.md 的入口自检兜底 + 插件 defaultPrompt 提示词引导承载。
 ````
 
-- [ ] **步骤 2：运行校验确认通过**
+- [x] **步骤 2：运行校验确认通过**
 
 ```bash
 node scripts/check-plugin.mjs --codex-validate && node scripts/validate-skills.mjs
@@ -118,7 +122,7 @@ node scripts/check-plugin.mjs --codex-validate && node scripts/validate-skills.m
 
 预期：退出码 0（commands/ 不参与 skill 校验与 marketplace skills[] 同步，新文件不引入失败项）。
 
-- [ ] **步骤 3：提交**
+- [x] **步骤 3：提交**
 
 ```bash
 git add commands/triage.md
@@ -133,6 +137,8 @@ git commit -m "feat(T1): 新增 /triage 显式分诊命令——四维度判定�
 
 ### 任务 2：quick-fix——默认倾向 + 升级交接 + eval
 
+> 2026-09-10 历史状态补记：实施提交 `4bd9c86c` 的文件差异及历史验收报告。无；按最终交付和静态检查记录回填，不追认逐任务校验时序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 修改：`skills/quick-fix/SKILL.md`（分诊三角节表格后、步骤 2.5 末句）
 - 修改：`skills/quick-fix/evals/evals.json`（末尾追加 1 条）
@@ -141,7 +147,7 @@ git commit -m "feat(T1): 新增 /triage 显式分诊命令——四维度判定�
 - 消费：任务 1 的"拿不准档默认 quick-fix"表述方向（两处必须同向）
 - 产出：升级交接句（根因 + spec 反查结果 + 已裁决澄清答案 → requirement-analysis 阶段 1 输入），任务 3 的 requirement-analysis 侧对偶句与之互相印证。
 
-- [ ] **步骤 1：分诊三角节表格后追加默认倾向段**
+- [x] **步骤 1：分诊三角节表格后追加默认倾向段**
 
 在 `## 定位：分诊三角里的位置` 节的表格之后（`| requirement-analysis | 已承诺 + 有设计空间 | 有 | 交接 writing-plans |` 行与下一个 `## ` 标题之间）插入：
 
@@ -150,7 +156,7 @@ git commit -m "feat(T1): 新增 /triage 显式分诊命令——四维度判定�
 **拿不准档默认倾向**：已承诺的开发请求、大小/设计空间拿不准时，默认先进 quick-fix——升级便宜、降级浪费；步骤 2.5 基于根因证据的升级门（含上下文交接）是安全网。与 requirement-analysis 阶段 1 小修检查的对偶表述同向。
 ```
 
-- [ ] **步骤 2：步骤 2.5 末句补上下文交接**
+- [x] **步骤 2：步骤 2.5 末句补上下文交接**
 
 将步骤 2.5 节末句：
 
@@ -162,7 +168,7 @@ git commit -m "feat(T1): 新增 /triage 显式分诊命令——四维度判定�
 升级经用户同意后调用 requirement-analysis skill，**并把已定位的根因、spec 反查结果与步骤 3 已裁决的澄清答案作为其阶段 1 输入——其阶段 2 不重查已查证部分、阶段 3 不重问已裁决问题，升级不等于重来**。
 ```
 
-- [ ] **步骤 3：evals.json 追加升级交接用例**
+- [x] **步骤 3：evals.json 追加升级交接用例**
 
 在 `skills/quick-fix/evals/evals.json` 的 evals 数组末尾（`"id": "qf-new-feature-routes-away"` 对象之后）追加：
 
@@ -176,7 +182,7 @@ git commit -m "feat(T1): 新增 /triage 显式分诊命令——四维度判定�
 
 （注意前一对象后补逗号，保持 JSON 合法。）
 
-- [ ] **步骤 4：校验并提交**
+- [x] **步骤 4：校验并提交**
 
 ```bash
 node -e "JSON.parse(require('fs').readFileSync('skills/quick-fix/evals/evals.json')); console.log('JSON OK')"
@@ -189,6 +195,8 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "feat(T2): quick-fix 拿不准档默认�
 
 ### 任务 3：requirement-analysis——任务类型检查 + 对偶句 + eval
 
+> 2026-09-10 历史状态补记：实施提交 `4bd9c86c` 的文件差异及历史验收报告。无；按最终交付和静态检查记录回填，不追认逐任务校验时序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 修改：`skills/requirement-analysis/SKILL.md`（阶段 1 小修检查条目尾部 + 其后新增任务类型检查条目）
 - 修改：`skills/requirement-analysis/evals/evals.json`（末尾追加 1 条）
@@ -197,7 +205,7 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "feat(T2): quick-fix 拿不准档默认�
 - 消费：任务 2 的默认倾向表述（对偶句必须同向）；任务 1 对"报告通道权威定义在本条"的指向
 - 产出：**报告通道权威定义**（`.spec-dev/reports/YYYY-MM-DD-<topic>.md` 落盘约定），任务 1/4 引用不复制。
 
-- [ ] **步骤 1：小修检查条目尾部追加对偶句**
+- [x] **步骤 1：小修检查条目尾部追加对偶句**
 
 将阶段 1 小修检查条目（以 `- **小修检查**：` 开头的行）的末句：
 
@@ -209,7 +217,7 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "feat(T2): quick-fix 拿不准档默认�
 建议式（不自动切换），由用户裁决。大小/设计空间拿不准的已承诺开发请求，同样建议先走 quick-fix——其步骤 2.5 基于根因证据的升级门（含上下文交接）比入口猜测更准，升级便宜、降级浪费
 ```
 
-- [ ] **步骤 2：新增任务类型检查条目**
+- [x] **步骤 2：新增任务类型检查条目**
 
 在小修检查条目行之后、`- **范围分解检查**：` 行之前插入：
 
@@ -217,7 +225,7 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "feat(T2): quick-fix 拿不准档默认�
 - **任务类型检查（报告通道权威定义）**：需求已承诺交付、但交付物不是代码变更（调研报告、方案对比、日志分析等非开发交付）→ 建议走报告通道，不硬拉八阶段：不建特性目录、不写 spec/plan；需要时按 clarifying 纪律澄清关注点；主线程产出结论后**问一次**「落盘为 `.spec-dev/reports/YYYY-MM-DD-<topic>.md` 吗」（结构从轻：问题、结论、依据来源；目录随首个报告创建），用户婉拒则只留对话、零落盘。建议式，由用户裁决。结论要落地成代码时回归正常分诊——报告通道不是实施后门
 ```
 
-- [ ] **步骤 3：evals.json 追加报告通道用例**
+- [x] **步骤 3：evals.json 追加报告通道用例**
 
 在 `skills/requirement-analysis/evals/evals.json` 的 evals 数组末尾（`"id": "ra-adversarial-info-check"` 对象之后）追加：
 
@@ -231,7 +239,7 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "feat(T2): quick-fix 拿不准档默认�
 
 （前一对象后补逗号。）
 
-- [ ] **步骤 4：校验并提交**
+- [x] **步骤 4：校验并提交**
 
 ```bash
 node -e "JSON.parse(require('fs').readFileSync('skills/requirement-analysis/evals/evals.json')); console.log('JSON OK')"
@@ -244,6 +252,8 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "feat(T3): requirement-analysis 任务类
 
 ### 任务 4：clarifying 出口 1 回填 + 其 spec 数据流同步
 
+> 2026-09-10 历史状态补记：实施提交 `4bd9c86c` 的文件差异及历史验收报告。无；按最终交付和静态检查记录回填，不追认逐任务校验时序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 修改：`skills/clarifying/SKILL.md`（独立会话模式节三出口的出口 1）
 - 修改：`.spec-dev/2026-08-05-clarifying-skill/spec/clarifying-skill-design.md`（方案设计-数据流行）
@@ -252,7 +262,7 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "feat(T3): requirement-analysis 任务类
 - 消费：任务 3 产出的报告通道权威定义（引用不复制）
 - 产出：无（终端改造；两文件同 commit，符合漂移守卫纪律——clarifying spec covers `skills/clarifying/**` 且 active）。
 
-- [ ] **步骤 1：改写出口 1**
+- [x] **步骤 1：改写出口 1**
 
 将 `skills/clarifying/SKILL.md` 三出口中的：
 
@@ -266,7 +276,7 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "feat(T3): requirement-analysis 任务类
 
 （保持原有三空格缩进的列表层级。）
 
-- [ ] **步骤 2：同步 clarifying spec 数据流行**
+- [x] **步骤 2：同步 clarifying spec 数据流行**
 
 将 `.spec-dev/2026-08-05-clarifying-skill/spec/clarifying-skill-design.md` 数据流节中的：
 
@@ -278,7 +288,7 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "feat(T3): requirement-analysis 任务类
 三出口分发（requirement-analysis / quick-fix / 报告通道 ｜ 结束 ｜ `.spec-dev/explorations/<topic>.md`）
 ```
 
-- [ ] **步骤 3：校验并提交（两文件同 commit）**
+- [x] **步骤 3：校验并提交（两文件同 commit）**
 
 ```bash
 node scripts/validate-skills.mjs
@@ -294,6 +304,8 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "feat(T4): clarifying 出口 1 追加报�
 
 ### 任务 5：README 双语 + Codex defaultPrompt/keywords
 
+> 2026-09-10 历史状态补记：实施提交 `4bd9c86c` 的文件差异及历史验收报告。无；按最终交付和静态检查记录回填，不追认逐任务校验时序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 修改：`README.md`（用法区约 239 行、目录树约 270 行）
 - 修改：`README.zh-CN.md`（对应两处）
@@ -303,7 +315,7 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "feat(T4): clarifying 出口 1 追加报�
 - 消费：任务 1 的命令名 `/triage`
 - 产出：无（终端发布面）。CHANGELOG/版本号由 post-commit 自动发版承载，本任务不动。
 
-- [ ] **步骤 1：README.md 两处**
+- [x] **步骤 1：README.md 两处**
 
 在 `Check MCP configuration status: ` + '`/check-mcp`' 行之后追加一行：
 
@@ -317,7 +329,7 @@ Triage a request to the right lane: `/triage <request>`
 ├── commands/                        # /check-mcp, /triage commands
 ```
 
-- [ ] **步骤 2：README.zh-CN.md 两处**
+- [x] **步骤 2：README.zh-CN.md 两处**
 
 在 `检查 MCP 配置状态：` + '`/check-mcp`' 行之后追加一行：
 
@@ -331,7 +343,7 @@ Triage a request to the right lane: `/triage <request>`
 ├── commands/                        # /check-mcp、/triage 命令
 ```
 
-- [ ] **步骤 3：.codex-plugin/plugin.json 两处**
+- [x] **步骤 3：.codex-plugin/plugin.json 两处**
 
 keywords 数组在 `"clarifying"` 之后插入一行：
 
@@ -345,7 +357,7 @@ interface.defaultPrompt 数组在 clarifying 条目（`"Use clarifying to grill 
       "Triage this request to the right workflow lane (quick-fix / requirement-analysis / exploring / report) / 把这个需求分诊到正确的工作流通道（quick-fix / requirement-analysis / exploring / 报告通道）",
 ```
 
-- [ ] **步骤 4：校验并提交**
+- [x] **步骤 4：校验并提交**
 
 ```bash
 node -e "JSON.parse(require('fs').readFileSync('.codex-plugin/plugin.json')); console.log('JSON OK')"
@@ -362,6 +374,8 @@ git commit -m "feat(T5): 发布面登记 /triage——README 双语用法与目�
 
 ### 任务 6：验收（acceptance-qa）
 
+- [x] 历史验收已执行并归档（2026-09-10 补记）：[验收报告](../acceptance/acceptance-report.md)记录 7 行 PASS，发布项仍含 `PENDING-MERGE` 原始注记；交付锚点 `4bd9c86c` 已进入当前主分支，后续 `ef13ef2a` 登记 delivered。当时由主线程降级执行静态检查，独立性限制保留。本次仅核对历史证据，未重新验收。
+
 > 本任务由 executing-plans 收尾审查阶段触发 acceptance-qa 按下表执行，
 > 不参与逐任务连续执行；报告与证据落盘特性目录 `acceptance/` 子目录。
 
@@ -377,7 +391,9 @@ git commit -m "feat(T5): 发布面登记 /triage——README 双语用法与目�
 
 ### 任务 7：合并与清理
 
-- [ ] **步骤 1：全量验证**
+> 2026-09-10 历史状态补记：收尾提交 `ef13ef2a`、历史验收报告、当前 worktree/分支/目录不存在的核对结果。无；清理按当前资源已不存在补记。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
+- [x] **步骤 1：全量验证**
 
 在 worktree 内运行：
 
@@ -387,7 +403,7 @@ node scripts/check-plugin.mjs --codex-validate && node scripts/validate-skills.m
 
 预期：三者退出码 0。失败 → 修复后才进入合并。
 
-- [ ] **步骤 2：合并回来源分支**
+- [x] **步骤 2：合并回来源分支**
 
 ```bash
 cd "$(dirname "$(git rev-parse --git-common-dir)")"   # 回到主工作区
@@ -396,7 +412,7 @@ git merge plan/2026-08-08-triage-routing
 
 合并冲突、或主工作区有未提交改动 → 停下向计划作者确认，不强行合并。（版本号/CHANGELOG 若冲突：保留 main 侧较高版本号，特性内容侧并入——同子项目①先例。）
 
-- [ ] **步骤 3：清理**
+- [x] **步骤 3：清理**
 
 ```bash
 git worktree remove .worktrees/plan/2026-08-08-triage-routing
@@ -405,7 +421,7 @@ git branch -d plan/2026-08-08-triage-routing
 
 （原生工具建立的隔离用原生方式退出。）
 
-- [ ] **步骤 4：sync_commit 锚定**
+- [x] **步骤 4：sync_commit 锚定**
 
 ```bash
 SYNC=$(git rev-parse HEAD)   # 合并完成后的主工作区 HEAD

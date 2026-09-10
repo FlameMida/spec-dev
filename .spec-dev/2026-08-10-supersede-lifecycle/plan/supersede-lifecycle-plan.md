@@ -676,6 +676,8 @@ SKIP_CODEX_PACKAGE_HOOK=1 SKIP_RELEASE_HOOK=1 /usr/bin/git commit -m "feat(T10):
 
 ### 任务 11：验收（acceptance-qa）
 
+- [x] 历史验收已执行并归档（2026-09-10 补记）：[验收报告](../acceptance/acceptance-report.md)记录验收矩阵通过，含实际 fixture 测试与审查修复证据；交付锚点 `8dc5c71c` 已进入当前主分支。报告披露未对每条发现单独派发独立反驳，该限制保留。本次仅核对历史证据，未重新验收。
+
 > 本任务由 executing-plans 收尾审查阶段触发 acceptance-qa 按下表执行，
 > 不参与逐任务连续执行；报告与证据落盘特性目录 `acceptance/` 子目录。
 

@@ -38,19 +38,21 @@
 
 ### 任务 0：建立隔离工作区
 
-- [ ] **步骤 1：检测已有隔离**
+> 2026-09-10 历史状态补记：历史验收/审查报告中的 worktree 对象；test-scoping 另有 `8a1146e7` 分支合并记录。按用户裁决，以历史隔离工作区记录和后续相关验证支持任务结果；原始隔离检测与开工基线过程记录缺失，不追认当时执行顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
+- [x] **步骤 1：检测已有隔离** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 运行：`git rev-parse --git-dir` 与 `git rev-parse --git-common-dir`
 两者不同、且 `git rev-parse --show-superproject-working-tree` 无输出（排除 submodule）
 → 已在隔离工作区，跳过本任务。
 
-- [ ] **步骤 2：建立 worktree**
+- [x] **步骤 2：建立 worktree**
 
 有原生 worktree 工具（如 EnterWorktree）或 using-git-worktrees skill 时优先使用（Codex 无原生 worktree 工具，直接走下面的手工路径）；否则手工降级：
 确认 `.worktrees/` 已被忽略（`git check-ignore -q .worktrees`，未忽略先加入 `.gitignore` 并提交），然后
 `git worktree add .worktrees/plan-2026-08-26-01-major-upgrade -b plan/2026-08-26-01-major-upgrade` 并切换到该目录。
 
-- [ ] **步骤 3：安装依赖并验证基线**
+- [x] **步骤 3：安装依赖并验证基线** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 本仓库无依赖清单（纯 Node 脚本 + markdown），跳过安装。按计划头部「相关测试范围」运行基线验证：
 
@@ -64,6 +66,8 @@ node scripts/validate-skills.mjs && node scripts/check-openai-sync.mjs && node s
 
 ### 任务 1：vendor sequential-thinking skill
 
+> 2026-09-10 历史状态补记：实施提交 `32ad6c06` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 创建：`skills/sequential-thinking/SKILL.md`、`skills/sequential-thinking/references/example-session.md`、`skills/sequential-thinking/scripts/think.ts`、`skills/sequential-thinking/LICENSE`、`skills/sequential-thinking/NOTICE`、`skills/sequential-thinking/agents/openai.yaml`、`skills/sequential-thinking/evals/evals.json`
 - 修改：`.claude-plugin/marketplace.json:29`（skills 数组追加）
@@ -72,7 +76,7 @@ node scripts/validate-skills.mjs && node scripts/check-openai-sync.mjs && node s
 - 消费：无（首任务）
 - 产出：`skills/sequential-thinking/` 目录（后续任务 2/3/4 依赖其存在）；frontmatter `metadata.upstream`/`metadata.upstream-tag`（任务 3 的 readPinnedRef 消费）；marketplace 注册项 `./skills/sequential-thinking`
 
-- [ ] **步骤 1：写失败断言**
+- [x] **步骤 1：写失败断言** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 test -f skills/sequential-thinking/SKILL.md && echo EXISTS || echo MISSING
@@ -80,7 +84,7 @@ test -f skills/sequential-thinking/SKILL.md && echo EXISTS || echo MISSING
 
 运行预期：`MISSING`（红）。
 
-- [ ] **步骤 2：抓取上游快照（pin SHA）**
+- [x] **步骤 2：抓取上游快照（pin SHA）**
 
 ```bash
 SHA=$(git ls-remote https://github.com/thedotmack/sequential-thinking-skill.git HEAD | cut -f1)
@@ -94,7 +98,7 @@ rm -rf /tmp/st-vendor
 
 预期：`skills/sequential-thinking/` 下有 SKILL.md、references/example-session.md、scripts/think.ts。
 
-- [ ] **步骤 3：写本地适配文件（上游没有，永不冲突）**
+- [x] **步骤 3：写本地适配文件（上游没有，永不冲突）**
 
 创建 `skills/sequential-thinking/NOTICE`：
 
@@ -136,7 +140,7 @@ interface:
 }
 ```
 
-- [ ] **步骤 4：手动首次 frontmatter 规范化并注册**
+- [x] **步骤 4：手动首次 frontmatter 规范化并注册**
 
 编辑 `skills/sequential-thinking/SKILL.md` frontmatter：保留上游 `name`/`description`，追加（任务 3 的 normalize 之后接管此形态，本次手动等价）：
 
@@ -153,7 +157,7 @@ metadata:
         "./skills/sequential-thinking"
 ```
 
-- [ ] **步骤 5：运行断言确认通过并提交**
+- [x] **步骤 5：运行断言确认通过并提交**
 
 ```bash
 test -f skills/sequential-thinking/SKILL.md && node scripts/validate-skills.mjs && node scripts/check-openai-sync.mjs
@@ -165,6 +169,8 @@ git commit -m "feat(T1): vendor sequential-thinking skill（SHA 快照 + 本地�
 
 ### 任务 2：think.mjs 零依赖 Node 端口
 
+> 2026-09-10 历史状态补记：实施提交 `67c4334a` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 创建：`skills/sequential-thinking/scripts/think.mjs`、`scripts/tests/think-port.test.mjs`
 
@@ -172,7 +178,7 @@ git commit -m "feat(T1): vendor sequential-thinking skill（SHA 快照 + 本地�
 - 消费：任务 1 的 `scripts/think.ts`
 - 产出：`skills/sequential-thinking/scripts/think.mjs`（CLI 入参与状态文件格式与 think.ts 完全一致；任务 7 doctor 的运行时链检测消费其存在性）
 
-- [ ] **步骤 1：写失败测试**
+- [x] **步骤 1：写失败测试**
 
 创建 `scripts/tests/think-port.test.mjs`：
 
@@ -197,12 +203,12 @@ test("think.mjs 与 think.ts 同输入同输出（无 TS 运行时环境）", ()
 });
 ```
 
-- [ ] **步骤 2：运行测试确认失败**
+- [x] **步骤 2：运行测试确认失败** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 运行：`node --test scripts/tests/think-port.test.mjs`
 预期：FAIL（think.mjs missing）。
 
-- [ ] **步骤 3：最小实现（esbuild 一次性转译，不手写端口）**
+- [x] **步骤 3：最小实现（esbuild 一次性转译，不手写端口）**
 
 ```bash
 npx -y esbuild skills/sequential-thinking/scripts/think.ts \
@@ -217,12 +223,12 @@ chmod +x skills/sequential-thinking/scripts/think.mjs
 
 若 think.ts 顶部有 `#!/usr/bin/env bun` 类 shebang 被 esbuild 保留为注释导致首行非 shebang，按上式补 node shebang。若 `--help` 不是上游支持的旗标（以 think.ts 实际 CLI 为准），把测试步骤 1 的调用与断言改为上游 README 声明的最小调用形态并在提交信息注明（小偏差）。
 
-- [ ] **步骤 4：运行测试确认通过**
+- [x] **步骤 4：运行测试确认通过**
 
 运行：`node --test scripts/tests/think-port.test.mjs`
 预期：PASS ×2。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 git add skills/sequential-thinking/scripts/think.mjs scripts/tests/think-port.test.mjs
@@ -230,6 +236,8 @@ git commit -m "feat(T2): think.mjs 零依赖 Node 端口（esbuild 转译 + pari
 ```
 
 ### 任务 3：update-anysearch.mjs 泛化为 update-vendored-skill.mjs
+
+> 2026-09-10 历史状态补记：实施提交 `b0b56013` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
 
 **文件**：
 - 创建：`scripts/update-vendored-skill.mjs`、`scripts/tests/update-vendored.test.mjs`
@@ -240,7 +248,7 @@ git commit -m "feat(T2): think.mjs 零依赖 Node 端口（esbuild 转译 + pari
 - 消费：任务 1 的 `metadata.upstream-tag`（SHA pin）；既有 `skills/anysearch/SKILL.md` frontmatter
 - 产出：CLI `node scripts/update-vendored-skill.mjs --skill <anysearch|sequential-thinking> [--check|--tag vX.Y.Z|--sha <sha>|--normalize]`；导出函数 `normalizeFrontmatter(cfg, ref)`（任务 11 的 description 增强断言依赖其行为）
 
-- [ ] **步骤 1：写失败测试**
+- [x] **步骤 1：写失败测试**
 
 创建 `scripts/tests/update-vendored.test.mjs`：
 
@@ -285,12 +293,12 @@ test("旧脚本已删除（不留兼容垫片）", () => {
 });
 ```
 
-- [ ] **步骤 2：运行测试确认失败**
+- [x] **步骤 2：运行测试确认失败** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 运行：`node --test scripts/tests/update-vendored.test.mjs`
 预期：FAIL（script 不存在）。
 
-- [ ] **步骤 3：实现**
+- [x] **步骤 3：实现**
 
 `git mv scripts/update-anysearch.mjs scripts/update-vendored-skill.mjs`，然后按下述改造（原文件行号基于改名前）：
 
@@ -370,12 +378,12 @@ function snapshotSync(targetSha) {
 
 (f) usage 文案（原 :299-307）更新为新 CLI 形态。README 双语中 `update-anysearch.mjs` 引用逐处替换为 `update-vendored-skill.mjs --skill anysearch`。
 
-- [ ] **步骤 4：运行测试确认通过**
+- [x] **步骤 4：运行测试确认通过**
 
 运行：`node --test scripts/tests/update-vendored.test.mjs`
 预期：PASS ×4。另跑 `node scripts/update-vendored-skill.mjs --skill anysearch --check`（预期：输出当前/目标 tag，退出码视上游而定，仅确认不抛异常）。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 git add scripts/update-vendored-skill.mjs scripts/tests/update-vendored.test.mjs README.md README.zh-CN.md skills/anysearch/SKILL.md skills/anysearch/agents/openai.yaml skills/sequential-thinking/SKILL.md
@@ -386,6 +394,8 @@ git commit -m "feat(T3): vendored skill 统一同步脚本（双模式 + normali
 
 ### 任务 4：结构化推理消费点改写（六处）
 
+> 2026-09-10 历史状态补记：实施提交 `fc97a924` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 修改：`skills/requirement-analysis/SKILL.md:31,106,152`、`skills/exploring/SKILL.md:74`、`skills/quick-fix/SKILL.md:103`、`skills/clarifying/SKILL.md:61`、`skills/requirement-analysis/references/codex-compat.md:69`、`skills/requirement-analysis/evals/evals.json:12`
 
@@ -393,7 +403,7 @@ git commit -m "feat(T3): vendored skill 统一同步脚本（双模式 + normali
 - 消费：任务 1 的 skill 名 `sequential-thinking`
 - 产出：全仓（除 vendored 目录、CHANGELOG、.spec-dev）不再出现 `mcp__sequential-thinking__sequentialthinking`（任务 5 的零残留断言消费）
 
-- [ ] **步骤 1：写失败断言**
+- [x] **步骤 1：写失败断言** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 rg -l 'mcp__sequential-thinking__sequentialthinking' skills/ --glob '!skills/anysearch/**' --glob '!skills/sequential-thinking/**' | wc -l
@@ -401,7 +411,7 @@ rg -l 'mcp__sequential-thinking__sequentialthinking' skills/ --glob '!skills/any
 
 预期：`5`（红：五个文件仍引用 MCP 工具名）。
 
-- [ ] **步骤 2：逐处改写**
+- [x] **步骤 2：逐处改写**
 
 | 文件:行 | 原文（定位串） | 改为 |
 |---|---|---|
@@ -414,7 +424,7 @@ rg -l 'mcp__sequential-thinking__sequentialthinking' skills/ --glob '!skills/any
 | codex-compat.md:69 | `\`mcp__sequential-thinking__sequentialthinking\` 在 Codex 下同样通过插件 MCP 配置提供；不可用时降级为…` | `sequential-thinking skill 在 Codex 下经插件 skill 发现提供（openai.yaml 已启用隐式调用）；skill 与运行时均不可用时降级为在回复中显式分点推演（信息质询 → 冲突消解 → 方案对比），不得因工具缺失跳过分析。` |
 | requirement-analysis/evals/evals.json:12 | `主线程用 sequential-thinking 先对承重信息做对抗验证` | 不改（已是 skill 名语义） |
 
-- [ ] **步骤 3：运行断言确认通过**
+- [x] **步骤 3：运行断言确认通过**
 
 ```bash
 rg -l 'mcp__sequential-thinking__sequentialthinking' skills/ --glob '!skills/anysearch/**' --glob '!skills/sequential-thinking/**' | wc -l
@@ -422,7 +432,7 @@ rg -l 'mcp__sequential-thinking__sequentialthinking' skills/ --glob '!skills/any
 
 预期：`0`。再跑 `node scripts/validate-skills.mjs`（预期通过）。
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 git add skills/
@@ -430,6 +440,8 @@ git commit -m "feat(T4): 结构化推理消费点改写为内嵌 sequential-thin
 ```
 
 ### 任务 5：MCP 清零（配置删除 + README + check-mcp 退役）
+
+> 2026-09-10 历史状态补记：实施提交 `3687c970` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
 
 **文件**：
 - 删除：`.mcp.json`、`commands/check-mcp.md`
@@ -439,7 +451,7 @@ git commit -m "feat(T4): 结构化推理消费点改写为内嵌 sequential-thin
 - 消费：任务 4 完成的消费点改写（本任务的零残留断言覆盖全仓）
 - 产出：插件零 MCP 分发状态（任务 7 doctor 的检测语义、验收任务的 rg 零命中行消费）
 
-- [ ] **步骤 1：写失败断言**
+- [x] **步骤 1：写失败断言** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 test ! -f .mcp.json && test ! -f commands/check-mcp.md && ! rg -q '"mcpServers"' .codex-plugin/plugin.json && echo CLEAN || echo DIRTY
@@ -447,7 +459,7 @@ test ! -f .mcp.json && test ! -f commands/check-mcp.md && ! rg -q '"mcpServers"'
 
 预期：`DIRTY`（红）。
 
-- [ ] **步骤 2：执行清零**
+- [x] **步骤 2：执行清零**
 
 ```bash
 git rm .mcp.json commands/check-mcp.md
@@ -468,7 +480,7 @@ README.md 与 README.zh-CN.md 同步改三处：
 > 未配置时 acceptance-qa 自动降级到 Tier D 工具链（Playwright CLI 等），语义不变。
 ```
 
-- [ ] **步骤 3：运行断言确认通过（全仓零残留）**
+- [x] **步骤 3：运行断言确认通过（全仓零残留）**
 
 ```bash
 test ! -f .mcp.json && test ! -f commands/check-mcp.md && ! rg -q '"mcpServers"' .codex-plugin/plugin.json && echo CLEAN
@@ -477,7 +489,7 @@ rg -n 'mcp__sequential-thinking|@modelcontextprotocol/server-sequential-thinking
 
 预期：`CLEAN` 且残留计数 `0`。`node scripts/check-plugin.mjs` 通过（若其校验 .mcp.json 存在性则按报错修正其清单，属本任务范围）。
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 git add -A
@@ -488,6 +500,8 @@ git commit -m "feat(T5): MCP 清零——删 .mcp.json/check-mcp，Codex manifes
 
 ### 任务 6：根级 plugin.json（AP 1.0.0）+ package.json（pi）+ 版本同步扩展
 
+> 2026-09-10 历史状态补记：实施提交 `e24f66a3` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 创建：`plugin.json`（根级）、`package.json`（根级）、`scripts/tests/manifests.test.mjs`
 - 修改：`scripts/check-plugin.mjs`（版本同步清单扩为五处）、`README.md` 与 `README.zh-CN.md`（新增"平台矩阵"小节）
@@ -496,7 +510,7 @@ git commit -m "feat(T5): MCP 清零——删 .mcp.json/check-mcp，Codex manifes
 - 消费：`.claude-plugin/plugin.json` 现有 name/version/description
 - 产出：根级 `plugin.json`（含 `$schema`、`name`、`version`、`skills`）、`package.json`（含 `pi.skills`）；check-plugin 的五处版本一致性校验（release.mjs 自动发版链路消费）
 
-- [ ] **步骤 1：写失败测试**
+- [x] **步骤 1：写失败测试**
 
 创建 `scripts/tests/manifests.test.mjs`：
 
@@ -533,12 +547,12 @@ test("五处版本号一致", () => {
 });
 ```
 
-- [ ] **步骤 2：运行测试确认失败**
+- [x] **步骤 2：运行测试确认失败** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 运行：`node --test scripts/tests/manifests.test.mjs`
 预期：FAIL（根级 plugin.json 不存在）。
 
-- [ ] **步骤 3：实现**
+- [x] **步骤 3：实现**
 
 创建根级 `plugin.json`（`<当前版本>` 取 `.claude-plugin/plugin.json` 的 version 现值）：
 
@@ -583,12 +597,12 @@ README 双语各加「Platform matrix / 平台矩阵」小节（安装章节之�
 | Agent plugins 1.0.0 | ✅ 根级 plugin.json + skills/ | —（不在标准便携范围） | —（同左） | plugin.json |
 ```
 
-- [ ] **步骤 4：运行测试确认通过**
+- [x] **步骤 4：运行测试确认通过**
 
 运行：`node --test scripts/tests/manifests.test.mjs && node scripts/check-plugin.mjs`
 预期：PASS ×3 + check-plugin 通过（五处同步）。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 git add plugin.json package.json scripts/ README.md README.zh-CN.md
@@ -597,6 +611,8 @@ git commit -m "feat(T6): 根级 AP 1.0.0 manifest 与 pi 分发清单，版本�
 
 ### 任务 7：doctor 诊断命令
 
+> 2026-09-10 历史状态补记：实施提交 `2488e063` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 创建：`scripts/doctor.mjs`、`commands/doctor.md`、`scripts/tests/doctor.test.mjs`
 
@@ -604,7 +620,7 @@ git commit -m "feat(T6): 根级 AP 1.0.0 manifest 与 pi 分发清单，版本�
 - 消费：任务 2 的 `think.mjs` 路径、任务 5 的零 MCP 状态、guardrail 既有文件（`.githooks/`、`guardrail/templates/*.snippet`、`scripts/spec-dev/check-spec-drift.mjs` 装机产物）
 - 产出：CLI `node scripts/doctor.mjs [--json]`，六节输出（platform/guardrail/markers/hooks/anysearch/sequential-thinking），退出码 0=健康或仅提示、1=有需修复项；`--json` 输出机器可读结构（验收任务消费）
 
-- [ ] **步骤 1：写失败测试**
+- [x] **步骤 1：写失败测试**
 
 创建 `scripts/tests/doctor.test.mjs`：
 
@@ -664,12 +680,12 @@ test("sequential-thinking 运行时链探测有三态", () => {
 });
 ```
 
-- [ ] **步骤 2：运行测试确认失败**
+- [x] **步骤 2：运行测试确认失败** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 运行：`node --test scripts/tests/doctor.test.mjs`
 预期：FAIL（doctor.mjs 不存在）。
 
-- [ ] **步骤 3：实现 `scripts/doctor.mjs`**
+- [x] **步骤 3：实现 `scripts/doctor.mjs`**
 
 ```js
 #!/usr/bin/env node
@@ -782,12 +798,12 @@ description: Diagnose spec-dev health — platform, guardrail install, injection
 用户要求机器可读输出时加 `--json`。退出码 1 表示存在需修复项——引导用户按 hint 逐项修复后复跑。
 ```
 
-- [ ] **步骤 4：运行测试确认通过**
+- [x] **步骤 4：运行测试确认通过**
 
 运行：`node --test scripts/tests/doctor.test.mjs`
 预期：PASS ×3（第二个测试依赖 `--explain`，在任务 8 前呈现"（无输出）"分支即可通过 lastDecision 断言不存在的情况——本测试不断言 injection 节，允许任务顺序）。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 git add scripts/doctor.mjs commands/doctor.md scripts/tests/doctor.test.mjs
@@ -795,6 +811,8 @@ git commit -m "feat(T7): doctor 六域诊断命令（含双副本与运行时链
 ```
 
 ### 任务 8：注入链去静默（--explain 重放模式）
+
+> 2026-09-10 历史状态补记：实施提交 `0eab23ca` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
 
 **文件**：
 - 修改：`guardrail/session-context.mjs`（全部静默退出分支）、`guardrail/install.mjs`（跳过分支补打印）
@@ -804,7 +822,7 @@ git commit -m "feat(T7): doctor 六域诊断命令（含双副本与运行时链
 - 消费：任务 7 doctor 的 `--explain` 调用约定
 - 产出：`node guardrail/session-context.mjs --explain` 在任何环境输出一行 `decision: <inject|skip> reason: <原因>` 后退出 0
 
-- [ ] **步骤 1：写失败测试**
+- [x] **步骤 1：写失败测试**
 
 创建 `scripts/tests/session-explain.test.mjs`：
 
@@ -854,12 +872,12 @@ test("默认模式行为不变（非 git 静默退出 0 且零输出）", () => 
 });
 ```
 
-- [ ] **步骤 2：运行测试确认失败**
+- [x] **步骤 2：运行测试确认失败** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 运行：`node --test scripts/tests/session-explain.test.mjs`
 预期：前两个 FAIL（--explain 未实现，非 git 下无输出）。
 
-- [ ] **步骤 3：实现**
+- [x] **步骤 3：实现**
 
 `guardrail/session-context.mjs` 顶部加：
 
@@ -878,12 +896,12 @@ const decide = (decision, reason) => {
 
 `guardrail/install.mjs`：rg 定位其所有"跳过写入"分支（标记块残缺、文件只读、非 git 等 early-return / continue），每个分支在现有行为不变的前提下补一行 `console.log("skip: <原因>")`（安装是交互过程，打印不属静默污染）。改动保持每分支一行、不改控制流。
 
-- [ ] **步骤 4：运行测试确认通过**
+- [x] **步骤 4：运行测试确认通过**
 
 运行：`node --test scripts/tests/session-explain.test.mjs`
 预期：PASS ×3。复跑 `node --test scripts/tests/doctor.test.mjs` 确认 doctor 的 injection 节现在能回放决策。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 git add guardrail/ scripts/tests/session-explain.test.mjs
@@ -891,6 +909,8 @@ git commit -m "feat(T8): 注入链去静默——session-context --explain 重�
 ```
 
 ### 任务 9：声明式 SessionStart hook 验证与接线
+
+> 2026-09-10 历史状态补记：实施提交 `e253017e` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序；声明式 hook 已注册，但重装后会话注入和基于实测的分支收敛缺证据。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
 
 **文件**：
 - 创建：`hooks/hooks.json`（验证可行分支）
@@ -900,7 +920,7 @@ git commit -m "feat(T8): 注入链去静默——session-context --explain 重�
 - 消费：任务 8 的 session-context.mjs（hook 目标脚本）
 - 产出：二选一的落地状态——(a) 插件声明式 hook（免手动安装即注入）或 (b) doctor 引导安装路径強化；执行记录写明验证结论（验收任务消费）
 
-- [ ] **步骤 1：写验证断言（红）**
+- [x] **步骤 1：写验证断言（红）** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 test -f hooks/hooks.json && echo DECLARED || echo NOT-DECLARED
@@ -934,7 +954,7 @@ test -f hooks/hooks.json && echo DECLARED || echo NOT-DECLARED
 - **可行**（打包校验通过且会话注入出现）：保留 hooks/hooks.json；README 双语安装节注明"Claude Code / grok 安装插件即自动注入，guardrail install 仅为 git 闸门与 CI 所需"。
 - **不可行**（校验拒绝或注入不出现）：`git rm hooks/hooks.json`；在 `commands/doctor.md` 的修复指引段与 README 安装节明确"注入依赖手动 guardrail install"；把验证失败的具体报错记入本任务提交信息。
 
-- [ ] **步骤 4：确认与提交**
+- [x] **步骤 4：确认与提交**
 
 ```bash
 node scripts/check-plugin.mjs && node scripts/validate-skills.mjs
@@ -946,6 +966,8 @@ git commit -m "feat(T9): 声明式 SessionStart hook 验证——<可行:插件�
 
 ### 任务 10：子代理定义修复
 
+> 2026-09-10 历史状态补记：实施提交 `fb9f2c46` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 修改：`agents/code-explorer.md:4`（tools 白名单）、`agents/external-resource-explorer.md:40`（加粗闭合）
 
@@ -953,7 +975,7 @@ git commit -m "feat(T9): 声明式 SessionStart hook 验证——<可行:插件�
 - 消费：无
 - 产出：code-explorer 可执行 Bash（anysearch CLI 物理可达）
 
-- [ ] **步骤 1：写失败断言**
+- [x] **步骤 1：写失败断言** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 rg -q '^tools: .*Bash' agents/code-explorer.md && echo HAS-BASH || echo NO-BASH
@@ -961,12 +983,12 @@ rg -q '^tools: .*Bash' agents/code-explorer.md && echo HAS-BASH || echo NO-BASH
 
 预期：`NO-BASH`。
 
-- [ ] **步骤 2：修复**
+- [x] **步骤 2：修复**
 
 `agents/code-explorer.md:4` 的 tools 行在 `Read,` 后插入 ` Bash,`（终态形如 `tools: LSP, Glob, Grep, LS, Read, Bash, NotebookRead, WebFetch, WebSearch`）。
 `agents/external-resource-explorer.md:40`：定位该行未闭合的 `**`（行内只有奇数个 `**`），补齐闭合星号。
 
-- [ ] **步骤 3：确认**
+- [x] **步骤 3：确认**
 
 ```bash
 rg -q '^tools: .*Bash' agents/code-explorer.md && echo HAS-BASH
@@ -975,7 +997,7 @@ awk 'NR==40' agents/external-resource-explorer.md | grep -o '\*\*' | wc -l
 
 预期：`HAS-BASH`；第二条输出偶数。
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 git add agents/
@@ -983,6 +1005,8 @@ git commit -m "feat(T10): code-explorer 白名单加 Bash（修 anysearch CLI �
 ```
 
 ### 任务 11：全 skill 统一搜索条款
+
+> 2026-09-10 历史状态补记：实施提交 `f878ff1c` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
 
 **文件**：
 - 修改：`skills/exploring/SKILL.md`、`skills/quick-fix/SKILL.md`、`skills/executing-plans/SKILL.md`、`skills/writing-plans/SKILL.md`、`skills/acceptance-qa/SKILL.md`、`skills/clarifying/SKILL.md`、`skills/test-driven-development/SKILL.md`、`skills/using-git-worktrees/SKILL.md`、`skills/visual-preview/SKILL.md`（九个非 vendored、非 requirement-analysis 的 skill）；`skills/requirement-analysis/SKILL.md:96`、`skills/requirement-analysis/references/codex-compat.md:28`（环境映射表补 anysearch）；`skills/requirement-analysis/references/exploration-patterns.md:86`（派发词模板段强化）
@@ -992,7 +1016,7 @@ git commit -m "feat(T10): code-explorer 白名单加 Bash（修 anysearch CLI �
 - 消费：exploration-patterns.md 既有降级链定义（单一定义点不动）
 - 产出：统一条款文本（九个 SKILL.md 语言协议引用块之后各一行）
 
-- [ ] **步骤 1：写失败测试**
+- [x] **步骤 1：写失败测试**
 
 创建 `scripts/tests/search-clause.test.mjs`：
 
@@ -1016,12 +1040,12 @@ for (const s of SKILLS) {
 }
 ```
 
-- [ ] **步骤 2：运行测试确认失败**
+- [x] **步骤 2：运行测试确认失败** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 运行：`node --test scripts/tests/search-clause.test.mjs`
 预期：FAIL ×9。
 
-- [ ] **步骤 3：实现**
+- [x] **步骤 3：实现**
 
 九个 SKILL.md 各在「语言协议」引用块之后、正文首个 `#` 标题之前插入同一行：
 
@@ -1033,12 +1057,12 @@ for (const s of SKILLS) {
 
 `exploration-patterns.md:86` 派发要求第 4 条句尾追加：`；派发词模板固定携带一行「工具优先级：AnySearch 第一优先（CLI 路径见 agents/external-resource-explorer.md），WebSearch/WebFetch 兜底」，主线程复制使用、不现场重写`。
 
-- [ ] **步骤 4：运行测试确认通过**
+- [x] **步骤 4：运行测试确认通过**
 
 运行：`node --test scripts/tests/search-clause.test.mjs && node scripts/validate-skills.mjs && node scripts/check-openai-sync.mjs`
 预期：PASS ×9 + 两校验通过（本条款不动 description，openai.yaml 无需变）。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 git add skills/ scripts/tests/search-clause.test.mjs
@@ -1047,6 +1071,8 @@ git commit -m "feat(T11): 九 skill 统一搜索条款 + 环境映射表纳入 a
 
 ### 任务 12：guardrail snippet 全局搜索规则
 
+> 2026-09-10 历史状态补记：实施提交 `0c5eba05` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 修改：`guardrail/templates/CLAUDE.md.snippet`、`guardrail/templates/AGENTS.md.snippet`
 
@@ -1054,7 +1080,7 @@ git commit -m "feat(T11): 九 skill 统一搜索条款 + 环境映射表纳入 a
 - 消费：任务 11 的统一条款语义
 - 产出：装了 guardrail 的项目主线程全局可见的搜索优先级规则（grok/pi 经 AGENTS.md 家族同样读到）
 
-- [ ] **步骤 1：写失败断言**
+- [x] **步骤 1：写失败断言** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 rg -l 'anysearch' guardrail/templates/*.snippet | wc -l
@@ -1062,7 +1088,7 @@ rg -l 'anysearch' guardrail/templates/*.snippet | wc -l
 
 预期：`0`。
 
-- [ ] **步骤 2：实现**
+- [x] **步骤 2：实现**
 
 两个 snippet 文件各在其列表体末尾（保持既有条目风格）追加一条：
 
@@ -1070,7 +1096,7 @@ rg -l 'anysearch' guardrail/templates/*.snippet | wc -l
 - Web lookups: prefer the anysearch skill (bundled with the spec-dev plugin) for any external search — docs, best practices, time-sensitive facts; fall back to WebSearch/WebFetch only when it is unavailable. / 联网检索一律优先使用 anysearch skill（spec-dev 插件内嵌）——查资料、查文档、核时效信息；不可用时才降级 WebSearch/WebFetch。
 ```
 
-- [ ] **步骤 3：确认**
+- [x] **步骤 3：确认**
 
 ```bash
 rg -l 'anysearch' guardrail/templates/*.snippet | wc -l
@@ -1078,7 +1104,7 @@ rg -l 'anysearch' guardrail/templates/*.snippet | wc -l
 
 预期：`2`。
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 git add guardrail/templates/
@@ -1089,6 +1115,8 @@ git commit -m "feat(T12): guardrail snippet 注入全局搜索优先级规则（
 
 ### 任务 13：同日顺序编号规则
 
+> 2026-09-10 历史状态补记：实施提交 `1589ecfd` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 修改：`skills/requirement-analysis/SKILL.md:183`（特性目录命名权威定义）、`:109`（reports 命名）、`:111`（roadmap 命名）、`skills/requirement-analysis/assets/spec-template.md:1`、`skills/requirement-analysis/assets/roadmap-template.md:1`、`skills/writing-plans/SKILL.md:20,31`、`skills/executing-plans/SKILL.md:33`、`guardrail/templates/CLAUDE.md.snippet` 与 `AGENTS.md.snippet` 中的示例路径（rg `YYYY-MM-DD` 定位）
 - 创建：`scripts/tests/numbering-docs.test.mjs`
@@ -1097,7 +1125,7 @@ git commit -m "feat(T12): guardrail snippet 注入全局搜索优先级规则（
 - 消费：无
 - 产出：全套件命名规则 `YYYY-MM-DD-NN-<名称>`（任务 14 roadmap 模板、任务 23/24 引用同一规则）
 
-- [ ] **步骤 1：写失败测试**
+- [x] **步骤 1：写失败测试**
 
 创建 `scripts/tests/numbering-docs.test.mjs`：
 
@@ -1124,11 +1152,11 @@ test("writing-plans 与 executing-plans 引用新命名", () => {
 });
 ```
 
-- [ ] **步骤 2：运行测试确认失败**
+- [x] **步骤 2：运行测试确认失败** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 运行：`node --test scripts/tests/numbering-docs.test.mjs` → FAIL。
 
-- [ ] **步骤 3：实现**
+- [x] **步骤 3：实现**
 
 `requirement-analysis/SKILL.md:183` 括注部分改写为：
 
@@ -1138,11 +1166,11 @@ test("writing-plans 与 executing-plans 引用新命名", () => {
 
 `:109` reports 与 `:111` roadmap 的路径模式同步为 `YYYY-MM-DD-NN-<topic>` / `YYYY-MM-DD-NN-<project>`（附一句"同一 NN 序列全 .spec-dev 日期前缀产物共用"）。两个模板文件标题行、writing-plans `:20`（计划路径）与 `:31`（roadmap 登记）、executing-plans `:33`（读取路径，保留旧命名兼容读取一句：「旧命名 `YYYY-MM-DD-<feature>` 目录按原样读取」）、snippet 示例路径同步替换。
 
-- [ ] **步骤 4：运行测试确认通过**
+- [x] **步骤 4：运行测试确认通过**
 
 运行：`node --test scripts/tests/numbering-docs.test.mjs && node scripts/validate-skills.mjs` → PASS。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 git add skills/ guardrail/templates/ scripts/tests/numbering-docs.test.mjs
@@ -1150,6 +1178,8 @@ git commit -m "feat(T13): 同日顺序编号 YYYY-MM-DD-NN 全套件落地（存
 ```
 
 ### 任务 14：roadmap 上下文胶囊与续接改写
+
+> 2026-09-10 历史状态补记：实施提交 `61e0a5d5` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
 
 **文件**：
 - 修改：`skills/requirement-analysis/assets/roadmap-template.md`（新增两节）、`skills/requirement-analysis/SKILL.md:111-112`（分解登记 + 续接检查）、`skills/executing-plans/SKILL.md:93,99`（交付回写 + 续接询问）
@@ -1159,7 +1189,7 @@ git commit -m "feat(T13): 同日顺序编号 YYYY-MM-DD-NN 全套件落地（存
 - 消费：任务 13 的命名规则
 - 产出：roadmap 模板的「原始需求」节与「上下文胶囊」小节结构（executing-plans 回写行格式）
 
-- [ ] **步骤 1：写失败断言**
+- [x] **步骤 1：写失败断言** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 rg -q '上下文胶囊' skills/requirement-analysis/assets/roadmap-template.md && echo HAS || echo MISSING
@@ -1167,7 +1197,7 @@ rg -q '上下文胶囊' skills/requirement-analysis/assets/roadmap-template.md &
 
 预期：`MISSING`。
 
-- [ ] **步骤 2：实现**
+- [x] **步骤 2：实现**
 
 `roadmap-template.md` 子项目表之后追加两节：
 
@@ -1210,7 +1240,7 @@ rg -q '上下文胶囊' skills/requirement-analysis/assets/roadmap-template.md &
 }
 ```
 
-- [ ] **步骤 3：确认**
+- [x] **步骤 3：确认**
 
 ```bash
 rg -q '上下文胶囊' skills/requirement-analysis/assets/roadmap-template.md && rg -q '不要求用户重新提供原始需求' skills/requirement-analysis/SKILL.md && rg -q '留给后继的注意事项' skills/executing-plans/SKILL.md && echo OK
@@ -1219,7 +1249,7 @@ node scripts/validate-skills.mjs
 
 预期：`OK` + 校验通过。
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 git add skills/
@@ -1227,6 +1257,8 @@ git commit -m "feat(T14): roadmap 上下文胶囊（原始需求全文+裁决+�
 ```
 
 ### 任务 15：visual-preview 产物归位特性目录
+
+> 2026-09-10 历史状态补记：实施提交 `8536dff8` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
 
 **文件**：
 - 修改：`skills/visual-preview/scripts/start-server.sh:126-134`（SESSION_DIR 计算）与其参数解析段、`skills/visual-preview/SKILL.md:36,39,55,70`、`skills/visual-preview/references/preview-guide.md:142`
@@ -1236,7 +1268,7 @@ git commit -m "feat(T14): roadmap 上下文胶囊（原始需求全文+裁决+�
 - 消费：任务 13 命名规则（特性目录名形态）
 - 产出：`start-server.sh --feature-dir <path>` 参数；产物路径 `<feature-dir>/visual/<session-id>/`；回退路径不变
 
-- [ ] **步骤 1：写失败测试**
+- [x] **步骤 1：写失败测试**
 
 创建 `scripts/tests/visual-path.test.sh`：
 
@@ -1256,12 +1288,12 @@ echo PASS
 
 `chmod +x scripts/tests/visual-path.test.sh`
 
-- [ ] **步骤 2：运行测试确认失败**
+- [x] **步骤 2：运行测试确认失败** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 运行：`bash scripts/tests/visual-path.test.sh`
 预期：FAIL（--feature-dir 与 --dry-run 均未实现）。
 
-- [ ] **步骤 3：实现**
+- [x] **步骤 3：实现**
 
 `start-server.sh` 参数解析段（现有 `--project-dir` 旁）新增 `--feature-dir <path>`（导出 `FEATURE_DIR`）与 `--dry-run`（计算并打印 `SESSION_DIR=<路径>` 后 exit 0，不起服务）。SESSION_DIR 计算（:126-134）改为：
 
@@ -1284,11 +1316,11 @@ fi
 
 `SKILL.md` 同步四处：`:36` 启动命令示例加"当前处于特性上下文（本次会话正在做某特性的需求设计/计划）时**必须**传 `--feature-dir .spec-dev/<当日特性目录>`"；`:39` gitignore 建议改为"把 `.spec-dev/visual/` 与 `.spec-dev/*/visual/` 加入 .gitignore（不要忽略整个 .spec-dev/）"；`:55` 产物路径描述同步双形态；`:70` 清理语义补"特性目录下的 visual/ 会话与 .spec-dev/visual/ 同规则：/tmp 会话删、项目内会话留"。追加一句归档约定："被设计采纳的定稿 mockup 复制为特性目录 `spec/assets/<名称>.html` 入库（这是唯一入 git 的 visual 产物）"。`preview-guide.md:142` 连接信息查找路径描述同步两种路径。
 
-- [ ] **步骤 4：运行测试确认通过**
+- [x] **步骤 4：运行测试确认通过**
 
 运行：`bash scripts/tests/visual-path.test.sh` → `PASS`。`stop-server.sh` 无需改（其删除逻辑只认 /tmp 前缀，特性目录会话自然保留）。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 git add skills/visual-preview/ scripts/tests/visual-path.test.sh
@@ -1299,6 +1331,8 @@ git commit -m "feat(T15): visual-preview 产物归位特性目录（--feature-di
 
 ### 任务 16：clarifying 第 0 条自我披露
 
+> 2026-09-10 历史状态补记：实施提交 `82a52d76` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 修改：`skills/clarifying/SKILL.md`（核心纪律节 :23-30、Codex 规范节 :58-64、Red Flags :66-73）、`skills/clarifying/evals/evals.json`
 
@@ -1306,7 +1340,7 @@ git commit -m "feat(T15): visual-preview 产物归位特性目录（--feature-di
 - 消费：无
 - 产出：核心纪律第 0 条文本（任务 17 引用方锚定语、任务 18 exploring 开场披露消费）
 
-- [ ] **步骤 1：写失败断言**
+- [x] **步骤 1：写失败断言** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 rg -q '提问前自我披露' skills/clarifying/SKILL.md && echo HAS || echo MISSING
@@ -1314,7 +1348,7 @@ rg -q '提问前自我披露' skills/clarifying/SKILL.md && echo HAS || echo MIS
 
 预期：`MISSING`。
 
-- [ ] **步骤 2：实现**
+- [x] **步骤 2：实现**
 
 核心纪律节（:23-30）在"一次只问一个问题"条目之前插入：
 
@@ -1335,7 +1369,7 @@ Red Flags 补一条：`- "背景我都懂，直接开问吧" → 披露先行：
 }
 ```
 
-- [ ] **步骤 3：确认**
+- [x] **步骤 3：确认**
 
 ```bash
 rg -q '提问前自我披露' skills/clarifying/SKILL.md && node scripts/validate-skills.mjs && echo OK
@@ -1343,7 +1377,7 @@ rg -q '提问前自我披露' skills/clarifying/SKILL.md && node scripts/validat
 
 预期：`OK`。
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 git add skills/clarifying/
@@ -1352,6 +1386,8 @@ git commit -m "feat(T16): clarifying 核心纪律第 0 条——提问前自我�
 
 ### 任务 17：引用方锚定语同步
 
+> 2026-09-10 历史状态补记：实施提交 `02685677` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 修改：`skills/requirement-analysis/SKILL.md:139`（阶段 3 锚定语）、`skills/quick-fix/SKILL.md:52`（步骤 3 锚定语）
 
@@ -1359,7 +1395,7 @@ git commit -m "feat(T16): clarifying 核心纪律第 0 条——提问前自我�
 - 消费：任务 16 的第 0 条
 - 产出：两处锚定语列举含披露条（与 clarifying:14 单向同步锚一致）
 
-- [ ] **步骤 1：写失败断言**
+- [x] **步骤 1：写失败断言** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 rg -c '自我披露' skills/requirement-analysis/SKILL.md skills/quick-fix/SKILL.md
@@ -1367,12 +1403,12 @@ rg -c '自我披露' skills/requirement-analysis/SKILL.md skills/quick-fix/SKILL
 
 预期：两文件计数均为 `0`（rg 无匹配退出码 1 即红）。
 
-- [ ] **步骤 2：实现**
+- [x] **步骤 2：实现**
 
 `requirement-analysis/SKILL.md:139` 的列举 `一次只问一个问题、选择题优先且推荐项放首位（Claude Code 用 \`AskUserQuestion\`）、事实自查决策交用户、按决策依赖排序、术语挑战、不编造问题` 之前插入 `提问前自我披露（假设/关键信息/易犯错三段先行）、`。
 `quick-fix/SKILL.md:52` 的列举 `一次一题、选择题优先且推荐项放首位（Claude Code 用 \`AskUserQuestion\`）、事实自查决策交用户` 之前插入 `提问前自我披露、`。
 
-- [ ] **步骤 3：确认**
+- [x] **步骤 3：确认**
 
 ```bash
 rg -c '自我披露' skills/requirement-analysis/SKILL.md skills/quick-fix/SKILL.md
@@ -1380,7 +1416,7 @@ rg -c '自我披露' skills/requirement-analysis/SKILL.md skills/quick-fix/SKILL
 
 预期：各 ≥1。
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 git add skills/requirement-analysis/SKILL.md skills/quick-fix/SKILL.md
@@ -1389,6 +1425,8 @@ git commit -m "feat(T17): 引用方锚定语同步披露条（requirement-analys
 
 ### 任务 18：exploring 全套接入（开场披露 + 关键分岔转漏斗）
 
+> 2026-09-10 历史状态补记：实施提交 `dba8569f` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 修改：`skills/exploring/SKILL.md`（:20-26 姿态、:28-37 可做/不必做、:47-56 对应 clarifying 分界内容、:76-82 Red Flags——行号以当前文件 rg 定位为准）、`skills/clarifying/SKILL.md:47-56`（与 exploring 分界表）、`skills/exploring/evals/evals.json`
 
@@ -1396,7 +1434,7 @@ git commit -m "feat(T17): 引用方锚定语同步披露条（requirement-analys
 - 消费：任务 16 的披露条、clarifying 被引用模式既有定义
 - 产出：「关键分岔」三条件判定文本（spec 术语表同名）
 
-- [ ] **步骤 1：写失败断言**
+- [x] **步骤 1：写失败断言** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 rg -q '关键分岔' skills/exploring/SKILL.md && echo HAS || echo MISSING
@@ -1404,7 +1442,7 @@ rg -q '关键分岔' skills/exploring/SKILL.md && echo HAS || echo MISSING
 
 预期：`MISSING`。
 
-- [ ] **步骤 2：实现**
+- [x] **步骤 2：实现**
 
 `exploring/SKILL.md` 姿态节（:20-26）：
 - `:22` "问题从对话中自然涌现，不照脚本提问" 保留；
@@ -1430,7 +1468,7 @@ rg -q '关键分岔' skills/exploring/SKILL.md && echo HAS || echo MISSING
 }
 ```
 
-- [ ] **步骤 3：确认**
+- [x] **步骤 3：确认**
 
 ```bash
 rg -q '关键分岔' skills/exploring/SKILL.md && rg -q '嵌套而非对立' skills/clarifying/SKILL.md && node scripts/validate-skills.mjs && echo OK
@@ -1438,7 +1476,7 @@ rg -q '关键分岔' skills/exploring/SKILL.md && rg -q '嵌套而非对立' ski
 
 预期：`OK`。
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 git add skills/exploring/ skills/clarifying/
@@ -1449,6 +1487,8 @@ git commit -m "feat(T18): exploring 全套接入澄清——开场披露 + 关�
 
 ### 任务 19：design-principles.md 与三个消费点
 
+> 2026-09-10 历史状态补记：实施提交 `09aacfb2` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 创建：`skills/writing-plans/references/design-principles.md`
 - 修改：`skills/writing-plans/SKILL.md`（「文件结构先行」节前引用 + 计划头部模板加「设计原则」块）、`skills/requirement-analysis/SKILL.md`（阶段 4 :164 评价维度、阶段 5 :177 设计要求、Key Principles）
@@ -1457,7 +1497,7 @@ git commit -m "feat(T18): exploring 全套接入澄清——开场披露 + 关�
 - 消费：无
 - 产出：`design-principles.md`（任务 23 的 index 头部模板、验收任务 rg 断言消费）；计划头部「设计原则」块模板
 
-- [ ] **步骤 1：写失败断言**
+- [x] **步骤 1：写失败断言** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 test -f skills/writing-plans/references/design-principles.md && echo HAS || echo MISSING
@@ -1465,7 +1505,7 @@ test -f skills/writing-plans/references/design-principles.md && echo HAS || echo
 
 预期：`MISSING`。
 
-- [ ] **步骤 2：创建 `skills/writing-plans/references/design-principles.md`**
+- [x] **步骤 2：创建 `skills/writing-plans/references/design-principles.md`**
 
 ```markdown
 # 设计原则（方案取舍与计划编写共同遵循）
@@ -1490,7 +1530,7 @@ test -f skills/writing-plans/references/design-principles.md && echo HAS || echo
 - 第 6/7 条的既有呼应：收尾审查维度 C「优先使用项目已有工具与模式」；ADR 三判据承载第 8 条的"长期决策"沉淀。
 ```
 
-- [ ] **步骤 3：接线三个消费点**
+- [x] **步骤 3：接线三个消费点**
 
 `writing-plans/SKILL.md`「文件结构先行」节标题前插入一行：`任务分解与方案形态遵循 [design-principles.md](references/design-principles.md) 八条设计原则——分解时逐条对照，违反即重划。`
 计划头部模板（:68-99 的 markdown 块）在「技术栈」行之后插入：
@@ -1501,7 +1541,7 @@ test -f skills/writing-plans/references/design-principles.md && echo HAS || echo
 
 `requirement-analysis/SKILL.md:164` 方案评价维度句 `核心思路、与现有模式的契合度、改动半径、风险、成本` 追加 `、设计原则符合度（对照 writing-plans/references/design-principles.md 八条——尤其"是否引入投机抽象""是否留兼容垫片""是否权宜之计"三问）`；`:177` 设计要求句尾追加 `；整体设计对照 design-principles.md 八条自检`；Key Principles 节追加一条 `- **原则先于偏好**——方案对比与设计定稿以 design-principles.md 为共同裁决维度`。
 
-- [ ] **步骤 4：确认**
+- [x] **步骤 4：确认**
 
 ```bash
 test -f skills/writing-plans/references/design-principles.md && rg -q 'design-principles' skills/requirement-analysis/SKILL.md && rg -q '设计原则' skills/writing-plans/SKILL.md && node scripts/validate-skills.mjs && echo OK
@@ -1509,7 +1549,7 @@ test -f skills/writing-plans/references/design-principles.md && rg -q 'design-pr
 
 预期：`OK`。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 git add skills/writing-plans/ skills/requirement-analysis/SKILL.md
@@ -1517,6 +1557,8 @@ git commit -m "feat(T19): 设计原则 reference 落盘并接线阶段4/5与计�
 ```
 
 ### 任务 20：test-strategy skill 本体
+
+> 2026-09-10 历史状态补记：实施提交 `68424796` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
 
 **文件**：
 - 创建：`skills/test-strategy/SKILL.md`、`skills/test-strategy/agents/openai.yaml`、`skills/test-strategy/evals/evals.json`、`skills/test-strategy/evals/trigger-evals.json`
@@ -1526,7 +1568,7 @@ git commit -m "feat(T19): 设计原则 reference 落盘并接线阶段4/5与计�
 - 消费：无
 - 产出：test-strategy skill（任务 21 references、任务 22 挂载点消费）；三 Lane 术语（fast/PR/nightly）
 
-- [ ] **步骤 1：写失败断言**
+- [x] **步骤 1：写失败断言** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 test -f skills/test-strategy/SKILL.md && echo HAS || echo MISSING
@@ -1534,7 +1576,7 @@ test -f skills/test-strategy/SKILL.md && echo HAS || echo MISSING
 
 预期：`MISSING`。
 
-- [ ] **步骤 2：创建 `skills/test-strategy/SKILL.md`**
+- [x] **步骤 2：创建 `skills/test-strategy/SKILL.md`**
 
 ```markdown
 ---
@@ -1593,7 +1635,7 @@ description: >-
 - 为测试选择系统引缝 → 缝跟着真实交付边界走，1-5 人先全量
 ```
 
-- [ ] **步骤 3：配套文件**
+- [x] **步骤 3：配套文件**
 
 `skills/test-strategy/agents/openai.yaml`：
 
@@ -1641,7 +1683,7 @@ interface:
 
 `.claude-plugin/marketplace.json` skills 数组 `"./skills/sequential-thinking"` 之后追加 `"./skills/test-strategy"`。
 
-- [ ] **步骤 4：确认**
+- [x] **步骤 4：确认**
 
 ```bash
 node scripts/validate-skills.mjs && node scripts/check-openai-sync.mjs && node scripts/check-plugin.mjs
@@ -1649,7 +1691,7 @@ node scripts/validate-skills.mjs && node scripts/check-openai-sync.mjs && node s
 
 预期：全部通过（13 个 skill）。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 git add skills/test-strategy/ .claude-plugin/marketplace.json
@@ -1658,6 +1700,8 @@ git commit -m "feat(T20): test-strategy skill 本体（三 Lane/治理顺序/Age
 
 ### 任务 21：test-strategy 栈特定 references
 
+> 2026-09-10 历史状态补记：实施提交 `0c828b5e` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 创建：`skills/test-strategy/references/db-testing.md`、`skills/test-strategy/references/frontend-testing.md`、`skills/test-strategy/references/ai-agent-testing.md`
 
@@ -1665,7 +1709,7 @@ git commit -m "feat(T20): test-strategy skill 本体（三 Lane/治理顺序/Age
 - 消费：任务 20 的 SKILL.md 引用锚
 - 产出：三份处方文件（writing-plans 翻译 DB/前端/Agent 测试步骤时引用）
 
-- [ ] **步骤 1：写失败断言**
+- [x] **步骤 1：写失败断言** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 ls skills/test-strategy/references/ 2>/dev/null | wc -l
@@ -1673,7 +1717,7 @@ ls skills/test-strategy/references/ 2>/dev/null | wc -l
 
 预期：`0`。
 
-- [ ] **步骤 2：创建三份 references**
+- [x] **步骤 2：创建三份 references**
 
 `db-testing.md`（阅读时机头 + 内容要点，全文落盘）：
 
@@ -1729,7 +1773,7 @@ ls skills/test-strategy/references/ 2>/dev/null | wc -l
 - **Lane 归属**：L0-L2 fast、L3 fast/PR、L4 PR（仅 agent 变更触发）、L5 nightly 永不阻塞 PR。
 ```
 
-- [ ] **步骤 3：确认**
+- [x] **步骤 3：确认**
 
 ```bash
 ls skills/test-strategy/references/ | wc -l && node scripts/validate-skills.mjs
@@ -1737,7 +1781,7 @@ ls skills/test-strategy/references/ | wc -l && node scripts/validate-skills.mjs
 
 预期：`3` + 校验通过。
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 git add skills/test-strategy/references/
@@ -1746,6 +1790,8 @@ git commit -m "feat(T21): test-strategy 栈特定处方三件（DB/前端/Agent 
 
 ### 任务 22：test-strategy 挂载接线
 
+> 2026-09-10 历史状态补记：实施提交 `dc649022` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 修改：`skills/writing-plans/SKILL.md:60`（Scenario 直译段后）、`skills/acceptance-qa/SKILL.md`（阶段 0 装配段 :59-69 与参考资料节 :182-191）、`skills/acceptance-qa/references/acceptance-matrix.md:29-47`（上游分工链）、`skills/requirement-analysis/assets/spec-template.md:108-111`（矩阵节提示）
 
@@ -1753,7 +1799,7 @@ git commit -m "feat(T21): test-strategy 栈特定处方三件（DB/前端/Agent 
 - 消费：任务 20/21 的 skill 与 references
 - 产出：四处挂载文本（验收任务 rg 断言消费）
 
-- [ ] **步骤 1：写失败断言**
+- [x] **步骤 1：写失败断言** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 rg -l 'test-strategy' skills/writing-plans/SKILL.md skills/acceptance-qa/ skills/requirement-analysis/assets/spec-template.md | wc -l
@@ -1761,7 +1807,7 @@ rg -l 'test-strategy' skills/writing-plans/SKILL.md skills/acceptance-qa/ skills
 
 预期：`0`。
 
-- [ ] **步骤 2：接线**
+- [x] **步骤 2：接线**
 
 `writing-plans/SKILL.md:60`（「Scenario 直译为测试」段落）句尾追加：`测试步骤的 Lane 归属与 DB/前端/Agent 处方遵循 test-strategy skill（矩阵行标注的 lane 直接继承；DB 类步骤对照其 references/db-testing.md，不得出现每测试一容器）。`
 
@@ -1771,7 +1817,7 @@ rg -l 'test-strategy' skills/writing-plans/SKILL.md skills/acceptance-qa/ skills
 
 `spec-template.md:108-111` 矩阵节说明追加一句：`每行可标注 Lane 归属（fast/PR/nightly，见 test-strategy skill）；含 DB/LLM 的行按其处方写执行方式`。
 
-- [ ] **步骤 3：确认**
+- [x] **步骤 3：确认**
 
 ```bash
 rg -l 'test-strategy' skills/writing-plans/SKILL.md skills/acceptance-qa/ skills/requirement-analysis/assets/spec-template.md | wc -l
@@ -1780,7 +1826,7 @@ node scripts/validate-skills.mjs
 
 预期：`≥4` + 校验通过。
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 git add skills/
@@ -1791,6 +1837,8 @@ git commit -m "feat(T22): test-strategy 挂载接线（writing-plans 翻译层 /
 
 ### 任务 23：progressive-plan-format.md 与 writing-plans 阈值分流
 
+> 2026-09-10 历史状态补记：实施提交 `62cd96dd` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 创建：`skills/writing-plans/references/progressive-plan-format.md`
 - 修改：`skills/writing-plans/SKILL.md:20`（保存路径段后加分流条款）
@@ -1799,7 +1847,7 @@ git commit -m "feat(T22): test-strategy 挂载接线（writing-plans 翻译层 /
 - 消费：任务 13 命名规则、任务 19 设计原则块（index 头部复用计划头部模板）
 - 产出：分文件形态规范——`plan/index.md` 导航表列契约（`任务 | 依赖 | 消费接口 | 产出接口`）、`plan/tasks/TNN.md`、`plan/progress.yaml` 键结构（任务 24/25 消费）
 
-- [ ] **步骤 1：写失败断言**
+- [x] **步骤 1：写失败断言** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 test -f skills/writing-plans/references/progressive-plan-format.md && echo HAS || echo MISSING
@@ -1807,7 +1855,7 @@ test -f skills/writing-plans/references/progressive-plan-format.md && echo HAS |
 
 预期：`MISSING`。
 
-- [ ] **步骤 2：创建 `skills/writing-plans/references/progressive-plan-format.md`**
+- [x] **步骤 2：创建 `skills/writing-plans/references/progressive-plan-format.md`**
 
 ```markdown
 # 分文件计划形态（阈值门控）
@@ -1856,7 +1904,7 @@ notes: []               # 偏差与备注，append-only
 4. Self-Review 三查对本形态逐任务文件执行，另加第 4 查：导航表接口列与任务文件接口块逐条一致。
 ```
 
-- [ ] **步骤 3：SKILL.md 分流条款**
+- [x] **步骤 3：SKILL.md 分流条款**
 
 `writing-plans/SKILL.md:20`（计划保存路径段）之后新增一段：
 
@@ -1864,7 +1912,7 @@ notes: []               # 偏差与备注，append-only
 **形态分流（阈值门控）**：分解出任务清单后判定——预估任务数 >8 或正文预估 >25KB 时按 [progressive-plan-format.md](references/progressive-plan-format.md) 产出分文件形态（`plan/index.md` + `plan/tasks/TNN.md` + `plan/progress.yaml`，复选框停用、progress.yaml 是唯一状态源）；低于阈值维持本文默认的单文件形态。两形态的任务内部结构与质量门完全一致。
 ```
 
-- [ ] **步骤 4：确认**
+- [x] **步骤 4：确认**
 
 ```bash
 rg -q '形态分流' skills/writing-plans/SKILL.md && test -f skills/writing-plans/references/progressive-plan-format.md && node scripts/validate-skills.mjs && echo OK
@@ -1872,7 +1920,7 @@ rg -q '形态分流' skills/writing-plans/SKILL.md && test -f skills/writing-pla
 
 预期：`OK`。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 git add skills/writing-plans/
@@ -1880,6 +1928,8 @@ git commit -m "feat(T23): plan 分文件形态规范（阈值门控 + index 导�
 ```
 
 ### 任务 24：progressive-execution.md 与 executing-plans 接线
+
+> 2026-09-10 历史状态补记：实施提交 `0336baa0` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
 
 **文件**：
 - 创建：`skills/executing-plans/references/progressive-execution.md`
@@ -1889,7 +1939,7 @@ git commit -m "feat(T23): plan 分文件形态规范（阈值门控 + index 导�
 - 消费：任务 23 的形态规范与 progress.yaml 键结构
 - 产出：渐进执行与 resume 规程（验收任务 A 行消费）
 
-- [ ] **步骤 1：写失败断言**
+- [x] **步骤 1：写失败断言** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 ```bash
 test -f skills/executing-plans/references/progressive-execution.md && echo HAS || echo MISSING
@@ -1897,7 +1947,7 @@ test -f skills/executing-plans/references/progressive-execution.md && echo HAS |
 
 预期：`MISSING`。
 
-- [ ] **步骤 2：创建 `skills/executing-plans/references/progressive-execution.md`**
+- [x] **步骤 2：创建 `skills/executing-plans/references/progressive-execution.md`**
 
 ```markdown
 # 分文件计划的渐进执行与恢复
@@ -1924,14 +1974,14 @@ test -f skills/executing-plans/references/progressive-execution.md && echo HAS |
 单文件计划无 progress.yaml：按复选框判读——首个含未勾选步骤的任务即续跑点；勾选状态与 git log 的 `feat(TN)` 提交对照，不一致时以提交为准并报告。
 ```
 
-- [ ] **步骤 3：SKILL.md 接线**
+- [x] **步骤 3：SKILL.md 接线**
 
 `:33` 读取句改为分流：`读取计划：`plan/tasks/` 存在 → 分文件形态，按 [progressive-execution.md](references/progressive-execution.md) 渐进加载（启动只读 index + progress + spec）；否则单文件形态，一次性读取计划全文与 spec。`
 `:55` 勾选句追加：`（分文件形态改为原子更新 progress.yaml 并随任务提交，不使用复选框）`。
 `:57` 资源登记句追加：`（分文件形态登记进 progress.yaml 的 resources 键，计划任务文件不编辑）`。
 阶段 1 末尾新增一行：`**恢复入口**：会话开始即发现未完成的 progress.yaml（或单文件计划有未勾选步骤）且用户要求继续 → 走 progressive-execution.md 的恢复流程（校验一致性 → ready 任务续跑），不从任务 0 重来。`
 
-- [ ] **步骤 4：确认**
+- [x] **步骤 4：确认**
 
 ```bash
 rg -q 'progressive-execution' skills/executing-plans/SKILL.md && node scripts/validate-skills.mjs && echo OK
@@ -1939,7 +1989,7 @@ rg -q 'progressive-execution' skills/executing-plans/SKILL.md && node scripts/va
 
 预期：`OK`。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 git add skills/executing-plans/
@@ -1947,6 +1997,8 @@ git commit -m "feat(T24): executing-plans 渐进执行与断点恢复接线（�
 ```
 
 ### 任务 25：validate-output 的 plan-index 结构校验
+
+> 2026-09-10 历史状态补记：实施提交 `cd36abd0` 的文件差异及历史验收报告。按用户裁决，以实施提交及后续相关测试/静态验收通过记录支持任务结果；原始红灯过程记录缺失，不追认先失败后实现的顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
 
 **文件**：
 - 修改：`scripts/validate-output.mjs`（新增 plan-index 模式分支）
@@ -1956,7 +2008,7 @@ git commit -m "feat(T24): executing-plans 渐进执行与断点恢复接线（�
 - 消费：任务 23 的导航表列契约与目录结构
 - 产出：CLI `node scripts/validate-output.mjs plan-index <plan目录>`（成功 `{ok:true}` 退出 0；失败 `{ok:false, errors:[…]}` 退出 1）
 
-- [ ] **步骤 1：写失败测试**
+- [x] **步骤 1：写失败测试**
 
 创建 `scripts/tests/plan-index.test.mjs`：
 
@@ -2007,12 +2059,12 @@ test("导航表与 tasks/ 文件不一致被拦截", () => {
 });
 ```
 
-- [ ] **步骤 2：运行测试确认失败**
+- [x] **步骤 2：运行测试确认失败** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 运行：`node --test scripts/tests/plan-index.test.mjs`
 预期：FAIL（plan-index 模式不存在——现有脚本把 "plan-index" 当 schema 名找不到文件而 exit 1，第一个用例即红）。
 
-- [ ] **步骤 3：实现**
+- [x] **步骤 3：实现**
 
 `scripts/validate-output.mjs` 在参数解析（:12-17）之后插入模式分支：
 
@@ -2066,12 +2118,12 @@ function validatePlanIndex(planDir) {
 
 （import 补 `readdirSync`；usage 文案补一行 plan-index 模式说明。）
 
-- [ ] **步骤 4：运行测试确认通过**
+- [x] **步骤 4：运行测试确认通过**
 
 运行：`node --test scripts/tests/plan-index.test.mjs`
 预期：PASS ×4。全量：`node --test scripts/tests/` 预期全绿。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 git add scripts/
@@ -2081,6 +2133,8 @@ git commit -m "feat(T25): validate-output 新增 plan-index 结构校验（一�
 ## 收尾
 
 ### 任务 26：验收（acceptance-qa）
+
+- [x] 历史验收已执行并归档（2026-09-10 补记）：[验收报告](../acceptance/acceptance-report.md)记录最终 44/44 mjs 测试及 visual-path.sh PASS，并附平台验证证据；交付锚点 `76eb9e22` 已进入当前主分支。报告中的 Claude Code 升级后重装未实测、Grok SessionStart 运行时触发未验证及其他证据等级限制继续保留，完成记录不代表所有运行行为均已验证。本次仅核对历史证据，未重新验收。
 
 > 本任务由 executing-plans 收尾审查阶段触发 acceptance-qa 按下表执行，
 > 不参与逐任务连续执行；报告与证据落盘特性目录 `acceptance/` 子目录。
@@ -2103,13 +2157,15 @@ git commit -m "feat(T25): validate-output 新增 plan-index 结构校验（一�
 
 ### 任务 27：合并与清理
 
+> 2026-09-10 历史状态补记：收尾提交 `19d4d432`、历史验收报告、当前 worktree/分支/目录不存在的核对结果。测试退役扫描的直接记录未找到。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **资源台账**（清理依据；写计划时预登记已知资源，执行中创建即追加；行格式 `- [ ] <类型>: <标识> —— <清理命令>`）：
 
-- [ ] worktree: .worktrees/plan-2026-08-26-01-major-upgrade —— `git worktree remove .worktrees/plan-2026-08-26-01-major-upgrade && git branch -d plan/2026-08-26-01-major-upgrade`
+- [x] worktree: .worktrees/plan-2026-08-26-01-major-upgrade —— `git worktree remove .worktrees/plan-2026-08-26-01-major-upgrade && git branch -d plan/2026-08-26-01-major-upgrade`
 
 台账总则：**清理只遍历本台账、台账外一律不动**（可疑残留只报告不删）；共享缓存默认保留；台账限定持久资源，worktree 内构建产物随 worktree 删除自然回收、不入账。
 
-- [ ] **步骤 1：全量验证（安全网）与归属裁决**
+- [x] **步骤 1：全量验证（安全网）与归属裁决**
 
 在 worktree 内运行：`node --test scripts/tests/ && node scripts/validate-skills.mjs && node scripts/check-openai-sync.mjs && node scripts/check-plugin.mjs && bash scripts/tests/visual-path.test.sh`
 - 全绿 → 进入步骤 2。
@@ -2120,7 +2176,7 @@ git commit -m "feat(T25): validate-output 新增 plan-index 结构校验（一�
 
 扫描「相关测试范围」内测试找孤儿（测试名对不上任何 active spec 现行 Scenario 且对应 Requirement 已 REMOVED/被 Superseded 标注/所属 spec superseded，双条件缺一不可）。本计划为全新增测试，预期声明"无孤儿测试"后跳过；resource-ledger 被取代两条 Requirement 的既有 Scenario 若有同名测试（rg 按 Scenario 名核对），列清单征询用户。
 
-- [ ] **步骤 3：取代回写（本 spec `supersedes` 非空）**
+- [x] **步骤 3：取代回写（本 spec `supersedes` 非空）**
 
 按 spec「取代与共存」节执行部分取代：
 - `.spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md` 的「Requirement: 执行中创建即登记」与「Requirement: writing-plans 最终任务模板含资源台账（改了什么：清理步骤由固定 worktree 命令扩为台账遍历，新增台账小节）」两条标题下各插入：
@@ -2128,7 +2184,7 @@ git commit -m "feat(T25): validate-output 新增 plan-index 结构校验（一�
 - H1 下的 `Superseded-pending (2026-08-26)` 行移除。
 - 分面共存的四份 spec 零回写；提交命中其 covers 时按双声明规则同步或 `Spec-Guard: off` trailer 放行。
 
-- [ ] **步骤 4：合并回来源分支**
+- [x] **步骤 4：合并回来源分支**
 
 ```bash
 cd "$(dirname "$(git rev-parse --git-common-dir)")"
@@ -2137,11 +2193,11 @@ git merge plan/2026-08-26-01-major-upgrade
 
 合并冲突、或主工作区有未提交改动 → 停下向计划作者确认，不强行合并。
 
-- [ ] **步骤 5：清理（按资源台账逐条执行）**
+- [x] **步骤 5：清理（按资源台账逐条执行）**
 
 逐条执行台账各行清理命令并勾选。失败行保留未勾选并报告；已不存在的资源勾选注明。
 
-- [ ] **步骤 6：sync_commit 锚定**
+- [x] **步骤 6：sync_commit 锚定**
 
 ```bash
 SYNC=$(git rev-parse HEAD)

@@ -26,19 +26,21 @@
 
 ### 任务 0：建立隔离工作区
 
-- [ ] **步骤 1：检测已有隔离**
+> 2026-09-10 历史状态补记：历史验收/审查报告中的 worktree 对象；test-scoping 另有 `8a1146e7` 分支合并记录。按用户裁决，以历史隔离工作区记录和后续相关验证支持任务结果；原始隔离检测与开工基线过程记录缺失，不追认当时执行顺序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
+- [x] **步骤 1：检测已有隔离** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 运行：`git rev-parse --git-dir` 与 `git rev-parse --git-common-dir`
 两者不同、且 `git rev-parse --show-superproject-working-tree` 无输出（排除 submodule）
 → 已在隔离工作区，跳过本任务。
 
-- [ ] **步骤 2：建立 worktree**
+- [x] **步骤 2：建立 worktree**
 
 有原生 worktree 工具（如 EnterWorktree）或 using-git-worktrees skill 时优先使用（Codex 无原生 worktree 工具，直接走下面的手工路径）；否则手工降级：
 确认 `.worktrees/` 已被忽略（`git check-ignore -q .worktrees`，未忽略先加入 `.gitignore` 并提交），然后
 `git worktree add .worktrees/plan/2026-08-05-clarifying-skill -b plan/2026-08-05-clarifying-skill` 并切换到该目录。
 
-- [ ] **步骤 3：安装依赖并验证基线**
+- [x] **步骤 3：安装依赖并验证基线** — 结果补记：依据后续验证/历史交付证据关闭，原始过程记录缺失，不追认当时执行顺序。
 
 本仓库无 npm 依赖安装步骤（根目录无 package.json），基线即三校验：
 
@@ -54,6 +56,8 @@ node scripts/check-plugin.mjs --codex-validate && node scripts/validate-skills.m
 
 ### 任务 1：创建 skills/clarifying/（SKILL.md + openai.yaml）
 
+> 2026-09-10 历史状态补记：实施提交 `bda2534e` 的文件差异及历史验收报告。无；按最终交付和静态检查记录回填，不追认逐任务校验时序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 创建：`skills/clarifying/SKILL.md`
 - 创建：`skills/clarifying/agents/openai.yaml`
@@ -62,7 +66,7 @@ node scripts/check-plugin.mjs --codex-validate && node scripts/validate-skills.m
 - 消费：无（首任务）
 - 产出：SKILL.md 的节名锚点，供任务 3/4 的引用语指向——`核心纪律`（六条纪律所在节）、`独立会话模式`、`Codex 规范`（内嵌节名）；frontmatter `name: clarifying`。
 
-- [ ] **步骤 1：写 SKILL.md**
+- [x] **步骤 1：写 SKILL.md**
 
 写入 `skills/clarifying/SKILL.md`，完整内容：
 
@@ -142,7 +146,7 @@ description: >-
 - "被引用时也走一遍三出口" → 被引用模式的终点是把控制权还给引用方
 ````
 
-- [ ] **步骤 2：写 agents/openai.yaml**
+- [x] **步骤 2：写 agents/openai.yaml**
 
 写入 `skills/clarifying/agents/openai.yaml`，完整内容：
 
@@ -156,7 +160,7 @@ policy:
   allow_implicit_invocation: true
 ```
 
-- [ ] **步骤 3：运行校验确认通过**
+- [x] **步骤 3：运行校验确认通过**
 
 ```bash
 node scripts/validate-skills.mjs && node scripts/check-openai-sync.mjs
@@ -164,7 +168,7 @@ node scripts/validate-skills.mjs && node scripts/check-openai-sync.mjs
 
 预期：输出含 `Skill validation passed: skills/clarifying`，两脚本退出码 0。失败 → 按报错修 frontmatter/yaml 结构后重跑。
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 git add skills/clarifying/SKILL.md skills/clarifying/agents/openai.yaml
@@ -175,6 +179,8 @@ git commit -m "feat(T1): 新增 clarifying skill——共享澄清纪律（grill
 
 ### 任务 2：clarifying evals（行为用例 + 触发面用例）
 
+> 2026-09-10 历史状态补记：实施提交 `bda2534e` 的文件差异及历史验收报告。无；按最终交付和静态检查记录回填，不追认逐任务校验时序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 创建：`skills/clarifying/evals/evals.json`
 - 创建：`skills/clarifying/evals/trigger-evals.json`
@@ -183,7 +189,7 @@ git commit -m "feat(T1): 新增 clarifying skill——共享澄清纪律（grill
 - 消费：任务 1 的 `skills/clarifying/SKILL.md`（frontmatter description 即 trigger-evals 的被测对象）
 - 产出：spec 验收矩阵中 eval 行的落盘载体（验收任务将逐条核对）。
 
-- [ ] **步骤 1：写 evals.json**
+- [x] **步骤 1：写 evals.json**
 
 写入 `skills/clarifying/evals/evals.json`，完整内容（六条对应 spec Scenario：一次一题不倾泻、事实不落到用户头上、上游未定不问下游、用户催促直接做、就此结束零产物 + 写入 md、被引用不触发出口）：
 
@@ -225,7 +231,7 @@ git commit -m "feat(T1): 新增 clarifying skill——共享澄清纪律（grill
 }
 ```
 
-- [ ] **步骤 2：写 trigger-evals.json**
+- [x] **步骤 2：写 trigger-evals.json**
 
 写入 `skills/clarifying/evals/trigger-evals.json`，完整内容（near-miss 负例检验与 exploring/requirement-analysis/quick-fix 的边界）：
 
@@ -253,7 +259,7 @@ git commit -m "feat(T1): 新增 clarifying skill——共享澄清纪律（grill
 }
 ```
 
-- [ ] **步骤 3：运行校验确认通过**
+- [x] **步骤 3：运行校验确认通过**
 
 ```bash
 node scripts/check-plugin.mjs --codex-validate && node scripts/validate-skills.mjs
@@ -261,7 +267,7 @@ node scripts/check-plugin.mjs --codex-validate && node scripts/validate-skills.m
 
 预期：退出码 0（evals 为数据文件，校验器验证 skill 结构完整性不受影响）。
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 git add skills/clarifying/evals/evals.json skills/clarifying/evals/trigger-evals.json
@@ -274,6 +280,8 @@ git commit -m "feat(T2): clarifying evals——五条行为用例与触发面双
 
 ### 任务 3：requirement-analysis 阶段 3 改为引用 + codex-compat 裁剪
 
+> 2026-09-10 历史状态补记：实施提交 `bda2534e` 的文件差异及历史验收报告。无；按最终交付和静态检查记录回填，不追认逐任务校验时序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 修改：`skills/requirement-analysis/SKILL.md`（`## 阶段 3: 澄清问题` 节，当前位于 133-147 行附近）
 - 修改：`skills/requirement-analysis/references/codex-compat.md`（`## 提问规范` 节，当前位于 41-48 行附近）
@@ -282,7 +290,7 @@ git commit -m "feat(T2): clarifying evals——五条行为用例与触发面双
 - 消费：任务 1 产出的 skill 名 `clarifying` 及其节名锚点（核心纪律、Codex 规范）
 - 产出：改造后的阶段 3 文本（任务 6 验收将做改造前后语义对照）。
 
-- [ ] **步骤 1：改写 SKILL.md 阶段 3**
+- [x] **步骤 1：改写 SKILL.md 阶段 3**
 
 将 `## 阶段 3: 澄清问题` 节从原文（自"**目标**：解决所有模糊、歧义与多解取舍。"起，至"**回补探索**"段落止，含视觉预览段）替换为：
 
@@ -301,7 +309,7 @@ git commit -m "feat(T2): clarifying evals——五条行为用例与触发面双
 
 替换要点核对：原六条纪律 bullet（一次一题/先探索后提问/依赖排序/AskUserQuestion 工具行/术语挑战/不编造问题）全部收进引用句，语义一条不丢；视觉预览与回补探索两段逐字保留。
 
-- [ ] **步骤 2：裁剪 codex-compat.md 提问规范节**
+- [x] **步骤 2：裁剪 codex-compat.md 提问规范节**
 
 将 `## 提问规范（阶段 3 澄清、阶段 4 方案选定、阶段 5 设计批准、阶段 7 spec review）` 节整节替换为：
 
@@ -313,7 +321,7 @@ git commit -m "feat(T2): clarifying evals——五条行为用例与触发面双
 三道门（方案选定 / 设计批准 / spec review）同样以普通对话消息呈现，等待用户明确回复后再继续；不要求用户切换模式，也不依赖环境专有输入工具。
 ```
 
-- [ ] **步骤 3：语义对照自检**
+- [x] **步骤 3：语义对照自检**
 
 逐条核对改造前后条目归属（改造前六条纪律 bullet + 两段特有内容 → 改造后引用句 + 保留段），确认无丢失、无新增约束。运行：
 
@@ -323,7 +331,7 @@ git diff skills/requirement-analysis/ | head -80
 
 预期：diff 仅涉及阶段 3 节与 codex-compat 提问规范节，其余阶段零改动。
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 git add skills/requirement-analysis/SKILL.md skills/requirement-analysis/references/codex-compat.md
@@ -334,6 +342,8 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "refactor(T3): requirement-analysis 阶�
 
 ### 任务 4：quick-fix 步骤 3 改为引用 + Codex 映射表更新
 
+> 2026-09-10 历史状态补记：实施提交 `bda2534e` 的文件差异及历史验收报告。无；按最终交付和静态检查记录回填，不追认逐任务校验时序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 修改：`skills/quick-fix/SKILL.md`（`### 步骤 3` 首段，当前 50 行附近；`## 执行环境兼容性` 映射表"用户澄清/确认"行，当前 95 行附近）
 
@@ -341,7 +351,7 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "refactor(T3): requirement-analysis 阶�
 - 消费：任务 1 产出的 skill 名 `clarifying` 及节名锚点
 - 产出：改造后的步骤 3 文本（任务 6 验收对照）。
 
-- [ ] **步骤 1：改写步骤 3 首段**
+- [x] **步骤 1：改写步骤 3 首段**
 
 将原文：
 
@@ -355,7 +365,7 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "refactor(T3): requirement-analysis 阶�
 
 三类核心确认（根因认定/修复方案/契约影响）及其后全部内容逐字保留、零改动。
 
-- [ ] **步骤 2：更新 Codex 映射表行**
+- [x] **步骤 2：更新 Codex 映射表行**
 
 将映射表中：
 
@@ -367,7 +377,7 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "refactor(T3): requirement-analysis 阶�
 | 用户澄清/确认 | `AskUserQuestion`（单题带选项） | 对话消息提问（逐题规范见 clarifying 内嵌 Codex 规范节） |
 ```
 
-- [ ] **步骤 3：语义对照自检**
+- [x] **步骤 3：语义对照自检**
 
 ```bash
 git diff skills/quick-fix/SKILL.md
@@ -375,7 +385,7 @@ git diff skills/quick-fix/SKILL.md
 
 预期：diff 仅两处（步骤 3 首段 + 映射表一行）；三类核心确认、步骤 2.5 升级门、5a/5b 分支全部零改动。
 
-- [ ] **步骤 4：提交**
+- [x] **步骤 4：提交**
 
 ```bash
 git add skills/quick-fix/SKILL.md
@@ -390,6 +400,8 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "refactor(T4): quick-fix 步骤 3 引用 
 
 ### 任务 5：双端清单与 README 同步
 
+> 2026-09-10 历史状态补记：实施提交 `bda2534e` 的文件差异及历史验收报告。无；按最终交付和静态检查记录回填，不追认逐任务校验时序。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
 **文件**：
 - 修改：`.claude-plugin/plugin.json`（description、keywords）
 - 修改：`.claude-plugin/marketplace.json`（plugins[0].skills 数组）
@@ -402,11 +414,11 @@ SKIP_OPENAI_SYNC_CHECK=1 git commit -m "refactor(T4): quick-fix 步骤 3 引用 
 - 消费：任务 1 的 skill 名与定位描述
 - 产出：无（终端发布面）。
 
-- [ ] **步骤 1：更新 .claude-plugin/plugin.json**
+- [x] **步骤 1：更新 .claude-plugin/plugin.json**
 
 description 的 EN 半句在 `quick-fix (lightweight bug-fix workflow)` 后插入 `, clarifying (shared clarification discipline)`；zh 半句在 `quick-fix 轻量修复` 后插入 `、clarifying 共享澄清纪律`。keywords 数组在 `"quick-fix"` 后插入 `"clarifying"`。
 
-- [ ] **步骤 2：更新 .claude-plugin/marketplace.json**
+- [x] **步骤 2：更新 .claude-plugin/marketplace.json**
 
 `plugins[0].skills` 数组在 `"./skills/exploring"` 之后插入一行：
 
@@ -414,7 +426,7 @@ description 的 EN 半句在 `quick-fix (lightweight bug-fix workflow)` 后插�
         "./skills/clarifying",
 ```
 
-- [ ] **步骤 3：更新 .codex-plugin/plugin.json**
+- [x] **步骤 3：更新 .codex-plugin/plugin.json**
 
 - description：EN 半句 `quick-fix (lightweight bug-fix workflow)` 后插入 `, clarifying (shared clarification discipline)`；zh 半句 `quick-fix 轻量修复` 后插入 `、clarifying 共享澄清纪律`
 - keywords：`"quick-fix"` 后插入 `"clarifying"`
@@ -425,7 +437,7 @@ description 的 EN 半句在 `quick-fix (lightweight bug-fix workflow)` 后插�
       "Use clarifying to grill this idea into shared understanding, one question at a time / 使用 clarifying 逐题把这个想法磨到共识",
 ```
 
-- [ ] **步骤 4：更新两份 README**
+- [x] **步骤 4：更新两份 README**
 
 `README.md` 第 18 行 quick-fix bullet 之后插入：
 
@@ -443,7 +455,7 @@ description 的 EN 半句在 `quick-fix (lightweight bug-fix workflow)` 后插�
 
 第 51 行独立使用句的 `quick-fix 处理已决定、无设计空间的小修复，不走完整设计流程` 后追加 `；clarifying 不承诺任何工作流，单独把一个想法逐题磨到共识`。
 
-- [ ] **步骤 5：运行校验确认通过**
+- [x] **步骤 5：运行校验确认通过**
 
 ```bash
 node scripts/check-plugin.mjs --codex-validate && node scripts/validate-skills.mjs && node scripts/check-openai-sync.mjs
@@ -451,7 +463,7 @@ node scripts/check-plugin.mjs --codex-validate && node scripts/validate-skills.m
 
 预期：三者退出码 0（marketplace 新增路径 `./skills/clarifying` 必须真实存在——任务 1 已创建）。
 
-- [ ] **步骤 6：提交**
+- [x] **步骤 6：提交**
 
 ```bash
 git add .claude-plugin/plugin.json .claude-plugin/marketplace.json .codex-plugin/plugin.json README.md README.zh-CN.md
@@ -463,6 +475,8 @@ git commit -m "feat(T5): 发布面登记 clarifying——双端清单、defaultP
 ## 测试与验收
 
 ### 任务 6：验收（acceptance-qa）
+
+- [x] 历史验收已执行并归档（2026-09-10 补记）：[验收报告](../acceptance/acceptance-report.md)记录 8 项静态检查 PASS；交付锚点 `c234049c` 已进入当前主分支。受网关故障影响，当时由主线程降级执行，独立性限制保留。本次仅核对历史证据，未重新验收。
 
 > 本任务由 executing-plans 收尾审查阶段触发 acceptance-qa 按下表执行，
 > 不参与逐任务连续执行；报告与证据落盘特性目录 `acceptance/` 子目录。
@@ -480,7 +494,9 @@ git commit -m "feat(T5): 发布面登记 clarifying——双端清单、defaultP
 
 ### 任务 7：合并与清理
 
-- [ ] **步骤 1：全量验证**
+> 2026-09-10 历史状态补记：收尾提交 `c234049c`、历史验收报告、当前 worktree/分支/目录不存在的核对结果。无；清理按当前资源已不存在补记。详见[证据对账](../../reports/2026-09-10-01-legacy-plan-status-backfill.md)。本次未重新验收。
+
+- [x] **步骤 1：全量验证**
 
 在 worktree 内运行：
 
@@ -490,7 +506,7 @@ node scripts/check-plugin.mjs --codex-validate && node scripts/validate-skills.m
 
 预期：三者退出码 0，且 `validate-skills` 输出含 `skills/clarifying`。失败 → 修复后才进入合并。
 
-- [ ] **步骤 2：合并回来源分支**
+- [x] **步骤 2：合并回来源分支**
 
 ```bash
 cd "$(dirname "$(git rev-parse --git-common-dir)")"   # 回到主工作区
@@ -499,14 +515,14 @@ git merge plan/2026-08-05-clarifying-skill
 
 合并冲突、或主工作区有未提交改动 → 停下向计划作者确认，不强行合并。
 
-- [ ] **步骤 3：清理**
+- [x] **步骤 3：清理**
 
 ```bash
 git worktree remove .worktrees/plan/2026-08-05-clarifying-skill
 git branch -d plan/2026-08-05-clarifying-skill
 ```
 
-- [ ] **步骤 4：sync_commit 锚定**
+- [x] **步骤 4：sync_commit 锚定**
 
 ```bash
 SYNC=$(git rev-parse HEAD)   # 合并完成后的主工作区 HEAD
