@@ -61,6 +61,7 @@
     "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r2/normal",
     "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/model-model-r2/divergent",
     "T07 fixture disposed: /Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview/.worktrees/status-overview-qa/acceptance-machine-r3",
-    "T07 owned fixture scope archived and disposed"
+    "T07 owned fixture scope archived and disposed",
+    "T07 worktree removed; branch cleanup pending"
   ]
 }
