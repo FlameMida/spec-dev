@@ -155,6 +155,7 @@ export async function collectStatus(repoPath,overrides={}){
 const display=value=>String(value??'—').replace(/[\u0000-\u001f\u007f-\u009f]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));
 export function renderStatus(snapshot){
  const lines=['本次为进度记录快照，未重新验收，也未核验交付事实。','',`仓库：${display(snapshot.repository.worktree)}`,`特性 ${snapshot.summary.features} 个；来源记录 ${snapshot.summary.source_records} 份`,''];
+ if(snapshot.diagnostics.length)lines.push('未知不等于没有：任务读取失败时，不能据空列表断言没有进行中、待验或阻塞任务；这些状态无法判断。','');
  lines.push('WORKTREE | 分支 / HEAD | 读取');
  for(const w of snapshot.worktrees)lines.push(`${display(w.path)} | ${display(w.branch??('detached '+w.head))} | ${display(w.read_status)}`);
  lines.push('','ROADMAP | 来源 | 记录状态 | 子项目');

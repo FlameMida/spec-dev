@@ -59,3 +59,9 @@ test('S20 BMP与补充平面路径按Unicode码点排序',()=>fixture(root=>{
  for(const name of ['Ａ','𠀀'])write(root,`.spec-dev/${name}/spec/f-design.md`,'---\nspec_dev:\n  status: draft\n---');
  const r=call(root);assert.equal(r.exit,0);assert.deepEqual(r.data.features.map(f=>f.key),['.spec-dev/Ａ','.spec-dev/𠀀']);
 }));
+
+test('S13/S26 解析失败明确区分未知与不存在',()=>fixture(root=>{
+ plan(root);write(root,'.spec-dev/F/plan/progress.yaml','invalid : [ yaml');
+ const json=call(root),text=call(root,[]);assert.equal(json.exit,1);assert.equal(text.exit,1);assert.equal(json.data.features[0].sources[0].plan.counts,null);
+ assert.match(text.out,/未知不等于没有/);assert.match(text.out,/不能据空列表断言/);
+}));
