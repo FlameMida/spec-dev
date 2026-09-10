@@ -138,3 +138,32 @@ export async function collectStatus(repoPath,overrides={}){
  result.diagnostics.sort((a,b)=>sort(a.worktree+'\0'+a.path+'\0'+a.code,b.worktree+'\0'+b.path+'\0'+b.code));
  return result;
 }
+const display=value=>String(value??'—').replace(/[\u0000-\u001f\u007f-\u009f]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));
+export function renderStatus(snapshot){
+ const lines=['本次为进度记录快照，未重新验收，也未核验交付事实。','',`仓库：${display(snapshot.repository.worktree)}`,`特性 ${snapshot.summary.features} 个；来源记录 ${snapshot.summary.source_records} 份`,''];
+ lines.push('WORKTREE | 分支 / HEAD | 读取');
+ for(const w of snapshot.worktrees)lines.push(`${display(w.path)} | ${display(w.branch??('detached '+w.head))} | ${display(w.read_status)}`);
+ lines.push('','ROADMAP | 来源 | 记录状态 | 子项目');
+ for(const g of snapshot.roadmaps)for(const r of g.sources){
+  lines.push(`${display(g.key)} | ${display(r.worktree)} | ${display(r.meta?.status)} | ${r.rows.length}`);
+  for(const row of r.rows)lines.push(`  ${display(row.id)} ${display(row.name)} | ${display(row.status)} | ${display(row.target)}`);
+ }
+ lines.push('','特性 | 来源 | SPEC 生命周期 | 计划记录');
+ for(const f of snapshot.features){
+  for(const s of f.sources){
+   const p=s.plan;let summary='无计划记录';
+   if(s.read_status!=='ok')summary='记录不完整；比例未知';
+   else if(p?.format==='legacy')summary=p.counts?`复选框记录：全勾选 ${p.counts.checked}/${p.counts.total}`:'复选框记录：比例未知';
+   else if(p)summary=p.counts?`已完成记录 ${p.counts.completed}/${p.counts.total}；进行中 ${p.counts.in_progress}；待验 ${p.counts.awaiting_verification}；阻塞 ${p.counts.blocked}`:'比例未知';
+   lines.push(`${display(f.key)} | ${display(s.worktree)} | ${s.specs.map(x=>display(x.status)).join(', ')||'无 spec 记录'} | ${summary}`);
+   for(const file of s.files)lines.push('  文件：'+display(file));
+   if(p){lines.push('  记录中的当前票：'+display(p.current));for(const t of p.tasks)lines.push(`  ${display(t.id)} ${display(t.title)} | ${display(t.status)}`);for(const g of p.groups)lines.push(`  组 ${display(g.id)} | ${display(g.status)}`);}
+  }
+  if(f.divergence.different)lines.push('  来源分歧：'+f.divergence.fields.join(', ')+'；以上来源并列，不自动择新');
+ }
+ if(!snapshot.features.length&&!snapshot.roadmaps.length)lines.push('未发现记录');
+ lines.push('','读取诊断');
+ if(!snapshot.diagnostics.length)lines.push('无读取错误');
+ for(const d of snapshot.diagnostics)lines.push(`${display(d.code)} | ${display(d.worktree)} | ${display(d.path)} | ${display(d.message)}`);
+ return lines.join('\n')+'\n';
+}
