@@ -1,0 +1,3 @@
+execution/**/*.log -whitespace
+acceptance/**/*.log -whitespace
+acceptance/**/*.jsonl -whitespace

@@ -108,3 +108,7 @@ critic缺口最多派一轮对应维度supplement并用critic-2补核；D可来�
 ### exploring-clarifying T05 切面同步
 
 本次T05更新skills/requirement-analysis/SKILL.md、skills/requirement-analysis/agents/openai.yaml、README.md、README.zh-CN.md、guardrail/migrate-to-spec-dev.mjs、skills/requirement-analysis/evals/evals.json、skills/exploring/evals/evals.json、skills/exploring/evals/trigger-evals.json、scripts/tests/exploring-clarifying.test.mjs的获批探索/澄清切面；其余现行条款保持，未将已取代条款重新激活。6项分版本行为贡献及边界见 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T05/green-selection.json；S26公共命令回归前后通过但不冒称四份独立哈希回执，原始失败及T06关注项分别保留；行为核查与装配证据见 .spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t05-red、.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/model/t05-green 及 .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T05/；这些任务期结果不替代最终候选验收。
+
+## 与 status-overview 的分面共存
+
+.spec-dev/2026-09-10-01-status-overview/spec/status-overview-design.md 负责同一仓库多 worktree 的只读记录投影及独立 CLI。本文现行未取代条款、状态写入/恢复/验收/守卫/诊断行为保持，双方 covers 按各自切面声明；status 的完成仅表示记录，不替代本文要求的事实核验。本项不修改既有守卫执行入口。

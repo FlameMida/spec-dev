@@ -354,3 +354,37 @@ JSON 顶层固定：`schema_version: 1`、`verification: "not_performed"`、`rep
 ## 当前交付状态
 
 用户已通过 spec review 并同意编写实施计划，现激活为 active；尚未实施、未运行产品测试。独立设计审查首轮发现两处问题，修订后增量复审 Approved；详见同目录 `design-review.md`。用户以 `ok` 批准 review 及编写计划，已交接 writing-plans；执行仍需后续明确指令。
+
+### T00 基线修正
+
+来源提交af57f444新增ddd-lifecycle后README目录表遗漏，来源main与隔离工作区同一计数测试均失败。本轮仅补双语目录条目以恢复既有检查，未改变该技能行为；原件见execution/serial/T00/source-counter与related。
+
+### T01 实施记录
+
+本票实现与验证回执位于 execution/serial/T01/；原失败保留，整体交付仍需T06与T07。
+
+### T02 实施记录
+
+本票实现与验证回执位于 execution/serial/T02/；原失败保留，整体交付仍需T06与T07。
+
+### T03 实施记录
+
+本票实现与验证回执位于 execution/serial/T03/；原失败保留，整体交付仍需T06与T07。
+
+### T04 实施记录
+
+本票实现与验证回执位于 execution/serial/T04/；原失败保留，整体交付仍需T06与T07。
+
+### T05 实施记录
+
+本票实现与验证回执位于 execution/serial/T05/；原失败保留，整体交付仍需T06与T07。
+
+### T06 边界修复记录
+
+独立A/B/S审查及独立反驳确认三项同范围缺陷：旧任务区域未结束、worktree中途消失未诊断、补充平面字符未按码点排序。新增公共CLI/collectStatus反例先红，修复后33项相关测试通过；仍待复审与统一最终验收，不改变R06/R02/R12/R09合同。证据见acceptance/reviews/disposition.json和execution/serial/T06/review-boundaries-*。
+
+T06另补现有行为保护：重读后的生命周期与任务状态来自同一第二批文件、v2拒绝未知字段与非JSON；首次即绿，不伪造RED。相关验证34/34，后续统一候选验收保留这些检查。
+
+T06模型partial原例真实FAIL且经独立反驳确认：把不可读来源的未知状态总结为不存在。按原R07/R13补充CLI和commands中的“未知不等于没有”说明，不改变记录结构或验收阈值。对应机器红绿通过35项；新候选须完整重验三例，不能拼接旧候选normal/divergent的通过。
+
+T06最终验收已闭合：全库215/215、machine-r3 25/25、统一候选model-r2三例独立PASS；critic确认无剩余阻断缺口，允许本地交付。证据与验证边界以acceptance/acceptance-report.md为准。

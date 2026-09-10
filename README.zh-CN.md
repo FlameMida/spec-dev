@@ -241,6 +241,14 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-des
 
 把一个需求分诊到正确通道：`/triage <需求>`
 
+### 项目进度记录
+
+运行 `node "<插件绝对目录>/scripts/status.mjs"` 查看同一仓库全部登记 worktree；从项目任意子目录调用，或加 `--repo "/项目路径"`。`--json` 输出同一快照的JSON，`--help` 查看用法。
+
+输出roadmap、spec生命周期、计划完成/待验/阻塞记录及来源；不同worktree不自动择新，未重新验收或核验交付。退出码0表示读取完成（可有blocked/分歧），1表示部分读取或格式失败，2表示调用错误。支持现行v1模板YAML/JSON、v2 JSON和旧单文件复选框；模板外语法明确诊断，不自动迁移。只读、离线、一次性运行，不是doctor健康检查或执行恢复。
+
+支持commands的宿主可使用status命令指引；Codex通过插件提示入口或上述CLI调用，不依赖commands自动加载。源码仍位于插件目录，无需安装到用户项目。
+
 ## 专门化 Agents
 
 默认串行由主线程写码。显式选择 executing-plans-parallel 后，implementer 在独立 worktree 内按认领写码；主线程仍独占进度与合并，其他 agents 保持分析职责：
@@ -272,6 +280,7 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 ├── commands/                        # /doctor、/triage 命令
 ├── guardrail/                       # spec 漂移守护（可装入目标仓库）
 ├── skills/
+│   ├── ddd-lifecycle/               # DDD 全流程开发规范
 │   ├── exploring/                   # 探索模式（思考伙伴）
 │   ├── clarifying/                  # 共享澄清纪律（grill 式）
 │   ├── requirement-analysis/        # 8 阶段需求设计工作流

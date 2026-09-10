@@ -198,3 +198,7 @@ T04在共享的requirement-analysis入口增加外部事实研究的定义读取
 ### exploring-clarifying T06 验收修复同步
 
 本次在既有获批切面内修正历史数值/条件与现行/拟议语义区分、RA 入口的澄清权威及首次外部材料前置、澄清互斥选项，并将 exploring 展开的恢复细则收回 exploration-patterns 单点，相关元数据同步。原门、TDD、契约生命周期和未取代条款不变；不新增公共 runner/schema。真实反例、独立反驳及修复前保护见 `.spec-dev/2026-09-09-01-exploring-clarifying/acceptance/reviews/disposition-r1.json` 和 `execution/serial/T06/`；当前仍待统一最终候选验收和本地交付，不以任务期或静态通过宣称全部 DELIVERED。
+
+## 与 status-overview 的分面共存
+
+.spec-dev/2026-09-10-01-status-overview/spec/status-overview-design.md 负责同一仓库多 worktree 的只读记录投影及独立 CLI。本文现行未取代条款、状态写入/恢复/验收/守卫/诊断行为保持，双方 covers 按各自切面声明；status 的完成仅表示记录，不替代本文要求的事实核验。本项不修改既有守卫执行入口。
