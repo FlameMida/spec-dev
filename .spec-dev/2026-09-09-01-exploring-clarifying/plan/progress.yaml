@@ -44,7 +44,6 @@
   "resources": [
     "worktree: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying —— git worktree remove; git branch -d plan/2026-09-09-01-exploring-clarifying",
     "fixture-scope: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa —— 子夹具逐项销账后仅清理空目录",
-    "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t01-red/S19 —— 归档并核验后由T07按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t01-red/S20 —— 归档并核验后由T07按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t01-red/S22 —— 归档并核验后由T07按实际路径清理",
     "fixture: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t01-red/S23 —— 归档并核验后由T07按实际路径清理",
@@ -410,6 +409,7 @@
     "T07: CLI active resource discharged after fresh query: 31fd2ece-a420-4ee4-9bf2-988e21eb084e; host stop, client history retained; evidence .spec-dev/2026-09-09-01-exploring-clarifying/execution/serial/T07/cli-recheck.json",
     "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t00-preflight/P00",
     "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t00-preflight-r2/P00",
-    "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t01-red/S18"
+    "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t01-red/S18",
+    "T07: archived fixture removed or verified absent: /Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying/.worktrees/ec-qa/t01-red/S19"
   ]
 }
