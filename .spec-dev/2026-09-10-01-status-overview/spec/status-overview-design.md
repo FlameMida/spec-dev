@@ -386,3 +386,5 @@ JSON 顶层固定：`schema_version: 1`、`verification: "not_performed"`、`rep
 T06另补现有行为保护：重读后的生命周期与任务状态来自同一第二批文件、v2拒绝未知字段与非JSON；首次即绿，不伪造RED。相关验证34/34，后续统一候选验收保留这些检查。
 
 T06模型partial原例真实FAIL且经独立反驳确认：把不可读来源的未知状态总结为不存在。按原R07/R13补充CLI和commands中的“未知不等于没有”说明，不改变记录结构或验收阈值。对应机器红绿通过35项；新候选须完整重验三例，不能拼接旧候选normal/divergent的通过。
+
+T06最终验收已闭合：全库215/215、machine-r3 25/25、统一候选model-r2三例独立PASS；critic确认无剩余阻断缺口，允许本地交付。证据与验证边界以acceptance/acceptance-report.md为准。
