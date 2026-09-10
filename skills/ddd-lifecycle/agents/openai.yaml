@@ -1,0 +1,7 @@
+interface:
+  display_name: "DDD Lifecycle"
+  short_description: "语言无关的 DDD 全流程规范：统一语言、限界上下文、战术建模、六边形架构、ADR 与模型评分。"
+  default_prompt: "Use $ddd-lifecycle for domain modeling, ubiquitous language, context mapping, entities and aggregates, domain events and repositories, hexagonal architecture, ADR decisions, or domain-model reviews. / 用 $ddd-lifecycle 开展领域建模、维护统一语言、划分限界上下文、设计实体与聚合及领域事件和仓储、搭建六边形架构、判断 ADR 或评审领域模型。"
+
+policy:
+  allow_implicit_invocation: true

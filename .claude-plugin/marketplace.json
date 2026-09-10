@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "中英双语的设计→计划→执行 skill 管线与全能验收工作流插件集",
-    "version": "8.3.0"
+    "version": "8.4.0"
   },
   "plugins": [
     {
@@ -29,7 +29,8 @@
         "./skills/quick-fix",
         "./skills/anysearch",
         "./skills/sequential-thinking",
-        "./skills/test-strategy"
+        "./skills/test-strategy",
+        "./skills/ddd-lifecycle"
       ]
     }
   ]
