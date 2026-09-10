@@ -2,7 +2,7 @@
 
 ## 结论与当前交付阶段
 
-**功能验收 PASS，T06可关闭；T07本地合并与清理尚待执行。**
+**已完成本地交付，T00—T07全部闭合。**
 
 最终产品候选 `b646f67fa4eeca1b409ca070624a2f91bdba8f6b`。七项产品SHA见[candidate.json](candidate.json)，与model-r2三例before/after及当前文件一致。后续治理提交不改变该产品快照。
 
@@ -23,7 +23,7 @@ S09最终公开查询包含块/行内映射、单双引号、注释、非空note
 
 ## Requirement Reconciliation
 
-13项需求、26个Scenario的必需证据均闭合：13项功能交付就绪，0 DEFERRED / 0 DROPPED / 0 SUPERSEDED / 0 ADDED-IN-FLIGHT；物理交付由T07完成。
+13项需求、26个Scenario的必需证据均闭合：13 DELIVERED，0 DEFERRED / 0 DROPPED / 0 SUPERSEDED / 0 ADDED-IN-FLIGHT；实际本地合并与资源处置已完成。
 
 | Requirement | Scenario | 验收 |
 |---|---|---|
@@ -67,4 +67,4 @@ S09最终公开查询包含块/行内映射、单双引号、注释、非空note
 
 ## 资源与后续状态
 
-当前只剩T07：归档本计划自有fixture scope，合并实际来源main，逐项清理资源，删除自有worktree/分支，写实际sync_commit并更新AB-34胶囊。台账外数据与全局客户端历史保持。未push/发布。
+实际合并 40eb7a10e9c02cb4e11e986089935c36cdd80b13，来源main；11项自有资源已处置，resources为空，自有worktree与分支已删除。原始失败与fixture归档均保留；台账外数据与全局客户端历史保持，未push/发布。实际回执见 ../execution/serial/T07/merge.json、cleanup.json、archive.json。

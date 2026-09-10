@@ -12,7 +12,7 @@ spec_dev:
     - ".codex-plugin/plugin.json"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: null
+  sync_commit: 40eb7a10e9c02cb4e11e986089935c36cdd80b13
   supersedes: []
   superseded_by: null
 ---
@@ -351,7 +351,7 @@ JSON 顶层固定：`schema_version: 1`、`verification: "not_performed"`、`rep
 - 当前工作区曾发现 `.spec-dev/.../acceptance/.../.spec-dev/demo/plan/progress.yaml`，S05 必须保留实际形状的反例。
 - 当前 commands/ 在 Codex 不作为加载入口，新增 defaultPrompt 及 README 的真实脚本用法；不新增 skill 清单项、不向用户项目复制脚本。
 
-## 当前交付状态
+## 历史设计与计划检查点（以下交付结论为准）
 
 用户已通过 spec review 并同意编写实施计划，现激活为 active；尚未实施、未运行产品测试。独立设计审查首轮发现两处问题，修订后增量复审 Approved；详见同目录 `design-review.md`。用户以 `ok` 批准 review 及编写计划，已交接 writing-plans；执行仍需后续明确指令。
 
@@ -388,3 +388,7 @@ T06另补现有行为保护：重读后的生命周期与任务状态来自同�
 T06模型partial原例真实FAIL且经独立反驳确认：把不可读来源的未知状态总结为不存在。按原R07/R13补充CLI和commands中的“未知不等于没有”说明，不改变记录结构或验收阈值。对应机器红绿通过35项；新候选须完整重验三例，不能拼接旧候选normal/divergent的通过。
 
 T06最终验收已闭合：全库215/215、machine-r3 25/25、统一候选model-r2三例独立PASS；critic确认无剩余阻断缺口，允许本地交付。证据与验证边界以acceptance/acceptance-report.md为准。
+
+## 本地交付结论
+
+T00—T07已完成；实际合并 40eb7a10e9c02cb4e11e986089935c36cdd80b13。必需场景与独立判读以acceptance/acceptance-report.md为准；原失败与nightly边界保留。本次未push/发布。

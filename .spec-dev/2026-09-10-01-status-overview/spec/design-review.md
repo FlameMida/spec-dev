@@ -37,4 +37,4 @@
 
 ## 用户 review 与实施边界
 
-用户随后以 `ok` 通过修订后的 spec review 并同意编写实施计划，spec 已在 `7d8d4a87` 激活为 active。实施计划现保存于 `../plan/index.md`；没有实施、合并、推送或产品验收结论，执行仍待明确指令。
+用户随后以 `ok` 通过修订后的 spec review 并同意编写实施计划，spec 已在 `7d8d4a87` 激活为 active。实施计划现保存于 `../plan/index.md`；用户后续已批准实施；T00—T07已完成本地交付，实际合并 40eb7a10e9c02cb4e11e986089935c36cdd80b13，详见 ../acceptance/acceptance-report.md；未push/发布。

@@ -122,6 +122,8 @@ spec_dev_roadmap:
 
 ### #8 p2-watchlist
 
+- **AB-34本地交付**：status-overview实施、验收与资源处置完成，实际merge 40eb7a10e9c02cb4e11e986089935c36cdd80b13；入口 `.spec-dev/2026-09-10-01-status-overview/`。仅AB-34交付，其余P2沿各自留观/取消记录，#8不自动结项。
+
 - **2026-09-10 AB-34 实施计划已保存**：入口 `.spec-dev/2026-09-10-01-status-overview/plan/index.md`；T00—T07共8任务，隔离/文档语法/计划状态/多worktree采集/CLI/公开入口/验收/交付，普通v1、默认串行。覆盖13Req/26Scenario、25机器场景和3真实模型入口场景；全部pending，尚无实施指令。主线程五查、plan-index、代码块及累计模块语法/路径检查通过，详见plan/self-review.md和validation.json；没有产品或模型验收通过结论。
 - **2026-09-10 AB-34 完整设计获批并落盘**：用户依次确认同一 Git 仓库所有登记 worktree、展示记录并提示格式/缺失/分歧且不重新验收、独立 CLI 表格 + JSON；六部分完整设计经通俗解释后用户回复 `ok`。spec `.spec-dev/2026-09-10-01-status-overview/spec/status-overview-design.md`（active，13 Requirement / 26 Scenario）；独立审查两处修订后 Approved，初稿提交 `87c8c683`，记录见同目录 `design-review.md`。用户已以 `ok` 通过 spec review 并同意编写计划，激活提交 `7d8d4a87`；本项尚未实施。
 - **当前 P2 处置**：AB-34 启动；AB-15/28/41 继续留观；AB-24 保留原一次一题并等待实际反馈；AB-43 原全量瘦身任务取消，当前14项 description 折叠文本均值约234字符，原双语长度前提已变化，触发准确率若有新证据另评。本轮不自动交付或实现其余项。
