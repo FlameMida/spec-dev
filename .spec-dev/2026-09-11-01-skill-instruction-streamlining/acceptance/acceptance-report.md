@@ -9,7 +9,7 @@
 - A 独立补跑 37/37，原始证据 `independent-tests/A/`；补跑用于可移交归档，不倒推前次已有文件回执。
 - 30 个排除文件哈希一致，见 `integrity.json`；五个来源版本回退文件保持未提交。
 - 真实 PR 模型冒烟的 6 个 Scenario、10 个子例通过独立审计及主线程证据核对；共 26 次 actor 调用、12 次独立判读。详见 `main-semantic-audit.json`。
-- 夜间全 43 场景评测未运行，按批准矩阵非阻塞、明确未验证；最终全量测试 T14 尚未到期。
+- 夜间全 43 场景评测未运行，按批准矩阵非阻塞、明确未验证；最终全量 253/253 通过；包、元数据、官方 Codex CLI 安装及 15 个技能格式检查 exit 0。
 
 ## 偏差与失败保留
 
@@ -68,3 +68,11 @@
 S03 首轮 feature 因缺少购物车矩阵为 unverified；修正合成矩阵及 diagnose 请求混杂后仅重跑 S03，原始结果保留。此为夹具补证，不修改候选产品规则。
 
 完整夜间模型评测：S01, S02, S03, S04, S05, S06, S07, S08, S09, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19, S20, S21, S22, S23, S24, S25, S26, S27, S28, S29, S30, S31, S32, S33, S34, S35, S36, S37, S38, S39, S40, S41, S42, S43 均未运行（non-blocking）；PR 冒烟不替代它们的完整分支覆盖。
+
+## T14 最终验证
+
+首次全量 252/253：session-explain 测试依赖仓库已有 spec，受控副本没有档案而失败。改为自建已跟踪合成 spec 后，定向 4/4、全量 253/253（0 skipped）通过；产品 guardrail 未改。原失败与新结果分别保留。
+
+`check-plugin.mjs`、`check-openai-sync.mjs`、`check-plugin.mjs --codex-validate`、`validate-skills.mjs` 均 exit 0；官方 CLI 安装检查真实通过，非跳过。证据在 `execution/serial/T14/`。补充独立复审及 4/4 原始回执见 `review-T14-supplement/`。
+
+旧档案测试退役盘点及旧 spec 取代回写按用户排除边界未执行，不声称不存在历史交集。模型/测试临时目录仅在实际合并及身份校验后清理；CLI 会话历史和本特性证据保留。
