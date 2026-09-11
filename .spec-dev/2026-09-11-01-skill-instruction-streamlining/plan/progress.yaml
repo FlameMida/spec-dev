@@ -105,6 +105,7 @@
     "T11 self_check: scope and interface checked; actual logs in execution/serial/T11",
     "T12 self_check: scope and interface checked; actual logs in execution/serial/T12",
     "T13 model run root /var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-cjfopqj1; source=b55483739d4215b20e91d87209bef8ef8a09fcf9; baseline=37bfc650631f7226f8e50b410e6244a74d390b75; MODE=smoke",
-    "owned-resource:{\"path\": \"/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-cjfopqj1\", \"identity\": [16777233, 197353800]}"
+    "owned-resource:{\"path\": \"/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-cjfopqj1\", \"identity\": [16777233, 197353800]}",
+    "model-archive:{\"path\": \"/Users/maverick/feature-dev/.worktrees/skill-instruction-streamlining/.spec-dev/2026-09-11-01-skill-instruction-streamlining/acceptance/model/smoke-dc5c7e7406204226b06315c9803c4b08\", \"candidate\": \"b55483739d4215b20e91d87209bef8ef8a09fcf9\", \"baseline\": \"37bfc650631f7226f8e50b410e6244a74d390b75\", \"mode\": \"smoke\"}"
   ]
 }
