@@ -81,7 +81,8 @@
     "branch: plan/2026-09-11-01-skill-instruction-streamlining —— delete only after actual merge",
     "model-fixtures: /var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-cjfopqj1 —— retain until actual traces and judgments are archived",
     "model-session: 01a08f0d-910f-7553-a786-8768b76a9f3c —— retain CLI session history; process finished, no deletion authorized or required",
-    "model-session: 01a08f10-6b60-7f91-ab17-fce3a4cffdef —— retain CLI session history; process finished, no deletion authorized or required"
+    "model-session: 01a08f10-6b60-7f91-ab17-fce3a4cffdef —— retain CLI session history; process finished, no deletion authorized or required",
+    "model-fixtures: /var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-z78tfook —— retain until actual traces and judgments are archived"
   ],
   "notes": [
     "2026-09-11: 用户已确认 spec 并授权编写计划；尚未授权实施。",
@@ -109,6 +110,8 @@
     "T13 model run root /var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-cjfopqj1; source=b55483739d4215b20e91d87209bef8ef8a09fcf9; baseline=37bfc650631f7226f8e50b410e6244a74d390b75; MODE=smoke",
     "owned-resource:{\"path\": \"/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-cjfopqj1\", \"identity\": [16777233, 197353800]}",
     "model-archive:{\"path\": \"/Users/maverick/feature-dev/.worktrees/skill-instruction-streamlining/.spec-dev/2026-09-11-01-skill-instruction-streamlining/acceptance/model/smoke-dc5c7e7406204226b06315c9803c4b08\", \"candidate\": \"b55483739d4215b20e91d87209bef8ef8a09fcf9\", \"baseline\": \"37bfc650631f7226f8e50b410e6244a74d390b75\", \"mode\": \"smoke\"}",
-    "2026-09-11: T13 all 22 invocations complete; original event hashes and final fixture inventories verified. S39 actual session IDs retained, not ephemeral."
+    "2026-09-11: T13 all 22 invocations complete; original event hashes and final fixture inventories verified. S39 actual session IDs retained, not ephemeral.",
+    "T13 model run root /var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-z78tfook; source=dc80adfab71ada4e7c6a9335221b77ee14b9dad7; baseline=37bfc650631f7226f8e50b410e6244a74d390b75; MODE=smoke",
+    "owned-resource:{\"path\": \"/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-z78tfook\", \"identity\": [16777233, 197454576]}"
   ]
 }
