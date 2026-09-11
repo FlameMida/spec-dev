@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T14",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -73,8 +73,9 @@
       "tests": "pass"
     },
     "T14": {
-      "status": "in_progress",
-      "tests": "fail"
+      "status": "completed",
+      "tests": "pass",
+      "commit": "96ed28a45ec953bfc735cc635a274f54aeefb9c7"
     }
   },
   "resources": [
@@ -134,6 +135,7 @@
     "T14 removed or verified absent owned archived resource /private/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-cjfopqj1",
     "T14 removed or verified absent owned archived resource /private/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-z78tfook",
     "T14 removed or verified absent owned archived resource /private/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-full-suite-n030i4ye",
-    "T14 removed or verified absent owned archived resource /private/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-full-suite-v2cpdur_"
+    "T14 removed or verified absent owned archived resource /private/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-full-suite-v2cpdur_",
+    "T14: actual merge, owned cleanup and sync anchor completed; see acceptance for model verification boundaries"
   ]
 }
