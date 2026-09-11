@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T05",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -28,7 +28,9 @@
       "tests": "pass"
     },
     "T05": {
-      "status": "in_progress"
+      "status": "completed",
+      "commit": "420c2c7320a5ba2fc0ea86b568ad88261a866823",
+      "tests": "pass"
     },
     "T06": {
       "status": "pending"
@@ -78,6 +80,7 @@
     "T03 unexpected exit at .spec-dev/2026-09-11-01-skill-instruction-streamlining/execution/serial/T03/green/02e7607e89a14104b2e2a6f9b4f2bd74",
     "T03 minor plan omission corrected: S10/S37 require explicit zero-test/SKIP non-evidence; initial green failed 1/5 and raw record retained.",
     "T03 self_check: scope/interface checked; 89/89 regression; removed extra EOF blank lines in three extracted references.",
-    "T04 self_check: scope and interface checked; actual logs in execution/serial/T04"
+    "T04 self_check: scope and interface checked; actual logs in execution/serial/T04",
+    "T05 self_check: scope and interface checked; actual logs in execution/serial/T05"
   ]
 }
