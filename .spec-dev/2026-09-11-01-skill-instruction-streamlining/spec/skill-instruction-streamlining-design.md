@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: skill-instruction-streamlining
-  status: draft
+  status: active
   covers:
     - "skills/requirement-analysis/**"
     - "skills/exploring/**"
@@ -550,9 +550,9 @@ nightly 完整模型评测沿现行非阻塞约定，未执行时明确记录未
 
 ## 当前交付状态与下一步
 
-本文件是已获完整设计批准后生成的待审 spec。当前没有实施改动、计划或运行验收结果；所有 Scenario 和矩阵均是后续验证要求，不是 PASS 记录。
+本文件已完成文档自检与独立审查（Approved）；用户于 2026-09-11 回复 `ok`，确认该 spec 并授权开始编写实施计划，故状态转为 active。当前没有实施改动或运行验收结果；所有 Scenario 和矩阵均是后续验证要求，不是 PASS 记录。
 
-下一步依次是文档自检、独立 spec 审查及用户对最新版 spec 的整体 review。取得“开始编写实施计划”的明确同意后才交接 writing-plans；不从设计批准或静态检查推定实施授权。
+下一步由 writing-plans 编写同特性目录内的计划。计划完成后另行取得开始执行的明确同意，不从 spec 或计划内容的认可推定实施授权。
 
 ## 范围内来源索引
 
