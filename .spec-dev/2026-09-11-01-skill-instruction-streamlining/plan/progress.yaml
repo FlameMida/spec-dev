@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T13",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -68,7 +68,9 @@
       "tests": "pass"
     },
     "T13": {
-      "status": "in_progress"
+      "status": "completed",
+      "commit": "6531d8920a26c01d75fe9194a020677d67656b3c",
+      "tests": "pass"
     },
     "T14": {
       "status": "pending"
@@ -113,6 +115,7 @@
     "2026-09-11: T13 all 22 invocations complete; original event hashes and final fixture inventories verified. S39 actual session IDs retained, not ephemeral.",
     "T13 model run root /var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-z78tfook; source=dc80adfab71ada4e7c6a9335221b77ee14b9dad7; baseline=37bfc650631f7226f8e50b410e6244a74d390b75; MODE=smoke",
     "owned-resource:{\"path\": \"/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-z78tfook\", \"identity\": [16777233, 197454576]}",
-    "model-archive:{\"path\": \"/Users/maverick/feature-dev/.worktrees/skill-instruction-streamlining/.spec-dev/2026-09-11-01-skill-instruction-streamlining/acceptance/model/smoke-e9b43dda99eb430697f468f72da5eab3\", \"candidate\": \"dc80adfab71ada4e7c6a9335221b77ee14b9dad7\", \"baseline\": \"37bfc650631f7226f8e50b410e6244a74d390b75\", \"mode\": \"smoke\"}"
+    "model-archive:{\"path\": \"/Users/maverick/feature-dev/.worktrees/skill-instruction-streamlining/.spec-dev/2026-09-11-01-skill-instruction-streamlining/acceptance/model/smoke-e9b43dda99eb430697f468f72da5eab3\", \"candidate\": \"dc80adfab71ada4e7c6a9335221b77ee14b9dad7\", \"baseline\": \"37bfc650631f7226f8e50b410e6244a74d390b75\", \"mode\": \"smoke\"}",
+    "T13: required PR checks independently verified; nightly statuses remain explicitly recorded in acceptance report"
   ]
 }
