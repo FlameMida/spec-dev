@@ -21,7 +21,7 @@
 
 ## Requirement Reconciliation
 
-20 DELIVERED / 0 DEFERRED / 0 DROPPED / 0 SUPERSEDED / 0 ADDED-IN-FLIGHT。实现与必需验收完成；实际本地合并及最终验证仍由 T14 执行。
+20 DELIVERED / 0 DEFERRED / 0 DROPPED / 0 SUPERSEDED / 0 ADDED-IN-FLIGHT。实现、必需验收、最终验证、本地合并及自有临时资源清理均已完成。
 
 | ID | 要求 | 当前状态 |
 |---|---|---|
@@ -75,4 +75,4 @@ S03 首轮 feature 因缺少购物车矩阵为 unverified；修正合成矩阵�
 
 `check-plugin.mjs`、`check-openai-sync.mjs`、`check-plugin.mjs --codex-validate`、`validate-skills.mjs` 均 exit 0；官方 CLI 安装检查真实通过，非跳过。证据在 `execution/serial/T14/`。补充独立复审及 4/4 原始回执见 `review-T14-supplement/`。
 
-旧档案测试退役盘点及旧 spec 取代回写按用户排除边界未执行，不声称不存在历史交集。模型/测试临时目录仅在实际合并及身份校验后清理；CLI 会话历史和本特性证据保留。
+旧档案测试退役盘点及旧 spec 取代回写按用户排除边界未执行，不声称不存在历史交集。模型/测试临时目录已在实际合并及身份校验后清理；CLI 会话历史和本特性证据保留。
