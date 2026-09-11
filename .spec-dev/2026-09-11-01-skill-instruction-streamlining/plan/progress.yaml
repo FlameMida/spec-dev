@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T03",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -18,8 +18,9 @@
       "tests": "pass"
     },
     "T03": {
-      "status": "in_progress",
-      "tests": "fail"
+      "status": "completed",
+      "tests": "pass",
+      "commit": "ddb35032960a0532f12e06f78285dab188670964"
     },
     "T04": {
       "status": "pending"
@@ -73,6 +74,7 @@
     "T01 self_check: scope and interface checked; actual logs in execution/serial/T01",
     "T02 self_check: scope and interfaces checked; 84/84 regression. Minor correction: trim product EOF, feature-scoped .gitattributes preserves raw evidence whitespace.",
     "T03 unexpected exit at .spec-dev/2026-09-11-01-skill-instruction-streamlining/execution/serial/T03/green/02e7607e89a14104b2e2a6f9b4f2bd74",
-    "T03 minor plan omission corrected: S10/S37 require explicit zero-test/SKIP non-evidence; initial green failed 1/5 and raw record retained."
+    "T03 minor plan omission corrected: S10/S37 require explicit zero-test/SKIP non-evidence; initial green failed 1/5 and raw record retained.",
+    "T03 self_check: scope/interface checked; 89/89 regression; removed extra EOF blank lines in three extracted references."
   ]
 }
