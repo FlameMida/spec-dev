@@ -91,7 +91,7 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/acceptance-qa/scripts/detect-env.mjs" [--cwd 
 
 按矩阵选中的维度依次执行（维度间无依赖，产物互不影响；同一测试进程内的并行由各框架自身管理）：
 
-1. **unit / integration**：运行项目测试套件与覆盖率检查。**范围规则**——验收本次交付时先跑「本次变更涉及的测试」再跑全量，报告中区分「本次新增失败」与「既有失败」；覆盖率只在项目已配置门槛或矩阵有要求时断言。
+1. **unit / integration**：运行本次目标、矩阵及计划到期要求的测试；覆盖率仅在项目已配置门槛或矩阵要求时断言。全量回归只在用户明确要求或计划注明的时机执行，验收子阶段不无条件追加全量；未到期的最终全量记待执行。报告区分本次新增失败与既有失败，必要独立复跑和变更后补验不因“减少重复”省略。
 2. **e2e**：无既有用例则生成（模板 [templates/e2e-test.ts](templates/e2e-test.ts)、模式与选择器纪律见 [e2e-patterns.md](references/e2e-patterns.md)），只运行本次生成/涉及的文件：`npx playwright test <文件> --reporter=list`。每条用例至少一个会因功能破坏而失败的业务断言，禁止仅断言元素可见。
 3. **visual**：有基线 → 跑截图对比；无基线 → 生成基线并声明"本次为建线，不构成回归结论"。
 4. **a11y**：AxeBuilder `withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa'])` 扫描目标页，violations 为空即通过；无法自动化的项（焦点顺序合理性等）转 Tier A 或标注人工项。
@@ -176,7 +176,7 @@ pass 项   → 独立子代理证据审计（只读证据不占浏览器，试�
 本 skill 两平台通用，Codex 环境按以下映射降级：
 
 - **子代理**：pass 项证据审计的"独立子代理"用 `spawn_agent` 派发（审计者不应继承主会话立场，不继承上下文：`fork_turns: "none"`；参数的新旧版本兼容见 requirement-analysis 的 codex-compat.md），`wait_agent` 收集；子代理能力不可用时降级为主进程以"不信任原结论"视角自行复审，并在 coverage_note 声明
-- **MCP**：playwright / chrome-devtools 随插件清单自动生效；未生效时按 [mcp-setup.md](references/mcp-setup.md) 的 Codex 配置路径（`config.toml [mcp_servers]`）接入
+- **MCP**：插件不分发浏览器 MCP；按用户项目实际配置核验 playwright / chrome-devtools 能力。已配置则复用，未配置或无效则按 [mcp-setup.md](references/mcp-setup.md) 说明及适用工具链降级，不能自动注册全局服务或声称安装插件即已就绪。
 - **沙箱网络**：Codex workspace-write 沙箱**默认禁网**——依赖网络的步骤（npx 临时拉包、访问非本地 URL、k6 打远端、Lighthouse 拉外部资源）会失败。处置：请用户为会话开启网络或在沙箱外执行该步骤；无法放行时相关维度标记 `unverified`（原因：沙箱禁网），不要静默跳过
 - **进度与提问**：任务管理用 `update_plan`；意图模糊时的询问用对话消息（一次一个问题）
 

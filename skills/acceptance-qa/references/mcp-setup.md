@@ -2,7 +2,7 @@
 
 > **Opt-in since MCP-zero / MCP 清零后的按需自配**：spec-dev 插件自身不再分发任何 MCP 配置。
 > 需要 Tier A 浏览器自动化（playwright / chrome-devtools）时按本文在项目级自行配置；
-> 未配置时 acceptance-qa 自动降级到 Tier D 工具链（Playwright CLI 等），语义不变。
+> 未配置时按目标和可用工具降级到适用 Tier D 路径；不能完成的语义或体验检查标记未验证。
 
 验收工作流所需的 MCP Server 按需自配参考。本文件给出按需接入与不推荐清单。
 
@@ -16,7 +16,7 @@ Microsoft 官方 MCP Server，AI Agent 通过它驱动浏览器。
 
 ### 配置
 
-项目级 `.mcp.json` 或用户级 `~/.claude.json`（注意：不是 `settings.json`）；也可 `claude mcp add playwright -- npx @playwright/mcp@latest`。Codex 环境则写入 `~/.codex/config.toml` 的 `[mcp_servers]` 表或用 `codex mcp add`（Codex 不读取项目级 `.mcp.json`；随本插件安装时经插件清单自动生效，无需手工配置）：
+项目级 `.mcp.json` 或用户级 `~/.claude.json`（注意：不是 `settings.json`）；也可 `claude mcp add playwright -- npx @playwright/mcp@latest`。Codex 环境则写入 `~/.codex/config.toml` 的 `[mcp_servers]` 表或用 `codex mcp add`（Codex 不读取项目级 `.mcp.json`；本插件不自动注册浏览器 MCP，是否可用以实际会话配置为准）：
 
 ```json
 {
