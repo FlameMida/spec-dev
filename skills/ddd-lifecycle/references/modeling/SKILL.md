@@ -1,74 +1,29 @@
 ---
 name: domain-modeling
-description: Build and sharpen a project's domain model. Use when discussing codebase terminology, writing or editing a CONTEXT.md, or recording or editing an ADR.
+description: Build and sharpen a project's domain model through precise terminology, concrete scenarios and evidence; save terms and ADRs using the shared spec-dev document conventions.
 ---
 
 # Domain Modeling
 
-Actively build and sharpen the project's domain model as you design. This is the *active* discipline: challenging terms, inventing edge-case scenarios, and writing the glossary and decisions down the moment they crystallise. (Merely *reading* `CONTEXT.md` for vocabulary is not this skill: that's a one-line habit any skill can do. This skill is for when you're changing the model, not just consuming it.)
-
-## File structure
-
-Most repos have a single context:
-
-```
-/
-├── CONTEXT.md
-├── docs/
-│   └── adr/
-│       ├── 0001-event-sourced-orders.md
-│       └── 0002-postgres-for-write-model.md
-└── src/
-```
-
-If a `CONTEXT-MAP.md` exists at the root, the repo has multiple contexts. The map points to where each one lives:
-
-```
-/
-├── CONTEXT-MAP.md
-├── docs/
-│   └── adr/                          ← system-wide decisions
-├── src/
-│   ├── ordering/
-│   │   ├── CONTEXT.md
-│   │   └── docs/adr/                 ← context-specific decisions
-│   └── billing/
-│       ├── CONTEXT.md
-│       └── docs/adr/
-```
-
-Create files lazily: only when you have something to write. If no `CONTEXT.md` exists, create one when the first term is resolved. If no `docs/adr/` exists, create it when the first ADR is needed.
+Actively refine the domain model. Merely reading vocabulary is not a reason to start a separate modeling workflow.
+Before any document action, read the current [shared document conventions](../../../requirement-analysis/references/document-conventions.md).
+These conventions apply identically when DDD is called independently or by another workflow.
 
 ## During the session
 
-### Challenge against the glossary
+- Challenge a conflict between the user's term and the applicable domain definition immediately; show both meanings and ask only when a real decision remains.
+- Propose precise canonical terms for vague or overloaded language.
+- Use concrete scenarios to examine domain boundaries; invented examples are hypothetical probes, never claims about current business behavior.
+- Check the user's statement against relevant code when facts can be investigated; distinguish current behavior from proposed changes.
+- Record candidates in the conversation until the design or the current document-saving scope is approved. Reuse an existing same-scope authorization.
+- Save cross-feature terms in `.spec-dev/glossary.md` and feature-local terms in the corresponding spec. Different domain meanings retain their applicable domain.
+- Record qualifying ADRs in `.spec-dev/adr/` with the shared numbering and lifecycle rules.
+- Create files only when there is actual content and authorization. A resolved term alone does not authorize a write.
+- Do not migrate, delete or maintain parallel copies of existing CONTEXT.md, docs/adr/ or another glossary automatically.
+- If there is no relevant spec for a local term, retain the candidate or use the authorized handoff; do not invent a feature directory.
+- A glossary contains domain definitions, not implementation details, scratch notes or runtime requirements.
 
-When the user uses a term that conflicts with the existing language in `CONTEXT.md`, call it out immediately. "Your glossary defines 'cancellation' as X, but you seem to mean Y. Which is it?"
+## Formats
 
-### Sharpen fuzzy language
-
-When the user uses vague or overloaded terms, propose a precise canonical term. "You're saying 'account': do you mean the Customer or the User? Those are different things."
-
-### Discuss concrete scenarios
-
-When domain relationships are being discussed, stress-test them with specific scenarios. Invent scenarios that probe edge cases and force the user to be precise about the boundaries between concepts.
-
-### Cross-reference with code
-
-When the user states how something works, check whether the code agrees. If you find a contradiction, surface it: "Your code cancels entire Orders, but you just said partial cancellation is possible. Which is right?"
-
-### Update CONTEXT.md inline
-
-When a term is resolved, update `CONTEXT.md` right there. Don't batch these up: capture them as they happen. Use the format in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md).
-
-`CONTEXT.md` should be totally devoid of implementation details. Do not treat `CONTEXT.md` as a spec, a scratch pad, or a repository for implementation decisions. It is a glossary and nothing else.
-
-### Offer ADRs sparingly
-
-Only offer to create an ADR when all three are true:
-
-1. **Hard to reverse**: the cost of changing your mind later is meaningful
-2. **Surprising without context**: a future reader will wonder "why did they do it this way?"
-3. **The result of a real trade-off**: there were genuine alternatives and you picked one for specific reasons
-
-If any of the three is missing, skip the ADR. Use the format in [ADR-FORMAT.md](./ADR-FORMAT.md).
+Use [term format](CONTEXT-FORMAT.md) and [ADR format](ADR-FORMAT.md) as examples, with the shared conventions as the normative source.
+ADR eligibility remains the three-condition rule in that source; simple or obvious choices do not justify an ADR.

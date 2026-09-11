@@ -8,7 +8,7 @@
 | DDD 方法论框架 + 10 分制评分 | https://github.com/wondelai/skills | `domain-driven-design/` | `references/methodology/` |
 | 六边形架构(Ports & Adapters) | https://github.com/affaan-m/ECC | `skills/hexagonal-architecture/` | `references/architecture/` |
 
-**修改声明**:唯一修改是 `references/methodology/SKILL.md` 中的内部相对链接由 `references/xxx.md` 调整为 `./xxx.md` 以适配扁平化目录布局;其余文件均为原文逐字收录。编排层(顶层 `SKILL.md`)为整合创作,同样以 MIT 提供。
+**修改声明**：本地整合保留原领域方法与 MIT 许可；除 methodology 内部相对链接适配外，modeling 指令及 CONTEXT/ADR 格式已适配统一 spec-dev 文档位置、保存授权和生命周期；ubiquitous-language 增加相同权限边界指针。编排层为本地整合创作。不得再将已适配文件描述为全部逐字收录。
 
 ---
 

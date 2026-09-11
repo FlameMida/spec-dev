@@ -1,5 +1,7 @@
 # Ubiquitous Language
 
+> Document locations, saving authorization and ADR lifecycle follow the [shared spec-dev conventions](../../../requirement-analysis/references/document-conventions.md). Modeling examples below do not authorize automatic document migration or implementation changes.
+
 The single most important practice in Domain-Driven Design. A ubiquitous language is the shared vocabulary between developers and domain experts that is used everywhere -- in conversation, documentation, code, tests, and diagrams. It is not a glossary appended to a wiki. It is the living, evolving language that shapes how the system is built and how the team thinks about the domain.
 
 ## Why Language Matters More Than Code
