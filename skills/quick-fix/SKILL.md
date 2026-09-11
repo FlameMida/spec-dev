@@ -37,8 +37,8 @@ description: >-
 ### 步骤 2：定位根因 + spec 反查
 
 - **根因定位**：轻量场景主线程直查（Grep/Glob/Read）；根因不明朗时可派 1 个 `code-explorer` 子代理只读追踪；失败先缩小范围重试 1 次，再失败主线程接管（定义见 exploration-patterns「派发要求与失败隔离」）。
-- **spec 反查**（防漂移的第一道视野拉入）：用嫌疑改动文件反查哪些 spec 拥有它。发现范围**必须与守卫逐字对齐**——Grep 这五条 glob：`.spec-dev/**/spec/*-design.md`、`.spec-dev/**/*-design.md`、`docs/**/spec/*-design.md`（历史位置）、`docs/**/*-design.md`（历史位置）、`.specs/**/*.md`，解析各文件 frontmatter，按 `covers` glob 命中嫌疑文件筛出相关 spec 并读取其 `status`——active 的把相关 Requirement/Scenario 读入上下文，其余状态按下述时效处理分流。**命中 spec 的时效处理**：status 为 `superseded` 的沿其 frontmatter `superseded_by` 跳转至 active 后继（跳转记录已访问路径集合，出现环即停下向用户报告环上文件清单；`superseded_by` 缺失或指向不存在的文件时按无后继处理——向用户报告并仅作历史参考，不阻塞修复）；正文带 `Superseded-pending` 标注的，以其指向的新 spec 为新工作依据、旧文为已实现行为描述，两者并陈说明。被 `Superseded` 标注的 Requirement 不作为"实现偏离 spec"的修复判据；诊断存量行为时可将已取代契约作为历史参考读取——排障允许读旧契约，修复方向以现行契约为准。同一行为面出现两份 active spec 矛盾且互无取代声明时，列出双方交用户裁决（此即升级门信号之一）。命中 `docs/` 历史位置的 spec-dev 产物时，默认先自动迁移到 `.spec-dev/`（有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移）并单独提交，再继续修复。这一步同时服务根因分析（spec 写着预期行为，帮判断是"实现偏离 spec"还是"spec 本身写错了"）。
-- **不硬依赖 guardrail**：反查是本 skill 的指令层动作（纯 Grep + 读 frontmatter），不要求目标仓库装过 `check-spec-drift.mjs`；若恰好装了（`scripts/spec-dev/check-spec-drift.mjs` 存在），可顺带 `node scripts/spec-dev/check-spec-drift.mjs --files <改动文件>` 复核，属优雅降级。
+- **spec 反查**：取得 [Spec 发现与时效](references/spec-discovery.md) 全文，按五条 glob、covers 和状态链反查适用契约；未安装守卫也执行，不把按需加载理解为可省略反查。
+- **不硬依赖 guardrail**：发现规则与适用降级见同一 [发现专题](references/spec-discovery.md)。
 
 **诊断前置**：根因非显而易见时，优先实际运行已有测试、CLI/API 或原场景回放，在根因认定前给出输入/触发条件、命令及针对原症状的失败输出。环境、鉴权、缺依赖或编译失败不算该 bug 的诊断红；先恢复条件或如实交接缺口。已有有效证据仍适用于当前代码和条件时直接复用，不强制新建测试。写新测试前先消费获批 seam，落点未定不先写某个候选测试；生产源码插桩仍受现行 TDD/例外授权约束。
 
@@ -64,11 +64,11 @@ description: >-
 
 1. **根因认定或下一步调查方向**：已唯一定位则给一个根因及证据，不凑候选；尚未唯一确定但有区分依据时给 2–3 个排序候选，各附依据和可证伪预测（若是 X，观察 Y 应出现 Z）。明确证实/待验证状态，一次只确认当前事项；用户选择调查方向不证明根因，出现反证即记录并修正。不得在修法/落点决定前改实现验证猜测；
 2. **修复方案**选哪个（有多个修法时）；
-3. **本次修复是否改变 spec 描述的行为契约**——这题机器判不了，必须问人，是步骤 4 分流的依据（附命中 spec 的相关小节引用供用户判断）。
+3. **契约影响**：根据现行 Requirement/Scenario、实际行为和拟议修复形成带引用的判断。证据充分、范围已授权且仅恢复既定行为时直接使用，不固定询问“是否改变契约”；真实语义取舍、冲突或证据不足才交用户裁决。未命中适用 spec 如实说明，不编造契约或人工确认题。
 
 ### 步骤 4：契约影响判定（分流点）
 
-依据步骤 3 第 3 问的答案分流。判定"改变契约"= 修复改变了某 active spec 中 Requirement/Scenario 所描述的可观察行为。改变 → 5a；不变 → 5b。
+依据步骤 3 的证据判断和适用用户决定分流：修复改变现行 Requirement/Scenario 的可观察行为则走 5a；仅恢复既定行为则走 5b。未知、冲突和证据不足仍走原澄清/升级门，事实判断不授权新行为或守卫放行。
 
 ### 步骤 5a：TDD 修复 + 同步 spec 小节（契约改变，单 spec 内）
 
@@ -80,16 +80,8 @@ description: >-
 
 ### 步骤 5b：TDD 修复 + trailer 放行（契约不变）
 
-- **强制 TDD** 同 5a。
-- **不改 spec**（契约没变，spec 没说谎）。
-- **提交按守卫安装情况分两种**：
-  - 改动**未命中**任何 active spec 的 covers → 普通提交即可，无需环境变量或 trailer。
-  - 改动**命中**某 active spec 的 covers → 提交用 `SPEC_DEV_GUARD=off git commit` 执行（该环境变量注入 commit 进程，令其 pre-commit 的提交期 `--staged` 闸放行——`--staged` 不识别 trailer，只认这个变量），并在 message 留 `Spec-Guard: off <原因>` trailer（trailer 才是 pre-push 与 CI 区间闸的放行凭证）。环境变量管本地提交期闸、trailer 管 push/CI 区间闸，二者配合、缺一不可。
-- **编辑期 hook 单独处理**：装了 guardrail 编辑期 hook（`--hook`）的仓库，因 hook 只认"文件是否命中 covers"、不认"契约是否改变"，用 Edit 类工具改 covers 覆盖文件会在**编辑动作发生时**就被拦。机制事实（决定放行手段）：编辑闸只检查**工具载荷里的文件路径字段**（Claude 只匹配 Edit/Write/NotebookEdit；Codex 虽匹配全部工具，但 shell 载荷提取不出文件路径），且 hook 进程的环境变量由平台设定——**给写入命令加 `SPEC_DEV_GUARD=off` 前缀影响不到 hook 进程，不是放行手段**。被拦时向用户说明"这是契约不变的内部修复"，经确认后二选一：
-    - **改用 shell 写入落盘改动**（agent 可自主执行；编辑闸天然不检查 shell 写入）。注意 Claude 的 Stop 收尾审计仍会对工作区漂移拦一次——说明后继续即可，本分支的 `SPEC_DEV_GUARD=off git commit` 完成后工作区变干净、审计自然通过。Codex 无 Stop 审计，此路径在 Codex 侧编辑期零拦截，更要靠 trailer 留痕。
-    - **请用户在会话/hook 进程环境层面设 `SPEC_DEV_GUARD=off`**（能同时覆盖编辑闸与 Stop 审计；需在启动会话的环境中设置，用完即撤，避免长期关闸）。
-
-    **不静默绕过、不伪造 spec 同步。**
+强制 TDD 同 5a；契约不变不伪造 spec 修改。未命中 covers 的普通提交与命中 covers 的提交/编辑处理，按 [守卫处理](references/guardrail-handling.md) 在首次相关动作前取得全文。
+保留用户对实际守卫放行的授权边界，不静默绕过；环境变量与 trailer 的作用不可互代。
 
 ### 修复收尾（5a/5b 共用）
 

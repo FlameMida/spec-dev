@@ -18,8 +18,8 @@
     },
     {
       "id": "qf-contract-stable-trailer",
-      "prompt": "（quick-fix 中）用户确认修复不改变契约，但改动文件命中某 active spec 的 covers",
-      "expected_output": "走 5b 分支：不改 spec，以 SPEC_DEV_GUARD=off git commit 提交并留 Spec-Guard: off <原因> trailer（环境变量过本地闸、trailer 过 push/CI 闸，二者配合）；装了编辑期 hook 被拦时向用户说明后经确认继续，不伪造 spec 同步"
+      "prompt": "现行 spec 明确预期行为，实际实现偏离，修复仅恢复该行为且范围已授权；改动命中 active spec covers。",
+      "expected_output": "先给证据化契约不变判断，不固定追加人工确认题；按 5b 的现行守卫机制及授权处理，环境变量和 trailer 配合，编辑闸不静默绕过；有效红和相关验证保留。"
     },
     {
       "id": "qf-new-feature-routes-away",
