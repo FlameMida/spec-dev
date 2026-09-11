@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T06",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -33,7 +33,9 @@
       "tests": "pass"
     },
     "T06": {
-      "status": "in_progress"
+      "status": "completed",
+      "commit": "bbafb514a051280a0fc7166cd9867e1be4e4bd72",
+      "tests": "pass"
     },
     "T07": {
       "status": "pending"
@@ -81,6 +83,7 @@
     "T03 minor plan omission corrected: S10/S37 require explicit zero-test/SKIP non-evidence; initial green failed 1/5 and raw record retained.",
     "T03 self_check: scope/interface checked; 89/89 regression; removed extra EOF blank lines in three extracted references.",
     "T04 self_check: scope and interface checked; actual logs in execution/serial/T04",
-    "T05 self_check: scope and interface checked; actual logs in execution/serial/T05"
+    "T05 self_check: scope and interface checked; actual logs in execution/serial/T05",
+    "T06 self_check: scope and interface checked; actual logs in execution/serial/T06"
   ]
 }
