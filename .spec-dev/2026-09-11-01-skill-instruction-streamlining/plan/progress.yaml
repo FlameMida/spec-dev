@@ -78,7 +78,8 @@
     "evidence: .spec-dev/2026-09-11-01-skill-instruction-streamlining/execution —— rtk proxy echo 'retain original execution evidence'",
     "evidence: .spec-dev/2026-09-11-01-skill-instruction-streamlining/acceptance —— rtk proxy echo 'retain acceptance report and raw receipts'",
     "worktree: /Users/maverick/feature-dev/.worktrees/skill-instruction-streamlining —— remove only after actual merge and ownership verification",
-    "branch: plan/2026-09-11-01-skill-instruction-streamlining —— delete only after actual merge"
+    "branch: plan/2026-09-11-01-skill-instruction-streamlining —— delete only after actual merge",
+    "model-fixtures: /var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-cjfopqj1 —— retain until actual traces and judgments are archived"
   ],
   "notes": [
     "2026-09-11: 用户已确认 spec 并授权编写计划；尚未授权实施。",
@@ -102,6 +103,8 @@
     "T09 self_check: scope and interface checked; actual logs in execution/serial/T09",
     "T10 self_check: scope and interface checked; actual logs in execution/serial/T10",
     "T11 self_check: scope and interface checked; actual logs in execution/serial/T11",
-    "T12 self_check: scope and interface checked; actual logs in execution/serial/T12"
+    "T12 self_check: scope and interface checked; actual logs in execution/serial/T12",
+    "T13 model run root /var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-cjfopqj1; source=b55483739d4215b20e91d87209bef8ef8a09fcf9; baseline=37bfc650631f7226f8e50b410e6244a74d390b75; MODE=smoke",
+    "owned-resource:{\"path\": \"/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-cjfopqj1\", \"identity\": [16777233, 197353800]}"
   ]
 }
