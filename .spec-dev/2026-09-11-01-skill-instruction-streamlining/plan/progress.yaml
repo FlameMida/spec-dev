@@ -73,7 +73,7 @@
       "tests": "pass"
     },
     "T14": {
-      "status": "blocked",
+      "status": "in_progress",
       "tests": "fail"
     }
   },
@@ -121,6 +121,7 @@
     "T13: required PR checks independently verified; nightly statuses remain explicitly recorded in acceptance report",
     "T14 validation copy /var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-full-suite-n030i4ye",
     "owned-resource:{\"path\": \"/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-full-suite-n030i4ye\", \"identity\": [16777233, 197520555]}",
-    "T14 unexpected exit at .spec-dev/2026-09-11-01-skill-instruction-streamlining/execution/serial/T14/full-node-suite/c01ba22f92e5432e821447b28d72366a"
+    "T14 unexpected exit at .spec-dev/2026-09-11-01-skill-instruction-streamlining/execution/serial/T14/full-node-suite/c01ba22f92e5432e821447b28d72366a",
+    "T14 resumed after test-only fixture correction; full-suite initial 252/253 failure preserved; no candidate product rules changed."
   ]
 }
