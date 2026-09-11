@@ -1,6 +1,6 @@
 interface:
   display_name: "Exploring"
-  short_description: "先取得共享规则，再陪伴想法未定时的只读探索，已核对的历史条件可复用；可选后台调研，授权spike回答运行性问题；关键分岔单题澄清，问题结晶后提议正式设计，笔记可选。"
+  short_description: "尚未决定实施时探索方向；默认只读，受控实验须有授权。"
   default_prompt: "Use $exploring to think through this idea or problem with me before committing to build anything. / 用 $exploring 在决定要不要做之前陪我把这个想法或问题想清楚。"
 
 policy:

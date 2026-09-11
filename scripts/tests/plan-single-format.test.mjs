@@ -48,7 +48,8 @@ test("Scenario: 旧单文件计划可执行(读宽容句在位)", () => {
   assert.match(ep, /冻结/, "单文件侧冻结语义应声明");
 });
 
-test("openai.yaml 与 SKILL description 同步含分文件入口", () => {
+test("openai.yaml 保留执行语义且格式细节由正文承载", () => {
   const yaml = readFileSync(path.join(repoRoot, "skills/executing-plans/agents/openai.yaml"), "utf8");
-  assert.match(yaml, /index\.md \+ tasks\/ \+ progress\.yaml/, "openai.yaml 应含分文件三件套特征串");
+  assert.match(yaml,/书面计划/,"摘要保留计划入口");
+  assert.match(ep,/progress\.yaml/,"具体格式仍能从技能正文取得");
 });
