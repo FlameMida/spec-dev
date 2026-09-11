@@ -73,7 +73,8 @@
       "tests": "pass"
     },
     "T14": {
-      "status": "in_progress"
+      "status": "blocked",
+      "tests": "fail"
     }
   },
   "resources": [
@@ -119,6 +120,7 @@
     "model-archive:{\"path\": \"/Users/maverick/feature-dev/.worktrees/skill-instruction-streamlining/.spec-dev/2026-09-11-01-skill-instruction-streamlining/acceptance/model/smoke-e9b43dda99eb430697f468f72da5eab3\", \"candidate\": \"dc80adfab71ada4e7c6a9335221b77ee14b9dad7\", \"baseline\": \"37bfc650631f7226f8e50b410e6244a74d390b75\", \"mode\": \"smoke\"}",
     "T13: required PR checks independently verified; nightly statuses remain explicitly recorded in acceptance report",
     "T14 validation copy /var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-full-suite-n030i4ye",
-    "owned-resource:{\"path\": \"/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-full-suite-n030i4ye\", \"identity\": [16777233, 197520555]}"
+    "owned-resource:{\"path\": \"/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-full-suite-n030i4ye\", \"identity\": [16777233, 197520555]}",
+    "T14 unexpected exit at .spec-dev/2026-09-11-01-skill-instruction-streamlining/execution/serial/T14/full-node-suite/c01ba22f92e5432e821447b28d72366a"
   ]
 }
