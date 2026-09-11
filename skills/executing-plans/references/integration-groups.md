@@ -6,7 +6,7 @@
 
 先解析 index/progress/spec；含组必须识别 format_version=2 与 protocol_version=1。每个状态边界运行插件根的 `scripts/validate-output.mjs plan-state <plan-dir>`：exit 0 且协议号匹配才消费 ready_tasks。ok=true 且 ready_tasks=[] 可表示合法业务阻塞，不强行找下一票。未知能力/非Git/无法隔离的组停止，不用旧普通流程猜执行。
 
-先读取 [executing-plans-parallel 的集成工作区与特性锁规则](../../executing-plans-parallel/SKILL.md)，按同一 common-dir/feature_key 规则取得特性锁，核实 owner 后才写 progress。取得、释放、接管都必须经过同一特性级原子维护门，在门内重新核对 owner 与锁实体；仅原子 mkdir 特性锁不能代替维护门。平台无法证明旧 owner 停止时保持阻塞，不按超时抢锁。普通模式、原始审查基线、授权请求、模型声明、资源与 claim 保留。并发进入组前停止新派发，收拢并核验全部在途票到已验证基线；未知执行者或未接收实现阻止进组。
+先读取 [executing-plans-parallel 的特性锁协议](../../executing-plans-parallel/references/feature-lock.md)，按同一 common-dir/feature_key 规则取得特性锁，核实 owner 后才写 progress。取得、释放、接管都必须经过同一特性级原子维护门，在门内重新核对 owner 与锁实体；仅原子 mkdir 特性锁不能代替维护门。平台无法证明旧 owner 停止时保持阻塞，不按超时抢锁。普通模式、原始审查基线、授权请求、模型声明、资源与 claim 保留。并发进入组前停止新派发，收拢并核验全部在途票到已验证基线；未知执行者或未接收实现阻止进组。
 
 主动暂停顺序：持锁完成本次进度保存与提交 → 运行 plan-state，所有修正及其提交也须在锁内完成 → 核对工作区干净 → 经过维护门释放自己持有的锁实体 → 停止写入。释放后保留已提交的 integration.owner 作为历史归属，不写 null；它不是实时持锁证明。释放后发现需要更正，即使只是 amend 进度，也必须先重新取得锁并核对最新检查点。
 
