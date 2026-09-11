@@ -10,7 +10,7 @@ description: >-
 
 # 探索模式（Exploring）
 
-**先取得共享规则**：分别实际读取 [clarifying 的核心纪律](../clarifying/SKILL.md)、[exploration-patterns.md](../requirement-analysis/references/exploration-patterns.md) 和 [external-resource-explorer.md](../../agents/external-resource-explorer.md)。三份定义可并行读取；先收到各自内容，再读取项目材料或开始提问。已有当前定义可复用，路径指针或摘要不算已取得定义。
+**先取得适用入口规则**：实际读取 [clarifying 核心纪律](../clarifying/SKILL.md) 与 [共享入口](../requirement-analysis/references/exploration-entry.md)，再读项目材料或提问。已有当前定义直接复用；事实归属及动作前完整规则取得遵循该入口，不把全部派发/恢复资料变成普通探索的必读项。
 
 进入探索模式：深入思考、自由可视化、跟着对话走到哪算哪。
 

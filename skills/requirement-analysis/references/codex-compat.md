@@ -23,7 +23,7 @@
 |------|-------------|-------|
 | 用户澄清/确认 | `AskUserQuestion`（单题带选项） | 直接用对话消息提问并等待回复（见下文提问规范） |
 | 进度跟踪 | `TaskCreate` / `TaskUpdate` | `update_plan` |
-| 并行子任务 | `Agent`（单响应一次性发起） | `spawn_agent`（上下文继承参数见下文"并行子任务"），需要结果时 `wait_agent` |
+| 并行子任务 | `Agent`（按实际容量尽早派发） | `spawn_agent`（上下文继承参数见下文"并行子任务"），需要结果时 `wait_agent` |
 | 项目规范文件 | 优先 `CLAUDE.md`，找不到再查 `AGENTS.md` | 优先 `AGENTS.md`，找不到再查 `CLAUDE.md` |
 | 网页搜索 | anysearch skill（内嵌）→ `WebSearch` 降级 | anysearch skill（内嵌）→ 内置 web 搜索降级（托管 `web_search` 工具，会话开启联网时可用） |
 
@@ -48,7 +48,7 @@
 
 ## 并行子任务（阶段 2 探索及回补探索）
 
-- 使用 `spawn_agent` 发起子任务，并让子代理**继承主会话上下文**；同组并行任务必须在单个响应中一次性全部发起——分批发起会退化为串行等待
+- 使用 `spawn_agent` 并按任务需要继承主会话上下文；输入齐全且独立的主题尽早派发，允许同波次多调用和容量分批，只在需要结果时等待，不丢失待启动主题。
 - 上下文继承参数分版本：新版多代理工具用 `fork_turns`（`"all"` 继承全部、`"none"` 不继承、正整数字符串继承最近 N 轮），旧版用 `fork_context: true/false`。新版已移除 `fork_context` 并会直接报错——参数被拒绝时换用另一套即可
 - 需要结果时使用 `wait_agent` 收集
 - 失败先缩小范围重试 1 次，再失败主线程接管（定义见 exploration-patterns「派发要求与失败隔离」）

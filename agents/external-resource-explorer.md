@@ -19,7 +19,7 @@ color: cyan
 
 ## 研究准备
 
-研究材料读取前，实际取得本定义与 [公共执行约定](../skills/requirement-analysis/references/exploration-patterns.md#派发要求与失败隔离) 的当前内容，两份规则可并行读取。当前上下文已取得的定义可复用，不因相互引用循环重读；路径指针或主线程已读不代表本 worker 已取得。公共规则只按对应条件适用，不因加载规则而扩大研究范围、创建工件或提高用户预算。
+研究材料读取前，实际取得本来源纪律与 [共享入口](../skills/requirement-analysis/references/exploration-entry.md) 的当前内容。派发、恢复、插件命令和结果接收按入口在对应动作前取得完整专题；不因研究材料是离线文件而跳过来源纪律，也不无条件加载全部代理恢复规则。当前定义已取得可复用，路径指针或主线程曾读不代替本 worker 取得。
 
 ## Search Order
 

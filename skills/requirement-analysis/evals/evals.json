@@ -9,7 +9,7 @@
     {
       "id": "ra-standard-notification",
       "prompt": "我们的 Express 项目要加站内通知功能：用户被 @ 时收到通知，通知列表分页展示，未读数实时角标。帮我设计",
-      "expected_output": "判定为 standard 档；阶段 2 内部 3-5 个 code-explorer 与外部 external-resource-explorer 在单条消息中一次性发起；阶段 3 一次一个问题澄清；阶段 4 主线程用 sequential-thinking 先对承重信息做对抗验证再给 2-3 方案（推荐项放首位）；用户选定后整篇展示完整设计；批准后写 spec（行为需求用 Requirement + Scenario/GIVEN-WHEN-THEN 结构，每条 Requirement 一个 SHALL 且可观察）并提交、self-review + 审查子代理、用户 review 通过后交接 writing-plans"
+      "expected_output": "判定为 standard 档；阶段 2 内部 3-5 个 code-explorer 与外部 external-resource-explorer 按实际容量尽早派发，允许同波次多调用和分批，不无故逐个启动后立即等待；阶段 3 一次一个问题澄清；阶段 4 主线程用 sequential-thinking 先对承重信息做对抗验证再给 2-3 方案（推荐项放首位）；用户选定后整篇展示完整设计；批准后写 spec（行为需求用 Requirement + Scenario/GIVEN-WHEN-THEN 结构，每条 Requirement 一个 SHALL 且可观察）并提交、self-review + 审查子代理、用户 review 通过后交接 writing-plans"
     },
     {
       "id": "ra-delta-modify-existing",

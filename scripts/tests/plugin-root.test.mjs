@@ -19,18 +19,21 @@ const walk = (rel, out = []) => {
 };
 const mdFiles = () => ["skills", "agents", "commands"].flatMap((d) => walk(d)).filter((f) => f.endsWith(".md"));
 const EP = "skills/requirement-analysis/references/exploration-patterns.md";
+const RUNTIME = "skills/requirement-analysis/references/plugin-root.md";
+const CONTRACT = "skills/requirement-analysis/references/output-contracts.md";
+const DISPATCH = "skills/requirement-analysis/references/agent-dispatch.md";
 // 受检文档全集：skills/agents/commands 的 .md + schemas 说明（单点定义，新增受检文件只改这里）
 const docFiles = () => [...mdFiles(), "scripts/schemas/README.md"];
 
 test("Scenario: 解析序列只有一个定义点", () => {
   const hits = [...docFiles(), "scripts/validate-output.mjs"]
     .filter((f) => { const t = read(f); return t.includes("上两级") && t.includes("已安装插件目录"); });
-  assert.deepEqual(hits, [EP], "解析序列完整陈述只能在 exploration-patterns");
-  assert.ok(read(EP).includes("## 插件根解析"), "应有「插件根解析」节");
+  assert.deepEqual(hits, [RUNTIME], "解析序列应只有一个完整权威");
+  assert.ok(read(RUNTIME).includes("## 插件根解析"), "应有「插件根解析」节");
 });
 
 test("Scenario: 契约校验完整陈述唯一（定义点侧）", () => {
-  const t = read(EP);
+  const t = read(CONTRACT);
   assert.equal(count(t, "补全一次"), 1, "canonical 只出现一次");
   assert.ok(t.includes("## 输出契约与校验"), "节标题应存在");
   assert.ok(t.includes("校验器不可用") && t.includes("契约校验降级"), "应有校验器不可用降级句");
@@ -39,11 +42,11 @@ test("Scenario: 契约校验完整陈述唯一（定义点侧）", () => {
 
 test("Scenario: 止损句单点存在", () => {
   const hits = docFiles().filter((f) => read(f).includes("不硬撑"));
-  assert.deepEqual(hits, [EP]);
+  assert.deepEqual(hits, [DISPATCH]);
 });
 
 test("Scenario: 三级全失败不静默", () => {
-  const t = read(EP);
+  const t = read(RUNTIME);
   assert.ok(t.includes("无法定位插件根") && t.includes("不得静默跳过"), "三级失败处置句应存在");
 });
 
@@ -118,7 +121,7 @@ test("Scenario: 四处 gist 与 canonical 字面一致", () => {
   for (const f of ["skills/requirement-analysis/SKILL.md", "skills/quick-fix/SKILL.md", "skills/requirement-analysis/references/codex-compat.md", "skills/executing-plans/references/review-orchestration.md"]) {
     assert.ok(read(f).includes(GIST_FI), `${f} 缺失败隔离 gist 或措辞不一致`);
   }
-  assert.equal(count(read(EP), "缩小该主题范围重试 1 次"), 1, "canonical 只在 exploration-patterns 出现一次");
+  assert.equal(count(read(DISPATCH), "缩小该主题范围重试 1 次"), 1, "canonical 只在 exploration-patterns 出现一次");
   for (const f of docFiles()) assert.ok(!read(f).includes("主进程接管"), `${f} 仍有措辞分化"主进程接管"`);
 });
 
@@ -127,7 +130,7 @@ test("Scenario: 契约校验完整陈述唯一（引用侧）", () => {
     assert.ok(read(f).includes(GIST_CV), `${f} 缺契约校验 gist 或措辞不一致`);
   }
   for (const f of docFiles()) {
-    if (f === EP) continue;
+    if (f === CONTRACT) continue;
     for (const line of read(f).split("\n")) {
       if (line.includes("补全一次")) assert.ok(line.includes("exploration-patterns"), `${f}: "补全一次"同行缺指针 → ${line.trim().slice(0, 100)}`);
     }
@@ -231,4 +234,11 @@ test("Scenario: 变量未替换时按序列推导——skill base directory 上�
     assert.ok(existsSync(path.join(root, "scripts/validate-output.mjs")), "插件根下应有校验器");
     assert.ok(existsSync(path.join(root, "skills/acceptance-qa/scripts/detect-env.mjs")), "插件根下应有 detect-env.mjs");
   }
+});
+
+test("S42 汇总入口可达且专题的读取条件明确",()=>{
+ for(const [file,label] of [[RUNTIME,'插件根解析'],[CONTRACT,'输出契约与校验'],[DISPATCH,'派发要求与失败隔离']]){
+  assert.ok(read(EP).includes(path.basename(file)),label+' 缺导航');
+  assert.match(read(file),/阅读时机/);
+ }
 });
