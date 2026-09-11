@@ -325,3 +325,13 @@ FlameMida
 ## 贡献
 
 欢迎提交 Issue 和 Pull Request！
+
+## 指令加载与统一文档规范
+
+技能入口保留用途、触发及持续生效的边界；详细流程、声明、模板、恢复和审查按动作条件取得完整专题。
+现有 exploration-patterns.md 为有效导航；插件根、派发与恢复、输出契约分别保留一个完整权威。
+writing-plans 的字段和资源台账位于 references/plan-format.md，专项声明与任务/交付模板按需读取；生成计划仍包含完整代码、命令和接口。
+DDD 独立使用及被主流程调用均采用 .spec-dev/glossary.md、对应 spec 局部术语节和 .spec-dev/adr/。
+完整设计或保存范围获批后写入，同范围授权复用；已有旧位置文档不自动迁移。
+本轮未改变 AnySearch、sequential-thinking 及其上游更新逻辑，也没有取消其当前调用规则。
+结构测试、文档契约和模型行为评测分别报告；仅文件变短或静态校验通过不证明模型效果。

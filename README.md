@@ -326,3 +326,13 @@ FlameMida
 ## Contributing
 
 Issues and pull requests are welcome!
+
+## Instruction loading and shared document conventions
+
+Skill entry files retain purpose, trigger boundaries and persistent constraints; detailed workflows, declarations, templates and recovery protocols load before the applicable action.
+The existing exploration-patterns.md remains a valid navigation entry. Plugin-root resolution, dispatch/recovery and output contracts each retain one complete authoritative definition.
+The planning fields and resource ledger live in writing-plans/references/plan-format.md; generated plans still embed complete applicable code, commands and interfaces.
+DDD uses .spec-dev/glossary.md, feature-local spec terms and .spec-dev/adr/ in both standalone and delegated use.
+Write only after design or document-saving authorization; reuse same-scope decisions and do not migrate existing documents automatically.
+AnySearch, sequential-thinking and their upstream update logic remain unchanged, including their existing invocation rules.
+Structure, document contracts and actual model behavior are separate verification results; shorter text is not evidence of improved model behavior.
