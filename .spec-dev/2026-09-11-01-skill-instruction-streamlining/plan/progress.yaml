@@ -1,0 +1,61 @@
+{
+  "format_version": 1,
+  "current": null,
+  "tasks": {
+    "T00": {
+      "status": "pending"
+    },
+    "T01": {
+      "status": "pending"
+    },
+    "T02": {
+      "status": "pending"
+    },
+    "T03": {
+      "status": "pending"
+    },
+    "T04": {
+      "status": "pending"
+    },
+    "T05": {
+      "status": "pending"
+    },
+    "T06": {
+      "status": "pending"
+    },
+    "T07": {
+      "status": "pending"
+    },
+    "T08": {
+      "status": "pending"
+    },
+    "T09": {
+      "status": "pending"
+    },
+    "T10": {
+      "status": "pending"
+    },
+    "T11": {
+      "status": "pending"
+    },
+    "T12": {
+      "status": "pending"
+    },
+    "T13": {
+      "status": "pending"
+    },
+    "T14": {
+      "status": "pending"
+    }
+  },
+  "resources": [
+    "worktree-planned: .worktrees/skill-instruction-streamlining —— rtk proxy echo 'T00 must verify actual ownership before cleanup'",
+    "evidence: .spec-dev/2026-09-11-01-skill-instruction-streamlining/execution —— rtk proxy echo 'retain original execution evidence'",
+    "evidence: .spec-dev/2026-09-11-01-skill-instruction-streamlining/acceptance —— rtk proxy echo 'retain acceptance report and raw receipts'"
+  ],
+  "notes": [
+    "2026-09-11: 用户已确认 spec 并授权编写计划；尚未授权实施。",
+    "规划使用普通串行 v1，未选择并发、不声明集成组。",
+    "旧档案排除、两个 vendored 技能与更新逻辑排除；未核验的历史契约不冒称无冲突。"
+  ]
+}

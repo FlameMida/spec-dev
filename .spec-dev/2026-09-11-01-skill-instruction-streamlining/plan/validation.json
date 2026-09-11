@@ -1,0 +1,22 @@
+{
+  "scope": "plan-authoring-only",
+  "date": "2026-09-11",
+  "source_base": "a1feebf6d6fb8fb6afa9b1cfaa84eb9f4e05609c",
+  "spec_sha256": "6ad20a6d8b6e0b6f243a7bfb544460cf63d2c7531d5aab78783955a181199c09",
+  "tasks": 15,
+  "review_items": 19,
+  "preserved_items": 30,
+  "scenarios": 43,
+  "prospective_changed_files": 72,
+  "python_blocks_syntax_checked": 66,
+  "javascript_payloads_syntax_checked": 22,
+  "new_markdown_links_checked": 65,
+  "missing_new_links": [],
+  "payload_predecessors": "consistent",
+  "plan_index": {"ok": true, "exit_code": 0},
+  "execution_state": "all_pending",
+  "generated_tasks_executed": false,
+  "model_acceptance_executed": false,
+  "historical_artifacts_read": false,
+  "self_review": "main-thread"
+}
