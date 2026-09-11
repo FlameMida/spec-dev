@@ -80,7 +80,6 @@
   "resources": [
     "evidence: .spec-dev/2026-09-11-01-skill-instruction-streamlining/execution —— rtk proxy echo 'retain original execution evidence'",
     "evidence: .spec-dev/2026-09-11-01-skill-instruction-streamlining/acceptance —— rtk proxy echo 'retain acceptance report and raw receipts'",
-    "branch: plan/2026-09-11-01-skill-instruction-streamlining —— delete only after actual merge",
     "model-fixtures: /private/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-cjfopqj1 —— retain until actual traces and judgments are archived",
     "model-session: 01a08f0d-910f-7553-a786-8768b76a9f3c —— retain CLI session history; process finished, no deletion authorized or required",
     "model-session: 01a08f10-6b60-7f91-ab17-fce3a4cffdef —— retain CLI session history; process finished, no deletion authorized or required",
@@ -134,6 +133,7 @@
     "owned-resource:{\"path\": \"/private/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-full-suite-v2cpdur_\", \"identity\": [16777233, 197548986]}",
     "T14 canonicalized macOS /var alias /var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-full-suite-v2cpdur_ to /private/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-full-suite-v2cpdur_ after original inode and archive checks; original receipts retained.",
     "T14 actual fast-forward merge 9cca379f61ba463e67a4f88863d44ca112c7e8f4 into /Users/maverick/feature-dev main",
-    "T14 owned worktree removed or verified absent after actual merge"
+    "T14 owned worktree removed or verified absent after actual merge",
+    "T14 implementation branch removed or verified absent"
   ]
 }
