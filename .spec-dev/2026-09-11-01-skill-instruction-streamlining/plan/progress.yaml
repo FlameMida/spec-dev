@@ -81,8 +81,7 @@
     "evidence: .spec-dev/2026-09-11-01-skill-instruction-streamlining/execution —— rtk proxy echo 'retain original execution evidence'",
     "evidence: .spec-dev/2026-09-11-01-skill-instruction-streamlining/acceptance —— rtk proxy echo 'retain acceptance report and raw receipts'",
     "model-session: 01a08f0d-910f-7553-a786-8768b76a9f3c —— retain CLI session history; process finished, no deletion authorized or required",
-    "model-session: 01a08f10-6b60-7f91-ab17-fce3a4cffdef —— retain CLI session history; process finished, no deletion authorized or required",
-    "validation-copy: /private/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-full-suite-v2cpdur_ —— retain until test evidence archived; remove only this owned copy"
+    "model-session: 01a08f10-6b60-7f91-ab17-fce3a4cffdef —— retain CLI session history; process finished, no deletion authorized or required"
   ],
   "notes": [
     "2026-09-11: 用户已确认 spec 并授权编写计划；尚未授权实施。",
@@ -134,6 +133,7 @@
     "T14 implementation branch removed or verified absent",
     "T14 removed or verified absent owned archived resource /private/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-cjfopqj1",
     "T14 removed or verified absent owned archived resource /private/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-model-z78tfook",
-    "T14 removed or verified absent owned archived resource /private/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-full-suite-n030i4ye"
+    "T14 removed or verified absent owned archived resource /private/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-full-suite-n030i4ye",
+    "T14 removed or verified absent owned archived resource /private/var/folders/gb/6mr3jmcs06dcbxm5c85pdyyw0000gp/T/skill-streamlining-full-suite-v2cpdur_"
   ]
 }
