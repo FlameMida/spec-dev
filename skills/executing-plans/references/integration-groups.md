@@ -1,6 +1,6 @@
 # 集成组执行协议
 
-> 字段和格式唯一定义在 writing-plans 的集成组声明与 v2 进度节；这里定义执行时序。适用于已批准且机器预检支持的组，不适用于无组 v1 或旧单文件。普通 implementer 协议与模型声明仍遵循 executing-plans-parallel。
+> 字段和格式唯一定义在 [writing-plans 集成组声明](../../writing-plans/references/integration-declaration.md)；这里定义执行时序。适用于已批准且机器预检支持的组，不适用于无组 v1 或旧单文件。普通 implementer 协议与模型声明仍遵循 executing-plans-parallel。
 
 ## 执行入口
 

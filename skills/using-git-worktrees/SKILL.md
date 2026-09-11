@@ -88,15 +88,11 @@ cd "$path"
 
 ## Step 2：项目就绪
 
-自动检测并执行相应安装：
-
-```bash
-[ -f package.json ]     && npm install
-[ -f Cargo.toml ]       && cargo build
-[ -f requirements.txt ] && pip install -r requirements.txt
-[ -f pyproject.toml ]   && poetry install
-[ -f go.mod ]           && go mod download
-```
+先核对项目明确声明的包管理器、安装/构建命令、锁文件和既有依赖状态。
+已有环境可用时直接进入基线验证，不强制重复安装。
+确实缺依赖时使用项目声明的实际命令；package.json 不等于必须 npm，pyproject.toml 不等于必须 Poetry。
+多个声明冲突时先查实际配置与项目说明；仍无法确定才报告缺口，不擅自更换工具或锁文件。
+按任务目标定位正确 package/工作目录，保留安装命令、结果及必要的失败边界。
 
 ## Step 3：验证干净基线
 
@@ -146,5 +142,5 @@ Worktree 就绪：<完整路径>
 - 先跑 Step 0 检测
 - 原生工具优先于 git 降级
 - 目录优先级：显式指令 > 既有项目内目录 > 默认
-- 自动检测并执行项目安装
+- 按实际声明和就绪状态选择必要安装，已就绪不重复安装
 - 验证干净测试基线

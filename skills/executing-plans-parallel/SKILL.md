@@ -35,7 +35,7 @@ description: >-
 
 ## 入口与定义点
 
-启动只读 index、progress、spec；任务正文按需读取。声明与 progress 字段以 writing-plans 为唯一定义点；TDD、worktree、测试 Lane 分别遵循 test-driven-development、using-git-worktrees、test-strategy；工具映射见 requirement-analysis 的 references/codex-compat.md；探索、插件根、失败隔离与输出契约见 requirement-analysis 的 references/exploration-patterns.md，不复制其完整纪律。
+启动只读 index、progress、spec；任务正文按需读取。声明与 progress 字段按 [计划格式](../writing-plans/references/plan-format.md)、[并发声明](../writing-plans/references/parallel-declaration.md) 及适用的 [集成组声明](../writing-plans/references/integration-declaration.md) 取得唯一完整定义；TDD、worktree、测试 Lane 分别遵循 test-driven-development、using-git-worktrees、test-strategy；工具映射见 requirement-analysis 的 references/codex-compat.md；探索、插件根、失败隔离与输出契约见 requirement-analysis 的 references/exploration-patterns.md，不复制其完整纪律。
 
 先使用 `node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" plan-index` 并传入实际计划目录。仅在用户已明确选择、声明合法、导航拓扑至少存在两张无相互依赖路径且资源隔离的实施票时进入；共同依赖 T00 不影响资格，实际派发仍须依赖全 completed。普通「继续」只沿用已持久化模式，未选模式默认串行。缺声明、能力不可用或只有依赖链则说明原因回 executing-plans，不自动改计划。
 

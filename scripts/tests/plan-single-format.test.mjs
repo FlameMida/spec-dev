@@ -16,11 +16,11 @@ test("Scenario: 小计划也产分文件——writing-plans 无按规模分流�
   assert.match(wp, /plan\/progress\.yaml/, "应声明 progress.yaml");
 });
 
-test("Scenario: 阈值条款不复存在 + reference 已并入本体", () => {
+test("Scenario: 阈值条款不复存在且现行格式可由导航取得", () => {
   assert.ok(!existsSync(path.join(repoRoot, "skills/writing-plans/references/progressive-plan-format.md")), "reference 应已删除");
   assert.doesNotMatch(wp, /progressive-plan-format/, "SKILL.md 不应再引用该 reference");
-  assert.match(wp, /任务导航表/, "导航表规则应并入本体");
-  assert.match(wp, /format_version/, "progress.yaml 键结构应并入本体");
+  assert.match(wp, /任务导航表/, "导航表规则应由入口可达");
+  assert.match(wp, /format_version/, "progress 字段应由入口可达");
 });
 
 test("Scenario: 任务文件无复选框(步骤标题式;复选框动作语义清零)", () => {
