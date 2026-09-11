@@ -1,3 +1,4 @@
+import {readPolicy} from './helpers/policy-documents.mjs';
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
@@ -5,7 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const wp = readFileSync(path.join(repoRoot, "skills/writing-plans/SKILL.md"), "utf8");
+const wp = readPolicy(repoRoot,"skills/writing-plans/SKILL.md").text;
 
 test("Scenario: 小计划也产分文件——writing-plans 无按规模分流判定", () => {
   // 注意:验收矩阵表头的"阈值/预期""阈值数字"是合法用法,正则只锁门控条款措辞

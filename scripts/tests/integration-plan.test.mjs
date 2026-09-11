@@ -42,4 +42,4 @@ test('S03 group members cannot appear in parallel declaration',()=>{const d=fixt
  assert.match(JSON.stringify(check(d,false)),/parallel/);
 }finally{rmSync(d,{recursive:true});}});
 
-test('S18 a group on v1 is rejected but existing v1 plan stays readable',()=>{const d=fixture();try{writeFileSync(path.join(d,'progress.yaml'),'format_version: 1\n');check(d,false);const old=path.join(root,'.spec-dev/2026-08-27-01-plan-single-format/plan');check(old,true);}finally{rmSync(d,{recursive:true});}});
+test('S18 a group on v1 is rejected but existing v1 plan stays readable',()=>{const d=fixture();try{writeFileSync(path.join(d,'progress.yaml'),'format_version: 1\n');check(d,false);const old=fixture();try{const index=path.join(old,'index.md');writeFileSync(index,readFileSync(index,'utf8').split('\n```json spec-dev-integration')[0]+'\n');writeFileSync(path.join(old,'progress.yaml'),'format_version: 1\ncurrent: null\ntasks: {}\nresources: []\nnotes: []\n');check(old,true);}finally{rmSync(old,{recursive:true,force:true});}}finally{rmSync(d,{recursive:true});}});

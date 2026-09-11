@@ -1,3 +1,4 @@
+import {readPolicy} from './helpers/policy-documents.mjs';
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -5,7 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const read = (p) => readFileSync(path.join(repoRoot, p), "utf8");
+const read = (p) => p.startsWith("skills/") ? readPolicy(repoRoot,p).text : readFileSync(path.join(repoRoot,p),"utf8");
 
 test("特性目录命名规则含同日序号 NN 与重扫防撞", () => {
   const ra = read("skills/requirement-analysis/SKILL.md");
