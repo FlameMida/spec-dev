@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T09",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -48,7 +48,9 @@
       "tests": "pass"
     },
     "T09": {
-      "status": "in_progress"
+      "status": "completed",
+      "commit": "21142f62153d4907e20a6bb3e29c366fe2835c92",
+      "tests": "pass"
     },
     "T10": {
       "status": "pending"
@@ -90,6 +92,7 @@
     "T05 self_check: scope and interface checked; actual logs in execution/serial/T05",
     "T06 self_check: scope and interface checked; actual logs in execution/serial/T06",
     "T07 self_check: scope and interface checked; actual logs in execution/serial/T07",
-    "T08 self_check: scope and interface checked; actual logs in execution/serial/T08"
+    "T08 self_check: scope and interface checked; actual logs in execution/serial/T08",
+    "T09 self_check: scope and interface checked; actual logs in execution/serial/T09"
   ]
 }
