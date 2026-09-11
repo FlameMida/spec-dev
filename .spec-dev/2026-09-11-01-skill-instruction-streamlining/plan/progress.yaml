@@ -18,7 +18,7 @@
       "tests": "pass"
     },
     "T03": {
-      "status": "blocked",
+      "status": "in_progress",
       "tests": "fail"
     },
     "T04": {
@@ -72,6 +72,7 @@
     "T00: declared scoped baseline passed; whole-suite validation remains T14",
     "T01 self_check: scope and interface checked; actual logs in execution/serial/T01",
     "T02 self_check: scope and interfaces checked; 84/84 regression. Minor correction: trim product EOF, feature-scoped .gitattributes preserves raw evidence whitespace.",
-    "T03 unexpected exit at .spec-dev/2026-09-11-01-skill-instruction-streamlining/execution/serial/T03/green/02e7607e89a14104b2e2a6f9b4f2bd74"
+    "T03 unexpected exit at .spec-dev/2026-09-11-01-skill-instruction-streamlining/execution/serial/T03/green/02e7607e89a14104b2e2a6f9b4f2bd74",
+    "T03 minor plan omission corrected: S10/S37 require explicit zero-test/SKIP non-evidence; initial green failed 1/5 and raw record retained."
   ]
 }
