@@ -39,37 +39,9 @@ description: >-
 7. **Spec self-review + 对抗验证** — inline 自检 + 审查子代理；有修改则请用户再 review
 8. **交接 writing-plans** — 唯一终态；经用户确认后调用 writing-plans 生成实施计划
 
-## 流程图
+## 阶段导航
 
-```dot
-digraph requirement_analysis {
-    "1 需求理解与分诊" [shape=box];
-    "2 并行探索（内部+外部）" [shape=box];
-    "3 澄清问题（逐题）" [shape=box];
-    "4 对抗验证 + 2-3 方案" [shape=box];
-    "用户选定方案?" [shape=diamond];
-    "5 展示完整设计" [shape=box];
-    "用户批准设计?" [shape=diamond];
-    "6 写 spec 并提交" [shape=box];
-    "7 self-review + 对抗验证" [shape=box];
-    "用户 review 通过?" [shape=diamond];
-    "8 调用 writing-plans" [shape=doublecircle];
-
-    "1 需求理解与分诊" -> "2 并行探索（内部+外部）";
-    "2 并行探索（内部+外部）" -> "3 澄清问题（逐题）";
-    "3 澄清问题（逐题）" -> "4 对抗验证 + 2-3 方案";
-    "4 对抗验证 + 2-3 方案" -> "用户选定方案?";
-    "用户选定方案?" -> "4 对抗验证 + 2-3 方案" [label="要求调整"];
-    "用户选定方案?" -> "5 展示完整设计" [label="选定"];
-    "5 展示完整设计" -> "用户批准设计?";
-    "用户批准设计?" -> "5 展示完整设计" [label="否，修订"];
-    "用户批准设计?" -> "6 写 spec 并提交" [label="是"];
-    "6 写 spec 并提交" -> "7 self-review + 对抗验证";
-    "7 self-review + 对抗验证" -> "用户 review 通过?";
-    "用户 review 通过?" -> "6 写 spec 并提交" [label="要求修改"];
-    "用户 review 通过?" -> "8 调用 writing-plans" [label="通过"];
-}
-```
+分诊 → 探索 → 澄清 → 信息对抗与方案选择 → 完整设计批准 → spec 生成 → spec 审查 → 计划交接。
 
 **终态是调用 writing-plans。** 不得调用 executing-plans、acceptance-qa 或任何其他实施类 skill——本 skill 之后唯一可调用的 skill 是 writing-plans。
 
@@ -185,50 +157,18 @@ standard 档在既有有界探索主题内核对相邻测试、公共行为入�
 
 ## 阶段 6: 写 spec 并提交
 
-- 为本需求创建特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/`（所有 spec-dev 产物统一收纳在项目根目录 `.spec-dev/` 下；NN 为当日两位序号——扫描 `.spec-dev/` 下当日已有的日期前缀产物（特性目录，及 `reports/`、`roadmaps/` 下的文件名）取最大加一、01 起步，**落盘前重扫一次防并发撞号**：发现同号已被占则顺延并同步修正自引路径；feature 取需求主题的短语义名，跟随项目语言；存量旧命名 `YYYY-MM-DD-<feature>` 目录不改名（grandfather）；同一 NN 序列由全部 `.spec-dev/` 日期前缀产物共用），将批准的设计写入其 `spec/<feature>-design.md`（用户对 spec 位置的偏好优先于此默认值）
-- 按 [context-reuse.md](references/context-reuse.md) 将本次获批共享术语与 spec 同次保存和范围提交；无共享术语不创建空 glossary，特性局部术语只留 spec。
-- spec 与后续 writing-plans 的计划（同目录 `plan/` 分文件形态：index.md + tasks/ + progress.yaml）共用这一个特性目录——一个需求的全部产物收纳在一处
-- **决策分流（ADR）**：检查"已确认的关键决策"中是否有同时满足三判据的决策——**难以逆转**（事后改主意成本高）、**缺上下文会费解**（未来读者会问"当初为什么这么做"）、**真实取舍**（存在真正的备选且因具体理由选定其一）——满足者每条沉淀为仓库级 `.spec-dev/adr/NNNN-<slug>.md`（全项目共用一个目录、统一编号：扫描现有最高编号递增，目录不存在时随首个 ADR 创建；**落盘前重扫一次目录防撞号**——并行会话可能已用掉同号，发现同号文件已存在则顺延取下一号并同步修正正文与链接中的自引编号；正文 1-3 句写清背景、决定与理由即可，值得记住的被否方案附一行），spec 决策节保留一行摘要并链接过去；三判据缺一即不建 ADR——ADR 泛滥和没有 ADR 一样没用。**ADR 状态纪律**：每条 ADR 标题下带状态行，封闭三态——`**Status**: Accepted (YYYY-MM-DD)` / `**Status**: Deprecated (YYYY-MM-DD) — <一句原因，强制>` / `**Status**: Superseded by [ADR-NNNN](NNNN-<slug>.md) (YYYY-MM-DD)`（同目录文件名相对链接，编号强制；缺状态行的历史 ADR 视同 Accepted）。判据一句话：有替代决策用 Superseded，无替代者且决策语境消失用 Deprecated。Accepted 后正文不可变（仅 status 行、错别字、坏链可改）；**不做部分推翻**——推翻既有 ADR 的任何部分时，新 ADR 完整重述仍有效的结论并整体取代，标题下声明 `**Supersedes**: ADR-NNNN` 行，且在本阶段同一提交把旧 ADR 状态行回写为 Superseded by（ADR 取代随裁决即时生效，不等实施交付）
-- **取代分流（supersede triage）**：对阶段 2 探索命中的每份行为相交 active spec 做三分类判定并写入 spec——**完全取代**（新 spec 整体替换旧特性）与**部分取代**（替换旧 spec 的部分 Requirement）登记进 frontmatter `supersedes`（仓库根相对路径）与正文「取代与共存」节（部分取代必须列出被取代的具体 Requirement 标题清单，每条附一句取代理由）；**分面共存**（同文件不同行为切面、无冲突）不登记 supersedes，记一行判定理由并各自声明 covers。节模板与标注形制见 [spec-template.md](assets/spec-template.md)。用户要求删除整个特性且无新行为承接时，产出仅含 REMOVED Requirements 的轻量 spec 作为后继（记录删除理由，交付时按完全取代回写旧 spec）。spec 的取代回写随交付生效（executing-plans 最终任务），与 ADR 的即时回写构成双轨
-- 结构参考 [spec-template.md](assets/spec-template.md)，按需增删节；**行为需求必须用 Requirement + Scenario 结构表达**（`### Requirement:` 一条一个 SHALL 且可观察，`#### Scenario:` 用 GIVEN/WHEN/THEN——它们是后续 TDD 测试与验收的直接锚点）；修改既有功能时行为部分改用差量三节（ADDED/MODIFIED/REMOVED Requirements，见模板）
-- **漂移守卫锚点（必填）**：落盘时保留模板顶部的 `spec_dev` frontmatter，填写 `feature` 与 `covers`（本特性拥有的代码路径 glob；纯文档特性留空数组 `[]`）——此阶段 `status` 保持 `draft`。该 frontmatter 是 pre-commit / CI 漂移守卫的锚点，缺失或永停 draft 意味着该特性代码不受"改了代码却没同步 spec"的拦截保护
-- 新建/本次更新胶囊指针时使用一句用途/适用边界摘要 + 精确来源路径；摘要不能替代续接读取原文，旧胶囊没有摘要仍正常读，不全库回填。
-- **roadmap 回填（仅当本特性是某 active roadmap 的子项目）**：把特性目录路径回填至 roadmap 对应子项目行、状态置 `in-progress`；不属于任何 roadmap 则无此步
-- git commit 该 spec、本次按获批设计更新的 glossary、新增 ADR 与 roadmap 回填（仅本次实际修改的这些文件；非 git 仓库则跳过并向用户说明）
+完整设计获批后，先读 [Spec 生命周期](references/spec-lifecycle.md) 和适用的 [文档规范](references/document-conventions.md)，再按实际授权保存。保留日期编号、frontmatter、可观察 Requirement/Scenario、取代分流与限定文件提交；不从摘要推定已执行。
 
 ## 阶段 7: Spec self-review + 对抗验证
 
-**第一步——inline 自检**（自己以新鲜眼光重读，发现即改，无需复审）：
 
-1. **占位符扫描**：有无 "TBD"、"TODO"、未写完的节、含糊的需求？
-2. **内部一致性**：各节是否互相矛盾？架构是否与功能描述匹配？术语是否全篇沿用术语表的规范名、未混入 Avoid 别名？
-3. **范围检查**：整份 spec 的意图能否一句话说清？是否聚焦到单个实施计划能承载？出现过大信号（不相关功能清单、一半任务可独立交付）则回到分解。**警惕伪聚焦**：spec 正文自行写了"第一阶段/Phase 1、第二阶段/Phase 2……"或"先做 X 再做 Y"这类阶段化结构——这是未登记的分解伪装成一份聚焦 spec（读起来聚焦，实则把多个实施周期塞进一份 spec，下游 writing-plans 只会为第一阶段写 plan、其余阶段无声蒸发）。命中即回到阶段 1 范围分解检查：把阶段拆成 roadmap 子项目，本 spec 只保留第一阶段的内容
-4. **歧义检查**：有无可以两种方式解读的需求？有则选定一种写明
-5. **Requirement 质量**：每条 Requirement 是否一个 SHALL 且可观察？每条是否至少有一个真正检验它的 Scenario（不是复述）？最怕坏掉的场景有没有命名的 Scenario？差量三节（如使用）分类是否与既有行为对得上？
-
-**第二步——对抗验证**：派 1 个临时子代理（Claude Code 用 general-purpose，Codex 用 `spawn_agent`），提示词按 [spec-reviewer-prompt.md](references/spec-reviewer-prompt.md) 模板构造，对 spec 做独立审查（完整性/一致性/清晰度/范围/YAGNI）。审查回报的问题逐条处置：成立则修 spec，不成立则记录理由。
-
-**第三步——用户 review 门**：
-
-先展示最新版 spec 链接、简短变更摘要和 2–3 个针对实际参与者、约束或边界的陈述式检查点，再使用下方一次整体确认。检查点只陈述来源已支持的事实与影响，不附“请确认”或问题；约束表示必须保护的边界，不能改写成违反约束的情况“不可能发生”。若确有未决决策，转为一次一题澄清，先处理该决策。
-
-保存与提交状态只按本次实际证据陈述：Read 只证明读到了文件；取得真实提交回执后才能说“已提交”。只读审阅或接手现有稿件时说明“待审稿”，不从话术模板推定执行过写入或提交。
-
-> 「待审 spec：`<路径>`。<按证据说明保存/提交状态及变更摘要>
-> <2–3 个陈述式检查点>
-> 是否确认这版 spec，并开始编写实施计划？」
-
-仅认可内容不等于授权实施；保持本阶段和下一阶段的授权边界，不把审阅认可报告成执行授权。
-
-等待用户回复。**若第一/二步曾修改 spec，必须让用户重新 review 修改后的版本**；用户要求修改则改完重跑本阶段。用户确认后才进入阶段 8。
+完整自检、独立审查与一次整体用户 review 见 [Spec 审查](references/spec-review.md)。仍须持有最新版的明确确认，不把保存/提交话术当事实。
 
 ## 阶段 8: 交接 writing-plans
 
-- **前置确认**：须持有用户对「开始编写实施计划」的明确同意——阶段 7 的确认话术已包含此询问；用户仅认可 spec、未表态是否继续时，先问「现在开始编写实施计划吗？」，同意后才交接
-- **激活漂移守卫**：交接前把 spec frontmatter 的 `status: draft` 翻为 `active` 并 commit（仅 `active` 参与漂移拦截——不翻转则守卫对本特性静默失效）
-- **打取代预告（仅当 spec 的 `supersedes` 非空）**：翻 active 的同一提交内，向每份被指向的旧 spec H1 标题下写入 Superseded-pending 标注（形制见 spec-template「取代标注形制」节；部分取代写明将被取代的 Requirement 标题）——窗口期的双 active 状态由此对全部消费方显式可判定；后续该计划若被废弃，由 executing-plans 意图级偏差收尾回收此标注
-- 调用 writing-plans skill，基于已批准的 spec 生成实施计划
-- **不得调用任何其他 skill**——writing-plans 是本流程唯一的下一步；实施纪律（worktree 隔离、TDD、审查编排）由 writing-plans → executing-plans 链路承接
+持有用户对开始编写实施计划的明确同意；已有同范围决定不重复问。
+按 [Spec 生命周期](references/spec-lifecycle.md) 完成 active 激活及适用的取代预告，再调用 writing-plans。
+仅认可 spec 内容不等于授权实施，不能直接调用 executing-plans。
 
 ---
 
