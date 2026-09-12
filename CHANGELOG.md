@@ -7,6 +7,17 @@
 
 ---
 
+## [8.7.0] - 2026-09-12
+
+- 计划改为「改动要点 + 关键 diff 片段 + 验收断言」，禁止整文件内嵌；单任务文件上限 200 行，`plan-index` 校验超限报错。
+- 需求设计按档位裁剪 spec 小节：light 五节一次成稿一次批准、不派 spec-reviewer；standard 约十五节；deep 全模板。
+- 收尾审查路数改为小 diff 一路 AS、常规两路 AS + BC、大变更五路；审查读取 execution 回执不再复跑测试；零候选不派反驳与 critic，AS 路自报的覆盖缺口仍阻止完成。受控运行器同步：`tests` 可为空并改用 `evidence` 回执，新增 `critic` 配置项，evidence 做值类型校验。
+- 测试固定为本地三时点：任务内只跑自有测试与直接依赖方、最终任务一次全量、模型级评测仅手动触发；T00 声明失效不再回退完整套件。
+- test-strategy 三 lane 改为 fast / final / manual，删除 PR / nightly 语义，验收矩阵与模板同步。
+- acceptance-qa 复用执行回执，standard 档不再默认全套复核与 pass 审计。
+- 执行证据与验收产物不再进 git（仅保留 acceptance-report.md），历史一次性清除并重写；资源台账改为随任务一次提交。
+- session-context 修复 hooksPath 绝对路径与 worktree 误报、守卫脚本缺失误报，同一会话 60 秒内重复 SessionStart 只注入一次。
+
 ## [8.6.0] - 2026-09-11
 
 - 精简技能触发描述，将计划、需求、小修和并发执行的详细规则按需分层。
