@@ -138,10 +138,25 @@ requirement-analysis SHALL 按档位裁剪 spec 小节集合：light 五节且�
 - **WHEN** AS 读取 context 并提交零发现报告
 - **THEN** context 含 `execution_evidence` 一条；提交被接受，无需 run_test 回执
 
+#### Scenario: S3.4 零候选但 AS 覆盖有缺口时不完成
+- **GIVEN** AS 与 BC 均零 findings，但 AS 的 coverage 有一条 status 为 gap
+- **WHEN** run 结束
+- **THEN** status incomplete，gaps 含 `Scenario未覆盖: <该 Scenario>`；仍不派反驳与 critic
+
 #### Scenario: S3.5 critic=always 零发现仍派 critic
 - **GIVEN** config `critic: "always"` 且零 findings
 - **WHEN** run 结束
 - **THEN** tasks 含 critic-1，status completed
+
+#### Scenario: S3.7 large 档默认五路且派 critic
+- **GIVEN** tier large 的 run，未显式给 critic
+- **WHEN** status
+- **THEN** tasks 的 actor 为 `['A','B-quality','B-simple','C','S','critic-1']`
+
+#### Scenario: S3.8 非法 config 被 init 拒绝
+- **GIVEN** config 分别为：tests 为空且无 evidence；evidence 元素缺键；exit_code 为字符串；command 为字符串；sha256 非 64 位十六进制；critic 为 never
+- **WHEN** init
+- **THEN** 退出码非 0，gaps 分别含「tests为空时必须提供evidence」「evidence必须为execution回执数组」「critic必须为on-findings或always」
 
 #### Scenario: S3.6 文本与 README 同步
 - **GIVEN** 读取 review-orchestration、executing-plans SKILL.md、code-reviewer.md、README、executing-plans evals
@@ -220,7 +235,7 @@ acceptance-qa SHALL 以 execution/ facts.json 作为 unit/integration 回执，�
 
 ### Requirement: R9 会话注入准确且不重复（改了什么：修两处误报，新增同会话去重）
 
-session-context SHALL 以 realpath 比较 core.hooksPath；守卫脚本缺失告警仅当 `.githooks/*`、`.claude/settings.json` 或 `.codex/hooks.json` 引用该脚本；同一 session_id 第二次 SessionStart SHALL 输出 `decision: skip`。
+session-context SHALL 以 realpath 比较 core.hooksPath，worktree 内解析到主工作区 `.githooks` 亦视为已启用；守卫脚本缺失告警仅当 `.githooks/*`、`.claude/settings.json` 或 `.codex/hooks.json` 引用该脚本；同一 session_id 在 60 秒内的第二次 SessionStart SHALL 输出 `decision: skip`（只吞同一事件的双注册，resume/compact 等后续事件重新注入）。
 
 #### Scenario: S9.1 绝对路径 hooksPath 不误报
 - **GIVEN** 临时仓库 core.hooksPath 为 .githooks 的绝对路径、有 .githooks/pre-commit、无守卫脚本且无引用
@@ -234,8 +249,13 @@ session-context SHALL 以 realpath 比较 core.hooksPath；守卫脚本缺失告
 
 #### Scenario: S9.3 同一 session_id 第二次注入被跳过
 - **GIVEN** stdin 传入 `{"session_id":"<唯一值>"}`
-- **WHEN** 连续运行两次 `--explain`
-- **THEN** 第一次 `decision: inject`，第二次 `decision: skip` 且 reason 含 `duplicate`
+- **WHEN** 60 秒内连续运行两次 `--explain`，随后把标记改为 120 秒前或非数字再运行
+- **THEN** 第一次 `decision: inject`，第二次 `decision: skip` 且 reason 含 `duplicate`；窗口到期或标记非数字时重新 `decision: inject`
+
+#### Scenario: S9.4 worktree 内 hooksPath 指向主工作区 .githooks 不误报
+- **GIVEN** 主仓库有 .githooks/pre-commit，core.hooksPath 为主仓库 .githooks 的绝对路径，`git worktree add` 建出从属工作区
+- **WHEN** 在从属工作区运行 `--explain`
+- **THEN** `decision: inject` 且输出不含 `health issue`
 
 ## 测试与验收策略
 
@@ -247,9 +267,9 @@ session-context SHALL 以 realpath 比较 core.hooksPath；守卫脚本缺失告
 |---|---|---|---|
 | S1.2 | fast / unit | 任务内 TDD（scripts/tests/plan-index.test.mjs） | 测试通过 |
 | S1.3、S2.1—S2.3、S3.6、S4.1—S4.3、S5.1、S6.1、S8.1 | fast / docs | 任务内 TDD（scripts/tests/workflow-slimming-TNN.test.mjs） | 测试通过 |
-| S3.1、S3.2、S3.3、S3.5 | fast / integration | 任务内 TDD（scripts/tests/controlled-review.test.mjs） | 测试通过 |
+| S3.1—S3.5、S3.7、S3.8 | fast / integration | 任务内 TDD（scripts/tests/controlled-review.test.mjs） | 测试通过 |
 | S7.1、S7.2 | fast / unit | 任务内 TDD（scripts/tests/workflow-slimming-T01.test.mjs） | 测试通过 |
 | S7.3 | fast / unit | T01 步骤 4 内联检查 | `git ls-files` 过滤结果为空 |
 | S7.4 | manual | T12 步骤 8 内联检查（重写属交付后动作，用户当场确认后执行） | count-objects 与 cat-file 输出 |
-| S9.1—S9.3 | fast / integration | 任务内 TDD（scripts/tests/session-explain.test.mjs） | 测试通过 |
+| S9.1—S9.4 | fast / integration | 任务内 TDD（scripts/tests/session-explain.test.mjs） | 测试通过 |
 | 全量回归 | final | 最终任务一次 `rtk proxy node --test 'scripts/tests/*.test.mjs'` | 全绿或范围外失败归属裁决 |

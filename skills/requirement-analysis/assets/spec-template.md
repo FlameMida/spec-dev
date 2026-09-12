@@ -4,6 +4,16 @@
 
 > 按需增删节：light 档几句话 + 关键决策 + 1-2 条 Requirement 即可；节的篇幅与其复杂度匹配，不为凑结构而注水。
 >
+> **档位裁剪**（requirement-analysis 阶段 1 判定）：
+>
+> | 档位 | 保留小节 |
+> |---|---|
+> | light | 背景与目标、非目标、已确认的关键决策、行为规范（Requirements 或差量三节）、测试与验收策略 |
+> | standard | light 全部 + 术语表、参与者与适用行为、影响面、约束归属与拒绝的解读、取代与共存、方案设计、风险与边缘情况 |
+> | deep | 全部小节 |
+>
+> 有相交 active spec 时任何档位都保留「取代与共存」节；frontmatter 任何档位必填。
+>
 > **顶部 frontmatter 是漂移守卫锚点，必须保留**：它把本 spec 与其覆盖的代码路径绑定，供 pre-commit / CI / Claude·Codex 的 PreToolUse hook 校验"改了代码却没同步 spec"。填 `feature` 与 `covers`，spec 定稿转 `status: active`；无守卫需求（如纯文档特性）可将 `covers` 留空数组，守卫即跳过。取代关系走生命周期：`supersedes` 在设计期声明、交付时由取代回写把旧 spec 翻 `superseded` 并填 `superseded_by`——`superseded` 是有正式后继指向的终态，不是绕过守卫的手段。
 
 ```markdown
@@ -125,7 +135,7 @@ spec_dev:
 [以**验收矩阵**表达（结构定义见 acceptance-qa skill 的 references/acceptance-matrix.md）：每个 Scenario 至少一行；
 「任务内 TDD」行由 writing-plans 直接翻译为任务的失败测试（GIVEN→arrange、WHEN→act、THEN→assert）；
 「验收任务」行进入计划尾部的验收任务，由 executing-plans 收尾触发 acceptance-qa 执行。
-visual/a11y/perf 行仅在需求形态需要时出现；性能行必须带阈值数字——写不出数字回到澄清；每行可标注 Lane 归属（fast/PR/nightly，见 test-strategy skill），含 DB/LLM 的行按其处方写执行方式 / Acceptance matrix: one row per Scenario; TDD rows become failing tests, acceptance rows go to the acceptance task; perf rows need numeric thresholds; each row may carry a lane tag (fast/PR/nightly, per the test-strategy skill); DB/LLM rows follow its stack prescriptions]
+visual/a11y/perf 行仅在需求形态需要时出现；性能行必须带阈值数字——写不出数字回到澄清；每行可标注 Lane 归属（fast/final/manual，见 test-strategy skill），含 DB/LLM 的行按其处方写执行方式 / Acceptance matrix: one row per Scenario; TDD rows become failing tests, acceptance rows go to the acceptance task; perf rows need numeric thresholds; each row may carry a lane tag (fast/final/manual, per the test-strategy skill); DB/LLM rows follow its stack prescriptions]
 
 | Scenario / 检查项 | 维度 | 执行方式 | 验收证据 |
 |-------------------|------|---------|---------|

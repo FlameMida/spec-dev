@@ -24,9 +24,10 @@ function fixture(t, extra={}) {
  git('add','.');git('commit','-qm','base');const base=git('rev-parse','HEAD');
  writeFileSync(path.join(repo,'cart.py'),'def total(values):\n    return sum(values) + 1\n');git('add','.');git('commit','-qm','change');
  const run=path.join(dir,'run');const config={repo,base,head:git('rev-parse','HEAD'),spec:'spec.md',plan:'plan.md',tier:'regular',capacity:2,tests:[{id:'related',argv:['python3','check.py']}],...extra};
- delete config.fixtureSpec;
+ delete config.fixtureSpec;const expectInitError=config.expectInitError;delete config.expectInitError;
  const cp=path.join(dir,'config.json');writeFileSync(cp,JSON.stringify(config));
  const initialized=invoke(['init','--config',cp,'--run',run]);
+ if(expectInitError) return {dir,repo,run,config,init:initialized};
  assert.equal(initialized.code,0,`生产CLI必须建立固定run: ${JSON.stringify(initialized.data)}`);
  return {dir,repo,run,config};
 }
@@ -43,24 +44,24 @@ async function broker(t,run,actor) {
 function cleanReport(extra={}) {return {report:{findings:[],coverage_note:'已核对本角色范围；测试和引用由执行记录说明。'},citations:[],coverage:[{scenario:'empty',status:'reviewed',citations:[{file:'spec.md',line:3,quote:'empty returns zero'}]}],evidence_ids:[],d_request:[],...extra};}
 
 test('R01 受控工具不接受输出路径或actor；报告不能覆盖真实测试原件',async t=>{
- const f=fixture(t);const b=await broker(t,f.run,'A');
+ const f=fixture(t);const b=await broker(t,f.run,'AS');
  const list=await b.rpc('tools/list');assert.deepEqual(list.result.tools.map(x=>x.name).sort(),['context','read_source','run_test','submit_report']);
- assert.equal((await b.call('run_test',{test_id:'related',output:'parent-test.json',actor:'B'})).error,true);
- const result=await b.call('run_test',{test_id:'related'});assert.equal(result.error,false);assert.equal(result.data.exit,1);assert.equal(result.data.actor,'A');assert.equal(result.data.stdout,'actual test stdout\n');assert.equal(result.data.stderr,'actual stderr\n');
+ assert.equal((await b.call('run_test',{test_id:'related',output:'parent-test.json',actor:'BC'})).error,true);
+ const result=await b.call('run_test',{test_id:'related'});assert.equal(result.error,false);assert.equal(result.data.exit,1);assert.equal(result.data.actor,'AS');assert.equal(result.data.stdout,'actual test stdout\n');assert.equal(result.data.stderr,'actual stderr\n');
  const again=await b.call('run_test',{test_id:'related'});assert.equal(again.data.id,result.data.id);
  const submitted=await b.call('submit_report',cleanReport({evidence_ids:[result.data.id]}));assert.equal(submitted.error,false,JSON.stringify(submitted));
  assert.equal((await b.call('run_test',{test_id:'related'})).data.id,result.data.id);
  const status=invoke(['status','--run',f.run]);assert.equal(status.data.status,'incomplete');assert.ok(status.data.gaps.some(x=>x.includes('回执')));
 });
 
-test('R02 A不能用B真实测试冒充独立复跑',async t=>{
- const f=fixture(t);const b=await broker(t,f.run,'B');const a=await broker(t,f.run,'A');
+test('R02 AS不能用BC的测试回执冒充亲自运行',async t=>{
+ const f=fixture(t);const b=await broker(t,f.run,'BC');const a=await broker(t,f.run,'AS');
  const evidence=await b.call('run_test',{test_id:'related'});
- const r=await a.call('submit_report',cleanReport({evidence_ids:[evidence.data.id]}));assert.equal(r.error,true);assert.match(r.data.error,/独立复跑/);
+ const r=await a.call('submit_report',cleanReport({evidence_ids:[evidence.data.id]}));assert.equal(r.error,true);assert.match(r.data.error,/亲自运行/);
 });
 
 test('R03 拒绝目录逃逸、错误原文、缺失主引用以及未知字段',async t=>{
- const f=fixture(t);const b=await broker(t,f.run,'B');
+ const f=fixture(t);const b=await broker(t,f.run,'BC');
  assert.equal((await b.call('read_source',{file:'../config.json'})).error,true);
  const finding={file:'cart.py',line:2,severity:'高',category:'Bug',confidence:95,description:'返回总额额外加一，empty返回1，违反empty契约。',fix_suggestion:'移除额外加一'};
  const missing=await b.call('submit_report',cleanReport({report:{findings:[finding],coverage_note:'checked'}}));assert.equal(missing.error,true);
@@ -69,12 +70,12 @@ test('R03 拒绝目录逃逸、错误原文、缺失主引用以及未知字段'
  assert.equal((await b.call('submit_report',{...cleanReport(),actor:'A'})).error,true);
 });
 
-test('R04 零发现不放行缺少角色和critic的运行',t=>{
- const f=fixture(t);const s=invoke(['status','--run',f.run]);assert.equal(s.data.status,'incomplete');assert.ok(s.data.gaps.some(x=>x.includes('critic')));assert.ok(s.data.gaps.some(x=>x.includes('A')));
+test('R04 零发现不放行缺少角色的运行',t=>{
+ const f=fixture(t);const s=invoke(['status','--run',f.run]);assert.equal(s.data.status,'incomplete');assert.ok(!s.data.gaps.some(x=>x.includes('critic')));assert.ok(s.data.gaps.some(x=>x.includes('AS')));assert.ok(s.data.gaps.some(x=>x.includes('BC')));
 });
 
 test('R06 固定快照变化拒绝继续；持久证据被篡改不能放行',async t=>{
- const f=fixture(t);const b=await broker(t,f.run,'A');const e=await b.call('run_test',{test_id:'related'});assert.equal(e.error,false);
+ const f=fixture(t);const b=await broker(t,f.run,'AS');const e=await b.call('run_test',{test_id:'related'});assert.equal(e.error,false);
  const file=path.join(f.run,'objects',e.data.id+'.json');const old=readFileSync(file);writeFileSync(file,old.toString().replace('actual test stdout','forged test stdout'));
  const status=invoke(['status','--run',f.run]);assert.equal(status.data.status,'blocked');assert.match(status.data.gaps.join(' '),/哈希/);
  writeFileSync(file,old);writeFileSync(path.join(f.repo,'cart.py'),'changed snapshot\n');
@@ -116,24 +117,25 @@ c=call('context');e=[]
 if mode=='page-resume' and actor=='critic-1' and not marker.exists(): marker.write_text('context delivered');time.sleep(30)
 if actor in ['A','AS'] or actor.startswith('supplement-A'): e=[call('run_test',{'test_id':'related'})['id']]
 body={'report':{'findings':[],'coverage_note':'Protocol fixture, not model acceptance'},'citations':[],'coverage':[{'scenario':'empty','status':'reviewed','citations':[{'file':'spec.md','line':3,'quote':'empty returns zero'}]}],'evidence_ids':e,'d_request':[]}
-if (mode in ['candidate','low'] and actor=='B') or (mode in ['late','last-candidate','late-d'] and actor=='critic-1') or (mode=='last-candidate' and actor=='critic-2') or (mode in ['merge','cross-merge'] and actor in ['A','S']):
+if (mode in ['candidate','low'] and actor=='BC') or (mode in ['late','last-candidate','late-d'] and actor=='critic-1') or (mode=='last-candidate' and actor=='critic-2') or (mode in ['merge','cross-merge'] and actor in ['AS','BC']):
  body['report']['findings']=[{'file':'cart.py','line':2,'severity':'中','category':'Bug','confidence':95,'description':'total adds one','fix_suggestion':'remove plus one'}]
  body['citations']=[{'finding_index':0,'file':'cart.py','line':2,'quote':'    return sum(values) + 1'}]
-if mode=='low' and actor=='B': body['report']['findings'][0]['severity']='低'
+if mode=='low' and actor=='BC': body['report']['findings'][0]['severity']='低'
+if mode=='coverage-gap' and actor=='AS': body['coverage'][0]['status']='gap'
 if mode=='late-d' and actor=='critic-1': body['d_request']=[{'file':'cart.py','line':2,'quote':'    return sum(values) + 1'}]
 if actor.startswith('refute-'):
  body['decisions']=[{'candidate_id':x['id'],'verdict':'rejected','citations':[{'file':'cart.py','line':2,'quote':'    return sum(values) + 1'}],'reason':'Protocol negative fixture: completion must not imply confirmation'} for x in c['task']['candidates']]
-if mode in ['merge','cross-merge'] and actor in ['A','S']:
- line=6 if mode=='cross-merge' and actor=='S' else 3
+if mode in ['merge','cross-merge'] and actor in ['AS','BC']:
+ line=6 if mode=='cross-merge' and actor=='BC' else 3
  quote='null throws TypeError' if line==6 else 'empty returns zero'
  body['citations'].append({'finding_index':0,'file':'spec.md','line':line,'quote':quote})
 if mode=='cross-merge': body['coverage'].append({'scenario':'invalid','status':'reviewed','citations':[{'file':'spec.md','line':6,'quote':'null throws TypeError'}]})
 if mode in ['merge','cross-merge'] and actor.startswith('refute-'):
  for decision in body['decisions']: decision['verdict']='confirmed'
  body['merge_groups']=[{'candidate_ids':[x['id'] for x in c['task']['candidates']],'reason':'修复同一额外加一同时消除两个报告','citations':[{'file':'cart.py','line':2,'quote':'    return sum(values) + 1'}]}]
-if mode=='dynamic-d' and actor=='C': body['d_request']=[{'file':'cart.py','line':2,'quote':'    return sum(values) + 1'}]
+if mode=='dynamic-d' and actor=='BC': body['d_request']=[{'file':'cart.py','line':2,'quote':'    return sum(values) + 1'}]
 if actor.startswith('critic-'): body['gaps']=[]
-if mode in ['supplement','last-d','skip-supplement-context'] and actor=='critic-1': body['gaps']=[{'actor':'S','reason':'need additional empty scenario check'}]
+if mode in ['supplement','last-d','skip-supplement-context'] and actor=='critic-1': body['gaps']=[{'actor':'AS','reason':'need additional empty scenario check'}]
 if mode=='last-d' and actor=='critic-2': body['d_request']=[{'file':'cart.py','line':2,'quote':'    return sum(values) + 1'}]
 call('submit_report',body)
 p.stdin.close();p.wait()
@@ -163,10 +165,10 @@ test('R06 超时保留同run，三片段上限不能用重复启动绕过',async
  const segments=JSON.parse(readFileSync(path.join(f.run,'segments.json'),'utf8'));assert.equal(segments.length,3);assert.ok(segments.every(x=>x.finished&&x.peak_workers<=2));
 });
 
-for (const [mode,actors] of [['dynamic-d',['D','critic-1']],['late',['refute-2','critic-2']],['supplement',['supplement-S','critic-2']]]) {
+for (const [mode,actors] of [['dynamic-d',['D']],['late',['refute-2','critic-2']],['supplement',['supplement-AS','critic-2']]]) {
  test('R04 有界补查与独立回执 '+mode,t=>{
   const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
-  const f=fixture(t,{client:fakeClient(folder,mode)});
+  const f=fixture(t,{client:fakeClient(folder,mode),...(mode==='dynamic-d'?{}:{critic:'always'})});
   const r=invoke(['run','--run',f.run,'--budget-seconds','20']);assert.equal(r.data.status,'completed',JSON.stringify(r));
   for(const actor of actors) assert.ok(r.data.tasks.some(x=>x.actor===actor),actor);
   if(mode==='late') {assert.equal(r.data.confirmed.length,0);assert.equal(r.data.rejected.length,1);}
@@ -188,7 +190,7 @@ test('R06 同run并发启动被拒绝，终止后无活动worker',async t=>{
 for(const mode of ['last-candidate','late-d','low','merge']) {
  test('R04 不丢末轮候选、后续D、低发现和同根因来源 '+mode,t=>{
   const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
-  const f=fixture(t,{client:fakeClient(folder,mode)});const r=invoke(['run','--run',f.run,'--budget-seconds','20']);
+  const f=fixture(t,{client:fakeClient(folder,mode),...(['last-candidate','late-d'].includes(mode)?{critic:'always'}:{})});const r=invoke(['run','--run',f.run,'--budget-seconds','20']);
   if(mode==='last-candidate') {assert.equal(r.data.status,'incomplete');assert.match(r.data.gaps.join(' '),/未复核候选/);}
   else {assert.equal(r.data.status,'completed',JSON.stringify(r));
    if(mode==='late-d') {assert.ok(r.data.tasks.some(x=>x.actor==='D'));assert.ok(r.data.tasks.some(x=>x.actor==='critic-2'));}
@@ -200,12 +202,12 @@ for(const mode of ['last-candidate','late-d','low','merge']) {
 
 test('R04 最终critic之后新增D，旧覆盖依据不能冒充完整',t=>{
  const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
- const f=fixture(t,{client:fakeClient(folder,'last-d')});const r=invoke(['run','--run',f.run,'--budget-seconds','20']);
+ const f=fixture(t,{client:fakeClient(folder,'last-d'),critic:'always'});const r=invoke(['run','--run',f.run,'--budget-seconds','20']);
  assert.equal(r.data.status,'incomplete');assert.match(r.data.gaps.join(' '),/最终critic.*过期/);
 });
 
 test('R03 context提供固定行号源码包，省去重复机械读取',async t=>{
- const f=fixture(t);const b=await broker(t,f.run,'A');const r=await b.call('context');
+ const f=fixture(t);const b=await broker(t,f.run,'AS');const r=await b.call('context');
  assert.equal(r.error,false);assert.equal(r.data.source_documents['cart.py'].content,'def total(values):\n    return sum(values) + 1\n');
  assert.match(r.data.source_documents['cart.py'].numbered,/2:     return sum/);
 });
@@ -215,7 +217,7 @@ test('R06 中断测试保留真实部分输出且拒绝自动重跑',t=>{
  const f=fixture(t,{client:fakeClient(folder),tests:[{id:'related',argv:['python3','-u','-c','import time; print("partial before interruption",flush=True); time.sleep(30)']}]});
  const r=invoke(['run','--run',f.run,'--budget-seconds','1.5']);assert.equal(r.data.status,'blocked',JSON.stringify(r));
  const records=readdirSync(path.join(f.run,'objects')).map(x=>JSON.parse(readFileSync(path.join(f.run,'objects',x),'utf8'))).filter(x=>x.kind==='test');
- assert.ok(records.some(x=>x.actor==='A'&&!x.complete&&x.stdout.includes('partial before interruption')));
+ assert.ok(records.some(x=>x.actor==='AS'&&!x.complete&&x.stdout.includes('partial before interruption')));
  const again=invoke(['run','--run',f.run,'--budget-seconds','1']);assert.equal(again.data.status,'blocked');
  assert.equal(JSON.parse(readFileSync(path.join(f.run,'segments.json'),'utf8')).length,1);
 });
@@ -229,10 +231,10 @@ test('R04 同一源码行上的不同Scenario不能凭一次编辑而误合并',
 test('R06 CLI原始完成日志被改写或缺失必须阻止完成',t=>{
  const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
  const f=fixture(t,{client:fakeClient(folder)});assert.equal(invoke(['run','--run',f.run,'--budget-seconds','20']).data.status,'completed');
- const log=path.join(f.run,'actors','A','attempt-1.jsonl');const raw=readFileSync(log);writeFileSync(log,'forged completion\n');
+ const log=path.join(f.run,'actors','AS','attempt-1.jsonl');const raw=readFileSync(log);writeFileSync(log,'forged completion\n');
  assert.equal(invoke(['status','--run',f.run]).data.status,'blocked');
  writeFileSync(log,raw);rmSync(log);assert.equal(invoke(['status','--run',f.run]).data.status,'blocked');
- writeFileSync(log,raw);const stderr=path.join(f.run,'actors','A','attempt-1.stderr');writeFileSync(stderr,'changed stderr');assert.equal(invoke(['status','--run',f.run]).data.status,'blocked');
+ writeFileSync(log,raw);const stderr=path.join(f.run,'actors','AS','attempt-1.stderr');writeFileSync(stderr,'changed stderr');assert.equal(invoke(['status','--run',f.run]).data.status,'blocked');
 });
 
 test('R05 合法测试超过30秒且仍在片段预算内可以完成',t=>{
@@ -243,7 +245,7 @@ test('R05 合法测试超过30秒且仍在片段预算内可以完成',t=>{
 
 test('R03 大上下文在受控接口内完整分页，不能落到worker不可读的客户端文件',async t=>{
  const spec='### Requirement: total\n#### Scenario: empty\nempty returns zero\n'+('中文完整上下文\\n'.repeat(12000));
- const f=fixture(t,{fixtureSpec:spec});const b=await broker(t,f.run,'B');
+ const f=fixture(t,{fixtureSpec:spec});const b=await broker(t,f.run,'BC');
  const first=await b.call('context');assert.ok(Buffer.byteLength(JSON.stringify(first.data))<12000);
  assert.equal(first.data.paged,true);let page=first.data;let raw='';
  for(;;) {raw+=page.content;if(page.next_cursor===null) break;const next=await b.call('context',{resource:page.resource,cursor:page.next_cursor});assert.equal(next.error,false);page=next.data;assert.ok(Buffer.byteLength(JSON.stringify(page))<12000);}
@@ -252,22 +254,22 @@ test('R03 大上下文在受控接口内完整分页，不能落到worker不可�
 });
 
 test('R01 大测试输出分页保留完整原件与哈希',async t=>{
- const f=fixture(t,{tests:[{id:'related',argv:['python3','-c','print("evidence"*8000)']}]});const b=await broker(t,f.run,'A');
+ const f=fixture(t,{tests:[{id:'related',argv:['python3','-c','print("evidence"*8000)']}]});const b=await broker(t,f.run,'AS');
  let page=(await b.call('run_test',{test_id:'related'})).data;assert.equal(page.paged,true);let raw='';
  for(;;) {assert.ok(Buffer.byteLength(JSON.stringify(page))<12000);raw+=page.content;if(page.next_cursor===null)break;page=(await b.call('context',{resource:page.resource,cursor:page.next_cursor})).data;}
- const receipt=JSON.parse(raw);assert.equal(receipt.stdout,'evidence'.repeat(8000)+'\n');assert.equal(receipt.actor,'A');assert.equal(receipt.complete,true);
+ const receipt=JSON.parse(raw);assert.equal(receipt.stdout,'evidence'.repeat(8000)+'\n');assert.equal(receipt.actor,'AS');assert.equal(receipt.complete,true);
  assert.equal((await b.call('submit_report',cleanReport({evidence_ids:[receipt.id]}))).error,false);
 });
 
 test('R04 critic只看上下文首段不能冒充已读全部依赖',t=>{
  const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
- const f=fixture(t,{client:fakeClient(folder,'partial-context'),fixtureSpec:'### Requirement: total\n#### Scenario: empty\nempty returns zero\n'+('context detail\n'.repeat(1000))});
+ const f=fixture(t,{client:fakeClient(folder,'partial-context'),critic:'always',fixtureSpec:'### Requirement: total\n#### Scenario: empty\nempty returns zero\n'+('context detail\n'.repeat(1000))});
  const r=invoke(['run','--run',f.run,'--budget-seconds','20']);assert.equal(r.data.status,'incomplete',JSON.stringify(r));assert.deepEqual(r.data.gaps,['critic-1 缺少完成回执']);
 });
 
 test('R06 新worker不能继承旧worker的分页已读记录',async t=>{
  const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
- const f=fixture(t,{client:fakeClient(folder,'page-resume'),fixtureSpec:'### Requirement: total\n#### Scenario: empty\nempty returns zero\n'+('context detail\n'.repeat(1000))});
+ const f=fixture(t,{client:fakeClient(folder,'page-resume'),critic:'always',fixtureSpec:'### Requirement: total\n#### Scenario: empty\nempty returns zero\n'+('context detail\n'.repeat(1000))});
  const proc=spawn('python3',[cli,'run','--run',f.run,'--budget-seconds','20'],{stdio:['ignore','pipe','pipe']});const closed=new Promise(resolve=>proc.on('close',resolve));t.after(()=>proc.kill());
  const deadline=Date.now()+10000;while(!existsSync(path.join(folder,'client.ready'))&&Date.now()<deadline)await new Promise(r=>setTimeout(r,50));
  assert.ok(existsSync(path.join(folder,'client.ready')),'first worker must really finish context delivery');proc.kill('SIGTERM');await closed;
@@ -275,7 +277,7 @@ test('R06 新worker不能继承旧worker的分页已读记录',async t=>{
 });
 
 test('R03 大校验错误也可在受控接口中完整读取',async t=>{
- const f=fixture(t);const b=await broker(t,f.run,'B');let result=await b.call('submit_report',cleanReport({report:{findings:Array.from({length:150},()=>({})),coverage_note:'invalid protocol payload'}}));
+ const f=fixture(t);const b=await broker(t,f.run,'BC');let result=await b.call('submit_report',cleanReport({report:{findings:Array.from({length:150},()=>({})),coverage_note:'invalid protocol payload'}}));
  assert.equal(result.error,true);let page=result.data;assert.ok(Buffer.byteLength(JSON.stringify(page))<12000);assert.equal(page.paged,true);let raw='';
  for(;;){raw+=page.content;if(page.next_cursor===null)break;page=(await b.call('context',{resource:page.resource,cursor:page.next_cursor})).data;assert.ok(Buffer.byteLength(JSON.stringify(page))<12000);}
  assert.match(JSON.parse(raw).error,/schema/);assert.ok(raw.length>12000);
@@ -285,18 +287,18 @@ test('R04 初审维度不读取其他维度结论，D仍取得真实触发范围
  const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
  const trigger={file:'cart.py',line:2,quote:'    return sum(values) + 1'};
  const f=fixture(t,{client:fakeClient(folder),d_request:[trigger]});assert.equal(invoke(['run','--run',f.run,'--budget-seconds','20']).data.status,'completed');
- const b=await broker(t,f.run,'B');const c=(await b.call('context')).data;assert.deepEqual(c.reports,{});assert.ok(c.test_receipts.every(x=>x.actor==='B'));
+ const b=await broker(t,f.run,'BC');const c=(await b.call('context')).data;assert.deepEqual(c.reports,{});assert.ok(c.test_receipts.every(x=>x.actor==='BC'));
  const d=await broker(t,f.run,'D');assert.deepEqual((await d.call('context')).data.architecture_scope,[trigger]);
 });
 
 test('R04 补查者必须实际读取原报告与critic缺口',t=>{
  const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
- const f=fixture(t,{client:fakeClient(folder,'skip-supplement-context')});const r=invoke(['run','--run',f.run,'--budget-seconds','20']);assert.equal(r.data.status,'incomplete',JSON.stringify(r));assert.ok(r.data.gaps.includes('supplement-S 缺少完成回执'));
+ const f=fixture(t,{client:fakeClient(folder,'skip-supplement-context'),critic:'always'});const r=invoke(['run','--run',f.run,'--budget-seconds','20']);assert.equal(r.data.status,'incomplete',JSON.stringify(r));assert.ok(r.data.gaps.includes('supplement-AS 缺少完成回执'));
 });
 
 
 test('R03 MCP声明完整嵌套契约，调用者无需猜测引用和发现字段',async t=>{
- const f=fixture(t);const b=await broker(t,f.run,'B');
+ const f=fixture(t);const b=await broker(t,f.run,'BC');
  const tools=(await b.rpc('tools/list')).result.tools;
  const s=tools.find(x=>x.name==='submit_report').inputSchema;
  const ref=s.properties.d_request.items;
@@ -314,7 +316,7 @@ test('R03 MCP声明完整嵌套契约，调用者无需猜测引用和发现字�
 });
 
 test('R01 worker测试视图去重编码，完整字节仍由宿主保存',async t=>{
- const f=fixture(t);const b=await broker(t,f.run,'A');
+ const f=fixture(t);const b=await broker(t,f.run,'AS');
  const r=(await b.call('run_test',{test_id:'related'})).data;
  assert.equal(r.stdout,'actual test stdout\n');assert.equal(r.stderr,'actual stderr\n');
  assert.equal('stdout_base64' in r,false);assert.equal('stderr_base64' in r,false);
@@ -328,16 +330,18 @@ test('R01 worker测试视图去重编码，完整字节仍由宿主保存',async
 
 test('R04 实际worker派发保留覆盖契约原文并排除原生报告模板',t=>{
  const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
- const f=fixture(t,{client:fakeClient(folder)});
+ const f=fixture(t,{client:fakeClient(folder),critic:'always'});
  assert.equal(invoke(['run','--run',f.run,'--budget-seconds','20']).data.status,'completed');
  const source=readFileSync(path.join(root,'agents/code-reviewer.md'),'utf8');
  const coverageRule=source.split('\n').find(line=>line.startsWith('- `coverage_note`'));
  assert.ok(coverageRule);
- for(const actor of ['A','B','C','S','critic-1']) {
+ for(const actor of ['AS','BC','critic-1']) {
   const invocation=JSON.parse(readFileSync(path.join(f.run,'actors',actor,'attempt-1.invocation.json'),'utf8'));
   const prompt=invocation.argv.at(-1);
   assert.ok(prompt.includes(coverageRule),actor+'必须保留覆盖证据语义');
   assert.ok(!prompt.includes('## 代码审查报告'),actor+'不能混入原生Markdown模板');
+  if(actor==='BC'){assert.ok(prompt.includes('### 维度 B')&&prompt.includes('### 维度 C'),'BC 必须同时携带 B 与 C 维度规则');assert.ok(!prompt.includes('### 维度 A'),'BC 不携带 A 维度规则');}
+  if(actor==='AS'){assert.ok(prompt.includes('### 维度 A')&&prompt.includes('### 维度 S'),'AS 必须携带 A 与 S 维度规则');}
  }
 });
 
@@ -349,7 +353,7 @@ for(const explicit of [false,true]) {
   assert.equal(result.data.status,'completed',JSON.stringify(result));
   const segments=JSON.parse(readFileSync(path.join(f.run,'segments.json'),'utf8'));
   assert.equal(segments[0].budget_seconds,1800);
-  const invocation=JSON.parse(readFileSync(path.join(f.run,'actors','A','attempt-1.invocation.json'),'utf8'));
+  const invocation=JSON.parse(readFileSync(path.join(f.run,'actors','AS','attempt-1.invocation.json'),'utf8'));
   assert.ok(!invocation.argv.includes('--max-budget-usd'));
  });
 }
@@ -359,4 +363,46 @@ test('R06 超过30分钟的片段被拒绝，不能开始worker',t=>{
  const result=invoke(['run','--run',f.run,'--budget-seconds','1801']);
  assert.equal(result.data.status,'blocked');assert.match(result.data.gaps.join(' '),/1800/);
  assert.equal(existsSync(path.join(f.run,'segments.json')),false);
+});
+
+test('S3.1 常规档派发两路 AS 与 BC',t=>{
+ const f=fixture(t);const s=invoke(['status','--run',f.run]);assert.deepEqual(s.data.tasks.map(x=>x.actor),['AS','BC']);
+});
+test('S3.2 零发现时无反驳无critic即可完成',t=>{
+ const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
+ const f=fixture(t,{client:fakeClient(folder)});const r=invoke(['run','--run',f.run,'--budget-seconds','20']);
+ assert.equal(r.data.status,'completed',JSON.stringify(r));assert.ok(!r.data.tasks.some(x=>/^(refute|critic)-/.test(x.actor)));
+});
+test('S3.3 tests 为空时以宿主 evidence 为证据',async t=>{
+ const evidence=[{task:'T01',phase:'green',command:['node','--test','x.test.mjs'],exit_code:0,stdout_sha256:'a'.repeat(64),stderr_sha256:'b'.repeat(64)}];
+ const f=fixture(t,{tests:[],evidence});const b=await broker(t,f.run,'AS');
+ const c=await b.call('context');assert.equal(c.error,false);assert.deepEqual(c.data.execution_evidence,evidence);
+ const r=await b.call('submit_report',cleanReport());assert.equal(r.error,false,JSON.stringify(r));
+});
+test('S3.5 critic=always 零发现仍派critic',t=>{
+ const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
+ const f=fixture(t,{client:fakeClient(folder),critic:'always'});const r=invoke(['run','--run',f.run,'--budget-seconds','20']);
+ assert.equal(r.data.status,'completed',JSON.stringify(r));assert.ok(r.data.tasks.some(x=>x.actor==='critic-1'));
+});
+
+test('S3.4 零候选但 AS 覆盖有缺口时不完成',t=>{
+ const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
+ const f=fixture(t,{client:fakeClient(folder,'coverage-gap')});const r=invoke(['run','--run',f.run,'--budget-seconds','20']);
+ assert.equal(r.data.status,'incomplete',JSON.stringify(r));assert.ok(r.data.gaps.some(x=>x.includes('Scenario未覆盖: empty')));
+ assert.ok(!r.data.tasks.some(x=>/^(refute|critic)-/.test(x.actor)));
+});
+test('S3.7 large 档默认五路且派 critic',t=>{
+ const f=fixture(t,{tier:'large'});const s=invoke(['status','--run',f.run]);
+ assert.deepEqual(s.data.tasks.map(x=>x.actor),['A','B-quality','B-simple','C','S','critic-1']);
+});
+test('S3.8 非法 config 被 init 拒绝',t=>{
+ const good={task:'T01',phase:'green',command:['node','--test','x.test.mjs'],exit_code:0,stdout_sha256:'a'.repeat(64),stderr_sha256:'b'.repeat(64)};
+ for(const [extra,message] of [
+  [{tests:[]},'tests为空时必须提供evidence'],
+  [{tests:[],evidence:[{task:'T01'}]},'evidence必须为execution回执数组'],
+  [{tests:[],evidence:[{...good,exit_code:'0'}]},'evidence必须为execution回执数组'],
+  [{tests:[],evidence:[{...good,command:'node'}]},'evidence必须为execution回执数组'],
+  [{tests:[],evidence:[{...good,stdout_sha256:'xyz'}]},'evidence必须为execution回执数组'],
+  [{critic:'never'},'critic必须为on-findings或always'],
+ ]){const f=fixture(t,{...extra,expectInitError:true});assert.notEqual(f.init.code,0,JSON.stringify(extra));assert.ok(f.init.data.gaps.join(' ').includes(message),JSON.stringify(f.init.data)+' 应含 '+message);}
 });

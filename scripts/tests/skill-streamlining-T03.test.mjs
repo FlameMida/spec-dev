@@ -21,7 +21,7 @@ assert.match(policy('skills/writing-plans/SKILL.md'),/format_version/);
 test("S10 自足产物和类型化步骤完整",()=>{
 
 const s=policy('skills/writing-plans/SKILL.md');
-assert.match(s,/每步给完整代码/);assert.match(s,/步骤 7：最终状态保存/);
+assert.match(s,/每步给关键片段/);assert.match(s,/步骤 7：最终状态保存/);
 assert.match(s,/零测试|SKIP/);assert.match(s,/资源台账总则/);
 
 });

@@ -12,9 +12,9 @@
 4. **歧义检查**：有无可以两种方式解读的需求？有则选定一种写明
 5. **Requirement 质量**：每条 Requirement 是否一个 SHALL 且可观察？每条是否至少有一个真正检验它的 Scenario（不是复述）？最怕坏掉的场景有没有命名的 Scenario？差量三节（如使用）分类是否与既有行为对得上？
 
-**第二步——对抗验证**：派 1 个临时子代理（Claude Code 用 general-purpose，Codex 用 `spawn_agent`），提示词按 [spec-reviewer-prompt.md](spec-reviewer-prompt.md) 模板构造，对 spec 做独立审查（完整性/一致性/清晰度/范围/YAGNI）。审查回报的问题逐条处置：成立则修 spec，不成立则记录理由。
+**第二步——对抗验证**（light 档跳过本步，其自检与用户批准已在阶段 5 一次完成）：standard/deep 档派 1 个临时子代理（Claude Code 用 general-purpose，Codex 用 `spawn_agent`），提示词按 [spec-reviewer-prompt.md](spec-reviewer-prompt.md) 模板构造，对 spec 做独立审查（完整性/一致性/清晰度/范围/YAGNI）。审查回报的问题逐条处置：成立则修 spec，不成立则记录理由。
 
-**第三步——用户 review 门**：
+**第三步——用户 review 门**（light 档不进入本步）：
 
 先展示最新版 spec 链接、简短变更摘要和 2–3 个针对实际参与者、约束或边界的陈述式检查点，再使用下方一次整体确认。检查点只陈述来源已支持的事实与影响，不附“请确认”或问题；约束表示必须保护的边界，不能改写成违反约束的情况“不可能发生”。若确有未决决策，转为一次一题澄清，先处理该决策。
 

@@ -1,9 +1,6 @@
 ---
 # —— spec-dev 漂移守卫锚点（机器可校验，勿删）——
 
-> **Superseded-pending (2026-09-12)** — 本 spec 的「Requirement: test-strategy skill」将被 .spec-dev/2026-09-12-01-workflow-slimming/spec/workflow-slimming-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
-
-
 spec_dev:
   version: 1
   feature: major-upgrade
@@ -51,7 +48,6 @@ spec_dev:
 ---
 
 # spec-dev 重大升级（多平台适配 · MCP 清零 · 工作流增强）设计
-
 
 ## 背景与目标
 
@@ -183,6 +179,8 @@ session-context 注入链 SHALL 在每个跳过分支留下可事后查询的一
 - **THEN** 退出码 1 并输出目标版本
 
 ### Requirement: test-strategy skill
+
+> **Superseded (2026-09-12)** — by .spec-dev/2026-09-12-01-workflow-slimming/spec/workflow-slimming-design.md#r5-本地三-lane；原文保留仅作历史参考。
 
 插件 SHALL 新增 `skills/test-strategy/`：SKILL.md 承载普适测试纪律（三 Lane 按 IO 类型调度、治理顺序 flaky→时长→选择、AI Agent 模型边界与五层测试骨架、与验收矩阵的对接规则），栈特定处方（DB 容器拓扑/模板克隆/两速隔离、前端 MSW 纪律、Agent eval 分级）进 references 按需加载；writing-plans 翻译验收矩阵时与 acceptance-qa 阶段 0 SHALL 引用之。
 

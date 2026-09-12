@@ -17,7 +17,7 @@ MAX_SEGMENT_SECONDS = 1800
 def reviewer_rules(source, actor):
     """Keep common rules verbatim and only the assigned dimension; native UI/tool templates do not apply."""
     role = actor.removeprefix('supplement-')
-    dimensions = {'A', 'B', 'C', 'S'} if role == 'AS' else {role.split('-')[0]}
+    dimensions = {'A', 'B', 'C', 'S'} if role == 'AS' else {'B', 'C'} if role == 'BC' else {role.split('-')[0]}
     if actor.startswith(('refute-', 'critic-')): dimensions = {'A', 'B', 'C', 'S', 'D'}
     source = re.sub(r'\A---\n.*?\n---\n', '', source, count=1, flags=re.S)
     sections = []; lines = []; fenced = False
@@ -45,8 +45,9 @@ def reviewer_rules(source, actor):
 
 def worker_prompt(data, actor):
     role = actor.removeprefix('supplement-')
-    descriptions = {'A': '功能正确性，必须亲自run_test取得所有相关测试回执。',
-        'AS': '功能正确性与S实现符合性，兼查B质量/C项目规范的显著问题并在coverage_note说明；必须亲自run_test，逐条核对现行Scenario。',
+    descriptions = {'A': '功能正确性；tests非空时必须亲自run_test取得回执，tests为空时以context.execution_evidence为测试证据，不得编造回执。',
+        'BC': '代码质量与项目规范合并一路：可维护性、简洁性、DRY，以及适用项目约定与已有工具；必须引用真实规则；不把纯注释未列计划当授权问题，必要内部实现或纯注释不形成新批准门。',
+        'AS': '功能正确性与S实现符合性，兼查B质量/C项目规范的显著问题并在coverage_note说明；tests非空时亲自run_test、为空时用execution_evidence，逐条核对现行Scenario。',
         'B': '代码质量，包括可维护性与简洁性；不把纯注释未列计划当授权问题。',
         'B-quality': '代码质量、可读性、可维护性。', 'B-simple': '简洁性、DRY、复杂性。',
         'C': '适用项目规范；必须引用真实规则，必要内部实现或纯注释不形成新批准门。',

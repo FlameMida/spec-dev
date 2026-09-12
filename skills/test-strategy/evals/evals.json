@@ -4,7 +4,7 @@
     {
       "id": "ts-lane-annotation",
       "prompt": "spec 验收矩阵有一行 integration 维度的 DB 回归检查，项目用 PostgreSQL",
-      "expected_output": "该行标注 PR lane；writing-plans 翻译的测试步骤引用 db-testing 处方（job 级一容器 + 模板克隆/事务回滚），运行命令归入 PR lane；不出现每测试一容器"
+      "expected_output": "该行标注 final lane；writing-plans 翻译的测试步骤引用 db-testing 处方（job 级一容器 + 模板克隆/事务回滚），运行命令归入 final lane；不出现每测试一容器"
     },
     {
       "id": "ts-governance-order",
@@ -19,7 +19,7 @@
     {
       "id": "tdd-seam-s15",
       "prompt": "S15 四类依赖与集成信心：\nGIVEN 测试涉及远端 API、数据库、时钟/随机源、文件系统\nWHEN 选择策略及 Lane",
-      "expected_output": "每类按上述规则得到真实依赖或替身方案；纯内存替身可以进入 fast，真实 IO 按 PR/nightly 安排；fast 全绿不能证明真实 DB/网络集成通过。"
+      "expected_output": "每类按上述规则得到真实依赖或替身方案；纯内存替身可以进入 fast，真实集成归 final、长耗时归 manual；fast 全绿不能证明真实 DB/网络集成通过。"
     },
     {
       "id": "plan-decomposition-s06",

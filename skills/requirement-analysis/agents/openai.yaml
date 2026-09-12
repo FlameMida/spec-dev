@@ -1,6 +1,6 @@
 interface:
   display_name: "Requirement Analysis"
-  short_description: "已承诺且有设计空间的需求设计；形成获批 spec 并交接计划。"
+  short_description: "已承诺且有设计空间的需求设计；形成获批 spec 并交接计划；light 档一次成稿一次批准。"
   default_prompt: "Use $requirement-analysis to design this feature through the 8-phase workflow and produce a spec. / 用 $requirement-analysis 走 8 阶段工作流设计这个功能并产出 spec。"
 
 policy:

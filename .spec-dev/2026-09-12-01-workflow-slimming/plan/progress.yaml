@@ -1,19 +1,25 @@
 format_version: 1
-current: null
+current: T12
 tasks:
-  T00: { status: pending }
-  T01: { status: pending }
-  T02: { status: pending }
-  T03: { status: pending }
-  T04: { status: pending }
-  T05: { status: pending }
-  T06: { status: pending }
-  T07: { status: pending }
-  T08: { status: pending }
-  T09: { status: pending }
-  T10: { status: pending }
-  T11: { status: pending }
-  T12: { status: pending }
+  T00: { status: completed, commit: dc1f6e9866ee693e8389f21ce18cd276408bda44, tests: pass }
+  T01: { status: completed, commit: 6c9ab30b0a1ef468aed15291e7e0cd27602cc772, tests: pass }
+  T02: { status: completed, commit: 556516121da08ffb5e7b23ad85f63f1f89177c68, tests: pass }
+  T03: { status: completed, commit: 721f5d97ebcb984efd36e9918f12de8dc4aebfd9, tests: pass }
+  T04: { status: completed, commit: 036002a4587efdd6d4d0b52dd1d4c2b31a6055ad, tests: pass }
+  T05: { status: completed, commit: 5d363be2f9c33bce9b94c4efafb06005b488f8cf, tests: pass }
+  T06: { status: completed, commit: a3722ac08efd9818db58cdcde0d30774938ad1cc, tests: pass }
+  T07: { status: completed, commit: 8a9c64798b4e47f7ebe0ca0bcf6a2d9be3815cc0, tests: pass }
+  T08: { status: completed, commit: 5c6b1bdb3ef91bd847cf1a5e7057358e1d70df43, tests: pass }
+  T09: { status: completed, commit: 133c565bd959d777b7626eeabedfdd436d286266, tests: pass }
+  T10: { status: completed, commit: eb603bdc6fd599d6f876e05be9ab7e40d77ba9b9, tests: pass }
+  T11: { status: completed, commit: 76f7515b2e82a6830c2ea1e3f10696661ef0ea6b, tests: pass }
+  T12: { status: in_progress }
 resources:
   - "worktree: .worktrees/plan/2026-09-12-01-workflow-slimming —— git worktree remove .worktrees/plan/2026-09-12-01-workflow-slimming && git branch -D plan/2026-09-12-01-workflow-slimming"
-notes: []
+notes:
+  - "T00 来源工作区 /Users/maverick/feature-dev，来源分支 main，来源 HEAD dc1f6e9866ee693e8389f21ce18cd276408bda44"
+  - "T00 实施工作区 /Users/maverick/feature-dev/.worktrees/plan/2026-09-12-01-workflow-slimming，实施分支 plan/2026-09-12-01-workflow-slimming，归属 created（本计划手工 git worktree 创建并拥有；原生 EnterWorktree 默认基于 origin/main，会丢失未推送的激活提交，故走手工路径）"
+  - "T00 来源工作区当时有 6423 个未提交删除（2026-09-11-01 特性 acceptance/ 整目录），worktree 从 HEAD 创建不受影响，处置在 T01"
+  - "T00 基线：相关测试范围 8 文件 70/70 通过（81 s），validate-skills 通过，check-openai-sync 通过；无 dependencies 不安装"
+  - "T01 来源工作区已提交 6423 个删除（9f05eaf9）；worktree 内从索引移除 6923 个已跟踪证据文件，磁盘保留；仍跟踪 9 份 acceptance-report.md"
+  - "T06 小偏差：计划替换表之外另补两处测试字面量（receipt.actor、cross-merge 的 S 条件）；T11 小偏差：hooksPath 解析到主工作区 .githooks 亦视为已启用"

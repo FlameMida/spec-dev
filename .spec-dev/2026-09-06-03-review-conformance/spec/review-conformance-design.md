@@ -31,8 +31,6 @@ spec_dev:
 
 # 收尾审查符合性与共享判据设计
 
-> **Superseded-pending (2026-09-12)** — 本 spec 的「Requirement: 规模化维度编排」「Requirement: 完整性审查的证据覆盖」将被 .spec-dev/2026-09-12-01-workflow-slimming/spec/workflow-slimming-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
-
 > roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #4，吸收 AB-12/09/14/13/32。用户于 2026-09-06 批准「S 与完整性审查分工」方案、完整设计及审查后的 spec，并同意编写实施计划。12 条 Requirement / 28 个 Scenario，独立审查 Approved，见 [design-review.md](design-review.md)；本 spec 已完成本地交付，T00–T06 全部完成；验收与模型边界见 acceptance/acceptance-report.md。
 
 ## 背景与目标
@@ -203,6 +201,8 @@ reviewer SHALL 用具体行为、影响和来源说明发现，排除无证据�
 
 ### Requirement: 规模化维度编排（改了什么：各档覆盖 S，大变更五路重分配，容量不足不丢维度）
 
+> **Superseded (2026-09-12)** — by .spec-dev/2026-09-12-01-workflow-slimming/spec/workflow-slimming-design.md#r3-收尾审查路数与证据；原文保留仅作历史参考。
+
 收尾编排 SHALL 按小变更一路 A+S 兼查 B/C、常规四路 A/B/C/S、大变更五路 A/B质量/B简洁性/C/S 的规则安排覆盖，并在实际容量不足时分批完成全部选定维度。
 
 #### Scenario: S14 小变更也检查越界
@@ -224,6 +224,8 @@ reviewer SHALL 用具体行为、影响和来源说明发现，排除无证据�
 - **THEN** 说明容量限制并分批完成四路，已返回报告可先复核，不把未启动维度报为完成；资源允许时仍同波扇出，不无故串行。
 
 ### Requirement: 完整性审查的证据覆盖（改了什么：明确零发现与未覆盖的区别，保留现行 Scenario 核对）
+
+> **Superseded (2026-09-12)** — by .spec-dev/2026-09-12-01-workflow-slimming/spec/workflow-slimming-design.md#r3-收尾审查路数与证据；原文保留仅作历史参考。
 
 completeness critic SHALL 对照变更文件、风险面和现行 Requirement/Scenario 核查审查与测试证据，区分已审零发现、实际未覆盖及明确截断，排除已取代项。
 

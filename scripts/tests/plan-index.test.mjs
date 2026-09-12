@@ -109,3 +109,19 @@ test("S02 并发声明损坏不可交付：CLI", () => {
     assert.match(result.stderr,/index.md#parallel/);
   } finally { rmSync(dir,{recursive:true,force:true}); }
 });
+
+const lines = (n) => Array.from({ length: n }, (_, i) => `line ${i + 1}`).join("\n") + "\n";
+test("S1.2 任务文件超过 200 行被拦截", () => {
+  const dir = makePlan(["| T01 a | — | — | f() |"], ["T01.md"]);
+  writeFileSync(path.join(dir, "tasks", "T01.md"), lines(201));
+  try {
+    const r = runCapture(dir);
+    assert.equal(r.status, 1);
+    assert.match(r.stderr, /tasks\/T01\.md/); assert.match(r.stderr, /<= 200 lines/); assert.match(r.stderr, /201 lines/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("S1.2 恰好 200 行通过", () => {
+  const dir = makePlan(["| T01 a | — | — | f() |"], ["T01.md"]);
+  writeFileSync(path.join(dir, "tasks", "T01.md"), lines(200));
+  try { assert.equal(run(dir), 0); } finally { rmSync(dir, { recursive: true, force: true }); }
+});
