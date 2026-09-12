@@ -11,7 +11,7 @@
 - **探索模式** — `exploring` 保持未定想法的发散讨论：默认只读，授权受控 spike 回答必须运行的问题；可选后台调研追溯一手来源。关键分岔清单可见但每轮仍只问一题；可选笔记记录已排除选项及条件，交付问题明确后提议正式设计。
 - **需求设计** — `requirement-analysis` 8 阶段设计工作流：需求分诊（light / standard / deep 三档）、内外部并行探索（不设子代理上限）、逐题澄清、sequential-thinking 对抗验证 + 2-3 方案对比、spec 落盘与双重 review（行为规范结构化：Requirement + Scenario）；HARD-GATE 保证设计获批前零实施动作
 - **可视化预览** — `visual-preview` 浏览器伴侣：设计对话中 JIT 提议，展示 mockup、线框、布局对比并回收点击选择
-- **实施计划** — `writing-plans` 把 spec 拆成零上下文可执行的 bite-sized 任务：精确文件路径、完整代码、TDD 五步内嵌、接口消费/产出契约、禁止占位符
+- **实施计划** — `writing-plans` 把 spec 拆成可独立验证的 bite-sized 任务：精确文件路径、改动要点与关键 diff 片段、TDD 五步内嵌、接口消费/产出契约、禁止占位符
 - **计划执行** — `executing-plans` 主线程逐任务执行（每任务 commit + spec 自检）、收尾多维对抗审查（fan-out code-reviewer + 契约校验 + loop-until-dry + completeness critic）、合并与总结
 - **可选并发执行** — `executing-plans-parallel`: 显式选择；模型声明、任务边界切换、独占进度、隔离实现和中断恢复；共用本地/PR 交付闭环。
 - **工程纪律** — `using-git-worktrees`（原生工具优先的隔离工作区）与 `test-driven-development`（没有失败测试就没有生产代码）独立成 skill，可被任何工作流复用
@@ -193,7 +193,7 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-des
 /executing-plans 执行 .spec-dev/2026-07-04-auth/plan/index.md
 ```
 
-- **writing-plans**：假设执行者零上下文——每份计划固定以任务 0（建立隔离工作区，含已隔离检测与 git 降级命令）开头、以最终任务（合并与清理）收尾，spec 验收矩阵含「验收任务」行时在两者之间固定生成验收任务，worktree 生命周期在计划内闭合、脱离插件也能按序执行；头部随行偏差处理指引；每任务给精确文件路径、完整代码、适用的行为红绿/纯重构保护/集成组验证步骤、接口消费/产出与关联 skill；写完跑五查（spec 覆盖/占位符/类型一致/导航表与任务文件一致/依赖最小性）再交接
+- **writing-plans**：假设执行者能读仓库但不知本次取舍——每份计划固定以任务 0（建立隔离工作区，含已隔离检测与 git 降级命令）开头、以最终任务（合并与清理）收尾，spec 验收矩阵含「验收任务」行时在两者之间固定生成验收任务，worktree 生命周期在计划内闭合、脱离插件也能按序执行；头部随行偏差处理指引；每任务给精确文件路径、关键 diff 片段、适用的行为红绿/纯重构保护/集成组验证步骤、接口消费/产出与关联 skill；写完跑五查（spec 覆盖/占位符/类型一致/导航表与任务文件一致/依赖最小性）再交接
 - **executing-plans**：执行确认后从任务 0（隔离工作区，纪律遵循 using-git-worktrees）开始，主线程逐任务连续执行（每任务 commit `feat(TN): xxx` + spec 自检），全部完成后 fan-out code-reviewer 多维对抗审查（review-findings 契约校验 + 高/中发现对抗复核 + completeness critic），按验收矩阵触发 acceptance-qa 验收，审查处置征询用户后执行最终任务（合并与清理）并总结
 
 ## visual-preview 使用方法
@@ -330,7 +330,7 @@ FlameMida
 
 技能入口保留用途、触发及持续生效的边界；详细流程、声明、模板、恢复和审查按动作条件取得完整专题。
 现有 exploration-patterns.md 为有效导航；插件根、派发与恢复、输出契约分别保留一个完整权威。
-writing-plans 的字段和资源台账位于 references/plan-format.md，专项声明与任务/交付模板按需读取；生成计划仍包含完整代码、命令和接口。
+writing-plans 的字段和资源台账位于 references/plan-format.md，专项声明与任务/交付模板按需读取；生成计划包含关键片段、命令和接口，单任务文件不超过 200 行。
 DDD 独立使用及被主流程调用均采用 .spec-dev/glossary.md、对应 spec 局部术语节和 .spec-dev/adr/。
 完整设计或保存范围获批后写入，同范围授权复用；已有旧位置文档不自动迁移。
 本轮未改变 AnySearch、sequential-thinking 及其上游更新逻辑，也没有取消其当前调用规则。
