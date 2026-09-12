@@ -24,9 +24,10 @@ function fixture(t, extra={}) {
  git('add','.');git('commit','-qm','base');const base=git('rev-parse','HEAD');
  writeFileSync(path.join(repo,'cart.py'),'def total(values):\n    return sum(values) + 1\n');git('add','.');git('commit','-qm','change');
  const run=path.join(dir,'run');const config={repo,base,head:git('rev-parse','HEAD'),spec:'spec.md',plan:'plan.md',tier:'regular',capacity:2,tests:[{id:'related',argv:['python3','check.py']}],...extra};
- delete config.fixtureSpec;
+ delete config.fixtureSpec;const expectInitError=config.expectInitError;delete config.expectInitError;
  const cp=path.join(dir,'config.json');writeFileSync(cp,JSON.stringify(config));
  const initialized=invoke(['init','--config',cp,'--run',run]);
+ if(expectInitError) return {dir,repo,run,config,init:initialized};
  assert.equal(initialized.code,0,`生产CLI必须建立固定run: ${JSON.stringify(initialized.data)}`);
  return {dir,repo,run,config};
 }
@@ -53,10 +54,10 @@ test('R01 受控工具不接受输出路径或actor；报告不能覆盖真实�
  const status=invoke(['status','--run',f.run]);assert.equal(status.data.status,'incomplete');assert.ok(status.data.gaps.some(x=>x.includes('回执')));
 });
 
-test('R02 A不能用B真实测试冒充独立复跑',async t=>{
+test('R02 AS不能用BC的测试回执冒充亲自运行',async t=>{
  const f=fixture(t);const b=await broker(t,f.run,'BC');const a=await broker(t,f.run,'AS');
  const evidence=await b.call('run_test',{test_id:'related'});
- const r=await a.call('submit_report',cleanReport({evidence_ids:[evidence.data.id]}));assert.equal(r.error,true);assert.match(r.data.error,/独立复跑/);
+ const r=await a.call('submit_report',cleanReport({evidence_ids:[evidence.data.id]}));assert.equal(r.error,true);assert.match(r.data.error,/亲自运行/);
 });
 
 test('R03 拒绝目录逃逸、错误原文、缺失主引用以及未知字段',async t=>{
@@ -120,6 +121,7 @@ if (mode in ['candidate','low'] and actor=='BC') or (mode in ['late','last-candi
  body['report']['findings']=[{'file':'cart.py','line':2,'severity':'中','category':'Bug','confidence':95,'description':'total adds one','fix_suggestion':'remove plus one'}]
  body['citations']=[{'finding_index':0,'file':'cart.py','line':2,'quote':'    return sum(values) + 1'}]
 if mode=='low' and actor=='BC': body['report']['findings'][0]['severity']='低'
+if mode=='coverage-gap' and actor=='AS': body['coverage'][0]['status']='gap'
 if mode=='late-d' and actor=='critic-1': body['d_request']=[{'file':'cart.py','line':2,'quote':'    return sum(values) + 1'}]
 if actor.startswith('refute-'):
  body['decisions']=[{'candidate_id':x['id'],'verdict':'rejected','citations':[{'file':'cart.py','line':2,'quote':'    return sum(values) + 1'}],'reason':'Protocol negative fixture: completion must not imply confirmation'} for x in c['task']['candidates']]
@@ -338,6 +340,8 @@ test('R04 实际worker派发保留覆盖契约原文并排除原生报告模板'
   const prompt=invocation.argv.at(-1);
   assert.ok(prompt.includes(coverageRule),actor+'必须保留覆盖证据语义');
   assert.ok(!prompt.includes('## 代码审查报告'),actor+'不能混入原生Markdown模板');
+  if(actor==='BC'){assert.ok(prompt.includes('### 维度 B')&&prompt.includes('### 维度 C'),'BC 必须同时携带 B 与 C 维度规则');assert.ok(!prompt.includes('### 维度 A'),'BC 不携带 A 维度规则');}
+  if(actor==='AS'){assert.ok(prompt.includes('### 维度 A')&&prompt.includes('### 维度 S'),'AS 必须携带 A 与 S 维度规则');}
  }
 });
 
@@ -379,4 +383,26 @@ test('S3.5 critic=always 零发现仍派critic',t=>{
  const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
  const f=fixture(t,{client:fakeClient(folder),critic:'always'});const r=invoke(['run','--run',f.run,'--budget-seconds','20']);
  assert.equal(r.data.status,'completed',JSON.stringify(r));assert.ok(r.data.tasks.some(x=>x.actor==='critic-1'));
+});
+
+test('S3.4 零候选但 AS 覆盖有缺口时不完成',t=>{
+ const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
+ const f=fixture(t,{client:fakeClient(folder,'coverage-gap')});const r=invoke(['run','--run',f.run,'--budget-seconds','20']);
+ assert.equal(r.data.status,'incomplete',JSON.stringify(r));assert.ok(r.data.gaps.some(x=>x.includes('Scenario未覆盖: empty')));
+ assert.ok(!r.data.tasks.some(x=>/^(refute|critic)-/.test(x.actor)));
+});
+test('S3.7 large 档默认五路且派 critic',t=>{
+ const f=fixture(t,{tier:'large'});const s=invoke(['status','--run',f.run]);
+ assert.deepEqual(s.data.tasks.map(x=>x.actor),['A','B-quality','B-simple','C','S','critic-1']);
+});
+test('S3.8 非法 config 被 init 拒绝',t=>{
+ const good={task:'T01',phase:'green',command:['node','--test','x.test.mjs'],exit_code:0,stdout_sha256:'a'.repeat(64),stderr_sha256:'b'.repeat(64)};
+ for(const [extra,message] of [
+  [{tests:[]},'tests为空时必须提供evidence'],
+  [{tests:[],evidence:[{task:'T01'}]},'evidence必须为execution回执数组'],
+  [{tests:[],evidence:[{...good,exit_code:'0'}]},'evidence必须为execution回执数组'],
+  [{tests:[],evidence:[{...good,command:'node'}]},'evidence必须为execution回执数组'],
+  [{tests:[],evidence:[{...good,stdout_sha256:'xyz'}]},'evidence必须为execution回执数组'],
+  [{critic:'never'},'critic必须为on-findings或always'],
+ ]){const f=fixture(t,{...extra,expectInitError:true});assert.notEqual(f.init.code,0,JSON.stringify(extra));assert.ok(f.init.data.gaps.join(' ').includes(message),JSON.stringify(f.init.data)+' 应含 '+message);}
 });

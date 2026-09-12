@@ -94,3 +94,17 @@ test("S9.3 同一 session_id 第二次注入被跳过", () => {
     assert.match(run(), /decision: skip.*duplicate/);
   } finally { rmSync(dir, { recursive: true, force: true }); rmSync(path.join(tmpdir(), `spec-dev-session-${id}`), { force: true }); }
 });
+test("S9.4 worktree 内 hooksPath 指向主工作区 .githooks 不误报", () => {
+  const dir = mkdtempSync(path.join(tmpdir(), "wt-hooks-"));
+  try {
+    trackedRepo(dir);
+    mkdirSync(path.join(dir, ".githooks")); writeFileSync(path.join(dir, ".githooks", "pre-commit"), "#!/bin/sh\nexit 0\n");
+    execFileSync("git", ["add", "--", ".githooks/pre-commit"], { cwd: dir });
+    execFileSync("git", ["-c", "user.email=t@example.invalid", "-c", "user.name=t", "commit", "-qm", "init"], { cwd: dir });
+    execFileSync("git", ["config", "core.hooksPath", path.join(dir, ".githooks")], { cwd: dir });
+    const wt = path.join(dir, "wt");
+    execFileSync("git", ["worktree", "add", "-q", wt, "-b", "wt"], { cwd: dir });
+    const out = execFileSync("node", [script, "--explain"], { cwd: wt, encoding: "utf8" });
+    assert.match(out, /decision: inject/); assert.doesNotMatch(out, /health issue/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

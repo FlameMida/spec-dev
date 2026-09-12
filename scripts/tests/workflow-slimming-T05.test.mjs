@@ -12,7 +12,7 @@ test("S3.6 路数表为 1/2/5 且读回执不复跑",()=>{
   assert.match(s,/零候选时不派 critic/);assert.match(s,/`critic`/);assert.match(s,/`evidence`/);
 });
 test("S3.6 执行入口与 reviewer 同步",()=>{
-  assert.match(raw('skills/executing-plans/SKILL.md'),/有候选才反驳与 critic/);
+  const e=raw('skills/executing-plans/SKILL.md');assert.match(e,/有候选才反驳与 critic/);assert.doesNotMatch(e,/loop-until-dry|四路 A\/B\/C\/S|独立复跑相关测试，不采信自报告/);
   const r=raw('agents/code-reviewer.md');assert.match(r,/facts\.json/);assert.doesNotMatch(r,/用 Bash 独立重跑本次变更涉及的测试，不采信实施者的自报告/);
 });
 test("S3.6 README 与 evals 同步",()=>{

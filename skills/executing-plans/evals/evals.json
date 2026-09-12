@@ -14,7 +14,7 @@
     {
       "id": "ep-review-orchestration",
       "prompt": "（4 个任务全部完成，变更约 600 行，涉及 3 个模块）进入收尾审查",
-      "expected_output": "预检基线、完整 diff 与契约来源；按常规两路 AS/BC 审查，容量不足分批而不丢维度；D 仅按明确要求或结构证据追加。报告经契约校验，高/中独立反驳，critic 核查证据覆盖，结果沿既有授权处置。"
+      "expected_output": "预检基线、完整 diff 与契约来源；按常规两路 AS/BC 审查，容量不足分批而不丢维度；D 仅按明确要求或结构证据追加。报告经契约校验；存在高/中候选时独立反驳并派 critic 核查证据覆盖，零候选时由 AS 路 coverage_note 收口；结果沿既有授权处置。"
     },
     {
       "id": "ep-spec-selfcheck-scope",

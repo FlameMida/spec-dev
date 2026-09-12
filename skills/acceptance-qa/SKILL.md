@@ -69,7 +69,7 @@ description: >-
 | 用户直接触发且存在相关特性目录 | 定位对应 spec（`.spec-dev/YYYY-MM-DD-NN-<feature>/spec/`，旧命名目录按原样读取；仍在历史位置 `docs/` 的先自动迁移到 `.spec-dev/`——有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移），沿用其矩阵；定位后读 spec frontmatter `status`：为 `superseded` 时沿 `superseded_by` 跳转 active 后继（记录已访问路径防环，出现环停下报告环上文件；`superseded_by` 缺失或悬空时报告"无可达后继"并与用户确认验收依据），以后继矩阵验收，报告头记录原始路径、实际使用路径与跳转链；正文带 `Superseded-pending` 标注时在报告头注明"取代进行中"；用户描述可收窄范围 |
 | 独立触发（无 spec） | 从目标描述**现场生成迷你矩阵**（维度选择 + 每维度 3-6 条检查项），随报告前置呈现 |
 
-矩阵结构、Scenario→检查项的映射规则、与 writing-plans「验收任务」的分工见 [acceptance-matrix.md](references/acceptance-matrix.md)。**维度取舍原则**：矩阵行来自需求实际形态——纯后端接口不硬凑 visual 行，静态页面不硬凑 perf-api 行；被裁掉的维度在报告 `coverage_note` 中声明。执行窗口按矩阵行的 Lane 归属选择（fast/final 行随验收即时执行，manual 行标 `manual-pending`、仅用户当轮显式要求时执行）——Lane 语义定义见 test-strategy skill。
+矩阵结构、Scenario→检查项的映射规则、与 writing-plans「验收任务」的分工见 [acceptance-matrix.md](references/acceptance-matrix.md)。**维度取舍原则**：矩阵行来自需求实际形态——纯后端接口不硬凑 visual 行，静态页面不硬凑 perf-api 行；被裁掉的维度在报告 `coverage_note` 中声明。执行窗口按矩阵行的 Lane 归属选择（fast 行随验收即时执行；final 行引用最终任务的全量回执、未到期记待执行；manual 行标 `manual-pending`、仅用户当轮显式要求时执行）——Lane 语义定义见 test-strategy skill。
 
 ## 阶段 1：环境检测
 

@@ -71,7 +71,12 @@ def initialize(run, config):
             raise ValueError('tests必须为id及固定argv')
     evidence = config.get('evidence', [])
     keys = {'task', 'phase', 'command', 'exit_code', 'stdout_sha256', 'stderr_sha256'}
-    if not isinstance(evidence, list) or any(not isinstance(x, dict) or set(x) != keys for x in evidence):
+    def evidence_ok(x):
+        return (isinstance(x, dict) and set(x) == keys and isinstance(x['task'], str) and isinstance(x['phase'], str)
+                and isinstance(x['command'], list) and bool(x['command']) and all(isinstance(c, str) for c in x['command'])
+                and type(x['exit_code']) is int
+                and all(isinstance(x[k], str) and re.fullmatch('[0-9a-f]{64}', x[k]) for k in ['stdout_sha256', 'stderr_sha256']))
+    if not isinstance(evidence, list) or not all(evidence_ok(x) for x in evidence):
         raise ValueError('evidence必须为execution回执数组')
     if not config['tests'] and not evidence:
         raise ValueError('tests为空时必须提供evidence')
@@ -315,7 +320,7 @@ def submit(run, actor, body, attempt=None):
     if any(e['kind'] != 'test' for e in records): raise ValueError('测试引用必须是实际test回执')
     if actor in ['A', 'AS'] or actor in ['supplement-A', 'supplement-AS']:
         own = {e['test_id'] for e in records if e['actor'] == actor and e.get('complete') is True}
-        if own != {x['id'] for x in data['tests']}: raise ValueError('A必须有本actor实际独立复跑的完整回执')
+        if own != {x['id'] for x in data['tests']}: raise ValueError('A/AS必须有本actor亲自运行的完整测试回执；tests为空时以execution_evidence为证据')
     schema_check(run, actor, body['report'])
     findings = body['report']['findings']
     if any(x['confidence'] < 80 for x in findings):
@@ -440,6 +445,10 @@ def status(run):
             critic = final_doc['body']
             gaps += [x['actor'] + ': ' + x['reason'] for x in critic['gaps']]
             gaps += ['Scenario未覆盖: ' + x['scenario'] for x in critic['coverage'] if x['status'] == 'gap']
+        elif final_critic is None:
+            # 零候选未派 critic：AS/S 路自己声明的覆盖缺口即收口依据（review-orchestration「completeness critic」节）
+            for actor in [a for a in selected_dimensions(run) if completion(run, a)]:
+                gaps += ['Scenario未覆盖: ' + x['scenario'] for x in report_get(run, actor)['body']['coverage'] if x['status'] == 'gap']
         return {'status': 'incomplete' if gaps else 'completed', 'run': data['id'], 'gaps': gaps,
                 'confirmed': confirmed, 'rejected': rejected, 'observations': observations,
                 'review_result': 'needs_changes' if confirmed else ('observations' if observations else ('no_confirmed_findings' if not gaps else 'unknown')),

@@ -14,6 +14,6 @@ test("S1.3 skill 文本不再要求完整代码",()=>{
   const body=raw('skills/writing-plans/SKILL.md');assert.doesNotMatch(body,/零上下文/);
 });
 test("S1.3 README 与 openai.yaml 同步",()=>{
-  for(const f of ['README.zh-CN.md','README.md']) assert.doesNotMatch(raw(f),/完整代码|complete code/);
+  for(const f of ['README.zh-CN.md','README.md']) assert.doesNotMatch(raw(f),/完整代码|complete (applicable )?code/);
   assert.match(raw('skills/writing-plans/agents/openai.yaml'),/200 行/);
 });

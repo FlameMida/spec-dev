@@ -15,5 +15,5 @@ test("S2.2 模板标注档位",()=>{
 });
 test("S2.1 light 一次批准",()=>{
   assert.match(raw('skills/requirement-analysis/references/spec-review.md'),/light 档跳过本步/);
-  assert.match(raw('skills/requirement-analysis/SKILL.md'),/spec 草稿随完整设计同一条消息呈现/);
+  const r=raw('skills/requirement-analysis/SKILL.md');assert.match(r,/spec 草稿随完整设计同一条消息呈现/);assert.match(r,/用户批准即视为阶段 5 与阶段 7 双门通过/);
 });

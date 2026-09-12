@@ -225,13 +225,12 @@ function validatePlanIndex(planDir) {
     .filter(Boolean)
     .map((m) => ({ id: m[1], deps: expandDeps(m[2], m[1]) }));
   const ids = rows.map((r) => r.id);
-  const files = readdirSync(tasksDir)
-    .filter((f) => /^T\d\d.*\.md$/.test(f))
-    .map((f) => f.match(/^T\d\d/)[0]);
+  const taskFiles = readdirSync(tasksDir).filter((f) => /^T\d\d.*\.md$/.test(f));
+  const files = taskFiles.map((f) => f.match(/^T\d\d/)[0]);
 
   // 单任务文件上限（writing-plans「计划体量」）：超限报错，逼迫拆任务或收敛片段
   const TASK_LINE_CAP = 200;
-  for (const f of readdirSync(tasksDir).filter((f) => /^T\d\d.*\.md$/.test(f))) {
+  for (const f of taskFiles) {
     const count = readFileSync(path.join(tasksDir, f), "utf8").replace(/\n$/, "").split("\n").length;
     if (count > TASK_LINE_CAP) errors.push({ path: `tasks/${f}`, expected: `<= ${TASK_LINE_CAP} lines`, actual: `${count} lines` });
   }

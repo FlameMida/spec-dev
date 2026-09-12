@@ -47,7 +47,11 @@ try {
 } catch { /* 无 stdin 或非 JSON：不去重 */ }
 if (/^[\w.-]{1,128}$/.test(sessionId)) {
   const marker = path.join(os.tmpdir(), `spec-dev-session-${sessionId}`);
-  if (existsSync(marker)) decide("skip", "duplicate SessionStart in the same session / 同一会话重复注入");
+  // 60 秒窗口只吞掉同一事件的双注册（插件 hook + 仓库 hook）；resume/compact 等后续事件重新注入
+  try {
+    const age = Date.now() - Number(readFileSync(marker, "utf8"));
+    if (Number.isFinite(age) && age >= 0 && age < 60_000) decide("skip", "duplicate SessionStart in the same session / 同一会话重复注入");
+  } catch { /* 无标记或不可读：不去重 */ }
   try { writeFileSync(marker, String(Date.now())); } catch { /* 写不了标记就不去重 */ }
 }
 
