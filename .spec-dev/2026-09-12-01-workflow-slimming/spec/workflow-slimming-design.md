@@ -38,7 +38,7 @@ spec_dev:
     - "guardrail/session-context.mjs"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: null
+  sync_commit: 33c9d8bd97c241959906234c3631a3a2a2e13afc
   supersedes:
     - ".spec-dev/2026-08-09-test-scoping/spec/test-scoping-design.md"
     - ".spec-dev/2026-09-06-03-review-conformance/spec/review-conformance-design.md"
