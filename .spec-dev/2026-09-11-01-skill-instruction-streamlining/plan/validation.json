@@ -1,7 +1,7 @@
 {
   "scope": "plan-authoring-only",
   "date": "2026-09-11",
-  "source_base": "a1feebf6d6fb8fb6afa9b1cfaa84eb9f4e05609c",
+  "source_base": "aefd0a237c8110a82b2b10f4306bcc489826f93e",
   "spec_sha256": "6ad20a6d8b6e0b6f243a7bfb544460cf63d2c7531d5aab78783955a181199c09",
   "tasks": 15,
   "review_items": 19,

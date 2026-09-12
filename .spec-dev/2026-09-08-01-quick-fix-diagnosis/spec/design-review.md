@@ -3,7 +3,7 @@
 ## 审查对象与边界
 
 - 设计：[quick-fix-diagnosis-design.md](quick-fix-diagnosis-design.md)
-- 审查基线：`bc4e047a85abd681fbaa83c0b898456dadf78fa9`。
+- 审查基线：`bfe0ed9b831804520454ed641f884cca8e7a9287`。
 - 日期：2026-09-08。
 - 独立审查代理：`/root/qf_spec_review`，`fork_turns: none`；只读，不继承主会话立场。
 - 依据：`skills/requirement-analysis/references/spec-reviewer-prompt.md` 与 `skills/writing-plans/references/design-principles.md`；按 active/单条 Superseded 过滤现行契约。

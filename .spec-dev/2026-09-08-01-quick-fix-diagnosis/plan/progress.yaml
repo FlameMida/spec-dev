@@ -4,44 +4,44 @@
   "tasks": {
     "T00": {
       "status": "completed",
-      "commit": "df568f3a9dde729d79a9b094571849a5ee0bf619",
+      "commit": "0c359e2262296de78539f6e4daa3ca19b5d94c16",
       "tests": "pass"
     },
     "T01": {
       "status": "completed",
-      "commit": "2b660ff32a63098fe3c2f8dd292566629aa7b34a",
+      "commit": "38458eeb008a53bdff5783759a425e16d0808b79",
       "tests": "pass"
     },
     "T02": {
       "status": "completed",
-      "commit": "eb0a30797de39bb03e868581656c831adda0bb94",
+      "commit": "6eaceee22690534819feb82c09cbc5e5a3a27eb8",
       "tests": "pass"
     },
     "T03": {
       "status": "completed",
-      "commit": "b0e04c913505acab7dc0812acda771c8f3bd7066",
+      "commit": "cdc0e53fd1eadffc3deaa8cb773f866aabdaa4e7",
       "tests": "pass"
     },
     "T04": {
       "status": "completed",
-      "commit": "411f4c483cfd88a0a56d08b8e6c27333a6666a86",
+      "commit": "0a9a79928312690c52aeadcfcd8b741cce908bbb",
       "tests": "pass"
     },
     "T05": {
       "status": "completed",
-      "commit": "3bd53774c3ce24be65f5f61f62d7160019bbf11a",
+      "commit": "4e3de474ffb6ff2573f8a90e7791916f3c995da6",
       "tests": "pass"
     },
     "T06": {
       "status": "completed",
-      "commit": "464666d7f1c3decd63c160814d8beab0af473d39",
+      "commit": "6dbcec8b6479320443e8ef34a321574958f5f89b",
       "tests": "pass"
     }
   },
   "resources": [],
   "notes": [
     "2026-09-08: 用户已批准完整设计、spec review及编写计划；当前仅计划，尚未批准实施。",
-    "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"249858eb755e5527a23c67ae7606af9daa623418\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis\", \"branch\": \"plan/2026-09-08-01-quick-fix-diagnosis\", \"owned\": true}",
+    "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"f2e55cece4bebb82e73c2d07f80b7d270e74a844\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-08-01-quick-fix-diagnosis\", \"branch\": \"plan/2026-09-08-01-quick-fix-diagnosis\", \"owned\": true}",
     "2026-09-08: 用户明确“开始吧”，授权执行T00—T06、任务内提交、审查验收与本地交付；默认串行，不push/发布。",
     "T01: S21/S22 initial decision fixtures were insufficient per independent review; supplied concrete facts, retained original unverified runs, unchanged THEN; new baseline run t01-red-detail.",
     "T01 complete: 4 independently confirmed behavior failures repaired; 11 selected scenario scopes pass, S01 uses actual diagnose; prior incomplete fixtures preserved. Decision-only execution boundaries remain explicit for final acceptance.",

@@ -2,7 +2,7 @@
 
 > Time: 2026-09-06 | Triggered by: executing-plans 接手收尾 | Tier: standard
 > Spec: ../spec/portability-hygiene-design.md（active）
-> Source: `b37c3b6d8dd3bcc8d47441348641e624d2c82e95`；初次对照主线 `05067de`，共同祖先 `ba954e6`；合并后验收提交 `6af9004`。
+> Source: `242cdbb03aedaa0c91520a103822e5d02e5818a6`；初次对照主线 `05067de`，共同祖先 `ba954e6`；合并后验收提交 `6af9004`。
 > Evidence dir: `evidence/`。本轮未修改实现代码；下列结论来自本次命令和独立复核。
 
 ## Overview
@@ -90,4 +90,4 @@ T10 发现 main 独有 `05067de`（描述/语言协议中文化），快进不�
 
 ## Closure
 
-2026-09-06：T00–T10 全部完成；变更已合入 main，保留 `05067de` 中文化。旧 major-upgrade 的 visual-preview Requirement 已标记部分 Superseded，pending 预告已回收。worktree/分支已删除，资源台账为空。`sync_commit: 3d05186dfa3e3e0013ad0f5267c35653c1404f7e`，锚定提交 `4f938976a0c2c5c9dddb05243760d3257dbb369f`；默认 post-commit hook 生成本地 `v8.2.0`，未推送。Roadmap #1 已 delivered，#2 concurrent-execution 依赖已满足，保持 pending。
+2026-09-06：T00–T10 全部完成；变更已合入 main，保留 `05067de` 中文化。旧 major-upgrade 的 visual-preview Requirement 已标记部分 Superseded，pending 预告已回收。worktree/分支已删除，资源台账为空。`sync_commit: b03bc452d22d2b99b20a1eb19e4799a9496b1b99`，锚定提交 `abbd170e6568e845619846ee978492add7a4ec9f`；默认 post-commit hook 生成本地 `v8.2.0`，未推送。Roadmap #1 已 delivered，#2 concurrent-execution 依赖已满足，保持 pending。

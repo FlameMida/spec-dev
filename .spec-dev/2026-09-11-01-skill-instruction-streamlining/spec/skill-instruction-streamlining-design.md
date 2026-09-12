@@ -23,7 +23,7 @@ spec_dev:
     - "scripts/tests/**"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: b3a61026cb950226a2f10980de21bd1a8ab87764
+  sync_commit: 6176db254755a5f33823c61a80ad8fe3be3159ce
   supersedes: []
   superseded_by: null
 ---

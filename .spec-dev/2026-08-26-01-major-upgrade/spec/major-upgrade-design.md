@@ -41,7 +41,7 @@ spec_dev:
     - "agents/external-resource-explorer.md"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: 76eb9e2200e896143b06e35f7d6a7f919659d1bb
+  sync_commit: 6bb97db47abbf017fd890e439262467c98a74de8
   supersedes:
     - ".spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md"
   superseded_by: null

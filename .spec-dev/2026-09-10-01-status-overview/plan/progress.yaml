@@ -4,49 +4,49 @@
   "tasks": {
     "T00": {
       "status": "completed",
-      "commit": "5b24c6fa52e43e396726d07f34f93bbef090548c",
+      "commit": "5254f610b1c1d0acb0a4d6cd157ced53929cb13f",
       "tests": "pass"
     },
     "T01": {
       "status": "completed",
-      "commit": "a6a72a82c4ff62a761b5d0412b3bf043d5803e42",
+      "commit": "39b371e1c461d985dc0bb19ee28840b1d12fc560",
       "tests": "pass"
     },
     "T02": {
       "status": "completed",
-      "commit": "49d37bdd6b4a51ce4db39afbdfa53f895054bf1e",
+      "commit": "af37ae08c29a8d60bc58ac02a3ccd7c52a302b1c",
       "tests": "pass"
     },
     "T03": {
       "status": "completed",
-      "commit": "d50b78f62b029c9ddd383ab35b6fc95997376508",
+      "commit": "8681abdb310d4597f85704a9e327734716c36558",
       "tests": "pass"
     },
     "T04": {
       "status": "completed",
-      "commit": "3695c8bf0dd13bcb360ed9cdf7714968bdaa4352",
+      "commit": "7c1b730679817c17afa3bd592ec04c63a23e428c",
       "tests": "pass"
     },
     "T05": {
       "status": "completed",
-      "commit": "6677542a0e4c9334bdc0da67c34f8df1a46aff67",
+      "commit": "89a6ef9cfa11cfaec288f1260b822906a00aa05e",
       "tests": "pass"
     },
     "T06": {
       "status": "completed",
-      "commit": "8cc4bf56d2b1ea2f20d994c9cb970b875a193c4e",
+      "commit": "d62c29137c477f284da34e06f36a48dd99cfd65f",
       "tests": "pass"
     },
     "T07": {
       "status": "completed",
-      "commit": "385db394b8f17d1ee5d43aaf37f8f180f94a74e9",
+      "commit": "b5c27cdac12d2bfa7d48b830bd943a1bddcd4008",
       "tests": "pass"
     }
   },
   "resources": [],
   "notes": [
     "2026-09-10: 用户已通过spec review并以ok同意编写实施计划；spec激活提交7d8d4a87。尚无实施授权；普通v1、默认串行，无parallel/integration声明。",
-    "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"44d9c351d024f2e5fd002604a2e3a7a87b5ab5f2\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview\", \"branch\": \"plan/2026-09-10-01-status-overview\", \"owned\": true}",
+    "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"e10445687d8b39ebe94407e5d81175548e8cfdb9\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-10-01-status-overview\", \"branch\": \"plan/2026-09-10-01-status-overview\", \"owned\": true}",
     "2026-09-10 用户在开始实施询问后回复ok：执行T00—T07全部范围，默认串行，本地交付不push/发布。",
     "T00 inherited baseline failure reproduced on source: README layout omitted ddd-lifecycle from af57f444. Applied only two directory entries; original failure retained, rerun required.",
     "T00 actual binding and related baseline verified; no product behavior claimed",

@@ -5,52 +5,52 @@
     "T00": {
       "status": "completed",
       "tests": "61/61 baseline; skills/plugin/official Codex validation pass",
-      "commit": "46752f43af19e91ff00964785f9ac35fb80d33b7"
+      "commit": "bc48e565fbcdb285d64313596da0656f7d4e61fc"
     },
     "T01": {
       "status": "completed",
       "tests": "34/34 pass; red 16 expected invalid groups accepted",
-      "commit": "f6f58e5545ebc5577b0432942463c46226e36aa8"
+      "commit": "e06057e7b7539e010c5b3bbe00c5385c56d790f3"
     },
     "T02": {
       "status": "completed",
       "tests": "35/35 pass; valid group CLI red observed; runtime facts pending T03",
-      "commit": "9591f83cbd57335443bc597cdfa5d6a12189df1c"
+      "commit": "9107eed8bed277220497969236220400039b1d90"
     },
     "T03": {
       "status": "completed",
       "tests": "53/53 pass; real Git, persisted checkpoint, log hash and symlink rejection verified",
-      "commit": "02589347d8cb5df663228744c047fc180b54f970"
+      "commit": "14bf4b2145b909886b6a4be38da04bce66340689"
     },
     "T04": {
       "status": "completed",
       "tests": "36/36 machine pass; six real-model readonly checks pass after fixes; action QA due T08",
-      "commit": "5a9b05bcf0fcda0b8f3d5f691778184ce82bf5c4"
+      "commit": "7661e712c1abaff526011b052b270ef4e4945c35"
     },
     "T05": {
       "status": "completed",
       "tests": "71/71 machine pass; four real-model readonly decisions pass; generated artifact due T08",
-      "commit": "d4f92dab3a1493b842517fc7f0962714792c6117"
+      "commit": "f29dab6fc69116995651b8baefa3e9b8c56da9fa"
     },
     "T06": {
       "status": "completed",
       "tests": "34/34 machine pass; four real-model readonly cases pass; S12 complete-role rerun corrected invalid status",
-      "commit": "cd6b7b0dcfee538439ce9dc7dc81d5577e7ffbe8"
+      "commit": "8189bd832c9e5bb5fa568eb28bee80bc1ee49f43"
     },
     "T07": {
       "status": "completed",
       "tests": "40/40 machine pass; six real-model readonly cases pass after bounded source/actor fixes",
-      "commit": "0528a24bf063e6411b4fb5edff570f883bccde0f"
+      "commit": "5a36400925806205f03b2c37320161315c082742"
     },
     "T08": {
       "status": "completed",
       "tests": "PASS required QA:23 DELIVERED/33Scenario/9PRmatrix;179 machine tests0fail0skip at frozen09e5019,178source unchanged;r26 S27 completeartifact PASS25controls; all model action/artifact lanes passed within boundaries; finalcritic no unresolvedhigh/medium. Historical FAIL/nonblockingRTK/nightly not_run retained. Evidence committed; package/skills/openai-sync/staged-whitespace hooks passed.",
-      "commit": "bf13701579cfed18e1f771b3d1126104b81df222"
+      "commit": "64b85d0aad779b6614d691e752fd6977d41e627b"
     },
     "T09": {
       "status": "completed",
       "tests": "Final179/179,0fail0skip; package/skills/plan-index/drift/diff0;23Req/33Scenario/9PRmatrix PASS;7 supersession markers. Actual local merge bc99e27;178product hashes equal;39snapshots,29fixtures and121external duplicates cleaned;implementation worktree/branch removed normally.5external uncertain roots+10private diagnostics retained; no required blockers.",
-      "commit": "bc99e272165167159e7e3409e47fa90ee0d32022"
+      "commit": "0521e1f71062c33f7f9bd7a96ff2547c3311b360"
     }
   },
   "resources": [
@@ -125,7 +125,7 @@
     "spec activation: b49102e；source=/Users/maverick/feature-dev，branch=main；T00在未来执行时记录真实原始base_commit。",
     "本计划默认主线程串行，无组声明与并发声明，不使用待交付协议调度自身。",
     "progress.yaml以JSON子集书写但format_version保持1；全部任务pending，无未来测试/模型/完成SHA。",
-    "2026-09-07: 用户在计划执行交接问题后以ok确认开始执行；main干净，base_commit=46752f43af19e91ff00964785f9ac35fb80d33b7；本计划创建指定worktree，主线程串行。",
+    "2026-09-07: 用户在计划执行交接问题后以ok确认开始执行；main干净，base_commit=bc48e565fbcdb285d64313596da0656f7d4e61fc；本计划创建指定worktree，主线程串行。",
     "T01漂移守卫实际exit1：major-upgrade/portability/concurrent对validate-output及scripts通配covers交集；按已批准新增组切面单次trailer放行，旧编号/插件根/parallel行为保留；本地发版hook变更按原规则记录。",
     "T01首次提交被git diff --check拒绝：Node原始失败日志含尾空格，代码未提交；进度完成准备已撤回，完成锚待实际提交成功后填。日志以gzip无损归档，未改原始字节。",
     "T01正式提交f6f58e5成功；发版hook按既有非main策略跳过，未改版本/推送。",
@@ -161,7 +161,7 @@
     "planning-r7终稿独立审计FAIL并归档reviews/pd-r7-planning-action/report.json：七文件hash核对、plan-index独立exit0；锁释放/取锁失败继续覆盖owner/trim清零误伤等错误未消除。两次外部请求均被拒绝，未发现外部脚本或对应临时仓，无成功外部执行；178候选hash一致。当前剩余阻塞为必需模型行为及完整产物验收，所有本轮调用已结束。",
     "用户明确要求修复：按已提出的审阅模板、可执行参考步骤和串行干净夹具复测三项推进，保持现有字段/CLI/锁协议，无新锁API，不设宿主时限。r7真实模型失败为本轮规则修复的红证据；所有原件保留，产品先冻结再编辑。",
     "r8修复：参考原语三项真实RED后11/11 GREEN；A独立11+8、BC4及仅状态/证据提交绑定验证通过；S21初始及内容认可分支独立PASS。旧r7失败原件保留；T08继续，后续模型生成/动作验收未通过。PD_TIMEOUT_SECONDS=0。",
-    "r8本地修复提交 de9726ead8c9454511b03dfc843f1464661fd9ce：三处产品文档、验收驱动和定向红绿/独立审查原件已保存；SKILL description未变，按hook既有选项SKIP_OPENAI_SYNC_CHECK=1，所有14项字段检查仍通过；SKIP_RELEASE_HOOK=1不发版。r8-planning仍运行，未因此标T08完成。",
+    "r8本地修复提交 476080b9662de0a4cfbde92ca8690a3f1373611e：三处产品文档、验收驱动和定向红绿/独立审查原件已保存；SKILL description未变，按hook既有选项SKIP_OPENAI_SYNC_CHECK=1，所有14项字段检查仍通过；SKIP_RELEASE_HOOK=1不发版。r8-planning仍运行，未因此标T08完成。",
     "r8-first/first自然结束347.7秒、无时限；T01待验/T02pending/验证基线保持，178产品hash未变，独立动作审查进行中，本次结果尚未审查放行进入resume。r8-planning完整产物FAIL，原件归档；S21独立决策分支串行补验已启动。",
     "r8收尾：修复de9726e已独立复核；全部当前模型调用无时间上限并自然结束。最终165/165全量在所有模型写者停止后执行且归档。独立规划与首票完整动作仍FAIL，均为未遵循已有明确规则，未确认需继续叠加的产品规则缺口；保存两个失败现场并将快照增至16，T08 blocked、T09 pending，后续依赖段不假放行。",
     "用户再次要求修复，r9从已证实失败补参考步骤机制：入口/状态预检、证据资源登记、blocked与恢复操作；既有协议/schema/CLI不扩展。当前模型kimi-k2，PD_TIMEOUT_SECONDS=0。",
@@ -199,15 +199,15 @@
     "r19/S27/T08当前发生CLI api_retry3，error unknown/statusnull，进程仍活，宿主timeout0。独立传输诊断acceptance/reviews/pd-r19-transport-review/report.json核现行CLI2.1.263：事件不能证明账号/额度/具体网络或SDK请求超时，根因unknown；未改配置或停进程。继续等自然结果，不把调用问题当计划语义FAIL。",
     "用户询问当前卡点，已说明S27/T08长请求重试，以及已确认T03恢复目标和T06串行/返回入口缺陷。额外唯一最小provider-check-r19在3.6007秒READY/exit0，实际deepseek-v4-flash[1m]，证明当前最小请求可用，不推断长请求根因；当前T08已观察5次unknown/null自动重试，继续不设host时限。",
     "认证诊断确认r20 init apiKeySource none/model无1m，与此前20次API_KEY源不同；当前本地配置又变为API_KEY非空/AUTH_TOKEN无，agent/根均未改配置。provider-check-r21实际2.229秒READY/API_KEY源/deepseek-v4-flash[1m]；r21从稳定r20 seed继续T03/T06/T08实际未完修订，不更改全局认证或模型，不把r20的401反推r19 unknown。",
-    "2026-09-08 local delivery completed at bc99e272165167159e7e3409e47fa90ee0d32022;23/33 acceptance and179/179 final tests. Original failures preserved; explicit private/external evidence retention is not deletion."
+    "2026-09-08 local delivery completed at 0521e1f71062c33f7f9bd7a96ff2547c3311b360;23/33 acceptance and179/179 final tests. Original failures preserved; explicit private/external evidence retention is not deletion."
   ],
   "delivery": {
     "channel": "local",
     "state": "completed",
-    "merge_commit": "bc99e272165167159e7e3409e47fa90ee0d32022",
+    "merge_commit": "0521e1f71062c33f7f9bd7a96ff2547c3311b360",
     "source_branch": "main",
     "source_path": "/Users/maverick/feature-dev",
-    "product_candidate": "09e50190069e59aa8cefb72b4344e6b2d563288d",
+    "product_candidate": "158feb7502033ec3fac9f995f35cf478bf33098f",
     "worktree_removed": true,
     "branch_removed": true,
     "push_performed": false,

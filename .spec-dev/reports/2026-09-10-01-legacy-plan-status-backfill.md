@@ -10,7 +10,7 @@
 
 ## 证据来源与边界
 
-核对基点：`4842779c5c473b5753481c632e2d893f5e401b6e`。各实施提交的非空文件差异与其属于该 HEAD 的祖先关系已核对。交付锚点分别为 clarifying `c234049c`、triage `4bd9c86c`、resource-ledger `086d8d33`（后来 `8dc5c71c` 重锚）、test-scoping `4d50e9ab`、major-upgrade `76eb9e22`。
+核对基点：`ceb2cdb48b7a8fd7984f24828104352ee8974ca7`。各实施提交的非空文件差异与其属于该 HEAD 的祖先关系已核对。交付锚点分别为 clarifying `c234049c`、triage `4bd9c86c`、resource-ledger `086d8d33`（后来 `8dc5c71c` 重锚）、test-scoping `4d50e9ab`、major-upgrade `76eb9e22`。
 
 清理结果：`git worktree list --porcelain` 仅列主工作区；按五个特性名查询本地分支无匹配，`.worktrees/` 和 `.claude/worktrees/` 下未发现对应特性目录。资源据当前已不存在补勾，不追认当年删除时间或具体命令。本次没有删除资源。原生 worktree 名称可能为 `worktree-plan+日期-特性`；test-scoping 另有 `8a1146e7` 分支合并证据。
 

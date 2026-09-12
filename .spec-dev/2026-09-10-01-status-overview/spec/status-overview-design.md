@@ -12,7 +12,7 @@ spec_dev:
     - ".codex-plugin/plugin.json"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: 40eb7a10e9c02cb4e11e986089935c36cdd80b13
+  sync_commit: 693475b337348b02883da70a060ab274450972ec
   supersedes: []
   superseded_by: null
 ---
@@ -391,4 +391,4 @@ T06最终验收已闭合：全库215/215、machine-r3 25/25、统一候选model-
 
 ## 本地交付结论
 
-T00—T07已完成；实际合并 40eb7a10e9c02cb4e11e986089935c36cdd80b13。必需场景与独立判读以acceptance/acceptance-report.md为准；原失败与nightly边界保留。本次未push/发布。
+T00—T07已完成；实际合并 693475b337348b02883da70a060ab274450972ec。必需场景与独立判读以acceptance/acceptance-report.md为准；原失败与nightly边界保留。本次未push/发布。

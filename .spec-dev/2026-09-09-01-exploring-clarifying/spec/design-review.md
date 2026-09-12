@@ -6,7 +6,7 @@
 
 **Approved（首轮 1 项发现已修正，独立增量复审通过）**。
 
-设计：[exploring-clarifying-design.md](exploring-clarifying-design.md)，14 条 Requirement / 32 个 Scenario。初始提交 `c53cc1b5b5b224b8dbd76197ee3325c08028c837`；复审设计 SHA-256 为 `fa98777110ec19c9ee9f8d273f64dcef481b1644e08f37faa2cfcb893beb150c`。当前只有设计与审查产物，尚未编写实施计划、修改产品规则或运行产品行为验收。
+设计：[exploring-clarifying-design.md](exploring-clarifying-design.md)，14 条 Requirement / 32 个 Scenario。初始提交 `d83201dbfc6346e0011843dce20dff168efe7b3b`；复审设计 SHA-256 为 `fa98777110ec19c9ee9f8d273f64dcef481b1644e08f37faa2cfcb893beb150c`。当前只有设计与审查产物，尚未编写实施计划、修改产品规则或运行产品行为验收。
 
 ## 独立性与实际运行
 

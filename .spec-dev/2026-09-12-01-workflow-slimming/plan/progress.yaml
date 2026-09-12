@@ -1,22 +1,22 @@
 format_version: 1
 current: null
 tasks:
-  T00: { status: completed, commit: dc1f6e9866ee693e8389f21ce18cd276408bda44, tests: pass }
-  T01: { status: completed, commit: 6c9ab30b0a1ef468aed15291e7e0cd27602cc772, tests: pass }
-  T02: { status: completed, commit: 556516121da08ffb5e7b23ad85f63f1f89177c68, tests: pass }
-  T03: { status: completed, commit: 721f5d97ebcb984efd36e9918f12de8dc4aebfd9, tests: pass }
-  T04: { status: completed, commit: 036002a4587efdd6d4d0b52dd1d4c2b31a6055ad, tests: pass }
-  T05: { status: completed, commit: 5d363be2f9c33bce9b94c4efafb06005b488f8cf, tests: pass }
-  T06: { status: completed, commit: a3722ac08efd9818db58cdcde0d30774938ad1cc, tests: pass }
-  T07: { status: completed, commit: 8a9c64798b4e47f7ebe0ca0bcf6a2d9be3815cc0, tests: pass }
-  T08: { status: completed, commit: 5c6b1bdb3ef91bd847cf1a5e7057358e1d70df43, tests: pass }
-  T09: { status: completed, commit: 133c565bd959d777b7626eeabedfdd436d286266, tests: pass }
-  T10: { status: completed, commit: eb603bdc6fd599d6f876e05be9ab7e40d77ba9b9, tests: pass }
-  T11: { status: completed, commit: 76f7515b2e82a6830c2ea1e3f10696661ef0ea6b, tests: pass }
-  T12: { status: completed, commit: 5bff9930b122e1da09d6365c8557015cd072b92c, tests: pass }
+  T00: { status: completed, commit: 2817a45e7c78d9114ab40c984e9c50f945f6833d, tests: pass }
+  T01: { status: completed, commit: 5df71065463b1bfb10c8f7d84621717104b697e1, tests: pass }
+  T02: { status: completed, commit: e4c1b6e42f660649196c9213c9d389fca7aa34bd, tests: pass }
+  T03: { status: completed, commit: 71e6de7c8f25ab20fa859a29904f138b4baf8a11, tests: pass }
+  T04: { status: completed, commit: 0426d19ed9a669c26444034164b21d046e068073, tests: pass }
+  T05: { status: completed, commit: 0f3fd6b0b7ec044809e2f922c50b001b65e16440, tests: pass }
+  T06: { status: completed, commit: c6dd5ce4b90f09db824f5b0404c8842d98c0ef08, tests: pass }
+  T07: { status: completed, commit: 8ce64fe4be94d7c9548edb083acdff2ef838970a, tests: pass }
+  T08: { status: completed, commit: cd34ca44d88ac4ab9480cc829b81c4f070fdbe65, tests: pass }
+  T09: { status: completed, commit: ccdc617cb8fb51e9e16b3a5d62ef8e72381a7a5d, tests: pass }
+  T10: { status: completed, commit: e7e77399194ba7a6b23815fcd92545d008273043, tests: pass }
+  T11: { status: completed, commit: d50c0bbcf9620b0fb35eafff8bdf32e22c2dec11, tests: pass }
+  T12: { status: completed, commit: 1f063ae610de90d579709a51104b33b8fa3d81b2, tests: pass }
 resources: []
 notes:
-  - "T00 来源工作区 /Users/maverick/feature-dev，来源分支 main，来源 HEAD dc1f6e9866ee693e8389f21ce18cd276408bda44"
+  - "T00 来源工作区 /Users/maverick/feature-dev，来源分支 main，来源 HEAD 2817a45e7c78d9114ab40c984e9c50f945f6833d"
   - "T00 实施工作区 /Users/maverick/feature-dev/.worktrees/plan/2026-09-12-01-workflow-slimming，实施分支 plan/2026-09-12-01-workflow-slimming，归属 created（本计划手工 git worktree 创建并拥有；原生 EnterWorktree 默认基于 origin/main，会丢失未推送的激活提交，故走手工路径）"
   - "T00 来源工作区当时有 6423 个未提交删除（2026-09-11-01 特性 acceptance/ 整目录），worktree 从 HEAD 创建不受影响，处置在 T01"
   - "T00 基线：相关测试范围 8 文件 70/70 通过（81 s），validate-skills 通过，check-openai-sync 通过；无 dependencies 不安装"

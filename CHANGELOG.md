@@ -134,7 +134,7 @@
 
 ### 🧹 其他 (Misc)
 
-- **spec**：sync_commit 锚定 3d05186
+- **spec**：sync_commit 锚定 b03bc45
 - **T00**：隔离工作区建立（portability-hygiene，基线 51/51 + visual-path + 三校验绿）
 
 
@@ -163,7 +163,7 @@
 
 ### 🧹 其他 (Misc)
 
-- **spec**：sync_commit 锚定 de66620（plan-single-format 交付合并点）
+- **spec**：sync_commit 锚定 36de468（plan-single-format 交付合并点）
 - **plan**：progress.yaml 归档收口——T00-T08 全部 completed，交付完成
 
 

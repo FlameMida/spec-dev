@@ -55,7 +55,7 @@ spec_dev_roadmap:
 - **关键裁决**：默认范式（主线程串行、子代理不写码）不变，并发为 opt-in——与报告 rejected #9 及 CHANGELOG v5.6.0"不新增 implementer 子代理、per-task 门留作 opt-in"裁决一致，例外已由 ADR-0007 记录；形态为独立正式 skill `executing-plans-parallel`（登记 .claude-plugin/marketplace.json skills[]、带 agents/openai.yaml 与 evals），executing-plans 在执行确认门加"满足条件时提议、同意则调用"，PR 出口单点定义供两模式引用；触发 = 用户显式选择 且 导航表 ≥2 条独立链 且 写集合不相交；merger 由主线程兼任、冲突上抛用户；每票强制 TDD 五步 + 契约锚定自检；已授权例外/空基线票归主线程串行；收尾仍走多维审查全套。
 - **探索指针**：报告 §3.1、AB-44/10/11/33；本文备注「并发模式设计事实」；`.spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md:171`（并行会话合并冲突对策）；外部 `/Users/maverick/skills/skills/in-progress/implement-spec/SKILL.md`（35 行，上游 2026-08-21 后无变更）。
 - **已扫范围**：executing-plans/writing-plans/review-orchestration/using-git-worktrees 全文与"主线程/不写码"全部陈述位置（SKILL.md、README 双语、openai.yaml、.codex-plugin、guardrail snippet）；progress.yaml 契约与真实实例；evals 中断言串行的用例（ep-continuous-execution、ep-execution-confirm-gate、ep-contract-deviation-stops、wp-final-task-closure 等）；上游 implement-spec 的 9 个社区 issue；Claude Code 官方 sub-agents/worktrees 文档；Codex spawn_agent 官方文档与源码。续接时阶段 2 只需补：新 skill 目录/清单登记流程（check-plugin 双向校验）、implementer 类 agent 定义形制。
-- **留给后继的注意事项**：2026-09-06 已交付到本地 main，sync_commit=d9428058cfd485c09b72700fb321ffac5871b67d。入口 skills/executing-plans-parallel/SKILL.md，声明/progress 唯一定义在 writing-plans，交付通道在 delivery-channels。全量91/91、0 skip，48条静态eval、10组真实Git/进程受控演练及独立复核通过；真实模型nightly与真实托管PR未验证。进度仅主线程持锁写入；blocked/失联不得按超时重派，接管前核验原写者停止。默认串行、原始base与validated基线分离、声明三列表和恢复追溯均保留。后继从 #3 tdd-seam 的胶囊继续需求设计，不改已接受 ADR-0007；本次未 push。
+- **留给后继的注意事项**：2026-09-06 已交付到本地 main，sync_commit=514c067109150b12de1aff52d0c281a5dbe5b23f。入口 skills/executing-plans-parallel/SKILL.md，声明/progress 唯一定义在 writing-plans，交付通道在 delivery-channels。全量91/91、0 skip，48条静态eval、10组真实Git/进程受控演练及独立复核通过；真实模型nightly与真实托管PR未验证。进度仅主线程持锁写入；blocked/失联不得按超时重派，接管前核验原写者停止。默认串行、原始base与validated基线分离、声明三列表和恢复追溯均保留。后继从 #3 tdd-seam 的胶囊继续需求设计，不改已接受 ADR-0007；本次未 push。
 
 ### #3 tdd-seam
 
@@ -66,11 +66,11 @@ spec_dev_roadmap:
 - **关键裁决**：seam 两案合一——spec/plan 已声明则以声明为准、仅即兴场景由 TDD 门发问（报告 §5.4 #1）；实现耦合测试裁决方向"挪测试位置而非改实现"（§5.4 #6）；mock 纪律 testing-anti-patterns（准入）与 test-strategy（策略）分层不合并（§5.4 #12）。
 - **探索指针**：报告 AB-01/02/03/04/05 与 §8.5 B 项修正（AB-05 executing-plans 落点 :68；AB-04 另牵 8 处"红-绿-重构"同义文本含 description/openai.yaml；code-reviewer.md:78 与 TDD:157 同为全覆盖措辞）。
 - **已扫范围**：早期探索记录已由本项更新：TDD/反模式、test-strategy、设计与计划接口、串并行/reviewer/元数据均已覆盖；本 spec covers 覆盖27个产品文件，旧 active 分面按批准设计共存。
-- **留给后继的注意事项**：2026-09-06 已本地交付到 main，sync_commit=7833c8b39c5925a0aa256b0e6d2b3cb1594410a4。公共测试落点沿 spec→四列导航/本票→串并行消费；TDD 是例外与纯重构单点，anti-patterns 管 mock 准入，test-strategy 管策略及票内/收尾时序。五步、结果 schema、ADR-0007 不变；#1 纯文案条款已部分取代。最终全量91/91、0 skip，24静态Scenario和5例真实模型（实际 glm-5.3-flash，含S07可写动作）通过；两个中等审查/模型发现已修复复审，nightly多轮未运行。#4 复用现有公共行为覆盖与重构候选收尾，Spec符合性新维度需划清与completeness职责；不能重引逐函数测试或把最终全量提前为每票解锁门。未 push。
+- **留给后继的注意事项**：2026-09-06 已本地交付到 main，sync_commit=721eb23d77dc6bff4a2cd04becdb4d74818e1f77。公共测试落点沿 spec→四列导航/本票→串并行消费；TDD 是例外与纯重构单点，anti-patterns 管 mock 准入，test-strategy 管策略及票内/收尾时序。五步、结果 schema、ADR-0007 不变；#1 纯文案条款已部分取代。最终全量91/91、0 skip，24静态Scenario和5例真实模型（实际 glm-5.3-flash，含S07可写动作）通过；两个中等审查/模型发现已修复复审，nightly多轮未运行。#4 复用现有公共行为覆盖与重构候选收尾，Spec符合性新维度需划清与completeness职责；不能重引逐函数测试或把最终全量提前为每票解锁门。未 push。
 
 ### #4 review-conformance
 
-- **2026-09-07 已本地交付**：T00–T06 completed；sync_commit=`941ec2439335a6003c195c16158505503c712fd1`，验收见 `.spec-dev/2026-09-06-03-review-conformance/acceptance/acceptance-report.md`。原12Requirement及受控修正R01–R06均DELIVERED；以下设计/计划条目保留为当时记录。
+- **2026-09-07 已本地交付**：T00–T06 completed；sync_commit=`73e881d7cc0577bc6aad7c661b1d31472e4d4b8f`，验收见 `.spec-dev/2026-09-06-03-review-conformance/acceptance/acceptance-report.md`。原12Requirement及受控修正R01–R06均DELIVERED；以下设计/计划条目保留为当时记录。
 
 - **2026-09-06 实施计划已保存**：入口 `.spec-dev/2026-09-06-03-review-conformance/plan/index.md`；T00—T06 共 7 任务，覆盖 12 Requirement / 28 Scenario，顺序为隔离、共享判据、reviewer/schema、通用派发、收尾编排、验收、本地交付。用户已 review spec 并同意写计划，激活提交 `43122c0`。默认串行、无并发声明；plan-index、四查、21 个替换锚点顺序模拟、16 个 Python 块和内嵌 JS 语法检查通过，20 个产品路径在 covers 内。PR 五组落实为 20 个具体夹具及报告/独立判读；尚未创建实施 worktree、未执行候选或模型验收。
 - **2026-09-06 设计已批准并落盘**：用户批准方案、完整设计及审查后的 spec，并同意编写计划；spec `.spec-dev/2026-09-06-03-review-conformance/spec/review-conformance-design.md`（active，12 条 Requirement / 28 个 Scenario，独立审查 Approved，实施计划已保存，尚未实施）。初始提交 `d6dd856`，审查记录同目录 `design-review.md`。S 查少做/多做/做错，critic 保留现行 Scenario、文件与证据覆盖核对；零发现不等于未审查。小变更一路 A+S，常规四路，大变更五路（B 拆质量/简洁性），D 按明确要求或具体结构摩擦证据追加；容量不足分批、不丢维度。category 新增 `Spec符合性`，引用与覆盖继续用现有 description/coverage_note，通用 validator 算法不变。
@@ -89,7 +89,7 @@ spec_dev_roadmap:
 - **关键裁决**：expand–contract 取第一轮完整版含两级降级（§5.4 #4）；prefactor"识别 + 固化为最前槽位"一步（§5.4 #8，实际槽位为 T01，T00 固定为隔离工作区）；产物 review 门"呈现产物 + 2-3 个目标化检查问题"通用形态、RA 阶段 7 与 writing-plans 交接各自落地（§5.4 #5）；AB-29 测试先例模态 deep 档已有（exploration-patterns:37），只需向 standard 档开放，actor 枚举落 spec-template。
 - **探索指针**：报告 AB-06/07/08/30/35/29 与 §8.5 修正（Self-Review 现为四查，"第 5 查"编号吻合；README 双语 :171 "四查"只列三项由 #1 修；design-principles:7 第 1 条与 expand 阶段新旧并存存在张力需补注解；胶囊指针现为纯路径无 gist；关联 skill 声明在头部 :86/:98/:122 已有部分）。
 - **已扫范围**：writing-plans 全文结构（任务粒度 :52-66、头部 :79-116、Self-Review :316-325）、design-principles.md 全文、roadmap-template、RA 阶段 2 探索模态定义。
-- **留给后继的注意事项**：2026-09-08完成T00—T09并合入本地main，实际merge bc99e272165167159e7e3409e47fa90ee0d32022。入口：.spec-dev/2026-09-07-01-plan-decomposition/ 下 spec/plan-decomposition-design.md、plan/index.md、acceptance/acceptance-report.md。23Req/33Scenario必需验收及最终179/179通过，七条部分取代生效；复用v2组状态、单点恢复与第五查，不把awaiting_verification当completed。模型完整稿为反馈修订后独立验收，真实执行链产品通过但resume辅助RTK格式FAIL保留；nightly三trial未运行，未push/发布。#6沿现有quick-fix契约扩充lite诊断，不重建十级loop；保持Spec/TDD和真实证据边界。
+- **留给后继的注意事项**：2026-09-08完成T00—T09并合入本地main，实际merge 0521e1f71062c33f7f9bd7a96ff2547c3311b360。入口：.spec-dev/2026-09-07-01-plan-decomposition/ 下 spec/plan-decomposition-design.md、plan/index.md、acceptance/acceptance-report.md。23Req/33Scenario必需验收及最终179/179通过，七条部分取代生效；复用v2组状态、单点恢复与第五查，不把awaiting_verification当completed。模型完整稿为反馈修订后独立验收，真实执行链产品通过但resume辅助RTK格式FAIL保留；nightly三trial未运行，未push/发布。#6沿现有quick-fix契约扩充lite诊断，不重建十级loop；保持Spec/TDD和真实证据边界。
 
 ### #6 quick-fix-diagnosis
 
@@ -103,7 +103,7 @@ spec_dev_roadmap:
 - **留给后继的注意事项**：（交付回写时追加）
 
 
-- **本地交付结论**：T00—T06完成，12Req/24Scenario必需证据及最终全库验证通过；实际合并 464666d7f1c3decd63c160814d8beab0af473d39。来源/资源以execution/serial/T06/merge.json和progress.notes为准，失败原件保留；未push/发布。#7从其原胶囊续接，不重开本项证据升级裁决。
+- **本地交付结论**：T00—T06完成，12Req/24Scenario必需证据及最终全库验证通过；实际合并 6dbcec8b6479320443e8ef34a321574958f5f89b。来源/资源以execution/serial/T06/merge.json和progress.notes为准，失败原件保留；未push/发布。#7从其原胶囊续接，不重开本项证据升级裁决。
 
 ### #7 exploring-clarifying
 
@@ -118,11 +118,11 @@ spec_dev_roadmap:
 - **留给后继的注意事项**：（交付回写时追加）
 
 
-- **本地交付结论**：T00—T07完成，14Req/32Scenario必需验收与全库验证通过；实际合并 2f6f7c8603ee6f2595cc4102c2032065592b49f2。资源/来源见execution/serial/T07/merge.json及progress.notes。原模型失败及nightly状态保留，未push/发布。下一项#8按原留观清单评估，不自动启动全部P2。
+- **本地交付结论**：T00—T07完成，14Req/32Scenario必需验收与全库验证通过；实际合并 87cf3e8cf9324cec7480094f7db6e8ed50453253。资源/来源见execution/serial/T07/merge.json及progress.notes。原模型失败及nightly状态保留，未push/发布。下一项#8按原留观清单评估，不自动启动全部P2。
 
 ### #8 p2-watchlist
 
-- **AB-34本地交付**：status-overview实施、验收与资源处置完成，实际merge 40eb7a10e9c02cb4e11e986089935c36cdd80b13；入口 `.spec-dev/2026-09-10-01-status-overview/`。仅AB-34交付，其余P2沿各自留观/取消记录，#8不自动结项。
+- **AB-34本地交付**：status-overview实施、验收与资源处置完成，实际merge 693475b337348b02883da70a060ab274450972ec；入口 `.spec-dev/2026-09-10-01-status-overview/`。仅AB-34交付，其余P2沿各自留观/取消记录，#8不自动结项。
 
 - **2026-09-10 AB-34 实施计划已保存**：入口 `.spec-dev/2026-09-10-01-status-overview/plan/index.md`；T00—T07共8任务，隔离/文档语法/计划状态/多worktree采集/CLI/公开入口/验收/交付，普通v1、默认串行。覆盖13Req/26Scenario、25机器场景和3真实模型入口场景；全部pending，尚无实施指令。主线程五查、plan-index、代码块及累计模块语法/路径检查通过，详见plan/self-review.md和validation.json；没有产品或模型验收通过结论。
 - **2026-09-10 AB-34 完整设计获批并落盘**：用户依次确认同一 Git 仓库所有登记 worktree、展示记录并提示格式/缺失/分歧且不重新验收、独立 CLI 表格 + JSON；六部分完整设计经通俗解释后用户回复 `ok`。spec `.spec-dev/2026-09-10-01-status-overview/spec/status-overview-design.md`（active，13 Requirement / 26 Scenario）；独立审查两处修订后 Approved，初稿提交 `87c8c683`，记录见同目录 `design-review.md`。用户已以 `ok` 通过 spec review 并同意编写计划，激活提交 `7d8d4a87`；本项尚未实施。

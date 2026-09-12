@@ -3,7 +3,7 @@
   "fallbackReason": "spawn_agent rejected: agent thread limit reached; no close-agent tool exposed",
   "model": "CLI default; not explicitly overridden; actual model not exposed by current JSONL init event",
   "command": "codex exec -C /Users/maverick/feature-dev --sandbox read-only --ephemeral --json --color never --output-last-message <review-output.md> - < <review-input.txt> > <review-events.jsonl> 2> <review-stderr.log>",
-  "baseline": "c53cc1b5b5b224b8dbd76197ee3325c08028c837",
+  "baseline": "d83201dbfc6346e0011843dce20dff168efe7b3b",
   "sourceHashes": {
     "skills/exploring/SKILL.md": "5b829ec59f28b05e3f611f1d3787e3822a649421e59f87cc42ad5571c0ff7735",
     "skills/clarifying/SKILL.md": "4bf42fc2b061a74ca21217992d5926873c18357326b9ed7e436dafed7e690009",

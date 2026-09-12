@@ -28,7 +28,7 @@ spec_dev:
     - "agents/implementer.md"
     - "agents/code-reviewer.md"
     - "scripts/tests/plugin-root.test.mjs"
-  sync_commit: 7833c8b39c5925a0aa256b0e6d2b3cb1594410a4
+  sync_commit: 721eb23d77dc6bff4a2cd04becdb4d74818e1f77
   supersedes:
     - ".spec-dev/2026-09-03-02-portability-hygiene/spec/portability-hygiene-design.md"
   superseded_by: null

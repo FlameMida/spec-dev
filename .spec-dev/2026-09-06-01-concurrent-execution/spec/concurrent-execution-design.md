@@ -31,7 +31,7 @@ spec_dev:
     - "guardrail/README.zh-CN.md"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: d9428058cfd485c09b72700fb321ffac5871b67d
+  sync_commit: 514c067109150b12de1aff52d0c281a5dbe5b23f
   supersedes:
     - ".spec-dev/2026-08-27-01-plan-single-format/spec/plan-single-format-design.md"
     - ".spec-dev/2026-09-03-02-portability-hygiene/spec/portability-hygiene-design.md"
@@ -461,7 +461,7 @@ awaiting_merge 可以结束当前执行会话，但不是“全部任务完成�
 
 - T08 合并前核对：产品实现与 T07 91/91 回归对应代码一致，后续仅补 blocked 协议与静态输入并通过 skill/openai 检查；计划校验、差异空白检查通过。四条旧 Requirement 按批准范围部分取代，旧 spec 保持 active；无测试退役候选。
 
-- T08 完成：本地 main 快进到 d9428058cfd485c09b72700fb321ffac5871b67d，两份旧 spec 四条 Requirement 部分取代回写已合入；临时夹具、实施 worktree 与分支按台账清理，所有跟踪 worker 已退出。仅文档锚定提交，未 push、未访问真实 PR；下一项 roadmap #3 tdd-seam 保持 pending。
+- T08 完成：本地 main 快进到 514c067109150b12de1aff52d0c281a5dbe5b23f，两份旧 spec 四条 Requirement 部分取代回写已合入；临时夹具、实施 worktree 与分支按台账清理，所有跟踪 worker 已退出。仅文档锚定提交，未 push、未访问真实 PR；下一项 roadmap #3 tdd-seam 保持 pending。
 
 ## 与 exploring-clarifying 的分面共存
 

@@ -9,7 +9,7 @@ spec_dev:
     - "skills/quick-fix/evals/**"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: 464666d7f1c3decd63c160814d8beab0af473d39
+  sync_commit: 6dbcec8b6479320443e8ef34a321574958f5f89b
   supersedes: []
   superseded_by: null
 ---

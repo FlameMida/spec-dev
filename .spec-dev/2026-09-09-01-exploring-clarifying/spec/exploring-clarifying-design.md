@@ -26,7 +26,7 @@ spec_dev:
     - "scripts/tests/exploring-clarifying.test.mjs"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: 2f6f7c8603ee6f2595cc4102c2032065592b49f2
+  sync_commit: 87cf3e8cf9324cec7480094f7db6e8ed50453253
   supersedes:
     - ".spec-dev/2026-08-26-01-major-upgrade/spec/major-upgrade-design.md"
   superseded_by: null

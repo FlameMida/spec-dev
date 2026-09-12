@@ -38,7 +38,7 @@ spec_dev:
     - "scripts/schemas/README.md"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: bc99e272165167159e7e3409e47fa90ee0d32022
+  sync_commit: 0521e1f71062c33f7f9bd7a96ff2547c3311b360
   supersedes:
     - ".spec-dev/2026-09-06-01-concurrent-execution/spec/concurrent-execution-design.md"
     - ".spec-dev/2026-09-06-02-tdd-seam/spec/tdd-seam-design.md"
@@ -529,7 +529,7 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 
 ## 实施记录
 
-- T00：用户已确认执行；建立计划自有隔离工作区，base_commit=46752f43af19e91ff00964785f9ac35fb80d33b7；相关基线61/61、skills与官方Codex插件校验通过，见execution/serial/T00。未把本机CLI版本视作模型已运行。
+- T00：用户已确认执行；建立计划自有隔离工作区，base_commit=bc48e565fbcdb285d64313596da0656f7d4e61fc；相关基线61/61、skills与官方Codex插件校验通过，见execution/serial/T00。未把本机CLI版本视作模型已运行。
 
 - T01：公共plan-index首次红16个非法组被旧CLI错误接受；实现后34/34通过（含旧plan-index/parallel）。只增加声明结构、角色与出口检查，未接入状态/执行；接口与本票导航一致，无额外调度行为。证据execution/serial/T01。
 
@@ -561,7 +561,7 @@ parallel 模式下 `integration.owner/worktree/branch/base_commit/validated_comm
 
 ### T09实际交付完成
 
-2026-09-08：实际快进合并main：bc99e272165167159e7e3409e47fa90ee0d32022，sync_commit锚定该真实合并点。178产品文件与最终179/179验收候选一致；29个live夹具、121个已验证外部审查副本、实施worktree与分支已清理，39份fixture快照保留。归档遗漏先由字节守卫拒绝，再补存完整tar、提交后续清。5个外部归属未明目录及10个私有诊断目录保留，不宣称删除。生成模型计划任务未执行；历史失败、非阻断RTK格式FAIL及nightly not_run保留。未push或发布。
+2026-09-08：实际快进合并main：0521e1f71062c33f7f9bd7a96ff2547c3311b360，sync_commit锚定该真实合并点。178产品文件与最终179/179验收候选一致；29个live夹具、121个已验证外部审查副本、实施worktree与分支已清理，39份fixture快照保留。归档遗漏先由字节守卫拒绝，再补存完整tar、提交后续清。5个外部归属未明目录及10个私有诊断目录保留，不宣称删除。生成模型计划任务未执行；历史失败、非阻断RTK格式FAIL及nightly not_run保留。未push或发布。
 
 ## 与 exploring-clarifying 的分面共存
 

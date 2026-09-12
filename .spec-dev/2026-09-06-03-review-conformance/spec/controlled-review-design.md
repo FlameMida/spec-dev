@@ -10,7 +10,7 @@ spec_dev:
     - "README.md"
     - "README.zh-CN.md"
     - ".codex-plugin/plugin.json"
-  sync_commit: 941ec2439335a6003c195c16158505503c712fd1
+  sync_commit: 73e881d7cc0577bc6aad7c661b1d31472e4d4b8f
 ---
 
 # 受控审查运行修正

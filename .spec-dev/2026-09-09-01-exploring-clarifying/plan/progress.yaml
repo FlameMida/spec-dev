@@ -4,49 +4,49 @@
   "tasks": {
     "T00": {
       "status": "completed",
-      "commit": "ba36bd26ff2acfde507339e8cd4284fb90294c42",
+      "commit": "4e0be5b590ebde79fc44a48dc58fd672c21d7486",
       "tests": "pass"
     },
     "T01": {
       "status": "completed",
-      "commit": "cccee46e8bfc2047d5ec6e89e99d986c8c11540c",
+      "commit": "92ffd4d5820874cc0abe795b4cdc4ccfdad65be8",
       "tests": "pass"
     },
     "T02": {
       "status": "completed",
-      "commit": "a7b81ab6c72b95a8a53c0b359e83cae14a62c528",
+      "commit": "38f13f3d3c9d344495227017923717cabd44b052",
       "tests": "pass"
     },
     "T03": {
       "status": "completed",
-      "commit": "5ca845168e9f7d13b6b5623c88b16c8e424d9750",
+      "commit": "69e7f0eb9e461591374dc00144ad11bfb615fa07",
       "tests": "pass"
     },
     "T04": {
       "status": "completed",
-      "commit": "60e1c2e82322268cb4f22565b1c8371e819e0426",
+      "commit": "0b1f5a963fc81b35f0112d66b83aa57aa2be9567",
       "tests": "pass"
     },
     "T05": {
       "status": "completed",
-      "commit": "e6704101cf7e864126fd97af885507758171649b",
+      "commit": "d54470a45fd4a85ae2f3665f18bb412dd4e374d8",
       "tests": "pass"
     },
     "T06": {
       "status": "completed",
-      "commit": "f42b70931919c798be4abc78fe8ae569004b4ad6",
+      "commit": "ca633cedb9932c425a483f64a0f95b9f36ad022c",
       "tests": "pass"
     },
     "T07": {
       "status": "completed",
-      "commit": "2f6f7c8603ee6f2595cc4102c2032065592b49f2",
+      "commit": "87cf3e8cf9324cec7480094f7db6e8ed50453253",
       "tests": "pass"
     }
   },
   "resources": [],
   "notes": [
     "2026-09-09: 用户已批准spec review及编写计划；尚无实施授权。默认串行、普通v1；执行值由T00核实，不预填SHA/owner/model。",
-    "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"988acdf6a5ebccd235fd1db11161959dd52d12da\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying\", \"branch\": \"plan/2026-09-09-01-exploring-clarifying\", \"owned\": true}",
+    "binding:{\"source\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"base\": \"9759f594a191fdcaf1e6245d9d00343ab671a9fa\", \"worktree\": \"/Users/maverick/feature-dev/.worktrees/plan-2026-09-09-01-exploring-clarifying\", \"branch\": \"plan/2026-09-09-01-exploring-clarifying\", \"owned\": true}",
     "2026-09-09 用户明确指令：开始吧；执行计划全部范围，默认串行，本地交付不push/发布。",
     "P00时序FAIL；实际后台可用；仅修正预检输入顺序与30秒窗口，新run t00-preflight-r2；THEN不变。",
     "恢复T00预检；有界重试输入修正已提交。",

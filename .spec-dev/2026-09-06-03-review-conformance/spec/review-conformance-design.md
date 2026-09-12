@@ -24,7 +24,7 @@ spec_dev:
     - "scripts/tests/review-findings.test.mjs"
     - "README.md"
     - "README.zh-CN.md"
-  sync_commit: 941ec2439335a6003c195c16158505503c712fd1
+  sync_commit: 73e881d7cc0577bc6aad7c661b1d31472e4d4b8f
   supersedes: []
   superseded_by: null
 ---
@@ -402,13 +402,13 @@ PR 五组的分组用于组织夹具，不将组数宣称为只有五次模型�
 
 ## 实施记录
 
-- T00：2026-09-06 创建隔离分支；原始 base `88cf00a9f5ba7a340720dd49cf8be068cb8a9e20`，相关基线 55 passed / 0 skipped；证据 `../execution/serial/T00/`。
+- T00：2026-09-06 创建隔离分支；原始 base `61736789186f2b56e4ed99e179a6bc8e878a82c9`，相关基线 55 passed / 0 skipped；证据 `../execution/serial/T00/`。
 - T01：按获批模块判据单点及三入口消费实施，中文 openai 元数据同步；37 项相关回归、技能与插件检查通过。S09 旧规则已有行为；S27 CLI 两次超时，原生候选决策对照及其平台/会话限制见 `../execution/serial/T01/`；真实工具动作留 T05，不将静态结果作为行为通过。保留八原则、原测试 seam、TDD/全量时机、既有批准与资源闭环。
 - T02：reviewer 增加 S/D 职责、证据措辞和覆盖说明；schema 仅新增 `Spec符合性`，通用校验器算法及字段不变。S19 真实 CLI 因旧枚举拒绝红、扩枚举后绿，S20/S21 回归绿；40 项相关回归及插件/技能检查通过，S02 候选行为验证见 `../execution/serial/T02/`。
 - T03：通用派发完成条件、排除项和好坏示例集中在 exploration-patterns，上游只引用；保留原时效过滤、一次重试与接管单点。40 项相关回归、技能和插件检查通过。模型运行器增加严格 MCP 隔离，T02 原始工具污染已标注并独立重放，不覆盖原件。
 - T04：收尾编排统一预检、一路 A+S/常规四路/大变更五路、D 证据触发、容量分批、同根因合并及 critic 证据收口；串行入口只消费单点，并发入口继承。README 双语与 openai 同步；40 项相关回归、技能与插件检查通过，S15 旧三路/缺 S 有效红，S14 为已有行为，候选模型结果见 `../execution/serial/T04/`。
 
-- T05（未完成）：真实模型验收发现证据锚定、覆盖误判、独立回执、D触发、规模与去重偏差；修复两份规则提交 `945467ea9fc386f9bdc8c8597dadb3471408bd7d`，未改变本spec验收判据。修复后94测试通过、0跳过，S04/S14有效红绿；S05/S18/S23仍失败，复杂调用仍有300秒超时，其他补证尚未完成。完整28场景、12Requirement对账和原始证据见 `../acceptance/acceptance-report.md`。原生执行器对照有输入副本缺口且超时，未拿它覆盖CLI失败；T05/T06均不标完成，未作DEFERRED。
+- T05（未完成）：真实模型验收发现证据锚定、覆盖误判、独立回执、D触发、规模与去重偏差；修复两份规则提交 `1d786bcef1a71fb158b0368ddfdb442d0af72396`，未改变本spec验收判据。修复后94测试通过、0跳过，S04/S14有效红绿；S05/S18/S23仍失败，复杂调用仍有300秒超时，其他补证尚未完成。完整28场景、12Requirement对账和原始证据见 `../acceptance/acceptance-report.md`。原生执行器对照有输入副本缺口且超时，未拿它覆盖CLI失败；T05/T06均不标完成，未作DEFERRED。
 
 ## T05 证据核对修复记录（2026-09-06）
 
