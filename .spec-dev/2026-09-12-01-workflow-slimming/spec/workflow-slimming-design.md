@@ -249,8 +249,8 @@ session-context SHALL 以 realpath 比较 core.hooksPath，worktree 内解析到
 
 #### Scenario: S9.3 同一 session_id 第二次注入被跳过
 - **GIVEN** stdin 传入 `{"session_id":"<唯一值>"}`
-- **WHEN** 60 秒内连续运行两次 `--explain`
-- **THEN** 第一次 `decision: inject`，第二次 `decision: skip` 且 reason 含 `duplicate`
+- **WHEN** 60 秒内连续运行两次 `--explain`，随后把标记改为 120 秒前或非数字再运行
+- **THEN** 第一次 `decision: inject`，第二次 `decision: skip` 且 reason 含 `duplicate`；窗口到期或标记非数字时重新 `decision: inject`
 
 #### Scenario: S9.4 worktree 内 hooksPath 指向主工作区 .githooks 不误报
 - **GIVEN** 主仓库有 .githooks/pre-commit，core.hooksPath 为主仓库 .githooks 的绝对路径，`git worktree add` 建出从属工作区

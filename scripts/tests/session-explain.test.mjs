@@ -92,6 +92,12 @@ test("S9.3 同一 session_id 第二次注入被跳过", () => {
     const run = () => execFileSync("node", [script, "--explain"], { cwd: dir, encoding: "utf8", input: JSON.stringify({ session_id: id }) });
     assert.match(run(), /decision: inject/);
     assert.match(run(), /decision: skip.*duplicate/);
+    const marker = path.join(tmpdir(), `spec-dev-session-${id}`);
+    writeFileSync(marker, String(Date.now() - 120_000));
+    assert.match(run(), /decision: inject/, "窗口到期（120 秒前）应重新注入");
+    writeFileSync(marker, "garbage");
+    assert.match(run(), /decision: inject/, "标记内容非数字应重新注入");
+    assert.match(run(), /decision: skip.*duplicate/, "重新注入后 60 秒内再次触发应跳过");
   } finally { rmSync(dir, { recursive: true, force: true }); rmSync(path.join(tmpdir(), `spec-dev-session-${id}`), { force: true }); }
 });
 test("S9.4 worktree 内 hooksPath 指向主工作区 .githooks 不误报", () => {
