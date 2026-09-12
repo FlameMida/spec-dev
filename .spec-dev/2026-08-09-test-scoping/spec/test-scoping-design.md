@@ -12,8 +12,6 @@ spec_dev:
 
 # 测试分域执行 + 测试退役纪律（test-scoping）设计
 
-> **Superseded-pending (2026-09-12)** — 本 spec 的「Requirement: 基线验证按声明范围执行」「Requirement: 计划头部声明相关测试范围」将被 .spec-dev/2026-09-12-01-workflow-slimming/spec/workflow-slimming-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
-
 ## 背景与目标
 
 随开发推进测试只增不减，套件现有三处全量测试触点（worktree 基线验证、writing-plans 任务 0 与最终任务）使每次开发的测试成本线性恶化。本设计引入"计划声明的相关测试范围"让基线与过程验证只跑相关测试，保留最终全量安全网；并以 Scenario 锚点为判据建立随周期的测试退役纪律。
@@ -51,6 +49,8 @@ spec_dev:
 ### ADDED Requirements
 
 ### Requirement: 计划头部声明相关测试范围
+
+> **Superseded (2026-09-12)** — by .spec-dev/2026-09-12-01-workflow-slimming/spec/workflow-slimming-design.md#r4-本地三时点测试；原文保留仅作历史参考。
 
 writing-plans 生成计划时 SHALL 在计划头部产出「相关测试范围」节，内容为命令级测试执行声明，推导以项目测试影响分析工具优先、spec `covers` + 影响面 glob 兜底。工具存在性以项目依赖/配置清单判定（如 package.json scripts、nx.json、pytest 插件），拿不准时询问用户。
 
@@ -115,6 +115,8 @@ writing-plans 生成计划时 SHALL 在计划头部产出「相关测试范围�
 - **THEN** 判定为本次引入的回归，修复并复跑通过后才进入合并
 
 ### Requirement: 基线验证按声明范围执行
+
+> **Superseded (2026-09-12)** — by .spec-dev/2026-09-12-01-workflow-slimming/spec/workflow-slimming-design.md#r4-本地三时点测试；原文保留仅作历史参考。
 
 worktree 基线验证（using-git-worktrees Step 3、writing-plans 任务 0 步骤 3）在计划声明了「相关测试范围」时 SHALL 只运行声明范围；失败处置（报告+询问）不变。
 
