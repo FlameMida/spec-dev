@@ -31,6 +31,8 @@ spec_dev:
 
 # 收尾审查符合性与共享判据设计
 
+> **Superseded-pending (2026-09-12)** — 本 spec 的「Requirement: 规模化维度编排」「Requirement: 完整性审查的证据覆盖」将被 .spec-dev/2026-09-12-01-workflow-slimming/spec/workflow-slimming-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
+
 > roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #4，吸收 AB-12/09/14/13/32。用户于 2026-09-06 批准「S 与完整性审查分工」方案、完整设计及审查后的 spec，并同意编写实施计划。12 条 Requirement / 28 个 Scenario，独立审查 Approved，见 [design-review.md](design-review.md)；本 spec 已完成本地交付，T00–T06 全部完成；验收与模型边界见 acceptance/acceptance-report.md。
 
 ## 背景与目标

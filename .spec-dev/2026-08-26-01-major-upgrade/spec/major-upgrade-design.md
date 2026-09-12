@@ -1,6 +1,8 @@
 ---
 # —— spec-dev 漂移守卫锚点（机器可校验，勿删）——
 
+> **Superseded-pending (2026-09-12)** — 本 spec 的「Requirement: test-strategy skill」将被 .spec-dev/2026-09-12-01-workflow-slimming/spec/workflow-slimming-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
+
 
 spec_dev:
   version: 1
