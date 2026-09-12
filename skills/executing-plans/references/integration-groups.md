@@ -48,7 +48,7 @@
 
 ## 证据记录形状
 
-每条 evidence_paths 指向特性内 `execution/groups/GNN/TNN/<attempt>/record.json`；每次尝试独立目录。记录包含 command（实际 argv 字符串数组）、cwd、exit_code、commit、tree、stdout/stderr 相对特性路径和两个 sha256。tree 是 `git ls-tree -r -z C` 中排除本特性 plan/progress.yaml 与 execution/ 后的记录用 NUL 连接再 SHA-256；其余文件（包括 spec/index/任务接口）改变都会使树不同。日志可恢复/哈希吻合只证明字节没变，主线程和审查者仍核对工具回执、命令与失败类别；不手写“pass”冒充测试。
+每条 evidence_paths 指向特性内 `execution/groups/GNN/TNN/<attempt>/record.json`；每次尝试独立目录。记录包含 command（实际 argv 字符串数组）、cwd、exit_code、commit、tree、stdout/stderr 相对特性路径和两个 sha256。tree 是 `git ls-tree -r -z C` 中排除本特性 plan/progress.yaml 与 execution/ 后的记录用 NUL 连接再 SHA-256；其余文件（包括 spec/index/任务接口）改变都会使树不同。日志可恢复/哈希吻合只证明字节没变，主线程和审查者仍核对工具回执、命令与失败类别；不手写“pass”冒充测试。 execution/ 整目录不进 git（仓库 `.gitignore`）；record.json 与日志留在本地工作区，evidence_paths 指向本地文件，跨机器复核以 acceptance-report.md 的摘要为准。
 
 completed 组必须有 verify 自己目录中的通过证据，记录的业务树等于 V；成员历史非零记录仍保留，不改成零。CLI 不会运行测试、取得锁或执行恢复写入。未提交进度返回 checkpoint_uncommitted；恢复者核对磁盘、已提交档案、真实提交和日志后补检查点，不用未提交 completed 解锁。
 

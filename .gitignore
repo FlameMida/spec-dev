@@ -2,3 +2,8 @@
 .DS_Store
 /.worktrees/
 **/.think_state.json
+
+# spec-dev 执行证据与验收产物留在本地，只有验收报告进 git
+.spec-dev/**/execution/
+.spec-dev/**/acceptance/*
+!.spec-dev/**/acceptance/acceptance-report.md

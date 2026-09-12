@@ -147,7 +147,7 @@ pass 项   → 独立子代理证据审计（只读证据不占浏览器，试�
 5. **证据索引**：契约 JSON 路径、测试文件、截图/trace/报告产物清单
 6. **coverage_note**：被裁剪的维度、未验证项及原因——截断必须显式声明
 
-**输出约定**：由 executing-plans（或其他工作流）触发 → 报告+证据落盘调用方指定目录（默认特性目录 `acceptance/`）并回传路径；直接面向用户 → 对话输出，产物路径附后。
+**输出约定**：由 executing-plans（或其他工作流）触发 → 报告+证据落盘调用方指定目录（默认特性目录 `acceptance/`）并回传路径；直接面向用户 → 对话输出，产物路径附后。 acceptance/ 下除 acceptance-report.md 外不进 git（仓库 `.gitignore` 规则）；JSON 回执、日志与 model/ 夹具留在本地。
 
 ## 执行档位（对齐上游 light/standard/deep）
 
