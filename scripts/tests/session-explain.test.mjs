@@ -57,3 +57,40 @@ test("默认模式行为不变（非 git 静默退出 0 且零输出）", () => 
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+const trackedRepo = (dir) => {
+  execFileSync("git", ["init", "-q"], { cwd: dir });
+  const rel = ".spec-dev/demo/spec/demo-design.md";
+  mkdirSync(path.dirname(path.join(dir, rel)), { recursive: true });
+  writeFileSync(path.join(dir, rel), "---\nspec_dev:\n  status: active\n---\n# Synthetic spec\n");
+  execFileSync("git", ["add", "--", rel], { cwd: dir });
+};
+test("S9.1 绝对路径 hooksPath 不误报，未引用守卫不告警", () => {
+  const dir = mkdtempSync(path.join(tmpdir(), "abs-hooks-"));
+  try {
+    trackedRepo(dir);
+    mkdirSync(path.join(dir, ".githooks")); writeFileSync(path.join(dir, ".githooks", "pre-commit"), "#!/bin/sh\nexit 0\n");
+    execFileSync("git", ["config", "core.hooksPath", path.join(dir, ".githooks")], { cwd: dir });
+    const out = execFileSync("node", [script, "--explain"], { cwd: dir, encoding: "utf8" });
+    assert.match(out, /decision: inject/); assert.doesNotMatch(out, /health issue/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("S9.2 引用守卫但脚本缺失仍告警", () => {
+  const dir = mkdtempSync(path.join(tmpdir(), "ref-guard-"));
+  try {
+    trackedRepo(dir);
+    mkdirSync(path.join(dir, ".claude")); writeFileSync(path.join(dir, ".claude", "settings.json"), JSON.stringify({ hooks: { Stop: [{ hooks: [{ command: "node scripts/spec-dev/check-spec-drift.mjs --worktree" }] }] } }));
+    const out = execFileSync("node", [script, "--explain"], { cwd: dir, encoding: "utf8" });
+    assert.match(out, /1 health issue/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("S9.3 同一 session_id 第二次注入被跳过", () => {
+  const dir = mkdtempSync(path.join(tmpdir(), "dedupe-"));
+  const id = `t-${process.pid}-${Date.now()}`;
+  try {
+    trackedRepo(dir);
+    const run = () => execFileSync("node", [script, "--explain"], { cwd: dir, encoding: "utf8", input: JSON.stringify({ session_id: id }) });
+    assert.match(run(), /decision: inject/);
+    assert.match(run(), /decision: skip.*duplicate/);
+  } finally { rmSync(dir, { recursive: true, force: true }); rmSync(path.join(tmpdir(), `spec-dev-session-${id}`), { force: true }); }
+});
