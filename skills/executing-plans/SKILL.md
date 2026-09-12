@@ -27,7 +27,7 @@ description: >-
 1. **载入并批判性审阅计划** — 有疑虑先提出；开工前过执行确认门
 2. **隔离工作区** — 执行计划的任务 0（纪律遵循 using-git-worktrees）
 3. **逐任务执行** — TDD + 每任务提交 + spec 自检，连续执行
-4. **收尾审查** — 多维 fan-out + 对抗复核 + completeness critic；按验收矩阵触发 acceptance-qa
+4. **收尾审查** — 按规模 1/2/5 路审查，读执行回执不复跑；有候选才反驳与 critic；按验收矩阵触发 acceptance-qa
 5. **审查处置与交付对账** — 例外驱动：零发现且全 DELIVERED 静默通过；否则一次性征询修复与裁决
 6. **合并与总结** — 执行计划的最终任务（合并与清理，含 sync_commit 锚定），回写 roadmap 状态（如属），输出总结
 
@@ -109,7 +109,7 @@ description: >-
 - **维度派发**：路数、各档 S 覆盖、D 的证据触发及容量不足分批均以 review-orchestration「维度与路数」为唯一规则；预检基线/diff/契约来源后派发全部选定维度，不在此复制路数表。
 - **契约校验**：每份报告落盘后 `node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" review-findings <file>`；校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「输出契约与校验」）
 - **loop-until-dry**：去重后无新发现即停（最多 2 轮）；高/中严重性发现逐条派独立子代理对抗复核（指令=试图反驳）
-- **completeness critic**：一个子代理检查现行文件/Scenario 的审查与测试覆盖，已取代项排除；S 判实现偏差，critic 查证据缺口，已审零发现不等于未审。未完成补查不能因零 confirmed 而当全交付，具体收口沿共用编排。
+- **completeness critic**：仅在存在高/中候选、大变更档或用户要求彻底时派发；零候选的小/常规档由 AS 路 coverage_note 承担覆盖声明。一个子代理检查现行文件/Scenario 的审查与测试覆盖，已取代项排除；S 判实现偏差，critic 查证据缺口，已审零发现不等于未审。未完成补查不能因零 confirmed 而当全交付，具体收口沿共用编排。
 - **acceptance-qa**：计划含验收任务、或 spec 验收矩阵含「验收任务」行时，触发 acceptance-qa skill 按矩阵执行（输入=spec 路径+计划验收任务+本次变更文件清单+证据目录 `acceptance/`）；旧版计划无矩阵时，变更涉及 UI 即按其验收点触发。验收结论并入审查报告
 
 ## 阶段 5：审查处置与交付对账

@@ -14,7 +14,7 @@
     {
       "id": "ep-review-orchestration",
       "prompt": "（4 个任务全部完成，变更约 600 行，涉及 3 个模块）进入收尾审查",
-      "expected_output": "预检基线、完整 diff 与契约来源；按常规四路 A/B/C/S 审查，容量不足分批而不丢维度；D 仅按明确要求或结构证据追加。报告经契约校验，高/中独立反驳，critic 核查证据覆盖，结果沿既有授权处置。"
+      "expected_output": "预检基线、完整 diff 与契约来源；按常规两路 AS/BC 审查，容量不足分批而不丢维度；D 仅按明确要求或结构证据追加。报告经契约校验，高/中独立反驳，critic 核查证据覆盖，结果沿既有授权处置。"
     },
     {
       "id": "ep-spec-selfcheck-scope",
@@ -159,12 +159,12 @@
     {
       "id": "review-conformance-s15",
       "prompt": "S15 常规与大变更的路数\nGIVEN 一份常规改动和另一份明确要求彻底审查的改动，均未触发 D\nWHEN 分别生成派发安排",
-      "expected_output": "前者四路 A/B/C/S，后者五路 A/B质量/B简洁性/C/S；D 被触发时在相应安排之外追加一路。"
+      "expected_output": "前者两路 AS/BC，后者五路 A/B质量/B简洁性/C/S；D 被触发时在相应安排之外追加一路。"
     },
     {
       "id": "review-conformance-s16",
-      "prompt": "S16 容量只够两路同时运行\nGIVEN 已选定四路，平台同时只能运行两个 reviewer\nWHEN 派发与回收",
-      "expected_output": "说明容量限制并分批完成四路，已返回报告可先复核，不把未启动维度报为完成；资源允许时仍同波扇出，不无故串行。"
+      "prompt": "S16 容量只够两路同时运行\nGIVEN 已选定五路，平台同时只能运行两个 reviewer\nWHEN 派发与回收",
+      "expected_output": "说明容量限制并分批完成五路，已返回报告可先复核，不把未启动维度报为完成；资源允许时仍同波扇出，不无故串行。"
     },
     {
       "id": "review-conformance-s17",

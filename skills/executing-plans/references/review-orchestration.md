@@ -6,7 +6,7 @@
 
 需要程序核验证据和收尾时，使用插件内 `scripts/review-runner.py`。此入口在 macOS/Linux 依赖 Python 3.9+、本机已认证 Claude CLI、Node 和 Git；本仓库命令经 rtk。其他客户端可继续下文原生编排，但不能声称具有受控运行器的证据写入隔离与状态保证。维度、D依据、相关测试命令及原始范围由主线程在预检后固定，不能让运行器替代这些语义裁决。
 
-配置JSON包含 `repo`（被审仓库绝对路径）、`base`、`head`、`spec`、`plan`（后两者是仓库相对路径）、`tier`（small/regular/large）、`capacity`（本次实际worker容量）、`tests`（如 `[{"id":"related","argv":["rtk","proxy","node","--test","test/cart.test.js"]}]`）。可选 `d_request` 为真实结构摩擦的 `{file,line,quote}` 引用数组；`model`/`effort` 仅沿用户既有选择，省略时继承本机默认。运行目录必须在被审仓库之外，scope需对应干净HEAD。使用：
+配置JSON包含 `repo`（被审仓库绝对路径）、`base`、`head`、`spec`、`plan`（后两者是仓库相对路径）、`tier`（small/regular/large）、`capacity`（本次实际worker容量）、`tests`（如 `[{"id":"related","argv":["rtk","proxy","node","--test","test/cart.test.js"]}]`）、`critic`（`on-findings` 默认 / `always`；large 档默认 `always`）、`evidence`（可选，execution 回执数组，元素 `{task,phase,command,exit_code,stdout_sha256,stderr_sha256}`；提供时 `tests` 可为空数组）。可选 `d_request` 为真实结构摩擦的 `{file,line,quote}` 引用数组；`model`/`effort` 仅沿用户既有选择，省略时继承本机默认。运行目录必须在被审仓库之外，scope需对应干净HEAD。使用：
 
 ```bash
 rtk proxy python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review-runner.py" init --config review-config.json --run /absolute/review-run
@@ -14,7 +14,7 @@ rtk proxy python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review-runner.py" run --run /ab
 rtk proxy python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review-runner.py" status --run /absolute/review-run
 ```
 
-worker只拥有内嵌stdio提供的context/read_source/run_test/submit_report，无任意Bash/Write/Agent。程序固定执行者和测试定义，原始证据按内容哈希保存，报告引用真实ID；A仍须亲自请求测试。受控入口只对逐成员现行Scenario集合非空且相同、并有独立因果说明的重复候选执行合并；不同Scenario或无Scenario的质量候选保守分列，保留全部来源，不把同一行或一次编辑当同因。程序核查引用原文、实际进程回执、独立反驳依赖、critic覆盖依据及最终未完成项；所有维度的语义判断、严重性与同根因因果仍由独立审查承担。
+worker只拥有内嵌stdio提供的context/read_source/run_test/submit_report，无任意Bash/Write/Agent。程序固定执行者和测试定义，原始证据按内容哈希保存，报告引用真实ID；tests 非空时 A/AS 仍须亲自请求测试；tests 为空且提供 evidence 时以该回执为证据。受控入口只对逐成员现行Scenario集合非空且相同、并有独立因果说明的重复候选执行合并；不同Scenario或无Scenario的质量候选保守分列，保留全部来源，不把同一行或一次编辑当同因。程序核查引用原文、实际进程回执、独立反驳依赖、critic覆盖依据及最终未完成项；所有维度的语义判断、严重性与同根因因果仍由独立审查承担。
 
 一次run调用默认且最多1800秒（30分钟），可用`--budget-seconds`指定更短预算；中断保留未完成，最多允许3个显式片段。入口不设置Claude CLI费用上限；时间上限独立生效。沿同一目录重新run仅继续未完成任务，已完成不重跑；候选规则、控制器或被审快照变化须新run，不把后继成功拼回旧运行。先前测试已开始而无完整回执则不自动复跑。`completed`仅表示审查链闭合；`review_result`、confirmed、observations及原始测试退出码分别决定后续修复，不能当代码交付PASS。超过预算、未复核新候选或覆盖缺口必须保留incomplete/blocked，不自动无限重启。
 
@@ -32,7 +32,7 @@ worker只拥有内嵌stdio提供的context/read_source/run_test/submit_report，
 
 ## 维度与路数
 
-- **A 功能正确性**：逻辑、边界、竞态、资源与错误处理；独立复跑相关测试，不采信自报告。
+- **A 功能正确性**：逻辑、边界、竞态、资源与错误处理；以特性目录 execution/ 下 facts.json 记录的命令、退出码、stdout/stderr sha256 为测试证据；回执缺失、退出码非零或未覆盖本次变更文件时才复跑，并说明复跑原因。
 - **B 代码质量**：命名、可读性、复杂度、DRY、抽象与公共行为测试覆盖；共享判据引用 writing-plans/references/design-principles.md。
 - **C 项目规范**：项目约定、已有工具、架构与抽象边界、接口及依赖组织。
 - **S 实现符合性**：核对现行契约的少做、多做、语义偏离。具体引用及报告要求见 agents/code-reviewer.md 的 S 定义；不把必要内部辅助函数当未批准行为。
@@ -40,12 +40,12 @@ worker只拥有内嵌stdio提供的context/read_source/run_test/submit_report，
 
 | 规模 | 派发覆盖 |
 |---|---|
-| 小 diff（<100 行） | 一路明确覆盖 A+S，兼查 B/C 显著问题 |
-| 常规 | 四路 A/B/C/S |
-| 大变更或用户要求彻底/全面/审计 | 五路 A/B质量/B简洁性/C/S；C 保留整体职责 |
+| 小 diff（<100 行） | 一路 AS：A 与 S 合并，兼查 B/C 显著问题 |
+| 常规 | 两路 AS + BC（B 与 C 合并） |
+| 大变更或用户要求彻底/全面/审计 | 五路 A/B质量/B简洁性/C/S |
 | D 已触发 | 在相应安排外追加一路 D |
 
-路数表只统计维度审查，独立反驳和 completeness critic 另计；它们同样占用平台实际并发容量。资源允许时同一响应扇出全部选定路；不足时告知并分批完成同一集合，不丢维度、不把待启动当完成。大变更无统一行数阈值，主线程按风险面和模块影响声明档位及理由；“彻底”明确进五路，但不自动触发 D。小档的 <100 行按完整 diff 计数，不能先剔除注释、机械修改或“无行为变化”再降为小档；超过该阈值至少保留常规四路。已给定大变更档时保留五路，内容机械也不缩减维度。
+路数表只统计维度审查，独立反驳和 completeness critic 另计；它们同样占用平台实际并发容量。资源允许时同一响应扇出全部选定路；不足时告知并分批完成同一集合，不丢维度、不把待启动当完成。大变更无统一行数阈值，主线程按风险面和模块影响声明档位及理由；“彻底”明确进五路，但不自动触发 D。小档的 <100 行按完整 diff 计数，不能先剔除注释、机械修改或“无行为变化”再降为小档；超过该阈值至少保留常规两路。已给定大变更档时保留五路，内容机械也不缩减维度。
 
 规模档位与 D 条件分开判断：小变更也可能需要追加 D。将本次实际 diff 及 reviewer 报告中的结构证据纳入触发核对；已有消费者依赖内部表示等具体泄漏证据时，记录位置与受影响边界并实际追加 D，不能一边承认该证据、一边宣称“无结构摩擦”。尚未核查的部分记未知；仅有机械行数或优化设想仍不触发 D。
 
@@ -62,6 +62,7 @@ repeat 最多 2 轮:
   每份报告一返回就校验，可先进入复核，不无故等齐
   fresh = 按 file:line+category 索引，再核对跨维度同根因
   无 fresh 则结束；否决候选也记 seen，避免反复出现
+  无高/中候选（首轮即空）→ 不派反驳、不派 critic，直接收口
   高/中候选各做独立反驳，成立者才记 confirmed
   同根因只保留一条处置记录，保留所有来源与 S 契约依据
 ```
@@ -80,7 +81,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" review-findings <file>
 
 ## completeness critic
 
-维度审查之后实际派发一个独立 critic，并收取其覆盖核查回执；主线程自行填写覆盖总结不替代该动作，缺派发或回执时收尾仍未完成。critic 对照变更文件/风险面、现行 Requirement/Scenario、各路 coverage_note、测试/验收证据核查覆盖。被 Superseded 标注的条款及 Scenario 排除。已审且零发现、实际未覆盖、明确截断分开记录：没有 finding 不等于未审，审查已覆盖也不证明测试已覆盖。
+存在高/中候选、大变更档或用户要求彻底时，维度审查之后派发一个独立 critic 并收取回执；小 diff 与常规档零候选时不派 critic，由 AS 路逐条 Scenario 的 coverage_note 充当覆盖声明；派发时主线程自行填写覆盖总结不替代该动作，缺派发或回执时收尾仍未完成。critic 对照变更文件/风险面、现行 Requirement/Scenario、各路 coverage_note、测试/验收证据核查覆盖。被 Superseded 标注的条款及 Scenario 排除。已审且零发现、实际未覆盖、明确截断分开记录：没有 finding 不等于未审，审查已覆盖也不证明测试已覆盖。
 
 Scenario 覆盖以实际核查该行为的记录和证据为准；共享文件、函数或源码位置，不意味着各 Scenario 均已审查。后续补查可以补齐缺口，但不能倒推前次已经覆盖，或把前次如实声明的未覆盖判为失实。报告区分原报告缺口与本次补查结果。
 
