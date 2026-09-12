@@ -12,7 +12,7 @@ tasks:
   T08: { status: completed, commit: 5c6b1bdb3ef91bd847cf1a5e7057358e1d70df43, tests: pass }
   T09: { status: completed, commit: 133c565bd959d777b7626eeabedfdd436d286266, tests: pass }
   T10: { status: completed, commit: eb603bdc6fd599d6f876e05be9ab7e40d77ba9b9, tests: pass }
-  T11: { status: pending }
+  T11: { status: completed, commit: 76f7515b2e82a6830c2ea1e3f10696661ef0ea6b, tests: pass }
   T12: { status: pending }
 resources:
   - "worktree: .worktrees/plan/2026-09-12-01-workflow-slimming —— git worktree remove .worktrees/plan/2026-09-12-01-workflow-slimming && git branch -D plan/2026-09-12-01-workflow-slimming"
@@ -22,3 +22,4 @@ notes:
   - "T00 来源工作区当时有 6423 个未提交删除（2026-09-11-01 特性 acceptance/ 整目录），worktree 从 HEAD 创建不受影响，处置在 T01"
   - "T00 基线：相关测试范围 8 文件 70/70 通过（81 s），validate-skills 通过，check-openai-sync 通过；无 dependencies 不安装"
   - "T01 来源工作区已提交 6423 个删除（9f05eaf9）；worktree 内从索引移除 6923 个已跟踪证据文件，磁盘保留；仍跟踪 9 份 acceptance-report.md"
+  - "T06 小偏差：计划替换表之外另补两处测试字面量（receipt.actor、cross-merge 的 S 条件）；T11 小偏差：hooksPath 解析到主工作区 .githooks 亦视为已启用"
