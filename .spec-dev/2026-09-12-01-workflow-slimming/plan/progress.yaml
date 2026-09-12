@@ -1,5 +1,5 @@
 format_version: 1
-current: T12
+current: null
 tasks:
   T00: { status: completed, commit: dc1f6e9866ee693e8389f21ce18cd276408bda44, tests: pass }
   T01: { status: completed, commit: 6c9ab30b0a1ef468aed15291e7e0cd27602cc772, tests: pass }
@@ -13,7 +13,7 @@ tasks:
   T09: { status: completed, commit: 133c565bd959d777b7626eeabedfdd436d286266, tests: pass }
   T10: { status: completed, commit: eb603bdc6fd599d6f876e05be9ab7e40d77ba9b9, tests: pass }
   T11: { status: completed, commit: 76f7515b2e82a6830c2ea1e3f10696661ef0ea6b, tests: pass }
-  T12: { status: in_progress }
+  T12: { status: completed, commit: 5bff9930b122e1da09d6365c8557015cd072b92c, tests: pass }
 resources: []
 notes:
   - "T00 来源工作区 /Users/maverick/feature-dev，来源分支 main，来源 HEAD dc1f6e9866ee693e8389f21ce18cd276408bda44"
