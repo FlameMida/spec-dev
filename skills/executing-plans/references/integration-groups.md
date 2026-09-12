@@ -209,7 +209,7 @@ def register_evidence(receipt, state, directory, policy):
     check_owner(receipt)
     saved = json.loads(git(receipt["worktree"], "show",
                            "HEAD:" + receipt["feature_key"] + "/plan/progress.yaml"))
-    require(state == saved, "stale resource state; reload the committed checkpoint")
+    require(state["tasks"] == saved["tasks"], "stale task state; reload the committed checkpoint")
     require(not git(receipt["worktree"], "status", "--porcelain"),
             "save pending changes before registering a resource")
     path = PurePosixPath(directory)
@@ -222,7 +222,7 @@ def register_evidence(receipt, state, directory, policy):
     if entry not in state["resources"]:
         state["resources"].append(entry)
         state["notes"].append("evidence " + directory + ": " + policy)
-        checkpoint(receipt, state, "chore: register " + directory)
+        # 登记随本票的下一次 checkpoint 一起提交，不单独提交
     receipt["evidence_resource"] = (directory, entry)
 
 def fail_task(receipt, state, group, task, reason, evidence):
@@ -343,7 +343,7 @@ state = json.loads(git(worktree, "show", "HEAD:" + feature_key + "/plan/progress
 1. 正常执行入口先实际读取 spec、index、已提交 progress，再用真实插件根的 `scripts/validate-output.mjs` 执行 `plan-index` 和 `plan-state`。只从返回的 ready 选择本票；读取本票正文与导航表依赖接口，不提前读取验证票正文来寻找组规则。批准的公共保护/组验证命令由 index 接口提供。
 2. `held_lock(worktree, feature_key, session_owner)` 的 owner 由真实编排会话提供，原会话回执可追溯；token 才随机生成。取锁后令 `receipt["validator"] = 实际插件根 / "scripts/validate-output.mjs"`，再次 `preflight(receipt)` 核对持锁时状态。不要用每张票自行生成的 UUID 替代会话 owner。
 3. 每次状态更新使用 `checkpoint`：独立提交后立即 `plan-state`；失败停止并保留锁和状态，成功才继续。无效状态已经提交时也不能返回成功。合法 `blocked` 的 `ready_tasks=[]` 允许保存，但不允许普通调度硬选下一票。
-4. 首次证据目录创建前调用 `register_evidence(receipt, state, "execution/groups/G01/T01", "本次特性拥有；原始输出持久保留，归档确认后仅回收登记的重复现场")`；它先提交资源台账并预检，随后 `record_check` 才允许在该目录下创建唯一 attempt。恢复时重新读取 state，按原登记行设置当前阶段的 receipt；保留全部旧目录，attempt 不复用。
+4. 首次证据目录创建前调用 `register_evidence(receipt, state, "execution/groups/G01/T01", "本次特性拥有；原始输出持久保留，归档确认后仅回收登记的重复现场")`；它把台账写入内存 state 并预检，随本票的下一次 checkpoint 一起提交；登记后 `record_check` 即可在该目录下创建唯一 attempt。恢复时重新读取 state，按原登记行设置当前阶段的 receipt；保留全部旧目录，attempt 不复用。
 5. 预期组间暂时失败仍走成员待验；实际检查出现**意外失败**，先保存实现 C/原始 record，核实归属并更新对应 `implementation_commit` 和组 `checkpoint_commit=C`，再 `fail_task(...)` 保存本票/组 blocked。验证失败只 block verify/组、保留其他成员待验。已经解释的失败正常保存后可按暂停顺序释放；未解释异常仍保留锁，不能用一个通用 catch 把所有异常猜成业务失败。
 6. 修复从实际已提交状态和核验后的锁归属开始；例如批准 G01 的成员 T01→T02、verify=T03，调用 `resume_member(receipt, state, "G01", "T01", ["T02"], "T03", 实际已批准修复原因)`，该检查点提交/预检后才修改 T01 写集合。T01 重新待验后，明确把 T02 从 blocked 改成 in_progress 并 `checkpoint`，核对原改名仍有效、补检查后恢复待验，不重复应用补丁；再按 T03 原全部验证重跑。旧 evidence、implementation SHA 和验证基线不清空，成功共同 V 单独完成。
 
