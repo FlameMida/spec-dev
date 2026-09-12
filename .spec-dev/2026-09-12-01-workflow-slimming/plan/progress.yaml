@@ -5,7 +5,7 @@ tasks:
   T01: { status: completed, commit: 6c9ab30b0a1ef468aed15291e7e0cd27602cc772, tests: pass }
   T02: { status: completed, commit: 556516121da08ffb5e7b23ad85f63f1f89177c68, tests: pass }
   T03: { status: completed, commit: 721f5d97ebcb984efd36e9918f12de8dc4aebfd9, tests: pass }
-  T04: { status: pending }
+  T04: { status: completed, commit: 036002a4587efdd6d4d0b52dd1d4c2b31a6055ad, tests: pass }
   T05: { status: pending }
   T06: { status: pending }
   T07: { status: pending }
