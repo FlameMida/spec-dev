@@ -14,8 +14,7 @@ tasks:
   T10: { status: completed, commit: eb603bdc6fd599d6f876e05be9ab7e40d77ba9b9, tests: pass }
   T11: { status: completed, commit: 76f7515b2e82a6830c2ea1e3f10696661ef0ea6b, tests: pass }
   T12: { status: in_progress }
-resources:
-  - "worktree: .worktrees/plan/2026-09-12-01-workflow-slimming —— git worktree remove .worktrees/plan/2026-09-12-01-workflow-slimming && git branch -D plan/2026-09-12-01-workflow-slimming"
+resources: []
 notes:
   - "T00 来源工作区 /Users/maverick/feature-dev，来源分支 main，来源 HEAD dc1f6e9866ee693e8389f21ce18cd276408bda44"
   - "T00 实施工作区 /Users/maverick/feature-dev/.worktrees/plan/2026-09-12-01-workflow-slimming，实施分支 plan/2026-09-12-01-workflow-slimming，归属 created（本计划手工 git worktree 创建并拥有；原生 EnterWorktree 默认基于 origin/main，会丢失未推送的激活提交，故走手工路径）"
@@ -23,3 +22,4 @@ notes:
   - "T00 基线：相关测试范围 8 文件 70/70 通过（81 s），validate-skills 通过，check-openai-sync 通过；无 dependencies 不安装"
   - "T01 来源工作区已提交 6423 个删除（9f05eaf9）；worktree 内从索引移除 6923 个已跟踪证据文件，磁盘保留；仍跟踪 9 份 acceptance-report.md"
   - "T06 小偏差：计划替换表之外另补两处测试字面量（receipt.actor、cross-merge 的 S 条件）；T11 小偏差：hooksPath 解析到主工作区 .githooks 亦视为已启用"
+  - "T12 合并 f08b3a28 已入 main；worktree 与分支 plan/2026-09-12-01-workflow-slimming 已移除（一次保存一次提交）；501 个本地证据文件从备份恢复到磁盘并受 .gitignore 保护"
