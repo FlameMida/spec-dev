@@ -47,7 +47,7 @@ def initialize(run, config):
     if run.exists():
         raise ValueError('run已存在，不允许覆盖')
     tier = config['tier']
-    roles = {'small': ['AS'], 'regular': ['A', 'B', 'C', 'S'], 'large': ['A', 'B-quality', 'B-simple', 'C', 'S']}[tier]
+    roles = {'small': ['AS'], 'regular': ['AS', 'BC'], 'large': ['A', 'B-quality', 'B-simple', 'C', 'S']}[tier]
     if type(config['capacity']) is not int or not 1 <= config['capacity'] <= 32:
         raise ValueError('capacity必须为1到32')
     state = snapshot(repo)
@@ -69,8 +69,17 @@ def initialize(run, config):
     for item in config['tests']:
         if set(item) != {'id', 'argv'} or not item['argv'] or not all(isinstance(x, str) for x in item['argv']):
             raise ValueError('tests必须为id及固定argv')
-    if not config['tests'] or len({x['id'] for x in config['tests']}) != len(config['tests']):
-        raise ValueError('测试定义为空或ID重复')
+    evidence = config.get('evidence', [])
+    keys = {'task', 'phase', 'command', 'exit_code', 'stdout_sha256', 'stderr_sha256'}
+    if not isinstance(evidence, list) or any(not isinstance(x, dict) or set(x) != keys for x in evidence):
+        raise ValueError('evidence必须为execution回执数组')
+    if not config['tests'] and not evidence:
+        raise ValueError('tests为空时必须提供evidence')
+    if len({x['id'] for x in config['tests']}) != len(config['tests']):
+        raise ValueError('测试ID重复')
+    critic = config.get('critic', 'always' if tier == 'large' else 'on-findings')
+    if critic not in ['on-findings', 'always']:
+        raise ValueError('critic必须为on-findings或always')
     run.mkdir(parents=True)
     (run / 'objects').mkdir()
     (run / 'actors').mkdir()
@@ -80,7 +89,7 @@ def initialize(run, config):
     runtime_paths = ['scripts/review-runner.py', 'scripts/lib/review_store.py', 'scripts/lib/review_broker.py', 'scripts/lib/review_process.py', 'scripts/validate-output.mjs', 'scripts/lib/parallel-plan.mjs', 'scripts/schemas/review-findings.json']
     runtime_hashes = {name: digest((plugin / name).read_bytes()) for name in runtime_paths}
     data = {**config, 'runtime_hashes': runtime_hashes, 'candidate_sources': candidate_sources, 'repo': str(repo), 'base': base, 'head': head, 'id': uuid.uuid4().hex,
-            'roles': roles, 'snapshot': state, 'texts': texts, 'diff': diff,
+            'roles': roles, 'snapshot': state, 'texts': texts, 'diff': diff, 'critic': critic, 'evidence': evidence,
             'plugin_root': str(Path(__file__).resolve().parents[2])}
     for ref in data.get('d_request', []):
         citation(data, ref)
@@ -279,8 +288,9 @@ def tasks(run):
         ids = {x['candidate_id'] for x in first_refute['body']['decisions']}
         first = [x for x in candidates(run, dims) if x['id'] in ids]
     if first: todo.append({'actor': 'refute-1', 'depends': dims, 'candidates': first})
-    todo.append({'actor': 'critic-1', 'depends': dims + (['refute-1'] if first else [])})
-    if completion(run, 'critic-1'):
+    critic_needed = bool(first) or manifest(run)['critic'] == 'always'
+    if critic_needed: todo.append({'actor': 'critic-1', 'depends': dims + (['refute-1'] if first else [])})
+    if critic_needed and completion(run, 'critic-1'):
         c = report_get(run, 'critic-1')
         supplements = sorted(set('supplement-' + x['actor'] for x in c['body'].get('gaps', []) if x['actor'] in dims))
         todo += [{'actor': a, 'depends': ['critic-1', a.removeprefix('supplement-')]} for a in supplements]
@@ -420,8 +430,9 @@ def status(run):
             merged.append({**sources[0], 'sources': sources, 'causal_reason': group['reason'], 'causal_citations': group['citations']})
             used.update(members)
         confirmed = merged + [{**x, 'sources': [x]} for x in confirmed if x['id'] not in used]
-        final_critic = 'critic-2' if any(t['actor'] == 'critic-2' for t in all_tasks) else 'critic-1'
-        if completion(run, final_critic):
+        critic_tasks = [t['actor'] for t in all_tasks if t['actor'].startswith('critic-')]
+        final_critic = ('critic-2' if 'critic-2' in critic_tasks else 'critic-1') if critic_tasks else None
+        if final_critic and completion(run, final_critic):
             final_doc = report_get(run, final_critic)
             final_task = next(t for t in all_tasks if t['actor'] == final_critic)
             if any(not completion(run, dep) or final_doc.get('basis', {}).get(dep) != report_get(run, dep)['id'] for dep in final_task['depends']):

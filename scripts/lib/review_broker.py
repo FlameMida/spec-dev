@@ -128,6 +128,7 @@ def context(run, actor):
             'spec': data['texts'][data['spec']], 'plan': data['texts'][data['plan']],
             'source_documents': documents,
             'architecture_scope': [ref for trigger in triggers for ref in trigger['citations']], 'architecture_sources': triggers,
+            'execution_evidence': data.get('evidence', []),
             'reports': reports, 'test_receipts': evidence, 'pending_report': report_get(run, actor),
             'note': '路径和行号取read_source实际原文；测试仅run_test。报告submitted不等于进程完成。'}
 
