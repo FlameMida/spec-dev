@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T03",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -26,12 +26,14 @@
       "tests": "pass"
     },
     "T03": {
-      "status": "in_progress",
+      "status": "completed",
       "evidence_paths": [
         "execution/T03/red-01/facts.json",
-        "execution/T03/green-01/facts.json"
+        "execution/T03/green-01/facts.json",
+        "execution/T03/red-history-repair/facts.json",
+        "execution/T03/green-repair/facts.json"
       ],
-      "commit": "edf3c5bc75335c45084098828df063940742bb20",
+      "commit": "44b7b169af4fb1c14aed8299b2d8ef3f00a643a3",
       "tests": "pass"
     },
     "T04": {
@@ -246,6 +248,9 @@
     "T13: 41/41 rule/navigation tests; three Mermaid decision diagrams, lifecycle/reading tables, bilingual README and eight skill summaries/case sets updated. Browser text fallback observed; graphical Mermaid rendering remains unverified and real-model cases manual-pending. No renderer installed. Normal pre-commit passed.",
     "T14 red-binding-audit: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/red-binding-audit/facts.json",
     "T14: Binding audit produced three real failing CLI assertions: dangling receipt treated as absent; claim baseline and integration worktree not checked. Reopening T03 for the owned behavior, preserving its prior implementation and evidence.",
-    "T03: Reopened from T14. Original T03 implementation edf3c5b and passing evidence remain historical; this correction validates claim creation context and invalid local receipt entities."
+    "T03: Reopened from T14. Original T03 implementation edf3c5b and passing evidence remain historical; this correction validates claim creation context and invalid local receipt entities.",
+    "T03 red-history-repair: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T03/red-history-repair/facts.json",
+    "T03 green-repair: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T03/green-repair/facts.json",
+    "T03: T14 correction: 48/48 binding/guard/installed-hook tests pass. Dangling references fail closed; claim creation uses its validated checkpoint and real local integration context. Historical checks no longer require surviving branches/worktrees; advancement of the live validated baseline does not invalidate an existing claim."
   ]
 }
