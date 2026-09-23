@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T16",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -204,7 +204,9 @@
       "tests": "pass"
     },
     "T16": {
-      "status": "in_progress"
+      "status": "completed",
+      "commit": "4b53335528e3baa41fdddd525d7870addcf92d2f",
+      "tests": "pass"
     }
   },
   "resources": [
@@ -426,12 +428,14 @@
     "cleanup: {\"entry\": \"evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/tasks/T15/ —— retain formal final Receipt and every attempt through transfer\", \"outcome\": \"retained\", \"receipt\": \"execution/T16/transfer-manifest-02.json\"}",
     "cleanup: {\"entry\": \"evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T15/review/ —— retain independent native review reports, reproducers and disposition receipts\", \"outcome\": \"retained\", \"receipt\": \"execution/T16/transfer-manifest-02.json\"}",
     "cleanup: {\"entry\": \"evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/delivery/ —— retain actual Git delivery operations and failed attempts\", \"outcome\": \"retained\", \"receipt\": \"execution/T16/transfer-manifest-02.json\"}",
-    "cleanup: {\"entry\": \"evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T16/ —— retain original task receipts through transfer\", \"outcome\": \"retained\", \"receipt\": \"execution/T16/transfer-manifest-02.json\"}"
+    "cleanup: {\"entry\": \"evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T16/ —— retain original task receipts through transfer\", \"outcome\": \"retained\", \"receipt\": \"execution/T16/transfer-manifest-02.json\"}",
+    "T16: sync_commit anchored to actual verified merge target; metadata commit 000560410d9fdc17f9cd39e55656432dd0489200 changes only that field. Post-merge record-only commits use the explicit package-hook skip; no product validation is inferred from them.",
+    "T16 completed: local ff, source archive ref, 678-file verified transfer, normal owned worktree/branch cleanup, exact sync field and appended actual-delivery report all verified. No push, tag, or release. Original user hooks remain unchanged and outside task validation."
   ],
   "delivery": {
     "version": 1,
     "channel": "local",
-    "state": "merged",
+    "state": "completed",
     "source_tip": "4b53335528e3baa41fdddd525d7870addcf92d2f",
     "source_tree": "11fac55f78484305eaede705f6890189e67ec132a926e18c7778bf4f4d1e6b5e",
     "target_branch": "main",
@@ -443,6 +447,21 @@
       "execution/delivery/ed3abdc9-8924-4e9e-bd25-4457807c5ee8/record.json",
       "execution/tasks/T15/final-r06-20260923T173117/record.json"
     ],
-    "post_merge": []
+    "post_merge": [
+      {
+        "commit": "000560410d9fdc17f9cd39e55656432dd0489200",
+        "kind": "sync_commit",
+        "files": [
+          ".spec-dev/2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md"
+        ]
+      },
+      {
+        "commit": "8d4b7972b702d56716470086bd2b493b6eb5c439",
+        "kind": "acceptance_delivery",
+        "files": [
+          ".spec-dev/2026-09-23-01-workflow-consistency/acceptance/acceptance-report.md"
+        ]
+      }
+    ]
   }
 }
