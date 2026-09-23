@@ -66,8 +66,8 @@ function check(repo,changed,view,previous,reference,sync=[]){
     }
   }return violations;
 }
-function commitChecks(repo,commit,ref){
-  const body=history(repo,'show','-s','--format=%B',commit),reference=taskAssociation(repo,body);
+function commitChecks(repo,commit,ref,body){
+  const reference=taskAssociation(repo,body);
   if(reference)associated=true;
   if(TRAILER_RE.test(body)){
     if(reference)throw new ScopeViolation('Spec-Task conflicts with Spec-Guard waiver: '+commit);
@@ -79,21 +79,28 @@ function commitChecks(repo,commit,ref){
     if(violations.length)result.push({commit,ref,violations});
   }return result;
 }
+function historyChecks(repo,batches){
+  const messages=batches.flatMap(({commits,ref})=>commits.map(commit=>({commit,ref,body:history(repo,'show','-s','--format=%B',commit)})));
+  // Earlier unbound spec commits can supply objects needed by a later task.
+  // Establish the range's associations before any tree/blob/diff read can fail.
+  if(messages.some(({body})=>/^Spec-Task:/im.test(body)))associated=true;
+  return messages.flatMap(({commit,ref,body})=>commitChecks(repo,commit,ref,body));
+}
 function rangeChecks(repo,range,ref=range){
   if(!range||!range.includes('..')||range.includes('...'))throw new ScopeViolation('expected A..B range');
-  const commits=history(repo,'rev-list','--reverse',range).trim().split('\n').filter(Boolean),result=[];
-  for(const commit of commits)result.push(...commitChecks(repo,commit,ref));return result;
+  const commits=history(repo,'rev-list','--reverse',range).trim().split('\n').filter(Boolean);
+  return historyChecks(repo,[{commits,ref}]);
 }
 function pushChecks(repo){
-  const result=[];
+  const batches=[];
   for(const line of readStdin().split('\n').filter(l=>l.trim())){
     const [localRef,localSha,remoteRef,remoteSha]=line.trim().split(/\s+/);if(!localSha||/^0+$/.test(localSha))continue;
     if(!/^[a-f0-9]{40,64}$/.test(localSha)||!/^[a-f0-9]{40,64}$/.test(remoteSha??''))throw new ScopeViolation('invalid push input');
-    if(/^0+$/.test(remoteSha)){
-      // A new ref has no trustworthy remote boundary. Check all reachable commits.
-      for(const c of history(repo,'rev-list','--reverse',localSha).trim().split('\n').filter(Boolean))result.push(...commitChecks(repo,c,remoteRef||localRef));
-    }else result.push(...rangeChecks(repo,remoteSha+'..'+localSha,remoteRef||localRef));
-  }return result;
+    // A new ref has no trustworthy remote boundary. Check all reachable commits.
+    const range=/^0+$/.test(remoteSha)?localSha:remoteSha+'..'+localSha;
+    batches.push({commits:history(repo,'rev-list','--reverse',range).trim().split('\n').filter(Boolean),ref:remoteRef||localRef});
+  }
+  return historyChecks(repo,batches);
 }
 try{
   if(!['--staged','--range','--push','--files','--hook','--worktree'].includes(MODE))usage();

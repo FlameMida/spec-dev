@@ -7,12 +7,22 @@ import {scopeFingerprint} from '../../guardrail/lib/task-scopes.mjs';
 import {execFileSync} from 'node:child_process';
 const cli='guardrail/check-spec-drift.mjs',guard=(f,args,options={})=>f.run(cli,args,options);
 const trailer=(f,authority)=>'Spec-Task: '+JSON.stringify({plan:f.plan,task:'T01',authority});
-for(const missing of ['authority','scope'])for(const entry of ['range','push-existing','push-new'])test('S06 '+entry+' rejects missing '+missing+' history objects before reading associations',t=>{
+test('S05/S06 an earlier unbound ref cannot hide a later task association on read failure',t=>{
+ const f=workflowFixture(t),base=f.git('rev-parse','HEAD~1'),scope=f.git('rev-parse','HEAD'),{authority}=f.bind();
+ f.put('src/app.mjs','changed');const tip=f.commit('implementation\n\n'+trailer(f,authority));
+ const input=`refs/heads/docs ${scope} refs/heads/docs ${base}\nrefs/heads/task ${tip} refs/heads/task ${base}\n`;
+ assert.equal(guard(f,['--push'],{input}).status,0);
+ const blob=f.git('rev-parse',scope+':'+f.spec),file=path.resolve(f.root,f.git('rev-parse','--git-path','objects/'+blob.slice(0,2)+'/'+blob.slice(2))),bytes=readFileSync(file);unlinkSync(file);
+ assert.equal(guard(f,['--push'],{input}).status,1);
+ writeFileSync(file,bytes);assert.equal(guard(f,['--push'],{input}).status,0);
+});
+for(const missing of ['authority','scope','spec-blob','scope-tree'])for(const entry of ['range','push-existing','push-new'])test('S06 '+entry+' rejects missing '+missing+' history objects before reading associations',t=>{
   const f=workflowFixture(t),base=f.git('rev-parse','HEAD~1'),{authority}=f.bind();
   f.put('src/app.mjs','export const value=2;\n');const tip=f.commit('implementation\n\n'+trailer(f,authority));
   const run=()=>entry==='range'?guard(f,['--range',base+'..'+tip]):guard(f,['--push'],{input:`refs/heads/fixture ${tip} refs/heads/fixture ${entry==='push-new'?'0'.repeat(40):base}\n`});
   assert.equal(run().status,0);
-  const object=missing==='authority'?authority:f.state.tasks.T01.binding.scope_commit;
+  const scope=f.state.tasks.T01.binding.scope_commit;
+  const object={authority,scope,'spec-blob':f.git('rev-parse',scope+':'+f.spec),'scope-tree':f.git('rev-parse',scope+'^{tree}')}[missing];
   const file=path.resolve(f.root,f.git('rev-parse','--git-path','objects/'+object.slice(0,2)+'/'+object.slice(2))),bytes=readFileSync(file);unlinkSync(file);
   assert.equal(f.git('cat-file','-t',base),'commit');assert.match(f.git('cat-file','-p',tip),/Spec-Task:/);
   const r=run();assert.equal(r.status,1,r.stderr);assert.match(r.stderr,/history|对象|object/i);
