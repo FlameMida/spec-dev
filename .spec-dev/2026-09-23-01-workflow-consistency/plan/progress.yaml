@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T04",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -35,7 +35,14 @@
       "tests": "pass"
     },
     "T04": {
-      "status": "in_progress"
+      "status": "completed",
+      "evidence_paths": [
+        "execution/T04/red-01/facts.json",
+        "execution/T04/green-01/facts.json",
+        "execution/T04/green-02/facts.json"
+      ],
+      "commit": "60a6ba69045e8553a596331af1581e9a2dedc6b0",
+      "tests": "pass"
     },
     "T05": {
       "status": "pending"
@@ -102,6 +109,10 @@
     "T02: 34/34 targeted tests; valid red and static-fingerprint checks retained.",
     "T03 red-01: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T03/red-01/facts.json",
     "T03 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T03/green-01/facts.json",
-    "T03: 51/51 actual Git binding and v2 state tests; red reproduced unknown binding rejection."
+    "T03: 51/51 actual Git binding and v2 state tests; red reproduced unknown binding rejection.",
+    "T04 red-01: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T04/red-01/facts.json",
+    "T04 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T04/green-01/facts.json",
+    "T04 green-02: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T04/green-02/facts.json",
+    "T04: 17/17 guard scenarios across local/index/history/ref/merge views; original failures retained."
   ]
 }

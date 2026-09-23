@@ -1,111 +1,123 @@
 #!/usr/bin/env node
-// spec-dev 漂移守卫：单一事实源，被 pre-commit / pre-push / CI / Claude·Codex 的工具面 hook 共用。
-//
-// 判定：仓库内每个 status=active 的 spec 用 frontmatter 的 `covers` glob 声明它拥有的代码。
-// 若一批变更改动了某 active spec 覆盖的代码，却没有同时改动该 spec 本身，则判为"漂移"——
-// 代码走了、文档没跟上，拦截并打印指引。
-//
-// 用法：
-//   node check-spec-drift.mjs --staged            # pre-commit：暂存区 vs HEAD
-//   node check-spec-drift.mjs --range <A>..<B>    # CI / 区间检查；识别 Spec-Guard: off trailer
-//   node check-spec-drift.mjs --push              # pre-push：从 stdin 读 ref 行，逐 ref 检查待推送区间
-//   node check-spec-drift.mjs --files <f1> <f2>…  # 显式文件清单（相对仓库根）
-//   node check-spec-drift.mjs --hook              # PreToolUse hook：从 stdin 读 JSON，取其中的文件路径
-//   node check-spec-drift.mjs --worktree          # Stop hook 收尾审计：整个工作区（暂存+未暂存+未跟踪）vs HEAD
-//
-// 退出码：0 通过 / 1 检出漂移（git/CI 场景）/ 2 用法错误；--hook 与 --worktree 模式下漂移退出 2
-// （两家 CLI 的阻断约定）。--worktree 在 stop_hook_active（同回合已拦截过）时降级为告警放行，避免拦截死循环。
-//
-// 临时放行：
-//   · 提交信息留 `Spec-Guard: off <原因>` trailer —— --range/--push 识别后放行该提交并打印计数；
-//   · 环境变量 SPEC_DEV_GUARD=off —— 单次全局关闭（打印警告）。
-
-import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, realpathSync } from "node:fs";
-import path from "node:path";
-
-const MODE = process.argv[2];
-const TRAILER_RE = /^spec-guard:\s*(off|skip)\b/im;
-// 主流程在模块顶层立即执行，可变状态必须先于它声明（避免 TDZ）
-let stdinCache = null;
-
-if (process.env.SPEC_DEV_GUARD === "off") {
-  warn("SPEC_DEV_GUARD=off —— 漂移守卫已临时关闭，跳过检查。请在提交信息留 `Spec-Guard: off <原因>` 便于追溯。");
-  process.exit(0);
+// Shared guard for worktree, index and per-commit history. Task associations fail closed.
+import {execFileSync} from 'node:child_process';
+import {readFileSync,realpathSync} from 'node:fs';
+import path from 'node:path';
+import {parseFrontmatter,globMatch} from './lib/spec-data.mjs';
+import {createGitView,ScopeViolation,taskAssociation} from './lib/git-view.mjs';
+import {localReference,readBinding} from './lib/task-binding.mjs';
+import {normalizeWrite} from './lib/write-paths.mjs';
+const MODE=process.argv[2],TRAILER_RE=/^spec-guard:\s*(off|skip)\b/im;
+let stdinCache=null,associated=false;
+const raw=(repo,...args)=>execFileSync('git',['-C',repo,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
+const git=(repo,...args)=>raw(repo,...args).trim();
+const files=(repo,...args)=>raw(repo,...args).split('\0').filter(Boolean);
+const blockedCode=()=>['--hook','--worktree'].includes(MODE)?2:1;
+function readStdin(){if(stdinCache===null)stdinCache=process.stdin.isTTY?'':readFileSync(0,'utf8');return stdinCache;}
+function stopHookActive(){try{return JSON.parse(readStdin()).stop_hook_active===true;}catch{return false;}}
+function changedBetween(repo,before,after){
+  if(!before)return files(repo,'diff-tree','--root','--no-commit-id','--name-only','--no-renames','-r','-z',after);
+  return files(repo,'diff','--name-only','--no-renames','-z',before,after);
 }
-
-try {
-  const repoRoot = gitRoot();
-  const changed = await collectChangedFiles(repoRoot);
-  if (changed.length === 0) process.exit(0);
-
-  const specs = loadActiveSpecs(repoRoot);
-  if (specs.length === 0) process.exit(0);
-
-  // 触发集 changed 判定"这次动了哪些代码"；--hook 模式额外把工作区已有改动（暂存+未暂存+未跟踪）
-  // 并入"spec 是否已同步"的认定：spec 先改好（尚未提交）后，对覆盖代码的后续编辑即放行。
-  // 注意工作区脏文件不扩大触发集，避免编辑无关文件时被既有漂移误伤。
-  const syncContext = MODE === "--hook" ? workingTreeDirty(repoRoot) : [];
-  const changedSet = new Set(changed.map(normalize));
-  const touchedSet = new Set([...changedSet, ...syncContext.map(normalize)]);
-  const violations = [];
-
-  for (const spec of specs) {
-    if (spec.covers.length === 0) continue;
-    // spec 自身是否已被同步（本批变更或工作区）
-    const specTouched = touchedSet.has(normalize(spec.relPath));
-    const hitCode = changed.filter((f) => f !== spec.relPath && spec.matches(f));
-    if (hitCode.length > 0 && !specTouched) {
-      violations.push({ spec: spec.relPath, feature: spec.feature, code: hitCode });
+function dirty(repo){return [...new Set([...files(repo,'diff','HEAD','--name-only','--no-renames','-z'),...files(repo,'ls-files','--others','--exclude-standard','-z')])];}
+function activeSpecs(view){
+  const out=[];
+  for(const file of view.entries().keys()){
+    if(!/^(?:\.spec-dev\/|docs\/).*\-design\.md$|^\.specs\/.*\.md$/.test(file))continue;
+    const meta=parseFrontmatter(view.readText(file)??'')?.spec_dev;if(!meta)continue;
+    if(meta.status&&!['active','draft','superseded'].includes(meta.status))warn('spec '+file+': unknown status; spec is NOT guarded');
+    if(meta.status!=='active')continue;
+    const covers=Array.isArray(meta.covers)?meta.covers.filter(c=>typeof c==='string'&&c.trim()):[];
+    if(!covers.length&&meta.coversSuspect)warn('spec '+file+': covers list could not be parsed; spec is NOT guarded');
+    out.push({relPath:file,feature:meta.feature||file,covers,matches:f=>covers.some(g=>globMatch(g,f))});
+  }return out;
+}
+function check(repo,changed,view,previous,reference,sync=[]){
+  let binding=null;
+  if(reference){
+    associated=true;
+    try{
+      if(process.env.SPEC_DEV_GUARD==='off')throw new Error('task association conflicts with SPEC_DEV_GUARD=off');
+      binding=readBinding(repo,reference,view);
+      const baseline=createGitView(repo,'commit',binding.scope_commit);
+      for(const file of [reference.plan,...binding.specs,...binding.writes]){
+        const original=baseline.resolvePath(file);
+        if(original!==file||view.resolvePath(file)!==original||(previous&&previous.resolvePath(file)!==original))throw new Error('path alias/rebinding: '+file);
+      }
+      for(const file of changed){
+        if(!binding.writes.has(file))throw new Error('write outside task scope: '+file);
+        if(view.resolvePath(file)!==file||(previous&&previous.resolvePath(file)!==file))throw new Error('changed path escape/rebinding: '+file);
+      }
+    }catch(error){throw new ScopeViolation(error.message);}
+  }else if(process.env.SPEC_DEV_GUARD==='off'){warn('SPEC_DEV_GUARD=off — legacy check waived');return [];}
+  const touched=new Set([...changed,...sync]),violations=[];
+  // Old owners also guard deletions and covers changes in the candidate view.
+  for(const spec of [...activeSpecs(view),...(previous?activeSpecs(previous):[])]){
+    const hit=changed.filter(file=>file!==spec.relPath&&spec.matches(file));
+    if(hit.length&&!touched.has(spec.relPath)){
+      const allowed=binding&&binding.specs.includes(spec.relPath)&&hit.every(file=>binding.writes.has(file));
+      if(!allowed&&!violations.some(v=>v.spec===spec.relPath&&JSON.stringify(v.code)===JSON.stringify(hit)))violations.push({spec:spec.relPath,feature:spec.feature,code:hit});
     }
+  }return violations;
+}
+function commitChecks(repo,commit,ref){
+  const body=raw(repo,'show','-s','--format=%B',commit),reference=taskAssociation(repo,body);
+  if(reference)associated=true;
+  if(TRAILER_RE.test(body)){
+    if(reference)throw new ScopeViolation('Spec-Task conflicts with Spec-Guard waiver: '+commit);
+    warn('Spec-Guard: off — legacy commit waived '+commit);return [];
   }
-
-  if (violations.length > 0) {
-    if (MODE === "--worktree" && stopHookActive()) {
-      warn("工作区仍存在未同步的 spec 漂移（本回合已提示过，不再阻断收尾）——请尽快同步对应 spec。");
-      process.exit(0);
+  const view=createGitView(repo,'commit',commit),parents=git(repo,'rev-list','--parents','-n','1',commit).split(' ').slice(1),result=[];
+  for(const parent of parents.length?parents:[null]){
+    const violations=check(repo,changedBetween(repo,parent,commit),view,parent?createGitView(repo,'commit',parent):null,reference);
+    if(violations.length)result.push({commit,ref,violations});
+  }return result;
+}
+function rangeChecks(repo,range,ref=range){
+  if(!range||!range.includes('..')||range.includes('...'))throw new ScopeViolation('expected A..B range');
+  const commits=git(repo,'rev-list','--reverse',range).split('\n').filter(Boolean),result=[];
+  for(const commit of commits)result.push(...commitChecks(repo,commit,ref));return result;
+}
+function pushChecks(repo){
+  const result=[];
+  for(const line of readStdin().split('\n').filter(l=>l.trim())){
+    const [localRef,localSha,remoteRef,remoteSha]=line.trim().split(/\s+/);if(!localSha||/^0+$/.test(localSha))continue;
+    if(!/^[a-f0-9]{40,64}$/.test(localSha)||!/^[a-f0-9]{40,64}$/.test(remoteSha??''))throw new ScopeViolation('invalid push input');
+    if(/^0+$/.test(remoteSha)){
+      // A new ref has no trustworthy remote boundary. Check all reachable commits.
+      for(const c of git(repo,'rev-list','--reverse',localSha).split('\n').filter(Boolean))result.push(...commitChecks(repo,c,remoteRef||localRef));
+    }else result.push(...rangeChecks(repo,remoteSha+'..'+localSha,remoteRef||localRef));
+  }return result;
+}
+try{
+  if(!['--staged','--range','--push','--files','--hook','--worktree'].includes(MODE))usage();
+  const repo=realpathSync(git(process.cwd(),'rev-parse','--show-toplevel'));let violations=[];
+  if(MODE==='--range'||MODE==='--push'){
+    const records=MODE==='--range'?rangeChecks(repo,process.argv[3]):pushChecks(repo);
+    for(const record of records){process.stderr.write(JSON.stringify(record)+'\n');violations.push(...record.violations);}
+  }else{
+    let reference;try{reference=localReference(repo);}catch(error){throw new ScopeViolation(error.message);}
+    associated=reference!==null;
+    const view=createGitView(repo,MODE==='--staged'?'index':'worktree'),previous=createGitView(repo,'commit','HEAD');let changed;
+    if(MODE==='--staged')changed=files(repo,'diff','--cached','--name-only','--no-renames','-z');
+    else if(MODE==='--worktree')changed=dirty(repo);
+    else{
+      const input=MODE==='--hook'?extractHookFiles(readStdin()):process.argv.slice(3);
+      changed=input.flatMap(file=>{
+        const relative=path.relative(repo,path.resolve(process.cwd(),file)).split(path.sep).join('/');
+        try{return [normalizeWrite(relative,{allowSpecDev:true})];}catch(error){if(reference)throw new ScopeViolation(error.message);return [];}
+      });
     }
-    report(violations);
-    // Claude Code 与 Codex 的阻断 hook 约定一致：退出码 2 + stderr = 阻断并把 stderr 回灌给模型；
-    // git/CI 场景沿用惯例退出码 1。
-    process.exit(MODE === "--hook" || MODE === "--worktree" ? 2 : 1);
+    violations=check(repo,changed,view,previous,reference,MODE==='--hook'?dirty(repo):[]);
   }
-  process.exit(0);
-} catch (error) {
-  // 守卫自身故障绝不应误伤提交流程：打印告警但放行，让真正的防线（CI）兜底。
-  warn(`漂移守卫执行异常，已放行（请检查守卫脚本）：${error instanceof Error ? error.message : String(error)}`);
-  process.exit(0);
+  if(violations.length){
+    if(!associated&&MODE==='--worktree'&&stopHookActive()){warn('工作区仍存在 spec 漂移，本回合不再重复阻断。');process.exit(0);}
+    report(violations);process.exit(blockedCode());
+  }
+}catch(error){
+  if(error instanceof ScopeViolation||associated){process.stderr.write('[spec-dev scope] '+error.message+'\n');process.exit(blockedCode());}
+  warn('漂移守卫执行异常，已放行（请检查守卫脚本）：'+error.message);
 }
-
-// —— 变更集采集 ——
-
-async function collectChangedFiles(repoRoot) {
-  if (MODE === "--staged") {
-    return gitLines(["diff", "--cached", "--name-only", "--diff-filter=ACMR"], repoRoot);
-  }
-  if (MODE === "--range") {
-    const range = process.argv[3];
-    if (!range) usage();
-    return rangeChangedFiles(range, repoRoot);
-  }
-  if (MODE === "--files") {
-    return process.argv.slice(3).map((f) => toRepoRel(f, repoRoot)).filter(Boolean);
-  }
-  if (MODE === "--hook") {
-    const raw = readStdin();
-    return extractHookFiles(raw).map((f) => toRepoRel(f, repoRoot)).filter(Boolean);
-  }
-  if (MODE === "--worktree") {
-    return workingTreeDirty(repoRoot);
-  }
-  if (MODE === "--push") {
-    return pushChangedFiles(repoRoot);
-  }
-  usage();
-}
-
-// Claude 与 Codex 的 PreToolUse 载荷结构不同，这里做宽松抽取：
-// 扫描常见的文件路径字段，取到什么用什么。
 function extractHookFiles(raw) {
   if (!raw.trim()) return [];
   let json;
@@ -128,328 +140,6 @@ function extractHookFiles(raw) {
   return [...out];
 }
 
-// 工作区全部改动（暂存 + 未暂存 + 未跟踪），路径相对仓库根。
-function workingTreeDirty(repoRoot) {
-  try {
-    const out = execFileSync("git", ["status", "--porcelain=v1", "-z", "--untracked-files=all"], {
-      cwd: repoRoot,
-      encoding: "utf8",
-    });
-    const tokens = out.split("\0").filter(Boolean);
-    const files = [];
-    for (let i = 0; i < tokens.length; i++) {
-      const t = tokens[i];
-      files.push(t.slice(3));
-      if (/[RC]/.test(t.slice(0, 2))) i++; // rename/copy 的下一个字段是原路径，跳过
-    }
-    return files;
-  } catch {
-    return [];
-  }
-}
-
-// 区间变更集；识别提交信息中的 Spec-Guard: off/skip trailer，放行对应提交并打印计数。
-// 无 trailer 时走端点 diff（一次 git 调用）；有 trailer 才逐提交聚合非放行提交的文件。
-function rangeChangedFiles(range, repoRoot) {
-  const endpointDiff = () => gitLines(["diff", "--name-only", "--diff-filter=ACMR", range], repoRoot);
-  let raw;
-  try {
-    raw = execFileSync("git", ["log", "--format=%H%x00%B%x1e", range], { cwd: repoRoot, encoding: "utf8" });
-  } catch {
-    return endpointDiff();
-  }
-  const commits = raw
-    .split("\x1e")
-    .map((s) => s.replace(/^\s+/, ""))
-    .filter(Boolean)
-    .map((s) => {
-      const [sha, ...body] = s.split("\0");
-      return { sha: sha.trim(), body: body.join("\0") };
-    })
-    .filter((c) => c.sha);
-  const waived = commits.filter((c) => TRAILER_RE.test(c.body));
-  if (waived.length === 0) return endpointDiff();
-  warn(
-    `${waived.length} 个提交带 Spec-Guard: off 标记，已放行（请人工复核）：${waived
-      .map((c) => c.sha.slice(0, 8))
-      .join(" ")}`,
-  );
-  const files = new Set();
-  for (const c of commits) {
-    if (TRAILER_RE.test(c.body)) continue;
-    for (const f of gitLines(
-      ["diff-tree", "--no-commit-id", "--name-only", "-r", "--diff-filter=ACMR", c.sha],
-      repoRoot,
-    )) {
-      files.add(f);
-    }
-  }
-  return [...files];
-}
-
-// pre-push：stdin 每行 "<local_ref> <local_sha> <remote_ref> <remote_sha>"，逐 ref 计算待推送区间。
-// 远端 sha 全零（新分支）时以 origin 默认分支的 merge-base 为界；解析不出则放行该 ref（fail-open）。
-function pushChangedFiles(repoRoot) {
-  const files = new Set();
-  const lines = readStdin().split("\n").map((s) => s.trim()).filter(Boolean);
-  for (const line of lines) {
-    const [, localSha, , remoteSha] = line.split(/\s+/);
-    if (!localSha || /^0+$/.test(localSha)) continue; // 删除远端分支，无需检查
-    let range;
-    if (!remoteSha || /^0+$/.test(remoteSha)) {
-      const base = mergeBaseWithDefault(localSha, repoRoot);
-      if (!base) continue;
-      range = `${base}..${localSha}`;
-    } else {
-      range = `${remoteSha}..${localSha}`;
-    }
-    for (const f of rangeChangedFiles(range, repoRoot)) files.add(f);
-  }
-  return [...files];
-}
-
-function mergeBaseWithDefault(sha, repoRoot) {
-  const candidates = [
-    gitLines(["symbolic-ref", "-q", "--short", "refs/remotes/origin/HEAD"], repoRoot)[0],
-    "origin/main",
-    "origin/master",
-  ].filter(Boolean);
-  for (const ref of candidates) {
-    const base = gitLines(["merge-base", sha, ref], repoRoot)[0];
-    if (base) return base;
-  }
-  return null;
-}
-
-// —— spec 加载与匹配 ——
-
-function loadActiveSpecs(repoRoot) {
-  const files = gitLines(
-    [
-      "ls-files",
-      ".spec-dev/**/spec/*-design.md",
-      ".spec-dev/**/*-design.md",
-      // 历史位置兜底：未迁移的旧分支 / CI 检查旧提交时仍受守护（新产物一律落 .spec-dev/）
-      "docs/**/spec/*-design.md",
-      "docs/**/*-design.md",
-      ".specs/**/*.md",
-    ],
-    repoRoot,
-  );
-  const seen = new Set();
-  const specs = [];
-  for (const relPath of files) {
-    if (seen.has(relPath)) continue;
-    seen.add(relPath);
-    const abs = path.join(repoRoot, relPath);
-    if (!existsSync(abs)) continue;
-    const meta = parseFrontmatter(readFileSync(abs, "utf8"));
-    if (!meta || !meta.spec_dev) continue;
-    const sd = meta.spec_dev;
-    if (sd.status && !["draft", "active", "superseded"].includes(sd.status)) {
-      warn(
-        `spec ${relPath}: unknown status "${sd.status}" (not draft|active|superseded) — this spec is NOT guarded; use active, or superseded with superseded_by. / status 值非法（不在 draft|active|superseded 枚举内），该 spec 不受守卫保护——现行用 active，已被取代用 superseded 并填 superseded_by。`,
-      );
-    }
-    if (sd.status !== "active") continue;
-    const covers = Array.isArray(sd.covers) ? sd.covers.filter((c) => typeof c === "string" && c.trim()) : [];
-    if (covers.length === 0 && sd.coversSuspect) {
-      warn(
-        `spec ${relPath}: covers list detected but could not be parsed (indentation/format); this spec is NOT guarded until its frontmatter matches the template. / covers 疑似存在但未能解析（缩进或格式异常），该 spec 暂不受守卫保护——请对照模板修正 frontmatter。`,
-      );
-    }
-    specs.push({
-      relPath,
-      feature: sd.feature || path.basename(relPath),
-      covers,
-      matches: (f) => covers.some((g) => globMatch(g, f)),
-    });
-  }
-  return specs;
-}
-
-// 极简 YAML frontmatter 解析：面向本模板产出的形状（spec_dev: 下的 version/feature/status/covers/sync_commit），
-// 并容忍常见合法变体——covers 行内注释、内联数组、≥2 空格缩进的 dash 条目（模板发行版的 covers 行自带注释，
-// 严格匹配会静默失守）。不引第三方 YAML 库，保持零依赖。
-// covers 疑似存在却未解析成功时置 coversSuspect，由 loadActiveSpecs 打告警——解析失败绝不允许静默。
-function parseFrontmatter(text) {
-  if (!text.startsWith("---")) return null;
-  const end = text.indexOf("\n---", 3);
-  if (end === -1) return null;
-  const block = text.slice(3, end).split("\n");
-  const root = {};
-  let inSpecDev = false;
-  let inCovers = false;
-  const sd = {};
-  for (const line of block) {
-    if (!line.trim() || line.trim().startsWith("#")) continue;
-    if (/^spec_dev:\s*$/.test(line)) {
-      inSpecDev = true;
-      inCovers = false;
-      root.spec_dev = sd;
-      continue;
-    }
-    if (inSpecDev && /^\s{2}covers:/.test(line)) {
-      const rest = stripComment(line.replace(/^\s{2}covers:/, "")).trim();
-      inCovers = false;
-      if (rest === "") {
-        sd.covers = [];
-        inCovers = true; // 块列表条目在后续行
-      } else if (rest.startsWith("[")) {
-        sd.covers = parseInlineList(rest); // covers: ["a", "b"] 或 covers: []
-      } else {
-        sd.covers = [unquote(rest)]; // 单标量按单元素列表接受——宁多保护，勿静默失守
-      }
-      continue;
-    }
-    if (inCovers) {
-      const m = line.match(/^\s{2,}-\s*(.*)$/);
-      if (m) {
-        const item = unquote(stripComment(m[1]).trim());
-        if (item) sd.covers.push(item);
-        continue;
-      }
-      inCovers = false; // covers 列表结束
-    }
-    if (inSpecDev) {
-      const m = line.match(/^\s{2}(\w+):\s*(.*)$/);
-      if (m) {
-        const key = m[1];
-        let val = stripComment(m[2]).trim();
-        if (key === "covers") continue; // 已由上方 covers 分支处理
-        if (val === "null" || val === "~" || val === "") sd[key] = null;
-        else sd[key] = unquote(val);
-        continue;
-      }
-      // 游离的 dash 行且 covers 尚未解析成功：covers 列表疑似存在但缩进/格式超出解析能力
-      if (/^\s*-\s/.test(line) && !Array.isArray(sd.covers)) sd.coversSuspect = true;
-      if (/^\S/.test(line)) inSpecDev = false; // 回到顶层键
-    }
-  }
-  return root;
-}
-
-function unquote(s) {
-  return s.replace(/^["']|["']$/g, "");
-}
-
-// 内联数组解析：covers: ["src/a/**", 'src/b/**']——逗号分隔后逐项去引号，容错为主
-function parseInlineList(s) {
-  const inner = s.replace(/^\[/, "").replace(/\]\s*$/, "").trim();
-  if (!inner) return [];
-  return inner
-    .split(",")
-    .map((x) => unquote(x.trim()))
-    .filter(Boolean);
-}
-
-function stripComment(s) {
-  // 去掉行内 # 注释，但不误伤引号内的 #
-  let inQ = null;
-  for (let i = 0; i < s.length; i++) {
-    const c = s[i];
-    if (inQ) {
-      if (c === inQ) inQ = null;
-    } else if (c === '"' || c === "'") inQ = c;
-    else if (c === "#") return s.slice(0, i);
-  }
-  return s;
-}
-
-// —— glob 匹配：支持 **、*、?，路径以 / 分隔 ——
-
-function globMatch(glob, file) {
-  const re = globToRegExp(glob);
-  return re.test(file);
-}
-
-function globToRegExp(glob) {
-  let re = "^";
-  for (let i = 0; i < glob.length; i++) {
-    const c = glob[i];
-    if (c === "*") {
-      if (glob[i + 1] === "*") {
-        i++; // 吞掉第二个 *
-        if (glob[i + 1] === "/") {
-          i++; // 吞掉紧随的 /
-          re += "(?:.*/)?"; // **/ 跨零或多级目录，保持路径段边界（a/**/b 不得匹配 a/xb）
-        } else {
-          re += ".*"; // 尾部 ** 匹配任意后缀
-        }
-      } else {
-        re += "[^/]*";
-      }
-    } else if (c === "?") re += "[^/]";
-    else if (".+^${}()|[]\\".includes(c)) re += "\\" + c;
-    else re += c;
-  }
-  return new RegExp(re + "$");
-}
-
-// —— git 辅助 ——
-
-function gitRoot() {
-  return execFileSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8" }).trim();
-}
-
-function gitLines(args, cwd) {
-  try {
-    const out = execFileSync("git", args, { cwd, encoding: "utf8" });
-    return out.split("\n").map((s) => s.trim()).filter(Boolean);
-  } catch {
-    return [];
-  }
-}
-
-function toRepoRel(file, repoRoot) {
-  const abs = path.isAbsolute(file) ? file : path.resolve(process.cwd(), file);
-  // 解析符号链接后再求相对路径：git 顶层目录常是 realpath（如 macOS /tmp→/private/tmp），
-  // 而 hook 载荷可能给出未解析的路径，直接 relative 会误判为仓库外。
-  const rel = path.relative(realpath(repoRoot), realpath(abs));
-  if (rel.startsWith("..")) return null; // 仓库外，忽略
-  return normalize(rel);
-}
-
-function realpath(p) {
-  try {
-    return realpathSync(p);
-  } catch {
-    // 文件可能尚不存在（如即将新建）：逐段回退，解析最深的已存在祖先目录。
-    const dir = path.dirname(p);
-    if (dir === p) return p;
-    try {
-      return path.join(realpathSync(dir), path.basename(p));
-    } catch {
-      return p;
-    }
-  }
-}
-
-function normalize(p) {
-  return p.split(path.sep).join("/");
-}
-
-function readStdin() {
-  if (stdinCache !== null) return stdinCache;
-  try {
-    // 终端手工运行时（TTY）不读 stdin，避免阻塞等待输入
-    stdinCache = process.stdin.isTTY ? "" : readFileSync(0, "utf8");
-  } catch {
-    stdinCache = "";
-  }
-  return stdinCache;
-}
-
-// Stop hook 二次触发标记：Claude Code 在因 Stop hook 阻断后继续、再次收尾时载荷带 stop_hook_active=true。
-function stopHookActive() {
-  try {
-    return JSON.parse(readStdin())?.stop_hook_active === true;
-  } catch {
-    return false;
-  }
-}
-
-// —— 输出 ——
 
 function report(violations) {
   const R = (s) => `\x1b[31m${s}\x1b[0m`;
