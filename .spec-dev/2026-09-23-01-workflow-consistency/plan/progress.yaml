@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T13",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -133,7 +133,13 @@
       "tests": "pass"
     },
     "T13": {
-      "status": "in_progress"
+      "status": "completed",
+      "evidence_paths": [
+        "execution/T13/red-01/facts.json",
+        "execution/T13/green-01/facts.json"
+      ],
+      "commit": "eafee9ba4973b6d095769564b741753d8144236a",
+      "tests": "pass"
     },
     "T14": {
       "status": "pending"
@@ -228,6 +234,11 @@
     "T12 red-template-json: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T12/red-template-json/facts.json",
     "T12 green-02: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T12/green-02/facts.json",
     "T12 green-final: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T12/green-final/facts.json",
-    "T12: 26/26 policy and real Git-template tests; 4 JS and 5 Python snippets pass syntax checks. The additional attempt named red-template-json was already green and is not claimed as a red signal. All five changed skill metadata files synchronized; normal pre-commit passed."
+    "T12: 26/26 policy and real Git-template tests; 4 JS and 5 Python snippets pass syntax checks. The additional attempt named red-template-json was already green and is not claimed as a red signal. All five changed skill metadata files synchronized; normal pre-commit passed.",
+    "T13 red-01: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T13/red-01/facts.json",
+    "T13 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T13/green-01/facts.json",
+    "T13 preview: mmdc and local mermaid package are unavailable. No renderer installed or downloaded. Local text fallback preview will be observed; graphical Mermaid rendering remains unverified.",
+    "T13 text fallback preview observed through Chrome tab 1752375661 at http://127.0.0.1:49302/, with AX text and two screenshot tool receipts. Owned preview tab closed and server exec session 25174 stopped (exit 130 intentional). Mermaid graphical rendering unverified; no new renderer downloaded.",
+    "T13: 41/41 rule/navigation tests; three Mermaid decision diagrams, lifecycle/reading tables, bilingual README and eight skill summaries/case sets updated. Browser text fallback observed; graphical Mermaid rendering remains unverified and real-model cases manual-pending. No renderer installed. Normal pre-commit passed."
   ]
 }
