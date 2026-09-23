@@ -158,7 +158,7 @@
       "tests": "pass"
     },
     "T15": {
-      "status": "in_progress",
+      "status": "blocked",
       "evidence_paths": [
         "execution/tasks/T15/final-20260923T150346-95972/record.json"
       ]
@@ -189,8 +189,7 @@
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T13/ —— retain original task receipts through transfer",
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/ —— retain original task receipts through transfer",
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T15/ —— retain original task receipts through transfer",
-    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/tasks/T15/ —— retain formal final Receipt and every attempt through transfer",
-    "comparison-worktree: /Users/maverick/feature-dev/.worktrees/workflow-consistency-baseline-check —— git worktree remove /Users/maverick/feature-dev/.worktrees/workflow-consistency-baseline-check"
+    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/tasks/T15/ —— retain formal final Receipt and every attempt through transfer"
   ],
   "notes": [
     "2026-09-23 用户确认 spec 定稿并授权编写计划；本记录尚不是实施授权。",
@@ -280,6 +279,8 @@
     "T14: Resumed after T08 correction. Source main HEAD and protected hooks hash were rechecked and still exactly match T00; no source branch writes. Scenario ledger is targeted evidence, not final/review completion.",
     "T14: 94/94 composed tests, then 20/20 affected transfer tests after interoperability correction; package and committed metadata-pair checks passed. 16 partial markers prepared in 7 active specs, no tests retired. Coverage ledger: execution/T14/scenario-coverage.json. Final and independent review remain pending.",
     "T15 entry verified T00-T14 individually; review base is the actual T00 source_head. Formal final output excludes only its generated acceptance/acceptance-report.md, which is not read by the targeted test source scan.",
-    "T15 first full suite: 418/420 pass, 2 fail, 0 skipped, exit_code=1. Comparing the two outside-original-target documentation assertions on source 5244a3989e68c4c740b1fc694c913c343d5fbacc in an owned detached comparison worktree; never run against dirty main."
+    "T15 first full suite: 418/420 pass, 2 fail, 0 skipped, exit_code=1. Comparing the two outside-original-target documentation assertions on source 5244a3989e68c4c740b1fc694c913c343d5fbacc in an owned detached comparison worktree; never run against dirty main.",
+    "T15 source comparison at exact T00 base passed 3/3; both final failures are introduced by this change. The owned clean detached comparison worktree was removed; raw stdout/stderr and hashes retained in execution/T15/source-comparison. T12 will clarify batch cleanup save/commit; T13 will keep the 200-line limit checked at its canonical rule instead of requiring it in the compact UI summary.",
+    "T15: Final attempt exit1 preserved. Source comparison passed; returning only the two introduced documentation assertions to T12/T13."
   ]
 }
