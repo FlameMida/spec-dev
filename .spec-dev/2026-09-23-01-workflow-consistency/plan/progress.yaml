@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T09",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -87,7 +87,18 @@
       "tests": "pass"
     },
     "T09": {
-      "status": "in_progress"
+      "status": "completed",
+      "evidence_paths": [
+        "execution/T09/red-shape/facts.json",
+        "execution/T09/red-ancestry/facts.json",
+        "execution/T09/squash-green-01/facts.json",
+        "execution/T09/green-01/facts.json",
+        "execution/T09/post-merge-01/facts.json",
+        "execution/T09/red-source-delta/facts.json",
+        "execution/T09/green-02/facts.json"
+      ],
+      "commit": "43e25172bf955f15a6ab91ab812e8d124b43e644",
+      "tests": "pass"
     },
     "T10": {
       "status": "pending"
@@ -167,6 +178,14 @@
     "T08 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/green-01/facts.json",
     "T08 green-02: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/green-02/facts.json",
     "T08 green-03: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/green-03/facts.json",
-    "T08: 19/19 transfer and execution cases. A real partial publication permission failure retained staging and resumed. Plan calls the historical group record ten-field, but the existing reference has nine named fields; preserved the exact existing schema instead of inventing a tenth."
+    "T08: 19/19 transfer and execution cases. A real partial publication permission failure retained staging and resumed. Plan calls the historical group record ten-field, but the existing reference has nine named fields; preserved the exact existing schema instead of inventing a tenth.",
+    "T09 red-shape: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T09/red-shape/facts.json",
+    "T09 red-ancestry: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T09/red-ancestry/facts.json",
+    "T09 squash-green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T09/squash-green-01/facts.json",
+    "T09 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T09/green-01/facts.json",
+    "T09 post-merge-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T09/post-merge-01/facts.json",
+    "T09 red-source-delta: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T09/red-source-delta/facts.json",
+    "T09 green-02: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T09/green-02/facts.json",
+    "T09: 74/74 final mapping, old archive and strict ticket ancestry tests; actual squash/ff/merge, source and target invalidation, post-merge record-only changes verified."
   ]
 }
