@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T16",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -204,7 +204,7 @@
       "tests": "pass"
     },
     "T16": {
-      "status": "pending"
+      "status": "in_progress"
     }
   },
   "resources": [
@@ -230,7 +230,9 @@
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/ —— retain original task receipts through transfer",
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T15/ —— retain original task receipts through transfer",
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/tasks/T15/ —— retain formal final Receipt and every attempt through transfer",
-    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T15/review/ —— retain independent native review reports, reproducers and disposition receipts"
+    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T15/review/ —— retain independent native review reports, reproducers and disposition receipts",
+    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/delivery/ —— retain actual Git delivery operations and failed attempts",
+    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T16/ —— retain original task receipts through transfer"
   ],
   "notes": [
     "2026-09-23 用户确认 spec 定稿并授权编写计划；本记录尚不是实施授权。",
@@ -396,6 +398,8 @@
     "T11: R06 conservative confirmation implemented; 13/13 R06 and 60/60 controlled-review pass. Six OS-boundary cases preserve blocked for active/invalid/unavailable/warning snapshots. First new harness incorrectly expected incomplete exit0; corrected to existing exit1 and obtained genuine blocked-vs-incomplete red against exact HEAD module, restoring owned candidate bytes afterward. Original failures/diagnosis untouched.",
     "T15: Resume final after independently assessed conservative R06 cleanup repair and complete controller green; preserve full04/05 and all diagnosis. No tests weakened and no failure waiver applied.",
     "T15 final06: 455/455, 0 fail, 0 skipped, actual exit0; formal receipt verified; affected closure review remains.",
-    "T15: Final06 verified 455/455, 0 failed/skipped/cancelled after all repairs; completion here is F only. Finish affected-dimension closure and reconciliation before T16."
+    "T15: Final06 verified 455/455, 0 failed/skipped/cancelled after all repairs; completion here is F only. Finish affected-dimension closure and reconciliation before T16.",
+    "T16: final and independent closure verified. Resolve two task-example omissions by the approved canonical interface: include actual final Receipt in delivery.receipt_paths, and use post_merge.kind=sync_commit (not spec-sync-commit). This records execution correction without rewriting the historical plan or tested business inputs.",
+    "T16: All T00-T15 completed, 455/455 valid F, final affected review zero findings, 14 requirements reconciled. Authorized created/manual local ff delivery; retain original dirty hooks, raw originals, and source history anchor."
   ]
 }
