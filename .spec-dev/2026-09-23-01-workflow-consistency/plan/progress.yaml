@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T05",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -47,7 +47,7 @@
       "tests": "pass"
     },
     "T05": {
-      "status": "completed",
+      "status": "in_progress",
       "evidence_paths": [
         "execution/T05/red-01/facts.json",
         "execution/T05/green-01/facts.json",
@@ -322,6 +322,7 @@
     "T12: R2/R3 docs aligned in 4aba653; 26/26 existing structure checks pass, disposition template really executed and preserved exit 7. First metadata check omitted the established 书面计划 trigger phrase; corrected, failed attempt retained. New intent cases remain manual-pending.",
     "T13: R4 confirmed by C: synchronize mandatory quick-fix guardrail-handling reference with valid/invalid/absent binding paths and update intent case; preserve legacy authorized waiver only without a task association.",
     "T13 review-R4-check: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T13/review-R4-check/facts.json",
-    "T13: R4 fixed in 7be7fe0: mandatory reference now distinguishes valid/invalid/absent binding; 66/66 related checks and public guard tests pass. New bound-fix intent case is saved, not claimed as a real model evaluation."
+    "T13: R4 fixed in 7be7fe0: mandatory reference now distinguishes valid/invalid/absent binding; 66/66 related checks and public guard tests pass. New bound-fix intent case is saved, not claimed as a real model evaluation.",
+    "T05: R1 follow-up boundary: interpreter matching must use the actual shebang executable, not an arbitrary name suffix or argument containing sh; preserve explicit supported shell wrappers."
   ]
 }
