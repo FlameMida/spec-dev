@@ -12,6 +12,7 @@ const keys=(x,required,optional=[],label='object')=>{
   for(const k of Object.keys(x)) need([...required,...optional].includes(k),label+': unknown '+k);
 };
 import {parseUniqueJson} from '../../guardrail/lib/record-data.mjs';
+import {validateBindingShape} from '../../guardrail/lib/task-binding.mjs';
 export {parseUniqueJson} from '../../guardrail/lib/record-data.mjs';
 export function readNavigation(markdown){
   const rows=[];
@@ -99,7 +100,8 @@ export function validateStateShape(p){
   need(arr(s.resources)&&arr(s.notes),'resources/notes string arrays');
   keys(s.tasks,p.ids,[],'tasks');
   for(const [id,t] of Object.entries(s.tasks)){
-    keys(t,['status'],['commit','tests','deviations','claim','implementation_commit','result_path','evidence_paths'],id);
+    keys(t,['status'],['commit','tests','deviations','claim','implementation_commit','result_path','evidence_paths','binding'],id);
+    if(own(t,'binding'))validateBindingShape(t.binding);
     need(statuses.includes(t.status),id+': invalid status');
     if(own(t,'deviations'))need(arr(t.deviations),id+': deviations array');
     if(own(t,'evidence_paths'))need(arr(t.evidence_paths),id+': evidence_paths array');

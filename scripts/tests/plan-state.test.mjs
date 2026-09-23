@@ -7,6 +7,12 @@ import {fileURLToPath} from 'node:url';
 import {execFileSync,spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fixture,run,check,evidence,enter,waiting,archiveFixture,git,hash,projectRoot as root} from './helpers/group-fixture.mjs';
+test('S03 persisted task binding is a valid progress extension',()=>{
+ const f=fixture();try{
+  f.state.tasks.T04.binding={scope_commit:f.base,scope_digest:'a'.repeat(64),authorization_ref:'fixture',worktree:f.wt,branch:'fixture-work',claim_key:null,claim_checkpoint:null};
+  f.save();assert.equal(run(f).status,0);
+ }finally{rmSync(f.outer,{recursive:true});}
+});
 test('S07 group can start after external dependencies complete',()=>{const f=fixture();try{assert.deepEqual(check(f).ready_tasks,['T01']);}finally{rmSync(f.outer,{recursive:true});}});
 test('S05/S07 waiting member permits only next in-group task',()=>{const f=fixture();try{enter(f);waiting(f,'T01');f.save();const j=check(f);assert.deepEqual(j.ready_tasks,['T02']);assert.equal(j.active_group,'G01');assert.equal(f.state.tasks.T01.status,'awaiting_verification');}finally{rmSync(f.outer,{recursive:true});}});
 test('S12 blocked group returns no ready task without pretending inconsistent data',()=>{const f=fixture();try{enter(f);waiting(f,'T01');Object.assign(f.state.integration.groups.G01,{status:'blocked'});f.state.tasks.T02={status:'blocked',tests:'fail'};f.save();assert.deepEqual(check(f).ready_tasks,[]);}finally{rmSync(f.outer,{recursive:true});}});

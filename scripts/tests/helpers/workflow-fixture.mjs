@@ -3,6 +3,7 @@ import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {execFileSync,spawnSync} from 'node:child_process';
+import {scopeFingerprint} from '../../../guardrail/lib/task-scopes.mjs';
 export const projectRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../../..');
 export function workflowFixture(t){
   const outer=realpathSync(mkdtempSync(path.join(tmpdir(),'workflow-contract-'))),root=path.join(outer,'repo');
@@ -23,5 +24,12 @@ export function workflowFixture(t){
   const state={format_version:1,current:'T01',tasks:{T00:{status:'completed',commit:base},T01:{status:'in_progress'},T02:{status:'pending'},T03:{status:'pending'}},resources:[],notes:[]};
   const save=()=>{put(feature+'/plan/progress.yaml',JSON.stringify(state,null,2)+'\n');return commit();};save();
   const run=(script,args=[],options={})=>spawnSync(process.execPath,[path.join(projectRoot,script),...args],{cwd:root,encoding:'utf8',...options});
-  return {outer,root,feature,plan,spec,state,scopes,index,setScopes,put,git,commit,save,run};
+  const f={outer,root,feature,plan,spec,state,scopes,index,setScopes,put,git,commit,save,run};
+  f.bind=(task='T01')=>{
+    const scope_commit=git('rev-parse','HEAD'),view={readText:p=>{try{return execFileSync('git',['-C',root,'show',scope_commit+':'+p],{encoding:'utf8',stdio:['ignore','pipe','pipe']});}catch{return null;}}};
+    state.tasks[task].binding={scope_commit,scope_digest:scopeFingerprint(view,plan,task).digest,authorization_ref:'fixture-explicit-execution',worktree:root,branch:git('branch','--show-current'),claim_key:null,claim_checkpoint:null};
+    const authority=save(),r=run('guardrail/task-binding.mjs',['bind','--plan',plan,'--task',task,'--authority',authority]);
+    if(r.status!==0)throw new Error(r.stdout+r.stderr);return {authority,...JSON.parse(r.stdout)};
+  };
+  return f;
 }
