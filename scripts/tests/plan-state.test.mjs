@@ -11,7 +11,7 @@ import {businessTree} from '../lib/execution-evidence.mjs';
 import {verifyDelivery} from '../lib/delivery-proof.mjs';
 import {workflowFixture} from './helpers/workflow-fixture.mjs';
 
-function existingFailureDelivery(t,{baselineExit=7}={}){
+function existingFailureDelivery(t,{baselineExit=7,decisionFile='record.json'}={}){
  const f=workflowFixture(t),feature=path.join(f.root,f.feature),branch=f.git('branch','--show-current');
  const command=[process.execPath,'-e','process.exit(Number(require("node:fs").readFileSync("failure.code","utf8")))'];
  const record=(attempt,phase)=>{
@@ -20,7 +20,7 @@ function existingFailureDelivery(t,{baselineExit=7}={}){
  };
  f.put('failure.code',String(baselineExit));f.commit('source failure fixture');const baseline=record('baseline','baseline');
  f.git('checkout','-qb','implementation');f.put('src/app.mjs','export const value=2;\n');f.put('failure.code','7');f.commit('implementation');const final=record('final','final');
- const dir='execution/dispositions/existing-failure',decision=dir+'/record.json';
+ const dir='execution/dispositions/existing-failure',decision=dir+'/'+decisionFile;
  f.put(f.feature+'/'+dir+'/comparison.md','Same command failed on the recorded source and candidate; fixture comparison confirms the same known failure.\n');
  f.put(f.feature+'/'+dir+'/authorization.md','Synthetic user decision fixture: permit this existing failure to remain nonblocking; retain actual exit 7.\n');
  const disposition={version:1,kind:'failure-disposition',baseline_record:baseline,final_record:final,comparison:dir+'/comparison.md',authorization:dir+'/authorization.md'};
@@ -37,8 +37,8 @@ function existingFailureDelivery(t,{baselineExit=7}={}){
  f.state.delivery={version:1,channel:'local',state:'merged',source_tip:source,source_tree:tree,target_branch:branch,merge_method:'squash',merge_commit:target,verified_target:target,history_ref:history,receipt_paths:[delivery,baseline,final,decision],post_merge:[]};f.save();
  return {...f,featureDir:feature,baseline,final,decision,disposition,verify:()=>verifyDelivery(f.root,f.state,f.feature)};
 }
-test('S14 accepted existing nonzero final supports actual v1 squash without rewriting results',t=>{
- const f=existingFailureDelivery(t);assert.equal(f.verify().method,'squash');
+for(const decisionFile of ['record.json','accepted'])test('S14 accepted existing nonzero final supports actual v1 squash and transfer: '+decisionFile,t=>{
+ const f=existingFailureDelivery(t,{decisionFile});assert.equal(f.verify().method,'squash');
  for(const file of [f.baseline,f.final])assert.equal(JSON.parse(readFileSync(path.join(f.featureDir,file))).exit_code,7);
  const target=path.join(f.outer,'retained');mkdirSync(target);
  const r=f.run('scripts/execution-evidence.mjs',['transfer','--source',f.featureDir,'--target',target]);assert.equal(r.status,0,r.stdout+r.stderr);

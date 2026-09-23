@@ -101,6 +101,7 @@ export function verifyReceipt({feature,record:recordPath,candidate}){
 function transferFiles(ctx){
   const chosen=new Set(),stateFile=path.join(ctx.feature,'plan/progress.yaml');
   const state=existsSync(stateFile)?parseRecord(readFileSync(stateFile,'utf8')):{};
+  const deliveryReceipts=new Set(state.delivery?.receipt_paths??[]);
   function add(relative,optional=false){
     const file=evidenceFile(ctx.feature,relative);
     if(optional&&!existsSync(file))return;
@@ -115,7 +116,7 @@ function transferFiles(ctx){
     if(task.claim?.key){need(normalizeWrite(task.claim.key)===task.claim.key&&!task.claim.key.includes('/'),'invalid claim evidence key');add('execution/'+task.claim.key,true);}
   }
   for(const group of Object.values(state.integration?.groups??{}))for(const ref of group.evidence_paths??[])add(ref);
-  for(const ref of state.delivery?.receipt_paths??[])add(ref);
+  for(const ref of deliveryReceipts)add(ref);
   for(const entry of state.resources??[]){
     const m=/^evidence:\s+(.+?)\s+——/.exec(entry);if(!m)continue;
     const prefix=ctx.relative+'/';need(m[1].startsWith(prefix),'resource belongs to a different feature');add(m[1].slice(prefix.length).replace(/\/$/,''));
@@ -138,7 +139,7 @@ function transferFiles(ctx){
     for(const operation of record.operations??[])streams(operation,pathsRequired);
   }
   for(const relative of chosen){
-    if(!relative.endsWith('.json'))continue;
+    if(!relative.endsWith('.json')&&!deliveryReceipts.has(relative))continue;
     const value=parseUniqueJson(readFileSync(evidenceFile(ctx.feature,relative),'utf8'));
     if(value?.kind==='failure-disposition'){
       for(const key of ['baseline_record','final_record'])add(value[key]);
