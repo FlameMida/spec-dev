@@ -12,6 +12,12 @@ let stdinCache=null,associated=false;
 const raw=(repo,...args)=>execFileSync('git',['-C',repo,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
 const git=(repo,...args)=>raw(repo,...args).trim();
 const files=(repo,...args)=>raw(repo,...args).split('\0').filter(Boolean);
+function history(repo,...args){
+  try{return raw(repo,...args);}catch(error){
+    // A failed walk has not established that the unread commits are unbound.
+    throw new ScopeViolation('cannot read required Git history: '+error.message);
+  }
+}
 const blockedCode=()=>['--hook','--worktree'].includes(MODE)?2:1;
 function readStdin(){if(stdinCache===null)stdinCache=process.stdin.isTTY?'':readFileSync(0,'utf8');return stdinCache;}
 function stopHookActive(){try{return JSON.parse(readStdin()).stop_hook_active===true;}catch{return false;}}
@@ -61,13 +67,13 @@ function check(repo,changed,view,previous,reference,sync=[]){
   }return violations;
 }
 function commitChecks(repo,commit,ref){
-  const body=raw(repo,'show','-s','--format=%B',commit),reference=taskAssociation(repo,body);
+  const body=history(repo,'show','-s','--format=%B',commit),reference=taskAssociation(repo,body);
   if(reference)associated=true;
   if(TRAILER_RE.test(body)){
     if(reference)throw new ScopeViolation('Spec-Task conflicts with Spec-Guard waiver: '+commit);
     warn('Spec-Guard: off — legacy commit waived '+commit);return [];
   }
-  const view=createGitView(repo,'commit',commit),parents=git(repo,'rev-list','--parents','-n','1',commit).split(' ').slice(1),result=[];
+  const view=createGitView(repo,'commit',commit),parents=history(repo,'rev-list','--parents','-n','1',commit).trim().split(' ').slice(1),result=[];
   for(const parent of parents.length?parents:[null]){
     const violations=check(repo,changedBetween(repo,parent,commit),view,parent?createGitView(repo,'commit',parent):null,reference);
     if(violations.length)result.push({commit,ref,violations});
@@ -75,7 +81,7 @@ function commitChecks(repo,commit,ref){
 }
 function rangeChecks(repo,range,ref=range){
   if(!range||!range.includes('..')||range.includes('...'))throw new ScopeViolation('expected A..B range');
-  const commits=git(repo,'rev-list','--reverse',range).split('\n').filter(Boolean),result=[];
+  const commits=history(repo,'rev-list','--reverse',range).trim().split('\n').filter(Boolean),result=[];
   for(const commit of commits)result.push(...commitChecks(repo,commit,ref));return result;
 }
 function pushChecks(repo){
@@ -85,7 +91,7 @@ function pushChecks(repo){
     if(!/^[a-f0-9]{40,64}$/.test(localSha)||!/^[a-f0-9]{40,64}$/.test(remoteSha??''))throw new ScopeViolation('invalid push input');
     if(/^0+$/.test(remoteSha)){
       // A new ref has no trustworthy remote boundary. Check all reachable commits.
-      for(const c of git(repo,'rev-list','--reverse',localSha).split('\n').filter(Boolean))result.push(...commitChecks(repo,c,remoteRef||localRef));
+      for(const c of history(repo,'rev-list','--reverse',localSha).trim().split('\n').filter(Boolean))result.push(...commitChecks(repo,c,remoteRef||localRef));
     }else result.push(...rangeChecks(repo,remoteSha+'..'+localSha,remoteRef||localRef));
   }return result;
 }

@@ -7,6 +7,17 @@ import {scopeFingerprint} from '../../guardrail/lib/task-scopes.mjs';
 import {execFileSync} from 'node:child_process';
 const cli='guardrail/check-spec-drift.mjs',guard=(f,args,options={})=>f.run(cli,args,options);
 const trailer=(f,authority)=>'Spec-Task: '+JSON.stringify({plan:f.plan,task:'T01',authority});
+for(const missing of ['authority','scope'])for(const entry of ['range','push-existing','push-new'])test('S06 '+entry+' rejects missing '+missing+' history objects before reading associations',t=>{
+  const f=workflowFixture(t),base=f.git('rev-parse','HEAD~1'),{authority}=f.bind();
+  f.put('src/app.mjs','export const value=2;\n');const tip=f.commit('implementation\n\n'+trailer(f,authority));
+  const run=()=>entry==='range'?guard(f,['--range',base+'..'+tip]):guard(f,['--push'],{input:`refs/heads/fixture ${tip} refs/heads/fixture ${entry==='push-new'?'0'.repeat(40):base}\n`});
+  assert.equal(run().status,0);
+  const object=missing==='authority'?authority:f.state.tasks.T01.binding.scope_commit;
+  const file=path.resolve(f.root,f.git('rev-parse','--git-path','objects/'+object.slice(0,2)+'/'+object.slice(2))),bytes=readFileSync(file);unlinkSync(file);
+  assert.equal(f.git('cat-file','-t',base),'commit');assert.match(f.git('cat-file','-p',tip),/Spec-Task:/);
+  const r=run();assert.equal(r.status,1,r.stderr);assert.match(r.stderr,/history|对象|object/i);
+  writeFileSync(file,bytes);assert.equal(run().status,0,'restoring exact bytes restores valid history');
+});
 test('S03 committed spec permits a valid bound staged implementation',t=>{
   const f=workflowFixture(t);f.bind();f.put('src/app.mjs','export const value=2;\n');f.git('add','src/app.mjs');
   const r=guard(f,['--staged']);assert.equal(r.status,0,r.stderr);
