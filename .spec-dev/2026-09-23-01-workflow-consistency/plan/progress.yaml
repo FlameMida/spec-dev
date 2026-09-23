@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T15",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -185,7 +185,7 @@
       "tests": "pass"
     },
     "T15": {
-      "status": "blocked",
+      "status": "in_progress",
       "evidence_paths": [
         "execution/tasks/T15/final-20260923T150346-95972/record.json",
         "execution/tasks/T15/final-20260923T151646-79243/record.json",
@@ -376,6 +376,7 @@
     "T08 review-R7-protocol-protection: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/review-R7-protocol-protection/facts.json",
     "T08 review-R8-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/review-R8-red/facts.json",
     "T08 review-R7-R8-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/review-R7-R8-green/facts.json",
-    "T08: R7/R8 fixed: unknown native originals stay opaque within explicit resource sets, formal task/group/delivery protocols stay strict, execution root registration supported. 23/23 target tests pass; actual full evidence transfer preflight04 copied and hashed 438 files. Earlier preflight02/03 earliest failure correctly attributed to R8; R7 independent raw samples retained."
+    "T08: R7/R8 fixed: unknown native originals stay opaque within explicit resource sets, formal task/group/delivery protocols stay strict, execution root registration supported. 23/23 target tests pass; actual full evidence transfer preflight04 copied and hashed 438 files. Earlier preflight02/03 earliest failure correctly attributed to R8; R7 independent raw samples retained.",
+    "T15: Actual evidence transfer preflight now passes; run complete final after R7/R8 repairs. Prior445/446 failure and source/current R06 controls preserved; no waiver or test relaxation."
   ]
 }
