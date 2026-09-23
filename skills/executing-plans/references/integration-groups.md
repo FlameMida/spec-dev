@@ -48,7 +48,7 @@
 
 ## 证据记录形状
 
-每条 evidence_paths 指向特性内 `execution/groups/GNN/TNN/<attempt>/record.json`；每次尝试独立目录。记录包含 command（实际 argv 字符串数组）、cwd、exit_code、commit、tree、stdout/stderr 相对特性路径和两个 sha256。tree 是 `git ls-tree -r -z C` 中排除本特性 plan/progress.yaml 与 execution/ 后的记录用 NUL 连接再 SHA-256；其余文件（包括 spec/index/任务接口）改变都会使树不同。日志可恢复/哈希吻合只证明字节没变，主线程和审查者仍核对工具回执、命令与失败类别；不手写“pass”冒充测试。 execution/ 整目录不进 git（仓库 `.gitignore`）；record.json 与日志留在本地工作区，evidence_paths 指向本地文件，跨机器复核以 acceptance-report.md 的摘要为准。
+每条 evidence_paths 指向特性内 `execution/groups/GNN/TNN/<attempt>/record.json`；每次尝试独立目录。记录包含 command（实际 argv 字符串数组）、cwd、exit_code、commit、tree、stdout/stderr 相对特性路径和两个 sha256。tree 是 `git ls-tree -r -z C` 中排除本特性 plan/progress.yaml 与 execution/ 后的记录用 NUL 连接再 SHA-256；其余文件（包括 spec/index/任务接口）改变都会使树不同。日志可恢复/哈希吻合只证明字节没变，主线程和审查者仍核对工具回执、命令与失败类别；不手写“pass”冒充测试。 execution/ 整目录不进 git（仓库 `.gitignore`）；record.json 与日志留在本地工作区，evidence_paths 指向本地文件，验收摘要提供索引；清理原工作区前须转存并核对原始回执与日志，摘要不能替代原件。
 
 completed 组必须有 verify 自己目录中的通过证据，记录的业务树等于 V；成员历史非零记录仍保留，不改成零。CLI 不会运行测试、取得锁或执行恢复写入。未提交进度返回 checkpoint_uncommitted；恢复者核对磁盘、已提交档案、真实提交和日志后补检查点，不用未提交 completed 解锁。
 
@@ -308,8 +308,6 @@ def record_check(receipt, argv, attempt, commit):
             "check changed files outside its evidence directory")
     relative_record = attempt + "/record.json"
     (feature / relative_record).write_text(json.dumps(record, indent=2) + "\n")
-    commit_only(receipt, [receipt["feature_key"] + "/" + attempt],
-                "test: preserve " + attempt)
     return relative_record, result.returncode
 ```
 <!-- integration-group-reference:end -->
@@ -357,7 +355,7 @@ state = json.loads(git(worktree, "show", "HEAD:" + feature_key + "/plan/progress
 |---|---|---|
 | T00 完成 | 复用或创建隔离后都绑定实际 worktree/branch/owner；基线真实通过；T00.commit 与 integration.base_commit/validated_commit 使用已存在的实际提交 | 先确定已有提交 B，再 `checkpoint` 保存状态；不能要求状态提交引用它自己的 SHA |
 | 组激活 | 全部外部前置 completed；保存组首行为保护；读取原 `integration.validated_commit` 为 B（不能改用最新 HEAD）；组 status=in_progress、base_commit=B、checkpoint_commit=实际已保存点、active_group=GNN；保留原 integration.base_commit/validated_commit | 在首次成员业务改动之前单独 `checkpoint` |
-| 成员实施 | 本票 in_progress/current 先提交；批准的写集合实际改动后，用 `commit_only` 保存实现 C；`record_check` 在该实际业务树上执行检查并保存原件 | 实现 C → 独立证据提交 → 成员 awaiting_verification、implementation_commit=C、commit=null、tests=pending_group、evidence_paths 和组 checkpoint_commit=C → 独立 `checkpoint` |
+| 成员实施 | 本票 in_progress/current 先提交；批准的写集合实际改动后，用 `commit_only` 保存实现 C；`record_check` 在该实际业务树上执行检查并保存原件 | 实现 C → 本地原始回执（不进 Git） → 成员 awaiting_verification、implementation_commit=C、commit=null、tests=pending_group、evidence_paths 和组 checkpoint_commit=C → 独立 `checkpoint` |
 | 组验证 | 全员待验；每条批准检查都真实执行并 `record_check`；任一必需项失败按修复协议处理 | 全部通过后取得实际通过业务树的 V；保留组 base/checkpoint 和所有历史 evidence；成员/verify/组一次完成，verify 自己也有 evidence_paths，所有 commit=V → 独立 `checkpoint` |
 | 暂停 | 所有修正及提交都在 `held_lock` 内；运行 plan-state 并核对干净 | 离开正常上下文才经过维护门释放；异常保留锁/现场，不能继续执行下一阶段 |
 
