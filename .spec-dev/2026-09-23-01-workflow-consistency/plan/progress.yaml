@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T05",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -47,7 +47,7 @@
       "tests": "pass"
     },
     "T05": {
-      "status": "in_progress",
+      "status": "completed",
       "evidence_paths": [
         "execution/T05/red-01/facts.json",
         "execution/T05/green-01/facts.json",
@@ -55,9 +55,12 @@
         "execution/T05/green-02/facts.json",
         "execution/T05/clone-01/facts.json",
         "execution/T05/review-R1-red/facts.json",
-        "execution/T05/review-R1-green/facts.json"
+        "execution/T05/review-R1-green/facts.json",
+        "execution/T05/review-R1-interpreter-red/facts.json",
+        "execution/T05/review-R1-interpreter-red-02/facts.json",
+        "execution/T05/review-R1-interpreter-green/facts.json"
       ],
-      "commit": "755f9c246625142045fcae2b0f961536bf12afc4",
+      "commit": "35d38aa45d4c08e2985df202647e2d6ee618a684",
       "tests": "pass"
     },
     "T06": {
@@ -323,6 +326,10 @@
     "T13: R4 confirmed by C: synchronize mandatory quick-fix guardrail-handling reference with valid/invalid/absent binding paths and update intent case; preserve legacy authorized waiver only without a task association.",
     "T13 review-R4-check: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T13/review-R4-check/facts.json",
     "T13: R4 fixed in 7be7fe0: mandatory reference now distinguishes valid/invalid/absent binding; 66/66 related checks and public guard tests pass. New bound-fix intent case is saved, not claimed as a real model evaluation.",
-    "T05: R1 follow-up boundary: interpreter matching must use the actual shebang executable, not an arbitrary name suffix or argument containing sh; preserve explicit supported shell wrappers."
+    "T05: R1 follow-up boundary: interpreter matching must use the actual shebang executable, not an arbitrary name suffix or argument containing sh; preserve explicit supported shell wrappers.",
+    "T05 review-R1-interpreter-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T05/review-R1-interpreter-red/facts.json",
+    "T05 review-R1-interpreter-red-02: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T05/review-R1-interpreter-red-02/facts.json",
+    "T05 review-R1-interpreter-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T05/review-R1-interpreter-green/facts.json",
+    "T05: R1 interpreter boundary fixed in 35d38aa; 14/14 installed hook tests pass. Initial custom-interpreter test failed in fixture setup because macOS cannot nest script shebang interpreters; replaced with owned symlink to real Python binary, then observed intended red before implementation. Both attempts preserved."
   ]
 }
