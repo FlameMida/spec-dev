@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T08",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -78,14 +78,15 @@
       "tests": "pass"
     },
     "T08": {
-      "status": "in_progress",
+      "status": "completed",
       "evidence_paths": [
         "execution/T08/red-01/facts.json",
         "execution/T08/green-01/facts.json",
         "execution/T08/green-02/facts.json",
-        "execution/T08/green-03/facts.json"
+        "execution/T08/green-03/facts.json",
+        "execution/T08/green-review-object-repair/facts.json"
       ],
-      "commit": "d60b3ef6d74224a9c910532c7e54490c0d24a323",
+      "commit": "38d658c84ea2e181b64af3e53b65f7d283ea44ee",
       "tests": "pass"
     },
     "T09": {
@@ -265,6 +266,8 @@
     "T14 metadata-commits: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/metadata-commits/facts.json",
     "T14 red-review-object-transfer: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/red-review-object-transfer/facts.json",
     "T14: A final transfer composition reproduced inline review stdout being mistaken for a path. Returning to T08 for a narrow artifact-classification correction; 94/94 core combinations remain historical evidence.",
-    "T08: Reopened for registered review-object transfer: inline stdout/stderr are raw bytes, not execution file references. Prior d60b3ef implementation and receipts preserved."
+    "T08: Reopened for registered review-object transfer: inline stdout/stderr are raw bytes, not execution file references. Prior d60b3ef implementation and receipts preserved.",
+    "T08 green-review-object-repair: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/green-review-object-repair/facts.json",
+    "T08: T14 interoperability correction 38d658c: 20/20 transfer/receipt tests pass, including inline review stdout/base64 handling while formal receipt paths remain strict."
   ]
 }
