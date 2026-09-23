@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T04",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -37,15 +37,19 @@
       "tests": "pass"
     },
     "T04": {
-      "status": "in_progress",
+      "status": "completed",
       "evidence_paths": [
         "execution/T04/red-01/facts.json",
         "execution/T04/green-01/facts.json",
         "execution/T04/green-02/facts.json",
         "execution/T04/review-R5-red/facts.json",
-        "execution/T04/review-R5-green/facts.json"
+        "execution/T04/review-R5-green/facts.json",
+        "execution/T04/review-R5-blob-red/facts.json",
+        "execution/T04/review-R5-blob-green/facts.json",
+        "execution/T04/review-R5-multi-ref-red/facts.json",
+        "execution/T04/review-R5-complete-green/facts.json"
       ],
-      "commit": "ac4adab75b53873f41e7598b5595b690ef96acc2",
+      "commit": "cd7808e223bae12be401cf889888636763356b9a",
       "tests": "pass"
     },
     "T05": {
@@ -341,6 +345,11 @@
     "T15: R1-R5 required fixes completed with scoped green evidence. Prior final retained but stale for repaired candidate; run complete formal final before affected-dimension re-review and reconciliation.",
     "T15 repaired candidate final: 438/438, 0 fail, 0 skipped; execution/tasks/T15/final-review-20260923T160831/record.json; independently re-review repairs next.",
     "T15: Formal final attempt 03 passed 438/438, 0 fail, 0 skipped and is content-verified. Required affected-dimension re-review remains before T16; completed here means F only.",
-    "T04: R5 residual independently confirmed: historical scope/spec blob read can fail before the task association later in the range is recognized. Pre-read commit messages for the bounded history before content checks, preserving known unbound legacy handling."
+    "T04: R5 residual independently confirmed: historical scope/spec blob read can fail before the task association later in the range is recognized. Pre-read commit messages for the bounded history before content checks, preserving known unbound legacy handling.",
+    "T04 review-R5-blob-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T04/review-R5-blob-red/facts.json",
+    "T04 review-R5-blob-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T04/review-R5-blob-green/facts.json",
+    "T04 review-R5-multi-ref-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T04/review-R5-multi-ref-red/facts.json",
+    "T04 review-R5-complete-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T04/review-R5-complete-green/facts.json",
+    "T04: R5 complete fix in cd7808e: pre-read associations across all refs before content checks; actual missing spec blob/tree plus multi-ref early failure tests and previous guard/install protections pass 47/47. Old failed attempts preserved."
   ]
 }
