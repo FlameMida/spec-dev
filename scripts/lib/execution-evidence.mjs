@@ -121,22 +121,32 @@ function transferFiles(ctx){
     const prefix=ctx.relative+'/';need(m[1].startsWith(prefix),'resource belongs to a different feature');add(m[1].slice(prefix.length).replace(/\/$/,''));
   }
   // Referenced streams extend the closure. Unknown registered files stay raw artifacts.
-  function streams(record){
+  function streams(record,pathsRequired=false){
     for(const key of ['stdout','stderr'])if(Object.hasOwn(record,key+'_sha256')){
+      // Registered review objects can contain inline text/base64, or only stream hashes.
+      // Their byte-copy proof is distinct from a formal execution receipt's path contract.
+      if(!pathsRequired){
+        if(record[key]===undefined)continue;
+        if(typeof record[key+'_base64']==='string'){
+          need(digest(Buffer.from(record[key+'_base64'],'base64'))===record[key+'_sha256'],'inline stream hash mismatch');continue;
+        }
+        if(typeof record[key]==='string'&&digest(record[key])===record[key+'_sha256'])continue;
+      }
       need(typeof record[key]==='string','stream path required');add(record[key]);
       need(digest(readFileSync(evidenceFile(ctx.feature,record[key])))===record[key+'_sha256'],'source stream hash mismatch');
     }
-    for(const operation of record.operations??[])streams(operation);
+    for(const operation of record.operations??[])streams(operation,pathsRequired);
   }
   for(const relative of chosen){
     if(!relative.endsWith('.json'))continue;
     const value=parseUniqueJson(readFileSync(evidenceFile(ctx.feature,relative),'utf8'));
-    if(value?.version===1&&value.task&&path.posix.basename(relative)==='record.json')verifyReceipt({feature:ctx.feature,record:relative,candidate:value.commit});
+    const ordinary=value?.version===1&&value.task&&path.posix.basename(relative)==='record.json';
+    if(ordinary)verifyReceipt({feature:ctx.feature,record:relative,candidate:value.commit});
     else if(value?.command&&value.tree&&value.commit){
       need(value.tree===businessTree(ctx.repo,ctx.relative,value.commit),'historical source tree mismatch');
       need(typeof value.cwd==='string'&&path.isAbsolute(value.cwd),'historical cwd missing');
     }
-    if(value&&typeof value==='object')streams(value);
+    if(value&&typeof value==='object')streams(value,ordinary||relative.startsWith('execution/groups/')||value.kind==='git');
   }
   return [...chosen].sort().map(relative=>({path:relative,sha256:digest(readFileSync(evidenceFile(ctx.feature,relative)))}));
 }

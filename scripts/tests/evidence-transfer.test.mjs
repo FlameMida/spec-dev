@@ -53,3 +53,9 @@ test('S22 publication failure returns completed files and can resume after permi
   assert.ok(existsSync(path.join(f.source,f.record)));const retry=f.transfer();assert.equal(retry.status,0,retry.stdout+retry.stderr);
   assert.deepEqual(readFileSync(path.join(f.target,f.record)),readFileSync(path.join(f.source,f.record)));
 });
+test('S21 registered review objects preserve inline outputs rather than treating them as paths',t=>{
+ const f=setup(t),receipt=JSON.parse(readFileSync(path.join(f.source,f.record)));
+ const artifact={kind:'test',stdout:readFileSync(path.join(f.source,receipt.stdout),'utf8'),stderr:readFileSync(path.join(f.source,receipt.stderr),'utf8'),stdout_sha256:receipt.stdout_sha256,stderr_sha256:receipt.stderr_sha256};
+ const rel='execution/review-archive/object.json';f.put(f.feature+'/'+rel,JSON.stringify(artifact));f.state.resources.push('evidence: '+f.feature+'/execution/review-archive —— retain sealed review objects');f.save();
+ const r=f.transfer();assert.equal(r.status,0,r.stdout+r.stderr);assert.deepEqual(readFileSync(path.join(f.target,rel)),readFileSync(path.join(f.source,rel)));
+});
