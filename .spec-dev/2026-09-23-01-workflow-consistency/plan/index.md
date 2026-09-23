@@ -133,6 +133,8 @@ parallel:
 
 source_tree 使用现有 businessTree 的 SHA-256（仅排除本特性 progress/execution）。Git 交付回执存于 `execution/delivery/<attempt>/record.json`：`{version:1,kind:"git",source_tip,target_commit,method,operations:[{argv,cwd,exit_code,stdout,stderr,stdout_sha256,stderr_sha256}]}`；stdout/stderr 是 feature 相对原件路径，真实 Git 调用返回后记录。PR 回执保存实际工具/API 原文及其 hash、PR URL、源 head 与合并提交，不能手写 state=merged 代替原文。`post_merge` 为 `{commit,kind,files}` 数组，只允许核验过的本特性进度、单一 sync_commit 字段或验收报告追加的实际交付节；变更其它正文/代码必须补验，不能按文件后缀放行。
 
+审查 R2 补齐 M04/S14 的遗漏出口：已有 `receipt_paths` 可引用 `{version:1,kind:"failure-disposition",baseline_record,final_record,comparison,comparison_sha256,authorization,authorization_sha256}`。两个 record 仍为原 Receipt v1，并一并登记；comparison/authorization 是 execution 下的来源比较和真实用户裁决原件。核验要求同命令、repository 范围、同输出排除项、来源为候选祖先、baseline/final 均同一非零退出码及原件 hash；再按 final 的检查内容核验交付来源/目标。失败等价性和授权真实性由主线程与独立审查核对，字段/hash 不自动批准例外。该补齐不改变 progress/普通 Receipt 字段或原退出码；T09 连同 T08 转存闭包和 T12 字段说明同步此变体。
+
 `history_ref` 使用 `refs/spec-dev/archive/<feature>/source`，创建前确认无冲突，指向已接受来源 tip，登记为保留/移交资源，不随临时分支删除。普通 merge 仍验证 ancestry；squash 用来源 history_ref 中的原任务/组历史加真实目标映射。目标合并、后续 sync_commit 锚定及最终状态提交分别保存，不自引用。缺来源对象的跨机器检查明确失败/未验证，不宣称本地锚已自动发布远端。
 
 review `config.evidence` 改为 `{task,phase,feature,record_path}` 引用数组；init 实际核验 Receipt、原件及 candidate，封存真实 bytes 到本 run 对象存储后供 broker 消费，不再接受只有伪哈希的自报。旧 run 的 manifest/对象维持不可变读取；新 init 拒绝旧自报形状，strict snapshot 仍生效。

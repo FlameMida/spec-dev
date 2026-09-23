@@ -41,6 +41,29 @@ function syncOnly(before,after,anchors){
   };
   const a=strip(before),b=strip(after);return Boolean(a&&b&&anchors.includes(b.value)&&a.text===b.text);
 }
+function acceptedFailure(root,featureDir,disposition,registered){
+  keys(disposition,['version','kind','baseline_record','final_record','comparison','comparison_sha256','authorization','authorization_sha256']);
+  need(disposition.version===1&&disposition.kind==='failure-disposition','invalid failure disposition');
+  const records=[];
+  for(const key of ['baseline_record','final_record']){
+    const file=disposition[key];need(registered.includes(file),'disposition receipt must be registered');
+    const record=parseUniqueJson(readFileSync(evidenceFile(featureDir,file),'utf8'));
+    records.push(verifyReceipt({feature:featureDir,record:file,candidate:record.commit}).record);
+  }
+  const [baseline,final]=records;
+  need(baseline.phase==='baseline'&&final.phase==='final','disposition requires baseline and final');
+  need(baseline.exit_code>0&&baseline.exit_code===final.exit_code,'not a matching existing failure');
+  need(baseline.scope.kind==='repository'&&final.scope.kind==='repository','full verification required');
+  need(JSON.stringify(baseline.command)===JSON.stringify(final.command)&&JSON.stringify(baseline.scope.outputs)===JSON.stringify(final.scope.outputs),'comparison command or scope differs');
+  ancestor(root,baseline.commit,final.commit);
+  for(const key of ['comparison','authorization']){
+    const bytes=readFileSync(evidenceFile(featureDir,disposition[key]));
+    need(bytes.toString('utf8').trim()&&hash(bytes)===disposition[key+'_sha256'],'missing or changed '+key+' artifact');
+  }
+  // These artifacts preserve the reviewer comparison and actual user decision.
+  // Hashes do not decide failure equivalence or grant authorization by themselves.
+  return disposition.final_record;
+}
 export function verifyDelivery(root,state,feature){
   const d=validateDeliveryShape(state.delivery);need(['merged','completed'].includes(d.state),'delivery is not merged');
   root=realpathSync(root);const featureDir=path.join(root,feature),head=git(root,'rev-parse','HEAD');
@@ -53,18 +76,20 @@ export function verifyDelivery(root,state,feature){
   if(d.merge_method==='squash'){
     need(parents.length===1,'squash target must have one parent');need(git(root,'merge-base',parents[0],d.source_tip),'squash has no shared source base');
   }else ancestor(root,d.source_tip,d.merge_commit);
+  const receipts=d.receipt_paths.map(relative=>[relative,parseUniqueJson(readFileSync(evidenceFile(featureDir,relative),'utf8'))]);
+  const accepted=new Set(receipts.filter(([,r])=>r.kind==='failure-disposition').map(([,r])=>acceptedFailure(root,featureDir,r,d.receipt_paths)));
   let delivered=false,verified=false,verifiedSource=false;
-  for(const relative of d.receipt_paths){
-    const r=parseUniqueJson(readFileSync(evidenceFile(featureDir,relative),'utf8'));
+  for(const [relative,r] of receipts){
     if(r.version===1&&r.task){
       verifyReceipt({feature:featureDir,record:relative,candidate:r.commit});
-      if(r.exit_code===0&&['final','integration'].includes(r.phase)&&r.scope?.kind==='repository'){
-        // Preserve stale/failed attempts, but consume only an applicable passing receipt.
+      if((r.exit_code===0||accepted.has(relative))&&['final','integration'].includes(r.phase)&&r.scope?.kind==='repository'){
+        // Consume only an applicable pass or explicitly adjudicated existing final failure.
         try{verifyReceipt({feature:featureDir,record:relative,candidate:d.verified_target});verified=true;}catch{}
         try{verifyReceipt({feature:featureDir,record:relative,candidate:d.source_tip});verifiedSource=true;}catch{}
       }
       continue;
     }
+    if(r.kind==='failure-disposition')continue;
     need(r.version===1&&['git','pr'].includes(r.kind),'unsupported delivery receipt');
     need(r.source_tip===d.source_tip&&r.target_commit===d.merge_commit&&r.method===d.merge_method,'receipt target mapping mismatch');
     if(r.kind==='git'){

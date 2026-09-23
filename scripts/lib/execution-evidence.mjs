@@ -140,6 +140,12 @@ function transferFiles(ctx){
   for(const relative of chosen){
     if(!relative.endsWith('.json'))continue;
     const value=parseUniqueJson(readFileSync(evidenceFile(ctx.feature,relative),'utf8'));
+    if(value?.kind==='failure-disposition'){
+      for(const key of ['baseline_record','final_record'])add(value[key]);
+      for(const key of ['comparison','authorization']){
+        add(value[key]);need(digest(readFileSync(evidenceFile(ctx.feature,value[key])))===value[key+'_sha256'],'disposition artifact hash mismatch');
+      }
+    }
     const ordinary=value?.version===1&&value.task&&path.posix.basename(relative)==='record.json';
     if(ordinary)verifyReceipt({feature:ctx.feature,record:relative,candidate:value.commit});
     else if(value?.command&&value.tree&&value.commit){

@@ -8,6 +8,53 @@ import {execFileSync,spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fixture,run,check,evidence,enter,waiting,archiveFixture,git,hash,projectRoot as root} from './helpers/group-fixture.mjs';
 import {businessTree} from '../lib/execution-evidence.mjs';
+import {verifyDelivery} from '../lib/delivery-proof.mjs';
+import {workflowFixture} from './helpers/workflow-fixture.mjs';
+
+function existingFailureDelivery(t,{baselineExit=7}={}){
+ const f=workflowFixture(t),feature=path.join(f.root,f.feature),branch=f.git('branch','--show-current');
+ const command=[process.execPath,'-e','process.exit(Number(require("node:fs").readFileSync("failure.code","utf8")))'];
+ const record=(attempt,phase)=>{
+  const result=f.run('scripts/execution-evidence.mjs',['record','--feature',feature,'--task','T02','--phase',phase,'--attempt',attempt,'--',...command]);
+  assert.equal(result.status,0,result.stderr);return JSON.parse(result.stdout).record;
+ };
+ f.put('failure.code',String(baselineExit));f.commit('source failure fixture');const baseline=record('baseline','baseline');
+ f.git('checkout','-qb','implementation');f.put('src/app.mjs','export const value=2;\n');f.put('failure.code','7');f.commit('implementation');const final=record('final','final');
+ const dir='execution/dispositions/existing-failure',decision=dir+'/record.json';
+ f.put(f.feature+'/'+dir+'/comparison.md','Same command failed on the recorded source and candidate; fixture comparison confirms the same known failure.\n');
+ f.put(f.feature+'/'+dir+'/authorization.md','Synthetic user decision fixture: permit this existing failure to remain nonblocking; retain actual exit 7.\n');
+ const disposition={version:1,kind:'failure-disposition',baseline_record:baseline,final_record:final,comparison:dir+'/comparison.md',authorization:dir+'/authorization.md'};
+ for(const key of ['comparison','authorization'])disposition[key+'_sha256']=hash(readFileSync(path.join(feature,disposition[key])));
+ f.put(f.feature+'/'+decision,JSON.stringify(disposition));
+ const source=f.git('rev-parse','HEAD'),tree=businessTree(f.root,f.feature,source),history='refs/spec-dev/archive/fixture/source';f.git('update-ref',history,source);f.git('checkout',branch);
+ const operations=[],deliveryDir='execution/delivery/nonzero';
+ for(const args of [['merge','--squash','implementation'],['commit','-qm','actual squash']]){
+  const r=spawnSync('git',args,{cwd:f.root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);const op={argv:['git',...args],cwd:f.root,exit_code:r.status};
+  for(const stream of ['stdout','stderr']){op[stream]=deliveryDir+'/'+operations.length+'-'+stream+'.log';op[stream+'_sha256']=hash(r[stream]);f.put(f.feature+'/'+op[stream],r[stream]);}operations.push(op);
+ }
+ const target=f.git('rev-parse','HEAD'),delivery=deliveryDir+'/record.json';
+ f.put(f.feature+'/'+delivery,JSON.stringify({version:1,kind:'git',source_tip:source,target_commit:target,method:'squash',operations}));
+ f.state.delivery={version:1,channel:'local',state:'merged',source_tip:source,source_tree:tree,target_branch:branch,merge_method:'squash',merge_commit:target,verified_target:target,history_ref:history,receipt_paths:[delivery,baseline,final,decision],post_merge:[]};f.save();
+ return {...f,featureDir:feature,baseline,final,decision,disposition,verify:()=>verifyDelivery(f.root,f.state,f.feature)};
+}
+test('S14 accepted existing nonzero final supports actual v1 squash without rewriting results',t=>{
+ const f=existingFailureDelivery(t);assert.equal(f.verify().method,'squash');
+ for(const file of [f.baseline,f.final])assert.equal(JSON.parse(readFileSync(path.join(f.featureDir,file))).exit_code,7);
+ const target=path.join(f.outer,'retained');mkdirSync(target);
+ const r=f.run('scripts/execution-evidence.mjs',['transfer','--source',f.featureDir,'--target',target]);assert.equal(r.status,0,r.stdout+r.stderr);
+ for(const file of [f.decision,f.disposition.comparison,f.disposition.authorization])assert.deepEqual(readFileSync(path.join(target,file)),readFileSync(path.join(f.featureDir,file)));
+});
+for(const defect of ['no-decision','missing-authorization','changed-comparison','baseline-passed','changed-candidate','different-command'])test('S14 existing failure disposition rejects '+defect,t=>{
+ const f=existingFailureDelivery(t,{baselineExit:defect==='baseline-passed'?0:7});
+ if(defect==='no-decision')f.state.delivery.receipt_paths=f.state.delivery.receipt_paths.filter(p=>p!==f.decision);
+ if(defect==='missing-authorization')rmSync(path.join(f.featureDir,f.disposition.authorization));
+ if(defect==='changed-comparison')writeFileSync(path.join(f.featureDir,f.disposition.comparison),'changed');
+ if(defect==='changed-candidate'){f.put('new-code.mjs','new behavior');f.commit('unverified target change');f.state.delivery.verified_target=f.git('rev-parse','HEAD');}
+ if(defect==='different-command'){
+  const p=path.join(f.featureDir,f.baseline),r=JSON.parse(readFileSync(p));r.command=[process.execPath,'-e','process.exit(7)'];writeFileSync(p,JSON.stringify(r));
+ }
+ assert.throws(()=>f.verify());
+});
 test('S03 persisted task binding is a valid progress extension',()=>{
  const f=fixture();try{
   f.state.tasks.T04.binding={scope_commit:f.base,scope_digest:'a'.repeat(64),authorization_ref:'fixture',worktree:f.wt,branch:'fixture-work',claim_key:null,claim_checkpoint:null};
