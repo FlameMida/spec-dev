@@ -15,7 +15,6 @@ spec_dev:
 
 # 受控审查运行修正
 
-> **Superseded-pending (2026-09-23)** — 本 spec 的「Requirement: 快照引用和独立复核」将被 .spec-dev/2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 
 用户要求“用一个能一次性解决所有问题的方案进行修正”，在明确告知需要运行控制器且超出旧“不新增自动审查调度器”范围后回复“继续”。本修正统一解决证据保管、执行者核验和中断收尾，不承诺模型语义零错误或任意服务延迟下300秒全部完成。
 
@@ -44,6 +43,7 @@ GIVEN 测试产生证据 WHEN worker提交同名或伪造字段 THEN 报告单�
 GIVEN B取得测试回执 WHEN A引用该回执且未复跑 THEN A提交被拒绝，未完成门保留。
 
 ### Requirement: 快照引用和独立复核
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [M06](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m06-critic-触发独立于反驳) 承接，另见 [M07](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m07-回执来源与验收审计条件一致)；原文保留作历史参考，本次标记随实际交付合并生效。
 
 控制器 SHALL 将引用绑定固定源码路径、行号及实际原文，并校验现有findings schema；高/中候选只有不同actor的实际独立复核完成后可确认。critic核查完整覆盖和证据清单；机器只证明引用内容/动作/身份，不代替语义判断。
 

@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,rmSync,realpathSync,symlinkSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,rmSync,realpathSync,symlinkSync,existsSync} from 'node:fs';
 import path from 'node:path';
 import {tmpdir} from 'node:os';
 import {fileURLToPath} from 'node:url';
@@ -61,6 +61,14 @@ test('S23 final squash is verifiable through retained source history',()=>{
 });
 test('S24 actual source tip cannot hide an unverified change after its accepted baseline',()=>{
  const f=squashArchiveFixture('squash',false,true);try{f.complete();check(f,false);}finally{rmSync(f.outer,{recursive:true});}
+});
+test('S21/S23/S24 ignored group evidence survives squash and cleanup without accepting a rewritten cwd',()=>{
+ const f=squashArchiveFixture();try{
+  const original=f.state.integration.worktree;assert.equal(existsSync(original),false);f.complete();check(f);
+  const file=path.join(f.wt,f.feature,f.state.tasks.T03.evidence_paths[0]),bytes=readFileSync(file),record=JSON.parse(bytes);assert.equal(record.cwd,original);
+  record.cwd=f.wt;writeFileSync(file,JSON.stringify(record));check(f,false);writeFileSync(file,bytes);check(f);
+  assert.equal(f.git('rev-parse',f.state.delivery.history_ref),f.state.delivery.source_tip);
+ }finally{rmSync(f.outer,{recursive:true});}
 });
 for(const method of ['ff','merge'])test('S23 delivery mapping keeps actual '+method+' ancestry',()=>{
  const f=squashArchiveFixture(method);try{f.complete();check(f);}finally{rmSync(f.outer,{recursive:true});}

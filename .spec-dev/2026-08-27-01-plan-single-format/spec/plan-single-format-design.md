@@ -1,7 +1,6 @@
 ---
 # —— spec-dev 漂移守卫锚点（机器可校验，勿删）——
 
-> **Superseded-pending (2026-09-23)** — 本 spec 的「Requirement: 存量计划兼容读取」将被 .spec-dev/2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 spec_dev:
   version: 1
   feature: plan-single-format
@@ -150,6 +149,7 @@ executing-plans 执行任务期间创建计划未预登记的持久资源时，�
 ## ADDED Requirements
 
 ### Requirement: 存量计划兼容读取
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [M02](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m02-未完成旧计划局部补齐) 承接；原文保留作历史参考，本次标记随实际交付合并生效。
 
 executing-plans 载入计划时 SHALL 按格式嗅探分流：`plan/tasks/` 子目录存在 → 分文件形态（渐进加载）；不存在 → 单文件形态，按 `plan/*-plan.md` 原样读取执行，不要求迁移、不改名、不生成 progress.yaml。存量单文件计划 SHALL 保持可执行、可恢复（复选框判读）、可验收（验收任务定位）能力；该读分支为冻结侧——后续流程演进不再为其新增条款，仅维持既有语义。acceptance-qa 定位存量计划的验收任务时 SHALL 读取计划正文尾部的验收任务节。
 

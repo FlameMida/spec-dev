@@ -40,7 +40,6 @@ spec_dev:
 
 # 可选并发执行（concurrent-execution）设计
 
-> **Superseded-pending (2026-09-23)** — 本 spec 的「Requirement: 特性级双交付通道」、「Requirement: 既有收尾审查全量继承」将被 .spec-dev/2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 
 
 > roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #2；吸收报告 AB-44 / AB-10 / AB-11 / AB-33。用户于 2026-09-06 确认含模型声明、切换与恢复的修订稿；本 spec 已激活，用户已指示开始实施；实施与必需验收已完成，已合入本地 main 并清理本次临时资源。
@@ -284,6 +283,7 @@ implementer SHALL 在给定绝对 worktree 内核对仓库、分支和基线，�
 - **THEN** 主线程冻结相关票并按契约偏差处理，不把探索意见当作隐式改约授权；不重复派发已覆盖的同一事实调查。
 
 ### Requirement: 特性级双交付通道
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [M09](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m09-最终交付映射与来源历史) 承接；原文保留作历史参考，本次标记随实际交付合并生效。
 
 执行链 SHALL 使用共用交付规则：默认本地合并与 sync_commit 锚定；用户已授权 PR 工作流或仓库明确要求 PR 时准备一个特性级 PR，在已有实际差异且具备相应发布授权后才 push/create draft，零差异时不造空提交。通过全套审查/验收与对账后可标 ready，但实际合并证据取得前最终任务维持 in_progress、roadmap 维持 in-progress、sync_commit 保持未锚定；实际合并后才完成取代回写、清理与锚定。不能把受保护来源分支当作原地实施理由；无法确认远端策略时报告未知，不推断未保护。
 
@@ -303,6 +303,7 @@ implementer SHALL 在给定绝对 worktree 内核对仓库、分支和基线，�
 - **THEN** 核对实际合并内容与已验收树，必要时补验证，再执行取代回写/清理/sync_commit/roadmap delivered；若写回受保护目标，走获准的后续 PR，不绕过保护。
 
 ### Requirement: 既有收尾审查全量继承
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [M03](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m03-final-验证先于审查验收) 承接，另见 [M04](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m04-失败处置与修复返回验证)；原文保留作历史参考，本次标记随实际交付合并生效。
 
 并发执行 SHALL 在全部实施票集成后交回 executing-plans 的审查、completeness critic、矩阵验收、例外驱动裁决和最终全量验证；票内自检或分支测试不能代替全局审查，Spec 追溯 trailer 仅增加可追溯性、不代替漂移检查。
 

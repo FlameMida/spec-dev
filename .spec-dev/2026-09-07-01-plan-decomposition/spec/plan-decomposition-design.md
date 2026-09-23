@@ -48,7 +48,6 @@ spec_dev:
 
 # 计划分解与集成组设计
 
-> **Superseded-pending (2026-09-23)** — 本 spec 的「Requirement: M01 plan 单一形态（增加组声明与类型化步骤）」、「Requirement: M02 渐进执行与断点恢复（扩展组检查点）」、「Requirement: A08 集成组恢复核对事实」、「Requirement: A09 协议能力检查先于写入」将被 .spec-dev/2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 
 > roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #5，吸收 AB-06/07/08/30/35/29。用户于 2026-09-07 选择“方案 2：多张小任务卡组成集成组”，并以 `ok` 批准整篇设计。本文件为批准设计的可执行化规格；2026-09-07用户确认执行后已完成T00—T07；T08必需验收及独立完整性审查已通过，T09本地交付已完成，状态见plan/progress.yaml与实施记录。
 
@@ -222,6 +221,7 @@ plan-index SHALL 拒绝违反方案设计中组成员、验证票、依赖出口
 - **THEN** 先把 T03 置 in_progress、受影响后继置 blocked，保留旧提交/证据；修复后逐票核对仍有效的操作与局部检查，已成立的内容不重复改写，证据失效部分补验，再回待验并复跑全部组验证；越出批准契约则冻结等裁决。
 
 ### Requirement: A08 集成组恢复核对事实
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [M01](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m01-恢复先处理当前任务) 承接，另见 [M05](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m05-证据按实际版本与范围复用)、[M09](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m09-最终交付映射与来源历史)；原文保留作历史参考，本次标记随实际交付合并生效。
 
 恢复者 SHALL 取得排他写权后核对已提交进度、未提交差异、工作区绑定、提交 ancestry 与证据，按中断窗口补齐未完成动作而不重复施工。
 
@@ -241,6 +241,7 @@ plan-index SHALL 拒绝违反方案设计中组成员、验证票、依赖出口
 - **THEN** 给出具体不一致、ready 为空，保留已有现场；不新建空进度、不清理未接受产物。
 
 ### Requirement: A09 协议能力检查先于写入
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [M09](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m09-最终交付映射与来源历史) 承接，另见 [M01](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m01-恢复先处理当前任务)；原文保留作历史参考，本次标记随实际交付合并生效。
 
 含集成组计划的执行者 SHALL 在首次写入、每个状态边界和恢复时使用支持本协议的校验入口，无法识别协议或校验失败时停止相关执行。
 
@@ -325,6 +326,7 @@ spec 作者 SHALL 枚举实际参与者及其适用行为/错误路径，以命�
 ## MODIFIED Requirements
 
 ### Requirement: M01 plan 单一形态（增加组声明与类型化步骤）
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [A01](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-a01-共用精确任务范围) 承接，另见 [M03](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m03-final-验证先于审查验收)；原文保留作历史参考，本次标记随实际交付合并生效。
 
 writing-plans SHALL 始终生成 index.md + tasks/TNN.md + progress.yaml，完整保留头部、全局约束、相关测试范围、四列导航、依赖闭区间、无环与文件一一对应、无复选框、T00 隔离、最大号最终任务及按矩阵安排的验收任务，并按下面的任务类型携带完整步骤与验证要求。
 
@@ -336,6 +338,7 @@ writing-plans SHALL 始终生成 index.md + tasks/TNN.md + progress.yaml，完�
 - **THEN** 每票有精确文件、接口、命令、预期结果与对应类型的完整步骤，组员没有假绿步骤；T00 与最终生命周期闭合、只一个状态源，导航通过结构校验。
 
 ### Requirement: M02 渐进执行与断点恢复（扩展组检查点）
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [M01](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m01-恢复先处理当前任务) 承接，另见 [M02](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m02-未完成旧计划局部补齐)；原文保留作历史参考，本次标记随实际交付合并生效。
 
 执行者 SHALL 启动只读 index、progress 与 spec，执行时按最小编号合法 ready 任务读取本票正文及依赖接口，并按当前模式核实提交/工作区/证据后恢复。
 

@@ -12,7 +12,6 @@ spec_dev:
 
 # 测试分域执行 + 测试退役纪律（test-scoping）设计
 
-> **Superseded-pending (2026-09-23)** — 本 spec 的「Requirement: 最终任务归属裁决」、「Requirement: executing-plans 消费声明语义」将被 .spec-dev/2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 
 ## 背景与目标
 
@@ -101,6 +100,7 @@ writing-plans 生成计划时 SHALL 在计划头部产出「相关测试范围�
 ### MODIFIED Requirements
 
 ### Requirement: 最终任务归属裁决
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [M04](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m04-失败处置与修复返回验证) 承接；原文保留作历史参考，本次标记随实际交付合并生效。
 
 （对既有"失败 → 修复后才进入合并"无条件阻塞语义的修改。）执行最终任务全量验证时，若失败测试位于相关测试范围之外，执行方 SHALL 在主工作区的源分支检出上复跑该测试（主工作区有未提交改动则先询问用户），并按结果分流：源分支同样失败则报告用户裁决是否阻塞合并，源分支通过则视为本次引入、修复后方可合并。范围内失败仍按既有语义无条件修复。
 
@@ -135,6 +135,7 @@ worktree 基线验证（using-git-worktrees Step 3、writing-plans 任务 0 步�
 - **THEN** 跳过测试执行并注明；最终任务全量验证照跑
 
 ### Requirement: executing-plans 消费声明语义
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [M03](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m03-final-验证先于审查验收) 承接；原文保留作历史参考，本次标记随实际交付合并生效。
 
 executing-plans SHALL 按计划声明的「相关测试范围」执行任务 0 基线验证，并在最终任务执行全量验证、归属裁决与退役检查；对缺该节的旧版计划 SHALL 按全量执行。（引用 writing-plans / using-git-worktrees 的判据，不复制。）
 

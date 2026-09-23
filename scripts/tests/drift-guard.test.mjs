@@ -1,8 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,writeFileSync,symlinkSync} from 'node:fs';
+import {readFileSync,writeFileSync,symlinkSync,unlinkSync} from 'node:fs';
 import path from 'node:path';
 import {workflowFixture} from './helpers/workflow-fixture.mjs';
+import {scopeFingerprint} from '../../guardrail/lib/task-scopes.mjs';
+import {execFileSync} from 'node:child_process';
 const cli='guardrail/check-spec-drift.mjs',guard=(f,args,options={})=>f.run(cli,args,options);
 const trailer=(f,authority)=>'Spec-Task: '+JSON.stringify({plan:f.plan,task:'T01',authority});
 test('S03 committed spec permits a valid bound staged implementation',t=>{
@@ -90,4 +92,17 @@ test('S05 merge differences are checked against every parent',t=>{
 test('S05 unbound environment waiver keeps its original explicit meaning',t=>{
   const f=workflowFixture(t);f.put('src/app.mjs','changed');f.git('add','src/app.mjs');
   assert.equal(guard(f,['--staged'],{env:{...process.env,SPEC_DEV_GUARD:'off'}}).status,0);
+});
+test('S03 a dangling task receipt is invalid rather than absent',t=>{
+ const f=workflowFixture(t);f.bind();const file=path.resolve(f.root,f.git('rev-parse','--git-path','spec-dev-task.json'));unlinkSync(file);symlinkSync(path.join(f.outer,'missing-receipt'),file);
+ assert.equal(guard(f,['--staged'],{env:{...process.env,SPEC_DEV_GUARD:'off'}}).status,1);
+});
+for(const defect of ['baseline','integration-worktree'])test('S04 parallel binding rejects inconsistent '+defect,t=>{
+ const f=workflowFixture(t),base=f.git('rev-parse','HEAD'),branch=f.git('branch','--show-current'),wt=path.join(f.outer,'worker');f.git('worktree','add','-qb','worker',wt);
+ const claim={key:'claim',owner:'fixture',agent_id:'fixture',worktree:wt,branch:'worker',base_commit:base};
+ f.state.current=null;f.state.tasks.T01.claim=claim;f.state.execution={mode:'parallel',owner:'fixture',integration_worktree:defect==='integration-worktree'?f.outer:f.root,integration_branch:branch,base_commit:base,validated_commit:defect==='baseline'?f.git('rev-parse','HEAD~1'):base};
+ const checkpoint=f.save();const view={readText:p=>execFileSync('git',['-C',f.root,'show',base+':'+p],{encoding:'utf8'})};
+ f.state.tasks.T01.binding={scope_commit:base,scope_digest:scopeFingerprint(view,f.plan,'T01').digest,authorization_ref:'fixture-explicit-execution',worktree:wt,branch:'worker',claim_key:'claim',claim_checkpoint:checkpoint};
+ const authority=f.save(),r=f.run('guardrail/task-binding.mjs',['bind','--plan',f.plan,'--task','T01','--authority',authority],{cwd:wt});
+ assert.equal(r.status,1,r.stdout+r.stderr);
 });

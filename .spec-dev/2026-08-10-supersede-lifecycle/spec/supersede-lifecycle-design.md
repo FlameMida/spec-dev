@@ -1,7 +1,6 @@
 ---
 # —— spec-dev 漂移守卫锚点（机器可校验，勿删）——
 
-> **Superseded-pending (2026-09-23)** — 本 spec 的「Requirement: 装机侧把 superseded 重写为生命周期终态」将被 .spec-dev/2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 spec_dev:
   version: 1
   feature: supersede-lifecycle
@@ -233,6 +232,7 @@ session-context.mjs 的健康自检与 check-spec-drift.mjs 的 loadActiveSpecs 
 - **THEN** 输出告警列出未知值及计数并给出修正指引，不静默忽略；注入行细分计数不含这些 spec
 
 ### Requirement: 装机侧把 superseded 重写为生命周期终态
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [A02](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-a02-多入口核验任务绑定) 承接；原文保留作历史参考，本次标记随实际交付合并生效。
 
 guardrail 的 CLAUDE.md.snippet、AGENTS.md.snippet 与 README（中英）SHALL 将 superseded 从"临时放行手段"清单移出、独立成生命周期条目：写明翻转必须携带 `superseded_by`、读到 superseded spec 应沿指针跳转后继、SHALL NOT 依据其行为规范开展新工作；并补充 covers 接管义务与 superseded spec 的 sync_commit 冻结语义；check-spec-drift.mjs 的 report() 指引第 3 条 SHALL 同步该措辞（判定逻辑不变）。
 

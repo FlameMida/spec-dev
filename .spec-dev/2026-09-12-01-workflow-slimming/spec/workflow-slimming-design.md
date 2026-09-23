@@ -49,7 +49,6 @@ spec_dev:
 
 # 工作流瘦身设计
 
-> **Superseded-pending (2026-09-23)** — 本 spec 的「Requirement: R3 收尾审查路数与证据（改了什么：四路改两路、复跑改读回执、critic 改条件派发）」、「Requirement: R4 本地三时点测试（改了什么：删除全量回退，任务内不跑回归）」、「Requirement: R5 本地三 lane（改了什么：fast/PR/nightly 改为 fast/final/manual）」、「Requirement: R6 验收复用执行证据（改了什么：standard 不再默认全套复核与审计）」、「Requirement: R7 执行证据留存（改了什么：证据与验收产物不进 git，历史一次性清除）」将被 .spec-dev/2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 
 > 档位：light（本 spec 按 light 五节成稿；因存在相交 active spec，保留「取代与共存」节）。
 
@@ -122,6 +121,7 @@ requirement-analysis SHALL 按档位裁剪 spec 小节集合：light 五节且�
 - **THEN** 不含「所有需求都要走完本流程」，含「light 档一次成稿一次批准」与「不派 spec-reviewer」
 
 ### Requirement: R3 收尾审查路数与证据（改了什么：四路改两路、复跑改读回执、critic 改条件派发）
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [M06](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m06-critic-触发独立于反驳) 承接，另见 [M07](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m07-回执来源与验收审计条件一致)；原文保留作历史参考，本次标记随实际交付合并生效。
 
 收尾编排与受控运行器 SHALL 按小 diff 一路 AS、常规两路 AS + BC、大变更五路派发；审查以 execution/ 回执为测试证据；零高/中候选且非 large / 非用户要求时不派反驳与 critic。
 
@@ -166,6 +166,7 @@ requirement-analysis SHALL 按档位裁剪 spec 小节集合：light 五节且�
 - **THEN** 路数表为「两路 AS + BC」，含 `facts.json`、「零候选时不派 critic」、「有候选才反驳与 critic」；不含「四路 A/B/C/S」「独立复跑相关测试，不采信自报告」「loop-until-dry」
 
 ### Requirement: R4 本地三时点测试（改了什么：删除全量回退，任务内不跑回归）
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [M03](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m03-final-验证先于审查验收) 承接，另见 [M04](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m04-失败处置与修复返回验证)；原文保留作历史参考，本次标记随实际交付合并生效。
 
 任务内 SHALL 只跑本任务目标测试与相关测试范围内的自有测试；T00 声明失效 SHALL 改跑自有测试而非完整套件；完整套件 SHALL 只在最终任务运行一次。
 
@@ -185,6 +186,7 @@ requirement-analysis SHALL 按档位裁剪 spec 小节集合：light 五节且�
 - **THEN** 含「不在任务内跑回归或完整套件」
 
 ### Requirement: R5 本地三 lane（改了什么：fast/PR/nightly 改为 fast/final/manual）
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [M03](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m03-final-验证先于审查验收) 承接，另见 [M04](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m04-失败处置与修复返回验证)；原文保留作历史参考，本次标记随实际交付合并生效。
 
 test-strategy 及其消费方 SHALL 使用 fast / final / manual 三 lane，manual 行 SHALL 不由 executing-plans 或 acceptance-qa 自动触发。
 
@@ -194,6 +196,7 @@ test-strategy 及其消费方 SHALL 使用 fast / final / manual 三 lane，manu
 - **THEN** 含 `| **manual** |` 与 `manual-pending`；不含 `nightly`、`PR lane`、`fast/PR`
 
 ### Requirement: R6 验收复用执行证据（改了什么：standard 不再默认全套复核与审计）
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [M05](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m05-证据按实际版本与范围复用) 承接，另见 [M07](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m07-回执来源与验收审计条件一致)；原文保留作历史参考，本次标记随实际交付合并生效。
 
 acceptance-qa SHALL 以 execution/ facts.json 作为 unit/integration 回执，缺失、非零或早于变更才复跑；standard 档 SHALL 只复核 fail/warn，pass 审计仅 deep。
 
@@ -203,6 +206,7 @@ acceptance-qa SHALL 以 execution/ facts.json 作为 unit/integration 回执，�
 - **THEN** 含「不采信无回执的自报告」「facts.json」「pass 项不派证据审计」，不含「全套复核与审计」；仍含「不无条件追加全量」「未到期的最终全量记待执行」
 
 ### Requirement: R7 执行证据留存（改了什么：证据与验收产物不进 git，历史一次性清除）
+> **Superseded (2026-09-23)** — 本条由 workflow-consistency [M08](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m08-本地证据转存先于清理) 承接，另见 [M05](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m05-证据按实际版本与范围复用)、[M07](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-m07-回执来源与验收审计条件一致)；原文保留作历史参考，本次标记随实际交付合并生效。
 
 仓库 .gitignore SHALL 排除 `.spec-dev/**/execution/` 整目录与 `.spec-dev/**/acceptance/*`，仅 `acceptance/acceptance-report.md` 例外；已跟踪的匹配文件 SHALL 从索引移除但保留在磁盘；git 历史 SHALL 一次性清除这两类路径。
 

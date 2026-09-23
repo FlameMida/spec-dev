@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,writeFileSync,existsSync,chmodSync,readdirSync,symlinkSync,unlinkSync} from 'node:fs';
+import {readFileSync,writeFileSync,existsSync,chmodSync,readdirSync,symlinkSync,unlinkSync,rmSync} from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {workflowFixture} from './helpers/workflow-fixture.mjs';
@@ -70,4 +70,13 @@ test('S06 a fresh clone checks durable history and pushes only to an owned local
   assert.equal(localGit('remote','add','owned-test',remote).status,0);
   const r=localGit('push','owned-test','HEAD:refs/heads/fixture');assert.equal(r.status,0,r.stderr);
   assert.ok(!existsSync(path.join(clone,'.git/spec-dev-task.json')));
+});
+test('S03/S06 installed commit to bare push to fresh clone needs no original workspace',t=>{
+ const f=installed(t),{authority}=f.installedBind();f.put('src/app.mjs','export const value=11;\n');f.git('add','src/app.mjs');f.git('commit','-qm','implementation');
+ const remote=path.join(f.outer,'portable.git'),clone=path.join(f.outer,'fresh');f.git('init','--bare','-q',remote);f.git('remote','add','portable-test',remote);f.git('push','portable-test','HEAD:refs/heads/delivered');f.git('clone','-q','--branch','delivered','--single-branch',remote,clone);
+ rmSync(f.root,{recursive:true});const check=()=>spawnSync(process.execPath,[path.join(clone,'scripts/spec-dev/check-spec-drift.mjs'),'--range',authority+'..HEAD'],{cwd:clone,encoding:'utf8'});
+ assert.equal(check().status,0);assert.ok(!existsSync(path.join(clone,'.git/spec-dev-task.json')));
+ const g=(...args)=>spawnSync('git',['-C',clone,...args],{encoding:'utf8'});g('config','user.name','Fixture');g('config','user.email','fixture@example.invalid');
+ // Simulate an untrusted remote history rewrite; the range guard must catch it independently of hooks.
+ const changed=g('-c','core.hooksPath=/dev/null','commit','--amend','-qm','association removed');assert.equal(changed.status,0,changed.stderr);assert.equal(check().status,1);
 });
