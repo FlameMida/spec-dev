@@ -11,38 +11,8 @@ const keys=(x,required,optional=[],label='object')=>{
   for(const k of required) need(own(x,k),label+': missing '+k);
   for(const k of Object.keys(x)) need([...required,...optional].includes(k),label+': unknown '+k);
 };
-// Recursive JSON reader preserves object-key uniqueness before JSON.parse can erase it.
-export function parseUniqueJson(text){
-  let i=0; const ws=()=>{while(/\s/.test(text[i]??'') && i<text.length)i++;};
-  const string=()=>{
-    const start=i++; while(i<text.length){
-      if(text[i]==='\\'){i+=2;continue;}
-      if(text[i++]==='"') return JSON.parse(text.slice(start,i));
-    } throw new Error('unterminated JSON string');
-  };
-  const value=()=>{
-    ws();
-    if(text[i]==='"') return string();
-    if(text[i]==='{'){
-      i++;ws(); const result=Object.create(null);
-      if(text[i]==='}'){i++;return result;}
-      while(i<text.length){
-        need(text[i]==='"','JSON object key at '+i);const k=string();
-        need(!own(result,k),'duplicate JSON key: '+k);ws();need(text[i++]===':','expected colon');
-        result[k]=value();ws();const end=text[i++];if(end==='}')return result;
-        need(end===',','expected comma');ws();
-      }
-    }else if(text[i]==='['){
-      i++;ws();const result=[];if(text[i]===']'){i++;return result;}
-      while(i<text.length){result.push(value());ws();const end=text[i++];if(end===']')return result;need(end===',','expected comma');}
-    }else{
-      const m=/^(?:true|false|null|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?)/.exec(text.slice(i));
-      need(m,'invalid JSON value at '+i);i+=m[0].length;return JSON.parse(m[0]);
-    }
-    throw new Error('unterminated JSON value');
-  };
-  const result=value();ws();need(i===text.length,'trailing JSON at '+i);return result;
-}
+import {parseUniqueJson} from '../../guardrail/lib/record-data.mjs';
+export {parseUniqueJson} from '../../guardrail/lib/record-data.mjs';
 export function readNavigation(markdown){
   const rows=[];
   for(const line of markdown.split('\n')){
