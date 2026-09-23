@@ -20,7 +20,7 @@
 // 幂等：可重复运行；软提示段与 hook 条目按标记/键去重，不重复堆叠。
 
 import { execFileSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync, chmodSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync, chmodSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -44,9 +44,12 @@ const done = [];
 const scriptsDir = path.join(repo, "scripts", "spec-dev");
 mkdirSync(scriptsDir, { recursive: true });
 copyFileSync(path.join(HERE, "check-spec-drift.mjs"), path.join(scriptsDir, "check-spec-drift.mjs"));
+copyFileSync(path.join(HERE, "task-binding.mjs"), path.join(scriptsDir, "task-binding.mjs"));
+mkdirSync(path.join(scriptsDir,"lib"),{recursive:true});
+for(const name of ['record-data','write-paths','task-scopes','task-binding','git-view','spec-data'])copyFileSync(path.join(HERE,'lib',name+'.mjs'),path.join(scriptsDir,'lib',name+'.mjs'));
 copyFileSync(path.join(HERE, "session-context.mjs"), path.join(scriptsDir, "session-context.mjs"));
 copyFileSync(path.join(HERE, "migrate-to-spec-dev.mjs"), path.join(scriptsDir, "migrate-to-spec-dev.mjs"));
-done.push("scripts/spec-dev/{check-spec-drift,session-context,migrate-to-spec-dev}.mjs");
+done.push("scripts/spec-dev/{check-spec-drift,task-binding,session-context,migrate-to-spec-dev}.mjs + lib/");
 
 // 1.5) 历史产物自动迁移（docs/ → .spec-dev/），默认执行
 if (!opt("--no-migrate")) {
@@ -85,7 +88,7 @@ if (mergeSnippet(path.join(repo, "AGENTS.md"), readFileSync(path.join(TPL, "AGEN
 if (!opt("--no-git-hook")) {
   const res = installGitHooks(repo);
   if (res) {
-    done.push(`${res.hooksDir}/{pre-commit,pre-push} (guard installed / 守卫已安装)`);
+    done.push(`${res.hooksDir}/{pre-commit,prepare-commit-msg,commit-msg,pre-push} (guard installed / 守卫已安装)`);
     if (res.configured) done.push("git config core.hooksPath .githooks (set / 已设置)");
     if (installPrepareScript(repo, res)) done.push("package.json prepare script (auto-enables hooksPath on install / install 时自动启用 hooksPath)");
   }
@@ -183,15 +186,27 @@ function installGitHooks(repo) {
   if (own) hooksPath = ".githooks";
   const dir = path.isAbsolute(hooksPath) ? hooksPath : path.join(repo, hooksPath);
   mkdirSync(dir, { recursive: true });
-  for (const name of ["pre-commit", "pre-push"]) {
+  for (const name of ["pre-commit", "prepare-commit-msg", "commit-msg", "pre-push"]) {
     const target = path.join(dir, name);
+    const mode=existsSync(target)?statSync(target).mode&0o777:0o755;
     if (existsSync(target)) {
       const cur = readFileSync(target, "utf8");
-      if (!cur.includes("check-spec-drift.mjs")) {
+      const start='# spec-dev:guard:start',end='# spec-dev:guard:end';
+      const guard=start+'\n'+guardLine(name)+'\n'+end+'\n';
+      if(cur.includes(start)||cur.includes(end)){
+        const a=cur.indexOf(start),b=cur.indexOf(end);
+        if(a<0||b<a||cur.indexOf(start,a+start.length)!==-1||cur.indexOf(end,b+end.length)!==-1)throw new Error('invalid guard markers: '+target);
+        writeFileSync(target,cur.slice(0,a)+guard.trimEnd()+cur.slice(b+end.length));
+      }else if (!cur.includes(name==='commit-msg'||name==='prepare-commit-msg'?'task-binding.mjs':'check-spec-drift.mjs')) {
         // 守卫行注入到 shebang 之后而非文件末尾：legacy hook 若以 exit 0 结尾，尾部追加的守卫永远执行不到
-        const guard = "\n# spec-dev 漂移守卫（前置注入，避免被 legacy hook 的 exit 旁路）\n" + guardLine(name) + "\n";
         let next;
-        if (cur.startsWith("#!")) {
+        if(name==='commit-msg'){
+          const nl=cur.indexOf('\n'),shebang=cur.startsWith('#!')?cur.slice(0,nl<0?undefined:nl):'#!/bin/sh';
+          if(!/(?:sh|bash|dash|zsh)(?:\s|$)/.test(shebang))throw new Error('cannot inject into a non-shell commit-msg hook: '+target);
+          const body=cur.startsWith('#!')?(nl<0?'':cur.slice(nl+1)):cur;
+          // A subshell preserves legacy exit codes, then validates its final message.
+          next=shebang+'\n(\n'+body+'\n) || exit $?\n'+guard;
+        }else if (cur.startsWith("#!")) {
           const nl = cur.indexOf("\n");
           next = nl === -1 ? cur + guard : cur.slice(0, nl + 1) + guard + cur.slice(nl + 1);
         } else {
@@ -202,7 +217,7 @@ function installGitHooks(repo) {
     } else {
       copyFileSync(path.join(TPL, name), target);
     }
-    chmodSync(target, 0o755);
+    chmodSync(target, mode|0o111);
   }
   let configured = false;
   if (own) {
@@ -220,6 +235,10 @@ function installGitHooks(repo) {
 // 不让守卫自身故障阻断宿主 hook。pre-push 先整段捕获 stdin 喂给守卫，再用 exec heredoc
 // 还原给宿主 hook 的后续内容，避免守卫吃掉 refs 导致宿主脚本读到空 stdin。
 function guardLine(name) {
+  if(name==='prepare-commit-msg'||name==='commit-msg')return [
+    'spec_dev_binding="$(git rev-parse --show-toplevel)/scripts/spec-dev/task-binding.mjs"',
+    `node "$spec_dev_binding" ${name==='prepare-commit-msg'?'prepare-message':'check-message'} --file "$1" || exit $?`,
+  ].join('\n');
   const resolve = 'spec_dev_guard="$(git rev-parse --show-toplevel)/scripts/spec-dev/check-spec-drift.mjs"';
   if (name === "pre-push") {
     return [

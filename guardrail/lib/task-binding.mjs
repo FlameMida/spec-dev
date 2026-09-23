@@ -49,6 +49,7 @@ export function readBinding(repo,reference,view=worktreeView(repo)){
     b={scope_commit:r.authority,scope_digest:scopeFingerprint(authority,r.plan,r.task).digest,authorization_ref:t.authorization_ref,worktree:r.worktree,branch:r.branch,claim_key:null,claim_checkpoint:null};
   }
   need(b.worktree===r.worktree&&b.branch===r.branch,'workspace does not match authority');
+  need(ancestor(repo,b.scope_commit,r.authority),'scope must precede authority');
   const basis=commitView(repo,b.scope_commit),scope=scopeAt(basis,r.plan).tasks[r.task];need(scope,'task scope missing');
   need(scope.authorization_ref===b.authorization_ref,'authorization source mismatch');
   need(scopeFingerprint(basis,r.plan,r.task).digest===b.scope_digest,'recorded digest mismatch');
@@ -92,4 +93,26 @@ export function clearReceipt(repo,plan,task){
   const old=localReference(repo);need(old&&old.plan===plan&&old.task===task,'receipt identity mismatch');
   need(old.worktree===realpathSync(git(repo,'rev-parse','--show-toplevel'))&&old.branch===git(repo,'branch','--show-current'),'receipt belongs to another workspace');
   unlinkSync(receiptPath(repo));return {ok:true,cleared:true,plan,task};
+}
+export function addTaskTrailer(message,reference){
+  const lines=message.split(/\r?\n/).filter(l=>/^Spec-Task:/i.test(l));need(lines.length<=1,'duplicate Spec-Task');
+  const expected={plan:reference.plan,task:reference.task,authority:reference.authority};
+  if(lines.length){
+    const actual=parseUniqueJson(lines[0].slice(lines[0].indexOf(':')+1).trim());
+    keys(actual,['plan','task','authority']);need(Object.entries(expected).every(([k,v])=>actual[k]===v),'Spec-Task mismatch');return message;
+  }
+  return message.trimEnd()+'\n\nSpec-Task: '+JSON.stringify(expected)+'\n';
+}
+export function processMessage(repo,file,prepare){
+  const dir=realpathSync(git(repo,'rev-parse','--absolute-git-dir')),absolute=path.resolve(repo,file);
+  need(['COMMIT_EDITMSG','MERGE_MSG','SQUASH_MSG'].includes(path.basename(absolute))&&path.dirname(absolute)===dir,'not a worktree Git message file');
+  need(!lstatSync(absolute).isSymbolicLink()&&realpathSync(absolute)===absolute,'message path alias');
+  const message=readFileSync(absolute,'utf8'),reference=localReference(repo);
+  if(!reference){need(!/^Spec-Task:/im.test(message),'Spec-Task requires an active local receipt');return {ok:true,associated:false};}
+  readBinding(repo,reference);
+  need(process.env.SPEC_DEV_GUARD!=='off'&&!/^Spec-Guard:\s*(?:off|skip)\b/im.test(message),'task association conflicts with broad waiver');
+  const next=addTaskTrailer(message,reference);
+  if(prepare){if(next!==message)writeFileSync(absolute,next);}
+  else need(next===message,'missing Spec-Task association');
+  return {ok:true,associated:true,task:reference.task};
 }

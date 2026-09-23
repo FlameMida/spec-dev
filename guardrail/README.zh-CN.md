@@ -19,15 +19,15 @@ node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci] [--no-migra
 | 层 | 机制 | 作用域 | 可绕过性 |
 |---|---|---|---|
 | 编辑时拦截 · Claude | `.claude/settings.json` PreToolUse hook（退出码 2 阻断）；spec 已在工作区同步则放行 | Claude Code 会话 | 换工具即绕过 |
-| 收尾审计 · Claude | Stop hook 对整个工作区做漂移检查，shell 写入（`sed -i`、`cat >` 等）也逃不掉；同回合只拦一次 | Claude Code 会话 | 换工具即绕过 |
+| 收尾审计 · Claude | Stop hook 对整个工作区做漂移检查，shell 写入（`sed -i`、`cat >` 等）也逃不掉；普通漂移同回合只拦一次；无效任务绑定持续拦截 | Claude Code 会话 | 换工具即绕过 |
 | 编辑时拦截 · Codex | `.codex/hooks.json` PreToolUse hook（退出码 2 阻断） | Codex 会话 | 换工具即绕过 |
 | 提交时拦截 | 版本化 `.githooks/pre-commit`（`core.hooksPath` 启用；package.json `prepare` 在 install 时自动配置，新 clone 即带闸门） | 所有本地提交，任何编辑工具 | `--no-verify` 可绕过 |
 | 推送时拦截 | 版本化 `.githooks/pre-push` 整段复查待推送区间，捕获 `--no-verify` 落下的提交 | 所有本地推送 | `--no-verify` 可绕过 |
-| **最后防线** | `.github/workflows/spec-dev-drift-guard.yml` | **所有推送/PR，工具无关** | **不可绕过** |
+| **最后防线** | `.github/workflows/spec-dev-drift-guard.yml` | **所有推送/PR，工具无关** | 需仓库策略将该检查设为必需 |
 | 会话自愈 | SessionStart hook → `session-context.mjs`：注入流程义务 + 守卫健康自检（发现 `core.hooksPath` 未启用等问题时要求 agent 当场修复） | Claude / Codex 会话 | 仅提示 |
 | 软提示 | `CLAUDE.md` / `AGENTS.md` 守卫段 | 各自 AI 工具 | 仅提示 |
 
-单一事实源是 `check-spec-drift.mjs`，所有防线全部调它，只是入参模式不同（`--staged` / `--range` / `--push` / `--hook` / `--worktree`）。
+`check-spec-drift.mjs` 负责各视图的范围判定；`task-binding.mjs` 负责本地绑定与提交消息关联。漂移入口的模式为（`--staged` / `--range` / `--push` / `--hook` / `--worktree`）。
 
 ## 判定逻辑
 
@@ -39,7 +39,23 @@ frontmatter 的 `sync_commit` 是交付锚点：最近一次确认代码与本 s
 
 显式选择并发且写集合与资源可隔离时委托 `executing-plans-parallel`，默认仍串行；只有其 implementer 在独立 worktree 写认领代码。`Spec: <仓库根相对 spec 路径>` 仅作追溯，不代替 spec 同步或漂移检查。
 
-## 临时放行
+## 任务范围放行
+
+主线程先提交 spec、计划和精确写集合，再把任务绑定写入 `progress.yaml` 并提交，取得 authority SHA。旧单文件计划仍保留原格式，使用其已提交范围声明。随后在对应工作区激活：
+
+```bash
+node scripts/spec-dev/task-binding.mjs bind --plan .spec-dev/<feature>/plan/index.md --task T01 --authority <完整SHA>
+node scripts/spec-dev/task-binding.mjs inspect
+node scripts/spec-dev/task-binding.mjs clear --plan .spec-dev/<feature>/plan/index.md --task T01
+```
+
+本地引用位于实际 Git dir，不能自行授权。任务、spec、写集合、工作区或 claim 过期时必须重新核验。守卫核对范围；行为符合性仍由测试与审查负责，行为变更必须同步 spec。
+
+`prepare-commit-msg` 从有效绑定补充单行 `Spec-Task` JSON；`commit-msg` 在原 hook 执行后核对最终消息。历史检查使用该关联及提交内的视图，不读取当前工作区的授权引用。缺少源 Git 对象会拒绝核验。守卫脚本及其纯模块一起安装，无需插件缓存。
+
+任务关联不能与 `Spec-Guard: off` 或 `SPEC_DEV_GUARD=off` 混用。使用已授权的旧例外前，先 clear 当前任务引用；普通 `Spec:` 仍只作追溯。
+
+## 临时放行（无任务关联）
 
 - 推荐：提交信息留 `Spec-Guard: off <原因>` trailer——pre-push 与 CI 的区间检查会识别并放行该提交（打印计数供人工复核），全链路一致。
 - 单次命令：`SPEC_DEV_GUARD=off git commit …`（打印告警后放行；建议同时留 trailer，否则推送/CI 区间检查仍会拦）。
@@ -54,12 +70,16 @@ frontmatter 的 `sync_commit` 是交付锚点：最近一次确认代码与本 s
 ```
 guardrail/
 ├── check-spec-drift.mjs      # 核心校验器（零依赖）
+├── task-binding.mjs          # bind / inspect / clear / message hooks
+├── lib/                      # installed shared parsers and Git views
 ├── session-context.mjs       # SessionStart 上下文注入 + 守卫健康自检
 ├── install.mjs               # 安装器
 └── templates/
     ├── claude-settings.json  # Claude hooks 片段（PreToolUse + Stop + SessionStart）
     ├── codex-hooks.json      # Codex hooks 片段
     ├── pre-commit            # 版本化 git hook（串联 .git/hooks 历史 hook）
+    ├── prepare-commit-msg    # Spec-Task association
+    ├── commit-msg            # final message validation
     ├── pre-push              # 版本化 git hook（第二道闸）
     ├── github-workflow.yml   # CI
     ├── CLAUDE.md.snippet     # Claude 软提示
@@ -69,4 +89,4 @@ guardrail/
 ## 已知边界
 
 - 注入进已有自定义 hooks 目录（如 husky）的 pre-push 守卫段会先捕获 stdin 喂给守卫，再经 `exec <<heredoc` 还原给宿主 hook——宿主脚本仍能读到 refs；极老的不支持 heredoc-`exec` 的 sh 需手工调整。模板版 hook 无此顾虑（先捕获 stdin 再转发）。
-- pre-push 对"新分支首推且解析不出 origin 默认分支"的 ref 放行（fail-open），由 CI 兜底。
+- 新 ref 没有可信远端边界时，pre-push 检查其全部可达历史；已有 ref 按各自提交区间检查，不合并不同 ref 的变更集。
