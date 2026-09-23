@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T12",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -129,7 +129,7 @@
       "tests": "pass"
     },
     "T12": {
-      "status": "completed",
+      "status": "in_progress",
       "evidence_paths": [
         "execution/T12/red-01/facts.json",
         "execution/T12/green-01/facts.json",
@@ -310,6 +310,7 @@
     "T09 review-R2-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T09/review-R2-red/facts.json",
     "T09 review-R2-behavior-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T09/review-R2-behavior-red/facts.json",
     "T09 review-R2-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T09/review-R2-green/facts.json",
-    "T09: R2 fixed in 6d6c4ca: actual v1 nonzero final plus comparison/user-decision raw artifacts survive real squash and transfer; six rejecting cases retained; 92/92 targeted. Receipt shape red and subsequent real delivery-behavior red stored separately."
+    "T09: R2 fixed in 6d6c4ca: actual v1 nonzero final plus comparison/user-decision raw artifacts survive real squash and transfer; six rejecting cases retained; 92/92 targeted. Receipt shape red and subsequent real delivery-behavior red stored separately.",
+    "T12: R3 and R2 documentation: explicit legacy task identity precedes checkbox candidate selection; define existing failure disposition in canonical fields and delivery template. No runtime task-selection bypass was observed."
   ]
 }
