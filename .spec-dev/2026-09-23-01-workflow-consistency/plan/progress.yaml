@@ -400,6 +400,24 @@
     "T15 final06: 455/455, 0 fail, 0 skipped, actual exit0; formal receipt verified; affected closure review remains.",
     "T15: Final06 verified 455/455, 0 failed/skipped/cancelled after all repairs; completion here is F only. Finish affected-dimension closure and reconciliation before T16.",
     "T16: final and independent closure verified. Resolve two task-example omissions by the approved canonical interface: include actual final Receipt in delivery.receipt_paths, and use post_merge.kind=sync_commit (not spec-sync-commit). This records execution correction without rewriting the historical plan or tested business inputs.",
-    "T16: All T00-T15 completed, 455/455 valid F, final affected review zero findings, 14 requirements reconciled. Authorized created/manual local ff delivery; retain original dirty hooks, raw originals, and source history anchor."
-  ]
+    "T16: All T00-T15 completed, 455/455 valid F, final affected review zero findings, 14 requirements reconciled. Authorized created/manual local ff delivery; retain original dirty hooks, raw originals, and source history anchor.",
+    "T16 actual local ff merge recorded: execution/delivery/ed3abdc9-8924-4e9e-bd25-4457807c5ee8/record.json; raw transfer and cleanup remain."
+  ],
+  "delivery": {
+    "version": 1,
+    "channel": "local",
+    "state": "merged",
+    "source_tip": "4b53335528e3baa41fdddd525d7870addcf92d2f",
+    "source_tree": "11fac55f78484305eaede705f6890189e67ec132a926e18c7778bf4f4d1e6b5e",
+    "target_branch": "main",
+    "merge_method": "ff",
+    "merge_commit": "4b53335528e3baa41fdddd525d7870addcf92d2f",
+    "verified_target": "4b53335528e3baa41fdddd525d7870addcf92d2f",
+    "history_ref": "refs/spec-dev/archive/workflow-consistency/source",
+    "receipt_paths": [
+      "execution/delivery/ed3abdc9-8924-4e9e-bd25-4457807c5ee8/record.json",
+      "execution/tasks/T15/final-r06-20260923T173117/record.json"
+    ],
+    "post_merge": []
+  }
 }
