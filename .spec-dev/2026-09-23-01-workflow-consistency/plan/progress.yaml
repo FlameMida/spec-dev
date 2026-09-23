@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T10",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -101,7 +101,7 @@
       "tests": "pass"
     },
     "T10": {
-      "status": "pending"
+      "status": "in_progress"
     },
     "T11": {
       "status": "pending"
@@ -137,7 +137,8 @@
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T06/ —— retain original task receipts through transfer",
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T07/ —— retain original task receipts through transfer",
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/ —— retain original task receipts through transfer",
-    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T09/ —— retain original task receipts through transfer"
+    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T09/ —— retain original task receipts through transfer",
+    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T10/ —— retain original task receipts through transfer"
   ],
   "notes": [
     "2026-09-23 用户确认 spec 定稿并授权编写计划；本记录尚不是实施授权。",
