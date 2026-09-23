@@ -53,6 +53,8 @@ node scripts/spec-dev/task-binding.mjs clear --plan .spec-dev/<feature>/plan/ind
 
 `prepare-commit-msg` 从有效绑定补充单行 `Spec-Task` JSON；`commit-msg` 在原 hook 执行后核对最终消息。历史检查使用该关联及提交内的视图，不读取当前工作区的授权引用。缺少源 Git 对象会拒绝核验。守卫脚本及其纯模块一起安装，无需插件缓存。
 
+受管理的 hooks 目录若已有非 shell 消息 hook，安装器在写入任何文件前拒绝安装。保留原脚本并配置 shell 包装器后再重试；安装器不会向 Python 或 Node 脚本注入 shell 代码。
+
 任务关联不能与 `Spec-Guard: off` 或 `SPEC_DEV_GUARD=off` 混用。使用已授权的旧例外前，先 clear 当前任务引用；普通 `Spec:` 仍只作追溯。
 
 ## 临时放行（无任务关联）

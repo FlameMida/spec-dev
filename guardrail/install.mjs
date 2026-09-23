@@ -39,6 +39,8 @@ const repo = path.resolve(val("--repo") || detectRepo());
 log(`Target repo / 目标仓库：${repo}`);
 
 const done = [];
+// Reject unsupported message-hook interpreters before copying files or migrating artifacts.
+if (!opt("--no-git-hook")) preflightMessageHooks(repo);
 
 // 1) 脚本
 const scriptsDir = path.join(repo, "scripts", "spec-dev");
@@ -167,6 +169,27 @@ function mergeSnippet(file, snippet) {
 
 // 版本化 git hooks：尊重既有 core.hooksPath（写入该目录，不动配置）；
 // 未设置时启用仓库内 .githooks/ 并写入本地 git config。模板 hook 会串联 .git/hooks 里的历史 hook。
+function preflightMessageHooks(repo) {
+  try {
+    execFileSync("git", ["-C", repo, "rev-parse", "--git-dir"], { stdio: "ignore" });
+  } catch { return; }
+  let hooksPath = ".githooks";
+  try {
+    hooksPath = execFileSync("git", ["-C", repo, "config", "--get", "core.hooksPath"], {
+      encoding: "utf8", stdio: ["ignore", "pipe", "pipe"],
+    }).trim() || hooksPath;
+  } catch { /* No custom hooks directory. */ }
+  const dir = path.resolve(repo, hooksPath);
+  for (const name of ["prepare-commit-msg", "commit-msg"]) {
+    const target = path.join(dir, name);
+    if (!existsSync(target)) continue;
+    const body = readFileSync(target, "utf8"), shebang = body.split("\n", 1)[0];
+    if (shebang.startsWith("#!") && !/(?:sh|bash|dash|zsh)(?:\s|$)/.test(shebang)) {
+      throw new Error(`cannot inject into a non-shell ${name} hook: ${target}; preserve it and configure a shell wrapper before installing`);
+    }
+  }
+}
+
 function installGitHooks(repo) {
   try {
     execFileSync("git", ["-C", repo, "rev-parse", "--git-dir"], { encoding: "utf8" });

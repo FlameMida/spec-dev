@@ -5,6 +5,16 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {workflowFixture} from './helpers/workflow-fixture.mjs';
 const install=f=>f.run('guardrail/install.mjs',['--repo',f.root,'--no-ci','--no-migrate']);
+for(const name of ['prepare-commit-msg','commit-msg'])for(const runtime of ['python3','node'])test('S06 non-shell '+runtime+' '+name+' is refused without changing the repository',t=>{
+  const f=workflowFixture(t);f.git('config','core.hooksPath','.custom-hooks');
+  const file=path.join(f.root,'.custom-hooks',name),body=runtime==='python3'?'import sys\nsys.exit(0)\n':'process.exit(0);\n';
+  f.put('.custom-hooks/'+name,'#!/usr/bin/env '+runtime+'\n'+body);chmodSync(file,0o755);
+  f.commit('working original hook');const before=readFileSync(file);
+  const result=install(f);assert.notEqual(result.status,0,'unsupported interpreter must not report successful installation');
+  assert.match(result.stderr,/non-shell .* hook/);assert.deepEqual(readFileSync(file),before);
+  assert.equal(f.git('status','--porcelain'),'','preflight must precede installer writes');
+  f.put('ordinary.txt','after rejected install\n');f.commit('original hook still works');
+});
 function installed(t){
   const f=workflowFixture(t);f.git('config','--unset','core.hooksPath');const r=install(f);assert.equal(r.status,0,r.stderr);
   assert.ok(existsSync(path.join(f.root,'scripts/spec-dev/task-binding.mjs')),'installed binding CLI is required');

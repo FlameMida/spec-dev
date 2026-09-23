@@ -53,6 +53,8 @@ The local reference lives in the actual Git dir and grants no authority by itsel
 
 `prepare-commit-msg` adds one `Spec-Task` JSON line from a valid binding. `commit-msg` checks the final message after existing hooks run. History checks use that association and committed views, independently of the current checkout. Missing source Git objects fail verification. Installation includes all required pure modules and needs no plugin cache.
 
+Existing non-shell message hooks in the managed hooks directory are rejected before installation writes any files. Preserve the original script and configure a shell wrapper before retrying; the installer never injects shell code into Python or Node scripts.
+
 A task association cannot coexist with `Spec-Guard: off` or `SPEC_DEV_GUARD=off`. Clear its local reference before using an authorized legacy exception. An ordinary `Spec:` trailer remains traceability only.
 
 ## Temporary bypass (no task association)
