@@ -1,0 +1,35 @@
+{
+  "format_version": 1,
+  "current": null,
+  "tasks": {
+    "T00": {"status": "pending"},
+    "T01": {"status": "pending"},
+    "T02": {"status": "pending"},
+    "T03": {"status": "pending"},
+    "T04": {"status": "pending"},
+    "T05": {"status": "pending"},
+    "T06": {"status": "pending"},
+    "T07": {"status": "pending"},
+    "T08": {"status": "pending"},
+    "T09": {"status": "pending"},
+    "T10": {"status": "pending"},
+    "T11": {"status": "pending"},
+    "T12": {"status": "pending"},
+    "T13": {"status": "pending"},
+    "T14": {"status": "pending"},
+    "T15": {"status": "pending"},
+    "T16": {"status": "pending"}
+  },
+  "resources": [
+    "worktree: planned codex/workflow-consistency —— T00 以真实工具回执更新路径和 created/inherited 归属；未创建，不预授删除权",
+    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/ —— 执行时登记具体原件目录；T16 转存核验后保留，不提交原始证据",
+    "review-run: planned feature-owned run outside implementation worktree —— T15 审查前登记实际绝对路径；证据归档后按实际归属处理",
+    "history-ref: refs/spec-dev/archive/workflow-consistency/source —— T16 核对不存在或本任务已有回执后创建；保留来源历史，不随临时分支清理"
+  ],
+  "notes": [
+    "2026-09-23 用户确认 spec 定稿并授权编写计划；本记录尚不是实施授权。",
+    "来源初始目录 /Users/maverick/feature-dev；来源有 hooks/hooks.json 既有未提交修改；T00 必须重新核对并记录哈希，不回填当前规划值为执行事实。",
+    "spec 激活提交 23d6934；实施基线在 T00 从实际获批计划提交记录，不填写未来 SHA。",
+    "本计划默认串行；parallel 声明只表达可选资格，尚无用户选择或运行状态。"
+  ]
+}

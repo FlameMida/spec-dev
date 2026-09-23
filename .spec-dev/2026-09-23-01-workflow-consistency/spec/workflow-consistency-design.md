@@ -5,12 +5,15 @@ spec_dev:
   status: active
   covers:
     - "guardrail/check-spec-drift.mjs"
+    - "guardrail/task-binding.mjs"
+    - "guardrail/lib/**"
     - "guardrail/install.mjs"
     - "guardrail/templates/**"
     - "guardrail/README.md"
     - "guardrail/README.zh-CN.md"
     - "scripts/lib/**"
     - "scripts/validate-output.mjs"
+    - "scripts/execution-evidence.mjs"
     - "scripts/schemas/**"
     - "scripts/tests/**"
     - "agents/implementer.md"
