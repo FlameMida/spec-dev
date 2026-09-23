@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T05",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -47,7 +47,7 @@
       "tests": "pass"
     },
     "T05": {
-      "status": "completed",
+      "status": "in_progress",
       "evidence_paths": [
         "execution/T05/red-01/facts.json",
         "execution/T05/green-01/facts.json",
@@ -296,6 +296,7 @@
     "T13: Final repair: 23/23 affected tests pass, including real 200-line CLI boundaries. Compact metadata retains entry responsibility, and the unchanged 200-line constraint remains checked through canonical reachable policy.",
     "T15: Resumed after introduced documentation failures were compared against the exact clean source and corrected in T12/T13. Keep the first full exit1 receipt; rerun full suite on the new candidate before independent review.",
     "T15 final attempt 2: {'tests': 420, 'pass': 420, 'fail': 0, 'cancelled': 0, 'skipped': 0}; formal record execution/tasks/T15/final-20260923T151646-79243/record.json verified against a5cd67fd3e4d1a248e0678d6215fd890bfa0b36f. F is verified; independent large-tier review is still pending and T16 must not begin before it and reconciliation finish.",
-    "T15: F complete only: final attempt 2 passed 420/420 with zero skips and actual exit_code=0. Independent review, reconciliation and T16 delivery remain outstanding."
+    "T15: F complete only: final attempt 2 passed 420/420 with zero skips and actual exit_code=0. Independent review, reconciliation and T16 delivery remain outstanding.",
+    "T05: R1: independent A/B-quality finding confirmed by S; preflight non-shell message hooks before any installer mutation; preserve original bytes and avoid shell injection."
   ]
 }
