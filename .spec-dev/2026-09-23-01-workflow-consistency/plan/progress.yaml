@@ -184,7 +184,9 @@
       "evidence_paths": [
         "execution/tasks/T15/final-20260923T150346-95972/record.json",
         "execution/tasks/T15/final-20260923T151646-79243/record.json",
-        "execution/tasks/T15/final-review-20260923T160831/record.json"
+        "execution/tasks/T15/final-review-20260923T160831/record.json",
+        "execution/T15/final-04-R06-diagnostic/facts.json",
+        "execution/tasks/T15/final-closure-20260923T162925/record.json"
       ],
       "commit": "6b8a8b4aeae0a0ddd86b1f8eeae73fa9331297fe",
       "tests": "pass"
@@ -216,7 +218,8 @@
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/ —— retain original task receipts through transfer",
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T15/ —— retain original task receipts through transfer",
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/tasks/T15/ —— retain formal final Receipt and every attempt through transfer",
-    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T15/review/ —— retain independent native review reports, reproducers and disposition receipts"
+    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T15/review/ —— retain independent native review reports, reproducers and disposition receipts",
+    "worktree: /Users/maverick/feature-dev/.worktrees/workflow-consistency-baseline-check -- owned detached R06 source comparison; remove after check"
   ],
   "notes": [
     "2026-09-23 用户确认 spec 定稿并授权编写计划；本记录尚不是实施授权。",
@@ -357,6 +360,9 @@
     "T08 review-R6-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/review-R6-red/facts.json",
     "T08 review-R6-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/review-R6-green/facts.json",
     "T08: R6 fixed in aa88d02: explicitly registered delivery receipts parsed irrespective of suffix; real nonzero v1 squash plus extensionless transfer retains comparison/authorization; 13/13 targeted including full transfer suite and existing group cleanup proof.",
-    "T15: R5 blob/multi-ref residual and new R6 independently confirmed and repaired; prior 438-pass final retained as stale for this new candidate. Run fresh complete final then narrowly verify these closures."
+    "T15: R5 blob/multi-ref residual and new R6 independently confirmed and repaired; prior 438-pass final retained as stale for this new candidate. Run fresh complete final then narrowly verify these closures.",
+    "T15 final-04-R06-diagnostic: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T15/final-04-R06-diagnostic/facts.json",
+    "T15 final attempt 04: actual exit 1, 445/446, R06 worker termination acknowledgement assertion blocked vs incomplete; retain failure and compare exact source revision.",
+    "T15: Register exact-source detached R06 comparison; preserve failed final 04 and actual raw transfer preflight failure before further repairs."
   ]
 }
