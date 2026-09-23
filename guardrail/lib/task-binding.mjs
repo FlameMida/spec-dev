@@ -69,10 +69,22 @@ export function readBinding(repo,reference,view=worktreeView(repo)){
       need(ancestor(repo,b.scope_commit,claim.base_commit)&&ancestor(repo,claim.base_commit,tip),'claim baseline mismatch');
       const checkpoint=stateAt(commitView(repo,b.claim_checkpoint),r.plan),saved=checkpoint.tasks?.[r.task]?.claim;
       need(JSON.stringify(saved)===JSON.stringify(claim),'claim checkpoint mismatch');
-      const execution=state.execution;need(execution?.mode==='parallel'&&nonempty(execution.integration_branch),'integration context missing');
-      const integrationTip=git(repo,'rev-parse','refs/heads/'+execution.integration_branch);
-      need(ancestor(repo,b.claim_checkpoint,integrationTip)&&ancestor(repo,r.authority,integrationTip),'claim is not in integration history');
-      if(local){const current=stateAt(commitView(repo,integrationTip),r.plan).tasks?.[r.task];need(current?.status==='in_progress'&&JSON.stringify(current.claim)===JSON.stringify(claim)&&JSON.stringify(current.binding)===JSON.stringify(b),'claim expired');}
+      const execution=state.execution,created=checkpoint.execution;
+      need(execution?.mode==='parallel'&&nonempty(execution.integration_branch)&&nonempty(execution.integration_worktree)&&path.isAbsolute(execution.integration_worktree),'integration context missing');
+      need(created?.mode==='parallel'&&created.validated_commit===claim.base_commit,'claim did not start at the validated baseline');
+      need(['integration_branch','integration_worktree'].every(k=>created[k]===execution[k]),'claim integration context changed');
+      need(ancestor(repo,b.claim_checkpoint,r.authority),'claim checkpoint must precede authority');
+      // Historical commits depend on immutable checkpoints, never surviving branches/worktrees.
+      if(local){
+        const integration=realpathSync(execution.integration_worktree);
+        need(integration===execution.integration_worktree&&realpathSync(git(integration,'rev-parse','--show-toplevel'))===integration&&git(integration,'branch','--show-current')===execution.integration_branch,'integration worktree/branch mismatch');
+        const common=cwd=>realpathSync(path.resolve(cwd,git(cwd,'rev-parse','--git-common-dir')));
+        need(common(integration)===common(repo),'integration belongs to another repository');
+        const integrationTip=git(integration,'rev-parse','HEAD');need(ancestor(repo,r.authority,integrationTip),'authority is not in integration history');
+        const now=stateAt(commitView(repo,integrationTip),r.plan),current=now.tasks?.[r.task];
+        need(now.execution?.mode==='parallel'&&['integration_branch','integration_worktree'].every(k=>now.execution[k]===execution[k]),'integration context expired');
+        need(current?.status==='in_progress'&&JSON.stringify(current.claim)===JSON.stringify(claim)&&JSON.stringify(current.binding)===JSON.stringify(b),'claim expired');
+      }
       for(const file of scope.writes)normalizeWrite(file); // implementers never own .spec-dev
     }
   }else{
@@ -83,7 +95,12 @@ export function readBinding(repo,reference,view=worktreeView(repo)){
   return {plan:r.plan,task:r.task,authority:r.authority,scope_commit:b.scope_commit,scope_digest:b.scope_digest,specs:scope.specs,writes:new Set(scope.writes),worktree:b.worktree,branch:b.branch,claim_key:b.claim_key};
 }
 export function receiptPath(repo){return path.resolve(repo,git(repo,'rev-parse','--git-path','spec-dev-task.json'));}
-export function localReference(repo){const file=receiptPath(repo);if(!existsSync(file))return null;need(!lstatSync(file).isSymbolicLink(),'receipt symlink forbidden');return validateReference(parseUniqueJson(readFileSync(file,'utf8')));}
+export function localReference(repo){
+  const file=receiptPath(repo);let info;
+  try{info=lstatSync(file);}catch(error){if(error.code==='ENOENT')return null;throw error;}
+  need(info.isFile()&&!info.isSymbolicLink(),'receipt must be a regular file, not a symlink');
+  return validateReference(parseUniqueJson(readFileSync(file,'utf8')));
+}
 export function activateReceipt(repo,reference){
   const binding=readBinding(repo,reference),old=localReference(repo);
   need(!old||(old.plan===reference.plan&&old.task===reference.task),'another task receipt is active');

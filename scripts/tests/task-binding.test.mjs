@@ -66,7 +66,20 @@ test('S04 claim checkpoint can be on integration history outside implementer anc
   f.state.tasks.T01.binding={scope_commit:base,scope_digest:scopeFingerprint(view,f.plan,'T01').digest,authorization_ref:'fixture-explicit-execution',worktree:wt,branch:'ticket',claim_key:'c1',claim_checkpoint:checkpoint};
   const authority=f.save(),r=f.run(cli,['bind','--plan',f.plan,'--task','T01','--authority',authority],{cwd:wt});
   assert.equal(r.status,0,r.stderr);assert.equal(f.run(cli,['inspect'],{cwd:wt}).status,0);
+  f.put('src/independent.mjs','export const independent=1;\n');const advanced=f.commit('independent accepted implementation');f.state.execution.validated_commit=advanced;f.save();
+  assert.equal(f.run(cli,['inspect'],{cwd:wt}).status,0,'an existing claim keeps its original validated base');
   f.state.tasks.T01.claim={...claim,key:'c2'};f.save();rejected(f.run(cli,['inspect'],{cwd:wt}));
+});
+test('S04 historical parallel association remains verifiable after integration branch rename',t=>{
+ const f=workflowFixture(t),base=f.git('rev-parse','HEAD'),branch=f.git('branch','--show-current'),wt=path.join(f.outer,'historical-worker');f.git('worktree','add','-qb','historical-worker',wt);
+ f.state.current=null;f.state.execution={mode:'parallel',integration_branch:branch,integration_worktree:f.root,validated_commit:base};
+ f.state.tasks.T01.claim={key:'historical',owner:'fixture',agent_id:'fixture',worktree:wt,branch:'historical-worker',base_commit:base};const checkpoint=f.save();
+ const view={readText:p=>execFileSync('git',['-C',f.root,'show',base+':'+p],{encoding:'utf8'})};
+ f.state.tasks.T01.binding={scope_commit:base,scope_digest:scopeFingerprint(view,f.plan,'T01').digest,authorization_ref:'fixture-explicit-execution',worktree:wt,branch:'historical-worker',claim_key:'historical',claim_checkpoint:checkpoint};const authority=f.save();
+ writeFileSync(path.join(wt,'src/app.mjs'),'export const value=2;\n');
+ const gitWorker=(...args)=>execFileSync('git',['-C',wt,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();gitWorker('add','src/app.mjs');gitWorker('commit','-qm','implementation\n\nSpec-Task: '+JSON.stringify({plan:f.plan,task:'T01',authority}));const tip=gitWorker('rev-parse','HEAD');
+ f.git('merge','--no-ff','historical-worker','-m','integrated');f.git('branch','-m','integration-archived');f.git('worktree','remove',wt);f.git('branch','-d','historical-worker');
+ const r=f.run('guardrail/check-spec-drift.mjs',['--range',base+'..'+tip]);assert.equal(r.status,0,r.stdout+r.stderr);
 });
 test('S07 existing implementation commit does not complete or rewrite the task on inspect',t=>{
  const f=workflowFixture(t);f.bind();f.put('src/app.mjs','implemented\n');const commit=f.commit();
