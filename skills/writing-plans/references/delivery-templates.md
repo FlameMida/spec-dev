@@ -18,6 +18,7 @@ rtk proxy node "${CLAUDE_PLUGIN_ROOT}/scripts/execution-evidence.mjs" record \
 若验收报告仅为生成结果，可显式加 `--output acceptance/acceptance-report.md`；它作为测试输入时禁止排除。工具 exit0 只表示回执保存成功，必须读取 JSON.exit_code 和原始输出；零测试、缺工具、信号中断、SKIP 不记 pass。
 
 3. 失败按归属处理：范围内失败或本次回归沿获批范围修复；范围外失败用来源的同一检查比较。来源有 dirty 时保护原件，在已授权隔离基线比较，不 stash/reset 或覆盖。证实既有失败后记录原件，只有尚未决定的阻塞取舍才交用户裁决。修复追加 attempt，不覆盖旧失败。
+   用户已明确裁定既有失败不阻塞时，按 plan-format 的 failure-disposition 记录比较和裁决原件；来源必须是 T00 的实际来源，不能任选一个失败版本。保留两个非零回执，F.tests 写实际结果及处置引用，不写 pass。字段/hash 校验不替代语义归属及授权核对。
 4. 核对回执适用于当前候选后保存 F completed，commit 指已存在的受测提交，evidence_paths 引用实际 record。状态原子写入并独立提交，随后进入独立审查。
 
 后续审查、验收或合并检查引出修复，回到承担写集合的任务：先补验受影响范围，再复审相应维度、更新验收与对账；旧 F completed 不使新候选自动放行。
@@ -46,6 +47,31 @@ rtk proxy node "${CLAUDE_PLUGIN_ROOT}/scripts/execution-evidence.mjs" verify \
 ```
 
 报告、spec、fixture 或断言发生变化，先确认回执仍适用；不以“只是 Markdown”或时间较新放行。无有效回执不进入合并。
+
+已获准的既有失败使用下面片段保存处置引用；参数来自真实 baseline/final 回执、已保存的失败比较及用户裁决，不从退出码推断授权。比较和裁决都放 execution 下并保留来源链接/原话。将返回路径和两个原始 record 加入 delivery.receipt_paths，转存工具会带走引用的原件。正式交付核验仍检查当前候选；改变测试结果或输入后重新比较和处置。
+
+```javascript
+// node --input-type=module - <实际execution-evidence.mjs模块> <特性绝对路径> <baseline_record> <final_record> <comparison原件> <authorization原件> <新处置路径>
+import fs from 'node:fs';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {pathToFileURL} from 'node:url';
+const [tool,feature,baseline_record,final_record,comparison,authorization,output]=process.argv.slice(2);
+const {evidenceFile,verifyReceipt}=await import(pathToFileURL(tool).href);
+for(const file of [baseline_record,final_record]){
+  const record=JSON.parse(fs.readFileSync(evidenceFile(feature,file),'utf8'));
+  verifyReceipt({feature,record:file,candidate:record.commit});
+}
+const disposition={version:1,kind:'failure-disposition',baseline_record,final_record,comparison,authorization};
+for(const key of ['comparison','authorization']){
+  const bytes=fs.readFileSync(evidenceFile(feature,disposition[key]));
+  if(!bytes.toString('utf8').trim())throw Error('missing comparison or user decision');
+  disposition[key+'_sha256']=createHash('sha256').update(bytes).digest('hex');
+}
+const target=evidenceFile(feature,output);fs.mkdirSync(path.dirname(target),{recursive:true});
+fs.writeFileSync(target,JSON.stringify(disposition,null,2)+'\n',{flag:'wx'});
+console.log(JSON.stringify({record_path:output}));
+```
 
 **步骤 2：测试退役与取代材料核对**
 

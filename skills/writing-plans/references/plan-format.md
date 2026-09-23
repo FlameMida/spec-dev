@@ -129,6 +129,8 @@ fs.writeFileSync(file+'.tmp',JSON.stringify(state,null,2)+'\n',{flag:'wx'});fs.r
 
 分文件唯一 `progress.delivery`：`{version:1,channel,state,source_tip,source_tree,target_branch,merge_method,merge_commit,verified_target,history_ref,receipt_paths,post_merge}`。channel 为 local/pr；state 为 implementing/awaiting_merge/merged/completed；method 为 ff/merge/squash，未知事实填 null。source_tree 由 `businessTree(repo,feature,commit)` 实算；history_ref 使用 `refs/spec-dev/archive/<特性标识>/source`，保留并登记，不随工作分支删除。post_merge 项为 `{commit,kind,files}`，kind 为 progress/sync_commit/acceptance_delivery；仅允许精确进度、单一 sync_commit 或验收报告追加的“实际交付”节，其它改动须有当前版本补验。
 
+既有失败获准不阻塞时，receipt_paths 另引用 `{version:1,kind:"failure-disposition",baseline_record,final_record,comparison,comparison_sha256,authorization,authorization_sha256}`。baseline_record/final_record 一并登记，仍是原 Receipt v1；后四项为 execution 下来源比较、真实用户裁决原件的路径与 SHA-256。核验要求同命令、完整仓库范围/输出排除项、来源祖先、baseline/final 同一非零退出码，以及原件 hash；final 仍须适用于交付来源/目标。只接受 final 例外，不豁免组验证。相同退出码或有效 hash 不能证明失败等价性/授权真实性；主线程先用 T00 的实际来源比较失败原因，保存用户裁决，独立审查复核。无裁决、本次回归或新候选不能沿用旧处置，失败记录永不改成 pass。
+
 Git 原件为 `{version:1,kind:"git",source_tip,target_commit,method,operations}`，每个真实 operation 保存 `{argv,cwd,exit_code,stdout,stderr,stdout_sha256,stderr_sha256}`；PR 原件保存实际 API 响应文件及 hash、url、source_tip、target_commit、method。PR 状态不能自证已合并。Receipt 与 Git/PR 回执路径列在 receipt_paths；最终验证用 `verifyDelivery(root,state,feature)`，缺源对象或原件即未验证。
 
 未完成档案中旧 `execution.delivery` 在授权恢复时由主线程一次迁到顶层，旧值及来源提交记 notes；新形禁止双真源。已完成历史只读原形。旧单文件把同一 delivery 事实写入原最终任务的 `json spec-dev-delivery` 块，复选框仍是任务状态。

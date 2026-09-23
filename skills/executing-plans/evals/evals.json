@@ -34,7 +34,7 @@
     {
       "id": "ep-legacy-single-file-executable",
       "prompt": "执行 .spec-dev/2026-08-26-01-major-upgrade/plan/major-upgrade-plan.md（存量单文件计划，目录下无 tasks/ 子目录）",
-      "expected_output": "格式嗅探走单文件分支：按原样一次性读取计划全文与同特性目录 spec 执行；不提示迁移、不生成 tasks/ 或 progress.yaml；恢复用复选框判读（与 git log 的 feat(TN) 对照，不一致以提交为准并报告）；资源登记就地编辑其最终任务内嵌台账行"
+      "expected_output": "保持单文件和复选框，不生成 tasks/ 或 progress.yaml；恢复先核对已有绑定、明确 task key 与授权/执行记录，未勾选项只提供候选。提交存在不代表验证或状态已完成；只补当前/未执行范围和必要收尾步骤，保留已完成提交及证据，资源登记仍在原最终任务台账。"
     },
     {
       "id": "ep-parallel-opt-in",
@@ -265,6 +265,11 @@
       "id": "workflow-S07-S10-S17-resume",
       "prompt": "恢复时 current=T03/in_progress，没有完成 commit；旧单文件任务已部分执行。本次最终审查按 large，初审零候选。",
       "expected_output": "先核对并恢复当前票，不要求 in_progress 具有完成 SHA；旧单文件只补当前/未执行范围，保留已完成记录。large 仍实际派 critic，显式 on-findings 配置拒绝；图示不能绕过这些条件。"
+    },
+    {
+      "id": "workflow-S09-legacy-explicit-current",
+      "prompt": "旧单文件 T01 未开始，T02 部分完成，已有有效绑定和执行记录明确指向 T02；用户说继续。另一个案例两项都未完成且无当前任务依据。",
+      "expected_output": "第一例核验后续接 T02，不选首未勾选 T01或重建progress；第二例报告无法唯一定位的具体缺口，取得明确task key后继续，不把顺序当授权。"
     }
   ]
 }
