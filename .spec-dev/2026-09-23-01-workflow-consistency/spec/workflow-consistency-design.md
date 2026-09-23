@@ -3,6 +3,7 @@ spec_dev:
   version: 1
   feature: workflow-consistency
   status: active
+  sync_commit: 4b53335528e3baa41fdddd525d7870addcf92d2f
   covers:
     - "guardrail/check-spec-drift.mjs"
     - "guardrail/task-binding.mjs"
