@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T08",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -89,7 +89,7 @@
       "tests": "pass"
     },
     "T08": {
-      "status": "in_progress",
+      "status": "completed",
       "evidence_paths": [
         "execution/T08/red-01/facts.json",
         "execution/T08/green-01/facts.json",
@@ -97,9 +97,14 @@
         "execution/T08/green-03/facts.json",
         "execution/T08/green-review-object-repair/facts.json",
         "execution/T08/review-R6-red/facts.json",
-        "execution/T08/review-R6-green/facts.json"
+        "execution/T08/review-R6-green/facts.json",
+        "execution/T08/review-R7-red/facts.json",
+        "execution/T08/review-R7-green/facts.json",
+        "execution/T08/review-R7-protocol-protection/facts.json",
+        "execution/T08/review-R8-red/facts.json",
+        "execution/T08/review-R7-R8-green/facts.json"
       ],
-      "commit": "aa88d02228bb4e5cde4b8af05398ca4333fe6b0b",
+      "commit": "68a7e7ccc287eb1cd46b2ea07647ff4934678c90",
       "tests": "pass"
     },
     "T09": {
@@ -365,6 +370,12 @@
     "T15: Register exact-source detached R06 comparison; preserve failed final 04 and actual raw transfer preflight failure before further repairs.",
     "T15 final04 R06 diagnosis: current 7/7 and exact source 5244a39 7/7; full-run termination acknowledgement failure not reproduced in isolated controls. No product/test change or waiver for R06; new full final remains required. Owned detached source comparison was clean and removed normally.",
     "T15: Keep final04 failed and raw transfer preflight blocked until T08 original-artifact classification repair; R06 current/source controls both 7/7, no unsupported attribution or waiver.",
-    "T08: R7 confirmed independently after actual transfer preflight: preserve unknown registered native review artifacts as raw bytes; do not infer a formal stream-path protocol from stdout_sha256. Keep strict verification for declared Receipt/group/Git formats; raw resource directories remain explicit."
+    "T08: R7 confirmed independently after actual transfer preflight: preserve unknown registered native review artifacts as raw bytes; do not infer a formal stream-path protocol from stdout_sha256. Keep strict verification for declared Receipt/group/Git formats; raw resource directories remain explicit.",
+    "T08 review-R7-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/review-R7-red/facts.json",
+    "T08 review-R7-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/review-R7-green/facts.json",
+    "T08 review-R7-protocol-protection: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/review-R7-protocol-protection/facts.json",
+    "T08 review-R8-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/review-R8-red/facts.json",
+    "T08 review-R7-R8-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/review-R7-R8-green/facts.json",
+    "T08: R7/R8 fixed: unknown native originals stay opaque within explicit resource sets, formal task/group/delivery protocols stay strict, execution root registration supported. 23/23 target tests pass; actual full evidence transfer preflight04 copied and hashed 438 files. Earlier preflight02/03 earliest failure correctly attributed to R8; R7 independent raw samples retained."
   ]
 }
