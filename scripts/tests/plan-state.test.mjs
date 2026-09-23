@@ -7,6 +7,7 @@ import {fileURLToPath} from 'node:url';
 import {execFileSync,spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fixture,run,check,evidence,enter,waiting,archiveFixture,git,hash,projectRoot as root} from './helpers/group-fixture.mjs';
+import {businessTree} from '../lib/execution-evidence.mjs';
 test('S03 persisted task binding is a valid progress extension',()=>{
  const f=fixture();try{
   f.state.tasks.T04.binding={scope_commit:f.base,scope_digest:'a'.repeat(64),authorization_ref:'fixture',worktree:f.wt,branch:'fixture-work',claim_key:null,claim_checkpoint:null};
@@ -23,6 +24,78 @@ function ordinaryFixture(status='in_progress',parallel=false){
  if(parallel)f.state.execution={mode:'parallel',owner:f.state.integration.owner,integration_worktree:f.wt,integration_branch:'fixture-work',base_commit:h,validated_commit:h};
  f.save();return f;
 }
+function squashArchiveFixture(method='squash',withRecords=false,unverifiedSource=false){
+ const f=fixture();writeFileSync(path.join(f.wt,'.gitignore'),'.spec-dev/**/execution/\n');
+ if(withRecords){
+  for(const dir of ['spec','acceptance'])mkdirSync(path.join(f.wt,f.feature,dir),{recursive:true});
+  writeFileSync(path.join(f.wt,f.feature,'spec/fixture-design.md'),'---\nspec_dev:\n  status: active\n  sync_commit: null\n---\n# approved behavior\n');
+  writeFileSync(path.join(f.wt,f.feature,'acceptance/acceptance-report.md'),'## 验收\nfixture result\n');
+  git(f.wt,'add',f.feature+'/spec/fixture-design.md',f.feature+'/acceptance/acceptance-report.md');
+ }
+ git(f.wt,'add','.gitignore');git(f.wt,'commit','-qm','ignore raw evidence');
+ const base=git(f.wt,'rev-parse','HEAD');f.base=base;f.state.tasks.T00.commit=base;f.state.integration.base_commit=base;f.state.integration.validated_commit=base;f.save();
+ enter(f);waiting(f,'T01');waiting(f,'T02');f.save();
+ const v=git(f.wt,'rev-parse','HEAD'),ev=evidence(f,'T03');
+ for(const id of ['T01','T02'])Object.assign(f.state.tasks[id],{status:'completed',tests:'pass',commit:v});
+ f.state.tasks.T03={status:'completed',tests:'pass',commit:v,evidence_paths:[ev]};Object.assign(f.state.integration.groups.G01,{status:'completed',validated_commit:v,evidence_paths:[ev]});Object.assign(f.state.integration,{active_group:null,validated_commit:v});
+ f.state.tasks.T04={status:'in_progress'};f.state.current='T04';f.save('source ready');
+ if(unverifiedSource){writeFileSync(path.join(f.wt,'source.txt'),'unverified source change\n');git(f.wt,'add','source.txt');git(f.wt,'commit','-qm','unverified source');}
+ const sourceTip=git(f.wt,'rev-parse','HEAD'),sourceTree=businessTree(f.wt,f.feature,sourceTip),historyRef='refs/spec-dev/archive/fixture/source';git(f.wt,'update-ref',historyRef,sourceTip);
+ const main=path.join(f.outer,'main'),target=path.join(main,f.feature);mkdirSync(target,{recursive:true});
+ const copy=spawnSync(process.execPath,[path.join(root,'scripts/execution-evidence.mjs'),'transfer','--source',path.join(f.wt,f.feature),'--target',target],{encoding:'utf8'});assert.equal(copy.status,0,copy.stdout+copy.stderr);
+ const operations=[],dir='execution/delivery/a1';mkdirSync(path.join(target,dir),{recursive:true});
+ const mergeOperations=method==='squash'?[['merge','--squash','fixture-work'],['commit','-qm','actual squash']]:[method==='ff'?['merge','--ff-only','fixture-work']:['merge','--no-ff','fixture-work','-m','actual merge']];
+ for(const args of mergeOperations){
+  const r=spawnSync('git',['-C',main,...args],{encoding:'utf8'});assert.equal(r.status,0,r.stderr);const op={argv:['git',...args],cwd:main,exit_code:r.status};
+  for(const kind of ['stdout','stderr']){op[kind]=dir+'/'+operations.length+'-'+kind+'.log';writeFileSync(path.join(target,op[kind]),r[kind]);op[kind+'_sha256']=hash(r[kind]);}operations.push(op);
+ }
+ const targetCommit=git(main,'rev-parse','HEAD'),receipt=dir+'/record.json';writeFileSync(path.join(target,receipt),JSON.stringify({version:1,kind:'git',source_tip:sourceTip,target_commit:targetCommit,method,operations}));
+ f.state.delivery={version:1,channel:'local',state:'merged',source_tip:sourceTip,source_tree:sourceTree,target_branch:git(main,'branch','--show-current'),merge_method:method,merge_commit:targetCommit,verified_target:targetCommit,history_ref:historyRef,receipt_paths:[receipt],post_merge:[]};
+ assert.equal(git(f.wt,'status','--porcelain'),'');git(main,'worktree','remove','--force',f.wt);git(main,'branch','-D','fixture-work');
+ f.wt=main;f.dir=path.join(target,'plan');f.git=(...a)=>git(main,...a);
+ f.save=()=>{writeFileSync(path.join(f.dir,'progress.yaml'),JSON.stringify(f.state,null,2)+'\n');git(main,'add',f.feature+'/plan/progress.yaml');git(main,'commit','-qm','delivery state');};
+ f.complete=()=>{f.state.tasks.T04={status:'completed',tests:'pass',commit:git(main,'rev-parse','HEAD')};f.state.current=null;f.save();};return f;
+}
+test('S23 final squash is verifiable through retained source history',()=>{
+ const f=squashArchiveFixture();try{f.complete();const out=run(f);assert.equal(out.status,0,out.stdout+out.stderr);assert.deepEqual(JSON.parse(out.stdout).ready_tasks,[]);assert.equal(f.git('rev-parse',f.state.delivery.history_ref),f.state.delivery.source_tip);}finally{rmSync(f.outer,{recursive:true});}
+});
+test('S24 actual source tip cannot hide an unverified change after its accepted baseline',()=>{
+ const f=squashArchiveFixture('squash',false,true);try{f.complete();check(f,false);}finally{rmSync(f.outer,{recursive:true});}
+});
+for(const method of ['ff','merge'])test('S23 delivery mapping keeps actual '+method+' ancestry',()=>{
+ const f=squashArchiveFixture(method);try{f.complete();check(f);}finally{rmSync(f.outer,{recursive:true});}
+});
+for(const defect of ['missing-ref','wrong-ref','wrong-target','wrong-branch','bad-output','forged-binding','awaiting_merge','changed-code','orphan'])test('S24 final mapping rejects '+defect,()=>{
+ const f=squashArchiveFixture();try{
+  const d=f.state.delivery;
+  if(defect==='missing-ref')f.git('update-ref','-d',d.history_ref);
+  if(defect==='wrong-ref')f.git('update-ref',d.history_ref,d.merge_commit);
+  if(defect==='wrong-target')d.merge_commit=f.git('rev-parse','HEAD~1');
+  if(defect==='wrong-branch')d.target_branch='different';
+  if(defect==='bad-output'){const r=JSON.parse(readFileSync(path.join(f.wt,f.feature,d.receipt_paths[0])));writeFileSync(path.join(f.wt,f.feature,r.operations[0].stdout),'corrupt');}
+  if(defect==='forged-binding')f.state.integration.worktree='/forged/worktree';
+  if(defect==='awaiting_merge')d.state='awaiting_merge';
+  if(defect==='changed-code'){writeFileSync(path.join(f.wt,'source.txt'),'changed after accepted source\n');f.git('add','source.txt');f.git('commit','-qm','unverified change');}
+  if(defect==='orphan'){f.git('checkout','--orphan','orphan');f.git('add','.');f.git('commit','-qm','copied orphan');d.target_branch='orphan';d.merge_commit=d.verified_target=f.git('rev-parse','HEAD');}
+  f.complete();check(f,false);
+ }finally{rmSync(f.outer,{recursive:true});}
+});
+test('S24 actual verification on the changed target restores delivery evidence',()=>{
+ const f=squashArchiveFixture();try{
+  writeFileSync(path.join(f.wt,'source.txt'),'verified target behavior\n');f.git('add','source.txt');f.git('commit','-qm','target repair');
+  const r=spawnSync(process.execPath,[path.join(root,'scripts/execution-evidence.mjs'),'record','--feature',path.join(f.wt,f.feature),'--task','T04','--phase','final','--attempt','target-recheck','--',process.execPath,'-e','require("node:assert/strict").equal(require("node:fs").readFileSync("source.txt","utf8"),"verified target behavior\\n")'],{cwd:f.wt,encoding:'utf8'});
+  assert.equal(r.status,0,r.stderr);assert.equal(JSON.parse(r.stdout).exit_code,0);f.state.delivery.receipt_paths.push(JSON.parse(r.stdout).record);f.state.delivery.verified_target=f.git('rev-parse','HEAD');
+  f.complete();check(f);
+ }finally{rmSync(f.outer,{recursive:true});}
+});
+for(const kind of ['sync_commit','acceptance_delivery'])for(const valid of [true,false])test('S24 post-merge '+kind+' '+(valid?'records only delivery facts':'rejects body changes'),()=>{
+ const f=squashArchiveFixture('squash',true);try{
+  const d=f.state.delivery,file=f.feature+(kind==='sync_commit'?'/spec/fixture-design.md':'/acceptance/acceptance-report.md'),p=path.join(f.wt,file),before=readFileSync(p,'utf8');
+  let after=kind==='sync_commit'?before.replace('sync_commit: null','sync_commit: '+d.merge_commit):before+'\n## 实际交付\n来源 '+d.source_tip+'\n目标 '+d.merge_commit+'\n';
+  if(!valid)after=after.replace(kind==='sync_commit'?'approved behavior':'fixture result','changed original body');
+  writeFileSync(p,after);f.git('add',file);f.git('commit','-qm','delivery record');d.post_merge.push({commit:f.git('rev-parse','HEAD'),kind,files:[file]});f.complete();check(f,valid);
+ }finally{rmSync(f.outer,{recursive:true});}
+});
 test('S07 current ordinary task resumes before independent pending tasks',()=>{
  const f=ordinaryFixture();try{assert.deepEqual(check(f).ready_tasks,['T05']);assert.equal(f.state.tasks.T05.commit,undefined);}finally{rmSync(f.outer,{recursive:true});}
 });

@@ -42,3 +42,9 @@ test('S10 new scope blocks do not change legacy checkbox counts or source bytes'
  const input={legacy:[['old.md',text]]},before=JSON.stringify(input),r=parsePlanFiles(input);
  assert.equal(r.counts.checked,1);assert.equal(r.counts.unchecked,1);assert.equal(JSON.stringify(input),before);
 });
+test('S24 v1 delivery has one strict state location without rewriting its projection',()=>{
+ const f=basic(),s=JSON.parse(f.progress);s.delivery={version:1,channel:'local',state:'implementing',source_tip:null,source_tree:null,target_branch:null,merge_method:null,merge_commit:null,verified_target:null,history_ref:null,receipt_paths:[],post_merge:[]};
+ f.progress=JSON.stringify(s);assert.equal(parsePlanFiles(f).format,'v1');assert.equal(f.progress,JSON.stringify(s));
+ s.execution={mode:'parallel',delivery:{state:'implementing'}};f.progress=JSON.stringify(s);assert.throws(()=>parsePlanFiles(f),/duplicate delivery/);
+ delete s.execution;s.delivery.unknown=true;f.progress=JSON.stringify(s);assert.throws(()=>parsePlanFiles(f),/invalid fields/);
+});

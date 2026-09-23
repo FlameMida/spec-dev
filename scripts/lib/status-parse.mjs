@@ -41,6 +41,7 @@ export function parseRoadmap(text){
 
 import {readNavigation,validateStateShape} from './integration-plan.mjs';
 import {parseParallelBlock} from './parallel-plan.mjs';
+import {validateDeliveryShape} from './delivery-proof.mjs';
 const own=(x,k)=>Object.hasOwn(x,k);
 const keys=(x,required,optional=[],label='object')=>{
  need(object(x),label+': expected object');
@@ -116,6 +117,7 @@ function parsePlanInput(files){
   const named=taskNames.filter(n=>/^T\d\d.*\.md$/.test(n));
   need(named.length===ids.length&&ids.every(id=>named.includes(id+'.md')),'task files differ from navigation','missing');
   const state=parseRecord(progress);need(object(state),'progress object required');
+  need(!(state.delivery&&state.execution?.delivery),'duplicate delivery authority','inconsistent');if(state.delivery)validateDeliveryShape(state.delivery);
   need([1,2].includes(state.format_version),'unsupported progress version','unsupported_version');
   need(object(state.tasks)&&Array.isArray(state.resources)&&Array.isArray(state.notes),'progress tasks/resources/notes required');
   need(Object.keys(state.tasks).length===ids.length&&ids.every(id=>own(state.tasks,id)),'progress/navigation mismatch','inconsistent');

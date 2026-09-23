@@ -13,6 +13,8 @@ const keys=(x,required,optional=[],label='object')=>{
 };
 import {parseUniqueJson} from '../../guardrail/lib/record-data.mjs';
 import {validateBindingShape} from '../../guardrail/lib/task-binding.mjs';
+import {validateDeliveryShape,verifyDelivery} from './delivery-proof.mjs';
+import {verifyReceipt} from './execution-evidence.mjs';
 export {parseUniqueJson} from '../../guardrail/lib/record-data.mjs';
 export function readNavigation(markdown){
   const rows=[];
@@ -95,7 +97,9 @@ const sha=x=>typeof x==='string'&&/^[0-9a-f]{40,64}$/.test(x);
 const nullableSha=x=>x===null||sha(x);
 const arr=x=>Array.isArray(x)&&x.every(v=>typeof v==='string');
 export function validateStateShape(p){
-  const s=p.state;keys(s,['format_version','current','tasks','resources','notes','integration'],['execution'],'progress');
+  const s=p.state;keys(s,['format_version','current','tasks','resources','notes','integration'],['execution','delivery'],'progress');
+  need(!(s.delivery&&s.execution?.delivery),'duplicate delivery authority');
+  if(s.delivery)validateDeliveryShape(s.delivery);
   need(s.format_version===2,'unsupported progress version');need(s.current===null||p.ids.includes(s.current),'invalid current');
   need(arr(s.resources)&&arr(s.notes),'resources/notes string arrays');
   keys(s.tasks,p.ids,[],'tasks');
@@ -217,6 +221,10 @@ function runtimeFacts(p){
     need(committed===actual,'checkpoint_uncommitted: '+name);
   }
   const head=git(root,'rev-parse','HEAD');
+  const proof=archived&&s.delivery?verifyDelivery(root,s,feature):null;
+  const taskHistoryHead=proof?.sourceTip??head;
+  const deliveryTask=Object.keys(p.declaration.task_roles).find(id=>p.declaration.task_roles[id]==='delivery');
+  const sourceIntegration=proof?parseUniqueJson(execFileSync('git',['-C',root,'show',proof.sourceTip+':'+progressRel],{encoding:'utf8'})).integration:x;
   const ancestor=(a,b)=>{
     need(sha(a)&&sha(b),'invalid commit SHA');
     git(root,'cat-file','-e',a+'^{commit}');git(root,'cat-file','-e',b+'^{commit}');
@@ -228,16 +236,21 @@ function runtimeFacts(p){
     return createHash('sha256').update(entries.join('\0')).digest('hex');
   };
   const withinFeature=relative=>{
-    need(typeof relative==='string'&&relative.startsWith('execution/groups/')&&!relative.includes('\\'),'invalid evidence path');
+    need(typeof relative==='string'&&relative.startsWith('execution/')&&!relative.includes('\\'),'invalid evidence path');
     normalizeWrite(relative);
     const base=realpathSync(path.dirname(p.planDir)),resolved=realpathSync(path.join(base,relative)),rel=path.relative(base,resolved);
     need(rel&&!rel.startsWith('..')&&!path.isAbsolute(rel),'evidence escapes feature');return resolved;
   };
   function readEvidence(relative,verified=null){
     const file=withinFeature(relative),r=parseUniqueJson(readFileSync(file,'utf8'));
+    if(r.version===1){
+      verifyReceipt({feature:path.dirname(p.planDir),record:relative,candidate:verified??r.commit});
+      need(archived?r.cwd===x.worktree:realpathSync(r.cwd)===root,'evidence cwd mismatch');ancestor(r.commit,taskHistoryHead);
+      if(verified)need(r.exit_code===0,'verification did not pass');return r;
+    }
     keys(r,['command','cwd','exit_code','commit','tree','stdout','stderr','stdout_sha256','stderr_sha256'],[],'evidence');
     need(arr(r.command)&&r.command.length&&Number.isInteger(r.exit_code),'invalid test record');
-    need(archived?r.cwd===x.worktree:realpathSync(r.cwd)===root,'evidence cwd mismatch');ancestor(r.commit,head);
+    need(archived?r.cwd===x.worktree:realpathSync(r.cwd)===root,'evidence cwd mismatch');ancestor(r.commit,taskHistoryHead);
     need(r.tree===businessTree(r.commit),'evidence tree mismatch');
     for(const kind of ['stdout','stderr']){
       const bytes=readFileSync(withinFeature(r[kind]));need(createHash('sha256').update(bytes).digest('hex')===r[kind+'_sha256'],'evidence hash mismatch');
@@ -256,9 +269,10 @@ function runtimeFacts(p){
     const cd=realpathSync(path.resolve(root,git(root,'rev-parse','--git-common-dir')));
     need(gd!==cd,'group plan requires isolated worktree');
   }
-  ancestor(x.base_commit,x.validated_commit);ancestor(x.validated_commit,head);
+  if(proof)need([sourceIntegration.validated_commit,proof.verifiedTarget].includes(x.validated_commit),'global validation target mismatch');
+  ancestor(x.base_commit,sourceIntegration.validated_commit);ancestor(sourceIntegration.validated_commit,taskHistoryHead);
   for(const [id,t] of Object.entries(s.tasks)){
-    for(const k of ['commit','implementation_commit'])if(t[k])ancestor(t[k],head);
+    for(const k of ['commit','implementation_commit'])if(t[k])ancestor(t[k],id===deliveryTask?head:taskHistoryHead);
     if(archived&&p.membership.has(id)){
       const history=parseUniqueJson(execFileSync('git',['-C',root,'show',t.implementation_commit+':'+progressRel],{encoding:'utf8'}));
       need(history.format_version===2&&['worktree','branch','base_commit'].every(k=>history.integration?.[k]===x[k]),
@@ -274,20 +288,20 @@ function runtimeFacts(p){
   function epPrefix(paths,gid,id){return paths.every(q=>q.startsWith('execution/groups/'+gid+'/'+id+'/'));}
   for(const [gid,g] of Object.entries(x.groups)){
     if(g.status==='pending')continue;
-    ancestor(x.base_commit,g.base_commit);ancestor(g.base_commit,g.checkpoint_commit);ancestor(g.checkpoint_commit,head);
+    ancestor(x.base_commit,g.base_commit);ancestor(g.base_commit,g.checkpoint_commit);ancestor(g.checkpoint_commit,taskHistoryHead);
     const d=p.declaration.groups[gid],all=[...d.members,d.verify];
     for(const id of all)for(const dep of p.byId.get(id).deps)if(!all.includes(dep))need(s.tasks[dep].status==='completed',gid+': external dependency not complete');
     if(g.status==='completed'){
-      ancestor(g.base_commit,g.validated_commit);ancestor(g.validated_commit,x.validated_commit);
+      ancestor(g.base_commit,g.validated_commit);ancestor(g.validated_commit,sourceIntegration.validated_commit);
       need(epPrefix(g.evidence_paths,gid,d.verify),'verification evidence attribution mismatch');
       for(const ep of g.evidence_paths)readEvidence(ep,g.validated_commit);
       need(g.evidence_paths.every(ep=>s.tasks[d.verify].evidence_paths?.includes(ep)),'verifier/group evidence mismatch');
     }
   }
   const allowed=relative=>relative===progressRel||relative.startsWith(evidencePrefix);
-  const baseline=x.active_group?x.groups[x.active_group].checkpoint_commit:x.validated_commit;
+  const baseline=proof?.verifiedTarget??(x.active_group?x.groups[x.active_group].checkpoint_commit:x.validated_commit);
   const changes=execFileSync('git',['-C',root,'diff','--name-only','--no-renames','-z',baseline,head],{encoding:'utf8'}).split('\0').filter(Boolean);
-  need(changes.every(allowed),'unexplained business commit after checkpoint');
+  if(!proof)need(changes.every(allowed),'unexplained business commit after checkpoint');
   const dirty=execFileSync('git',['-C',root,'status','--porcelain=v1','-z','--untracked-files=all'],{encoding:'utf8'});
   // Any dirty path requires explicit recovery; metadata is committed before readiness too.
   need(!dirty,'uncommitted work requires recovery');
