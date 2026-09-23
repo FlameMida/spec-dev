@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T15",
+  "current": "T11",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -135,7 +135,7 @@
       "tests": "pass"
     },
     "T11": {
-      "status": "completed",
+      "status": "in_progress",
       "evidence_paths": [
         "execution/T11/red-01/facts.json",
         "execution/T11/green-selected/facts.json",
@@ -380,6 +380,7 @@
     "T08: R7/R8 fixed: unknown native originals stay opaque within explicit resource sets, formal task/group/delivery protocols stay strict, execution root registration supported. 23/23 target tests pass; actual full evidence transfer preflight04 copied and hashed 438 files. Earlier preflight02/03 earliest failure correctly attributed to R8; R7 independent raw samples retained.",
     "T15: Actual evidence transfer preflight now passes; run complete final after R7/R8 repairs. Prior445/446 failure and source/current R06 controls preserved; no waiver or test relaxation.",
     "T15 final05: actual exit1, 448/449, same R06 termination-confirmation failure as final04; no additional blind full retry. B-simple is collecting first controller code/signal/stdout/stderr and segments in a bounded copied-test diagnostic; implementation unchanged.",
-    "T15: Preserve final05 failure and bounded R06 diagnosis. R7/R8 actual transfer preflight passed; final cannot be marked pass on the isolated controls alone."
+    "T15: Preserve final05 failure and bounded R06 diagnosis. R7/R8 actual transfer preflight passed; final cannot be marked pass on the isolated controls alone.",
+    "T11: User continued after concrete diagnosis. Add conservative R06 termination confirmation for signal-probe EPERM: reaped leader plus successfully parsed process table showing no live group members; keep blocked for active/unknown groups. Original process module/test were unchanged and original failures remain."
   ]
 }
