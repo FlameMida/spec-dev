@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T09",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -92,7 +92,7 @@
       "tests": "pass"
     },
     "T09": {
-      "status": "in_progress",
+      "status": "completed",
       "evidence_paths": [
         "execution/T09/red-shape/facts.json",
         "execution/T09/red-ancestry/facts.json",
@@ -100,9 +100,12 @@
         "execution/T09/green-01/facts.json",
         "execution/T09/post-merge-01/facts.json",
         "execution/T09/red-source-delta/facts.json",
-        "execution/T09/green-02/facts.json"
+        "execution/T09/green-02/facts.json",
+        "execution/T09/review-R2-red/facts.json",
+        "execution/T09/review-R2-behavior-red/facts.json",
+        "execution/T09/review-R2-green/facts.json"
       ],
-      "commit": "43e25172bf955f15a6ab91ab812e8d124b43e644",
+      "commit": "6d6c4ca441a369e208dc37a1ec392c440332d301",
       "tests": "pass"
     },
     "T10": {
@@ -303,6 +306,10 @@
     "T05 review-R1-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T05/review-R1-red/facts.json",
     "T05 review-R1-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T05/review-R1-green/facts.json",
     "T05: R1 fixed: preflight rejects unsupported message interpreters before all writes; Python/Node prepare and commit hooks retain bytes and still commit. Red 4 new failures; targeted green 33/33, normal precommit passed in 755f9c2.",
-    "T09: R2 confirmed independently: implement M04/S14 nonblocking existing failure using a failure-disposition variant in existing delivery.receipt_paths, preserving all original exits and explicit source comparison/user decision artifacts; no new progress fields."
+    "T09: R2 confirmed independently: implement M04/S14 nonblocking existing failure using a failure-disposition variant in existing delivery.receipt_paths, preserving all original exits and explicit source comparison/user decision artifacts; no new progress fields.",
+    "T09 review-R2-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T09/review-R2-red/facts.json",
+    "T09 review-R2-behavior-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T09/review-R2-behavior-red/facts.json",
+    "T09 review-R2-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T09/review-R2-green/facts.json",
+    "T09: R2 fixed in 6d6c4ca: actual v1 nonzero final plus comparison/user-decision raw artifacts survive real squash and transfer; six rejecting cases retained; 92/92 targeted. Receipt shape red and subsequent real delivery-behavior red stored separately."
   ]
 }
