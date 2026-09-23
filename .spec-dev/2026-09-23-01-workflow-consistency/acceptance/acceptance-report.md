@@ -115,3 +115,16 @@ R5的后继修复还覆盖spec blob/tree和多ref的提前读取失败。R7/R8�
 - 诊断资料：[结论](../execution/T15/R06-diagnosis/diagnosis.json)、[独立核对](../execution/T15/R06-diagnosis/independent-S.json)。含Git对象的临时夹具已归档并逐项核对1980文件hash，确认70个登记组无成员后清理。
 - 七份旧active spec共16项部分取代标记已准备；其余契约保留，随真实交付生效。
 - 来源工作区原有hooks/hooks.json脏改动未纳入本次提交；实际交付前后再次核对原hash。
+
+## 实际交付
+
+已在本地 `main` 完成 ff-only 合并；来源与目标均为 `4b53335528e3baa41fdddd525d7870addcf92d2f`，`verified_target` 同此提交。来源历史保留在 `refs/spec-dev/archive/workflow-consistency/source`。
+
+- [真实Git操作回执](../execution/delivery/ed3abdc9-8924-4e9e-bd25-4457807c5ee8/record.json)保存原始argv、cwd、退出码和输出。
+- [转存清单](../execution/T16/transfer-manifest-02.json)：678份原件逐文件hash及源/目标字节比对通过，历史cwd保持原值。第一次因交付目录只在存活目标创建而失败，随后对实际Git回执作同字节镜像并幂等转存，失败回执保留。
+- [清理回执](../execution/T16/cleanup-operations.json)：本次created/manual工作区和临时分支已正常移除；未使用强制清理。23项证据/历史引用登记保留，未创建的受控审查目录占位已退役。
+- `sync_commit` 指向上述实际目标；单字段锚定提交为 `000560410d9fdc17f9cd39e55656432dd0489200`。[清理后交付核验](../execution/T16/proof-after-cleanup.json)通过。
+- 合并后仅保存进度、单一sync_commit字段和本实际交付节；记录性提交使用明确的包检查跳过开关，不当作新的产品测试证据。
+- 用户原有 `hooks/hooks.json` 内容哈希仍为 `89fae26d666a0d183794e0785a64b2361a82657959caa25035fa1258164a5020`。该未提交改动保留，未纳入本次隔离提交树验证。
+
+未执行推送、打tag或发布；真实模型评估和Mermaid图形渲染的未验证边界仍如正文所列。
