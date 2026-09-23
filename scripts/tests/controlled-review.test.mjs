@@ -433,6 +433,19 @@ test('S3.7 large 档默认五路且派 critic',t=>{
  const f=fixture(t,{tier:'large'});const s=invoke(['status','--run',f.run]);
  assert.deepEqual(s.data.tasks.map(x=>x.actor),['A','B-quality','B-simple','C','S','critic-1']);
 });
+test('S18 large cannot silently override required critic',t=>{
+ const f=fixture(t,{tier:'large',critic:'on-findings',expectInitError:true});assert.notEqual(f.init.code,0);assert.match(JSON.stringify(f.init.data),/large.*critic|critic.*large/);
+});
+test('S3.2 small zero-candidate review completes without optional critic',t=>{
+ const folder=realpathSync(mkdtempSync(path.join(tmpdir(),'review-client-')));t.after(()=>rmSync(folder,{recursive:true,force:true}));
+ const f=fixture(t,{tier:'small',client:fakeClient(folder)}),r=invoke(['run','--run',f.run,'--budget-seconds','20']);
+ assert.equal(r.data.status,'completed',JSON.stringify(r));assert.ok(!r.data.tasks.some(x=>/^(refute|critic)-/.test(x.actor)));
+});
+test('S3.7 large zero-candidate review still completes its actual critic process',t=>{
+ const folder=realpathSync(mkdtempSync(path.join(tmpdir(),'review-client-')));t.after(()=>rmSync(folder,{recursive:true,force:true}));
+ const f=fixture(t,{tier:'large',client:fakeClient(folder)}),r=invoke(['run','--run',f.run,'--budget-seconds','20']);
+ assert.equal(r.data.status,'completed',JSON.stringify(r));assert.ok(r.data.tasks.some(x=>x.actor==='critic-1'));assert.ok(existsSync(path.join(f.run,'actors/critic-1/completed.json')));
+});
 test('S3.8 非法 config 被 init 拒绝',t=>{
  const good={task:'T01',phase:'green',command:['node','--test','x.test.mjs'],exit_code:0,stdout_sha256:'a'.repeat(64),stderr_sha256:'b'.repeat(64)};
  for(const [extra,message] of [

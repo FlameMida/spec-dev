@@ -121,6 +121,8 @@ def initialize(run, config):
     critic = config.get('critic', 'always' if tier == 'large' else 'on-findings')
     if critic not in ['on-findings', 'always']:
         raise ValueError('critic必须为on-findings或always')
+    if tier == 'large' and critic != 'always':
+        raise ValueError('large requires critic=always')
     plugin = Path(__file__).resolve().parents[2]
     originals = [verify_external_receipt(plugin, repo, head, ref) for ref in evidence]
     if snapshot(repo) != state:
