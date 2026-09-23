@@ -41,7 +41,7 @@
         "execution/T04/green-01/facts.json",
         "execution/T04/green-02/facts.json"
       ],
-      "commit": "60a6ba69045e8553a596331af1581e9a2dedc6b0",
+      "commit": "39ac58f0c5ba8294386e5fb04547f02194f4808c",
       "tests": "pass"
     },
     "T05": {
@@ -114,6 +114,7 @@
     "T04 red-01: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T04/red-01/facts.json",
     "T04 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T04/green-01/facts.json",
     "T04 green-02: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T04/green-02/facts.json",
-    "T04: 17/17 guard scenarios across local/index/history/ref/merge views; original failures retained."
+    "T04: 17/17 guard scenarios across local/index/history/ref/merge views; original failures retained.",
+    "T04 checkpoint correction: the first code commit was rejected for a trailing blank line; pending staged T04 files were inadvertently included in 0071104 by the state helper. 39ac58f removes the whitespace and passes the full normal pre-commit checks. T04 completion now points to 39ac58f. The local checkpoint helper now requires an empty index. No history rewritten."
   ]
 }
