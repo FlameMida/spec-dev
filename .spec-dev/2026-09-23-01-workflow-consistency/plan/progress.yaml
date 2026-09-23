@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T07",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -66,7 +66,14 @@
       "tests": "pass"
     },
     "T07": {
-      "status": "in_progress"
+      "status": "completed",
+      "evidence_paths": [
+        "execution/T07/red-01/facts.json",
+        "execution/T07/red-02/facts.json",
+        "execution/T07/green-01/facts.json"
+      ],
+      "commit": "5a33f6c70f7a905aba339af2e5b4ff9803db0ee7",
+      "tests": "pass"
     },
     "T08": {
       "status": "pending"
@@ -141,6 +148,10 @@
     "T05: 41/41 installed binding/guard tests plus 1/1 fresh-clone local-bare push. Preserved failed hook sequencing cases; all normal pre-commit checks pass.",
     "T06 red-01: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T06/red-01/facts.json",
     "T06 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T06/green-01/facts.json",
-    "T06: 66/66 recovery, read-only status, legacy checkbox and binding tests; current precedence red retained."
+    "T06: 66/66 recovery, read-only status, legacy checkbox and binding tests; current precedence red retained.",
+    "T07 red-01: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T07/red-01/facts.json",
+    "T07 red-02: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T07/red-02/facts.json",
+    "T07 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T07/green-01/facts.json",
+    "T07: 10/10 real group recorder and Receipt v1 scenarios; exit7, signal and dirty outcomes preserved without staging logs."
   ]
 }
