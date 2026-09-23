@@ -125,6 +125,8 @@ fs.writeFileSync(file+'.tmp',JSON.stringify(state,null,2)+'\n',{flag:'wx'});fs.r
 
 未提交的 TDD 红绿保留原始工具输出与工作副本记录，不伪绑提交 SHA；正式 record 要求业务版本已提交。普通 Receipt v1：`{version:1,task,phase,command,cwd,exit_code,commit,tree,scope,stdout,stderr,stdout_sha256,stderr_sha256}`。phase 为 baseline/red/green/final/integration；scope 为 `{kind:"repository",outputs:[]}` 或获批精确验证范围 `{kind:"paths",paths:[...],digest,outputs:[]}`。默认覆盖全仓，仅排除本特性 progress/execution；outputs 只允许显式生成的 `acceptance/acceptance-report.md`，该文件若作为测试输入则不能排除。旧组记录保留现有九个原字段与 bytes，不补造字段。
 
+原生审查、诊断捕获等非正式回执按登记范围原样转存；将完整原件目录登记为 evidence 资源，或逐文件登记全部附件。它们的自定义 stdout/hash 字段不自动套用 Receipt 的相对路径规则；转存证明字节一致，不证明这些原生报告通过了正式回执校验。正式 task/group record 与 delivery.receipt_paths 继续按各自协议解析、展开并核验原件。
+
 `execution-evidence.mjs record --feature <绝对特性目录> --task TNN --phase <phase> --attempt <唯一名> [--output acceptance/acceptance-report.md] -- <真实argv>` 真正执行并保存；工具 exit0 表示保存成功，还须读取 JSON.exit_code。信号/启动错误或额外写入留下 incomplete 与原始输出。`verify --feature <目录> --record <特性相对record路径> --candidate <SHA>` 核对原件与适用版本；`transfer --source <原特性目录> --target <存活特性目录>` 只复制并核对原件，不删除来源。原件不进 Git；提交引用，清理前转存并保存真实回执。
 
 分文件唯一 `progress.delivery`：`{version:1,channel,state,source_tip,source_tree,target_branch,merge_method,merge_commit,verified_target,history_ref,receipt_paths,post_merge}`。channel 为 local/pr；state 为 implementing/awaiting_merge/merged/completed；method 为 ff/merge/squash，未知事实填 null。source_tree 由 `businessTree(repo,feature,commit)` 实算；history_ref 使用 `refs/spec-dev/archive/<特性标识>/source`，保留并登记，不随工作分支删除。post_merge 项为 `{commit,kind,files}`，kind 为 progress/sync_commit/acceptance_delivery；仅允许精确进度、单一 sync_commit 或验收报告追加的“实际交付”节，其它改动须有当前版本补验。

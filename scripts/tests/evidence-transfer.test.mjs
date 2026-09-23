@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,mkdirSync,existsSync,symlinkSync,rmSync,chmodSync} from 'node:fs';
 import path from 'node:path';
 import {workflowFixture} from './helpers/workflow-fixture.mjs';
+import {createHash} from 'node:crypto';
 import {evidence} from './helpers/group-fixture.mjs';
 const cli='scripts/execution-evidence.mjs';
 function setup(t){
@@ -10,6 +11,13 @@ function setup(t){
   const make=(attempt,script)=>{const r=f.run(cli,['record','--feature',source,'--task','T01','--phase','green','--attempt',attempt,'--',process.execPath,'-e',script]);assert.equal(r.status,0,r.stderr);return JSON.parse(r.stdout).record;};
   const record=make('a1','console.log(7)');return {...f,source,target,record,make,transfer:()=>f.run(cli,['transfer','--source',source,'--target',target])};
 }
+test('S21 a registered execution root includes all owned raw originals',t=>{
+ const f=setup(t),file='execution/native/note.txt';f.put(f.feature+'/'+file,'owned raw evidence\n');
+ f.state.resources.push('evidence: '+f.feature+'/execution/ —— retain complete owned originals');f.save();
+ const r=f.transfer();assert.equal(r.status,0,r.stdout+r.stderr);
+ assert.deepEqual(readFileSync(path.join(f.target,file)),readFileSync(path.join(f.source,file)));
+ assert.deepEqual(readFileSync(path.join(f.target,f.record)),readFileSync(path.join(f.source,f.record)));
+});
 test('S21 transfer preserves ignored bytes and original cwd',t=>{
   const f=setup(t),before=readFileSync(path.join(f.source,f.record)),head=f.git('rev-parse','HEAD'),r=f.transfer();assert.equal(r.status,0,r.stderr);
   assert.deepEqual(readFileSync(path.join(f.target,f.record)),before);assert.equal(JSON.parse(before).cwd,f.root);assert.equal(f.git('rev-parse','HEAD'),head);
@@ -58,4 +66,12 @@ test('S21 registered review objects preserve inline outputs rather than treating
  const artifact={kind:'test',stdout:readFileSync(path.join(f.source,receipt.stdout),'utf8'),stderr:readFileSync(path.join(f.source,receipt.stderr),'utf8'),stdout_sha256:receipt.stdout_sha256,stderr_sha256:receipt.stderr_sha256};
  const rel='execution/review-archive/object.json';f.put(f.feature+'/'+rel,JSON.stringify(artifact));f.state.resources.push('evidence: '+f.feature+'/execution/review-archive —— retain sealed review objects');f.save();
  const r=f.transfer();assert.equal(r.status,0,r.stdout+r.stderr);assert.deepEqual(readFileSync(path.join(f.target,rel)),readFileSync(path.join(f.source,rel)));
+});
+for(const style of ['document-relative','repository-relative'])test('S21 registered native '+style+' command records remain raw artifacts',t=>{
+ const f=setup(t),dir='execution/native-review',record=dir+'/command.json';
+ const raw='actual native review output\n',relative=dir+'/stdout.log';f.put(f.feature+'/'+relative,raw);
+ const artifact={command:['node','review-repro.mjs'],cwd:f.root,exit_code:0,stdout:style==='document-relative'?'stdout.log':f.feature+'/'+relative,stdout_sha256:createHash('sha256').update(raw).digest('hex')};
+ f.put(f.feature+'/'+record,JSON.stringify(artifact));f.state.resources.push('evidence: '+f.feature+'/'+dir+' —— retain complete native review originals');f.save();
+ const r=f.transfer();assert.equal(r.status,0,r.stdout+r.stderr);
+ for(const file of [record,relative])assert.deepEqual(readFileSync(path.join(f.target,file)),readFileSync(path.join(f.source,file)));
 });

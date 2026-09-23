@@ -103,9 +103,10 @@ function transferFiles(ctx){
   const state=existsSync(stateFile)?parseRecord(readFileSync(stateFile,'utf8')):{};
   const deliveryReceipts=new Set(state.delivery?.receipt_paths??[]);
   function add(relative,optional=false){
-    const file=evidenceFile(ctx.feature,relative);
+    const file=relative==='execution'?path.join(ctx.feature,'execution'):evidenceFile(ctx.feature,relative);
     if(optional&&!existsSync(file))return;
     const info=lstatSync(file);need(!info.isSymbolicLink(),'source evidence link');
+    if(relative==='execution')need(info.isDirectory(),'registered execution root must be a directory');
     if(info.isDirectory()){for(const name of readdirSync(file).sort())add(relative+'/'+name);}
     else{need(info.isFile(),'evidence must be a regular file');chosen.add(relative);}
   }
@@ -122,24 +123,19 @@ function transferFiles(ctx){
     const prefix=ctx.relative+'/';need(m[1].startsWith(prefix),'resource belongs to a different feature');add(m[1].slice(prefix.length).replace(/\/$/,''));
   }
   // Referenced streams extend the closure. Unknown registered files stay raw artifacts.
-  function streams(record,pathsRequired=false){
+  function streams(record){
     for(const key of ['stdout','stderr'])if(Object.hasOwn(record,key+'_sha256')){
-      // Registered review objects can contain inline text/base64, or only stream hashes.
-      // Their byte-copy proof is distinct from a formal execution receipt's path contract.
-      if(!pathsRequired){
-        if(record[key]===undefined)continue;
-        if(typeof record[key+'_base64']==='string'){
-          need(digest(Buffer.from(record[key+'_base64'],'base64'))===record[key+'_sha256'],'inline stream hash mismatch');continue;
-        }
-        if(typeof record[key]==='string'&&digest(record[key])===record[key+'_sha256'])continue;
-      }
       need(typeof record[key]==='string','stream path required');add(record[key]);
       need(digest(readFileSync(evidenceFile(ctx.feature,record[key])))===record[key+'_sha256'],'source stream hash mismatch');
     }
-    for(const operation of record.operations??[])streams(operation,pathsRequired);
+    for(const operation of record.operations??[])streams(operation);
   }
   for(const relative of chosen){
-    if(!relative.endsWith('.json')&&!deliveryReceipts.has(relative))continue;
+    const taskRecord=relative.startsWith('execution/tasks/')&&path.posix.basename(relative)==='record.json';
+    const groupRecord=relative.startsWith('execution/groups/')&&path.posix.basename(relative)==='record.json';
+    // The registered resource defines an opaque artifact's file set. A JSON suffix
+    // or a stdout hash does not grant it the formal receipt path contract.
+    if(!taskRecord&&!groupRecord&&!deliveryReceipts.has(relative))continue;
     const value=parseUniqueJson(readFileSync(evidenceFile(ctx.feature,relative),'utf8'));
     if(value?.kind==='failure-disposition'){
       for(const key of ['baseline_record','final_record'])add(value[key]);
@@ -147,13 +143,16 @@ function transferFiles(ctx){
         add(value[key]);need(digest(readFileSync(evidenceFile(ctx.feature,value[key])))===value[key+'_sha256'],'disposition artifact hash mismatch');
       }
     }
-    const ordinary=value?.version===1&&value.task&&path.posix.basename(relative)==='record.json';
+    const ordinary=value?.task!==undefined;
+    const legacyGroup=groupRecord&&!ordinary&&value?.kind===undefined;
     if(ordinary)verifyReceipt({feature:ctx.feature,record:relative,candidate:value.commit});
-    else if(value?.command&&value.tree&&value.commit){
+    else if(legacyGroup){
+      keys(value,['command','cwd','exit_code','commit','tree','stdout','stderr','stdout_sha256','stderr_sha256']);
       need(value.tree===businessTree(ctx.repo,ctx.relative,value.commit),'historical source tree mismatch');
       need(typeof value.cwd==='string'&&path.isAbsolute(value.cwd),'historical cwd missing');
     }
-    if(value&&typeof value==='object')streams(value,ordinary||relative.startsWith('execution/groups/')||value.kind==='git');
+    else need(value?.version===1&&['git','pr','failure-disposition'].includes(value.kind),'unsupported declared receipt');
+    if(ordinary||legacyGroup||value.kind==='git')streams(value);
   }
   return [...chosen].sort().map(relative=>({path:relative,sha256:digest(readFileSync(evidenceFile(ctx.feature,relative)))}));
 }
