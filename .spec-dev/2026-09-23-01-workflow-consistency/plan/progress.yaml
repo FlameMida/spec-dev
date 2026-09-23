@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T04",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -37,7 +37,7 @@
       "tests": "pass"
     },
     "T04": {
-      "status": "completed",
+      "status": "in_progress",
       "evidence_paths": [
         "execution/T04/red-01/facts.json",
         "execution/T04/green-01/facts.json",
@@ -330,6 +330,7 @@
     "T05 review-R1-interpreter-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T05/review-R1-interpreter-red/facts.json",
     "T05 review-R1-interpreter-red-02: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T05/review-R1-interpreter-red-02/facts.json",
     "T05 review-R1-interpreter-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T05/review-R1-interpreter-green/facts.json",
-    "T05: R1 interpreter boundary fixed in 35d38aa; 14/14 installed hook tests pass. Initial custom-interpreter test failed in fixture setup because macOS cannot nest script shebang interpreters; replaced with owned symlink to real Python binary, then observed intended red before implementation. Both attempts preserved."
+    "T05: R1 interpreter boundary fixed in 35d38aa; 14/14 installed hook tests pass. Initial custom-interpreter test failed in fixture setup because macOS cannot nest script shebang interpreters; replaced with owned symlink to real Python binary, then observed intended red before implementation. Both attempts preserved.",
+    "T04: R5/CG1 confirmed by independent S refutation: necessary history-object loss before association parsing must reject range/push. Preserve valid unbound synchronization/waivers and legacy non-history exception handling."
   ]
 }
