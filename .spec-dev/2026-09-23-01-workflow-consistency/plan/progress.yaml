@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T15",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -392,6 +392,7 @@
     "T11 R06-permission-red-corrected: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T11/R06-permission-red-corrected/facts.json",
     "T11 R06-permission-green-corrected: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T11/R06-permission-green-corrected/facts.json",
     "T11 R06-controller-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T11/R06-controller-green/facts.json",
-    "T11: R06 conservative confirmation implemented; 13/13 R06 and 60/60 controlled-review pass. Six OS-boundary cases preserve blocked for active/invalid/unavailable/warning snapshots. First new harness incorrectly expected incomplete exit0; corrected to existing exit1 and obtained genuine blocked-vs-incomplete red against exact HEAD module, restoring owned candidate bytes afterward. Original failures/diagnosis untouched."
+    "T11: R06 conservative confirmation implemented; 13/13 R06 and 60/60 controlled-review pass. Six OS-boundary cases preserve blocked for active/invalid/unavailable/warning snapshots. First new harness incorrectly expected incomplete exit0; corrected to existing exit1 and obtained genuine blocked-vs-incomplete red against exact HEAD module, restoring owned candidate bytes afterward. Original failures/diagnosis untouched.",
+    "T15: Resume final after independently assessed conservative R06 cleanup repair and complete controller green; preserve full04/05 and all diagnosis. No tests weakened and no failure waiver applied."
   ]
 }
