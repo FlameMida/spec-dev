@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T01",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -8,7 +8,7 @@
       "tests": "pass"
     },
     "T01": {
-      "status": "pending"
+      "status": "in_progress"
     },
     "T02": {
       "status": "pending"
@@ -62,7 +62,8 @@
     "review-run: planned feature-owned run outside implementation worktree —— T15 审查前登记实际绝对路径；证据归档后按实际归属处理",
     "history-ref: refs/spec-dev/archive/workflow-consistency/source —— T16 核对不存在或本任务已有回执后创建；保留来源历史，不随临时分支清理",
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T00/ —— retain original baseline logs through verified transfer",
-    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T00/ —— retain original task receipts through transfer"
+    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T00/ —— retain original task receipts through transfer",
+    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T01/ —— retain original task receipts through transfer"
   ],
   "notes": [
     "2026-09-23 用户确认 spec 定稿并授权编写计划；本记录尚不是实施授权。",
