@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T14",
+  "current": "T08",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -78,7 +78,7 @@
       "tests": "pass"
     },
     "T08": {
-      "status": "completed",
+      "status": "in_progress",
       "evidence_paths": [
         "execution/T08/red-01/facts.json",
         "execution/T08/green-01/facts.json",
@@ -264,6 +264,7 @@
     "T14 coverage: execution/T14/scenario-coverage.json maps S01-S27 to actual receipts and explicit static/manual boundaries. combined-01 failed only because the new test omitted fs.existsSync; it is a test-harness error, not a product red. The import was fixed and combined-02 passes 94/94. No test retirement candidate was authorized or removed.",
     "T14 metadata-commits: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/metadata-commits/facts.json",
     "T14 red-review-object-transfer: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/red-review-object-transfer/facts.json",
-    "T14: A final transfer composition reproduced inline review stdout being mistaken for a path. Returning to T08 for a narrow artifact-classification correction; 94/94 core combinations remain historical evidence."
+    "T14: A final transfer composition reproduced inline review stdout being mistaken for a path. Returning to T08 for a narrow artifact-classification correction; 94/94 core combinations remain historical evidence.",
+    "T08: Reopened for registered review-object transfer: inline stdout/stderr are raw bytes, not execution file references. Prior d60b3ef implementation and receipts preserved."
   ]
 }
