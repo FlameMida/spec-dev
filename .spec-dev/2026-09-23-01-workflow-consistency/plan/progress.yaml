@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T05",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -45,7 +45,16 @@
       "tests": "pass"
     },
     "T05": {
-      "status": "in_progress"
+      "status": "completed",
+      "evidence_paths": [
+        "execution/T05/red-01/facts.json",
+        "execution/T05/green-01/facts.json",
+        "execution/T05/red-02/facts.json",
+        "execution/T05/green-02/facts.json",
+        "execution/T05/clone-01/facts.json"
+      ],
+      "commit": "1ae7f743f52b8d484692b6597e99d17b24326c5e",
+      "tests": "pass"
     },
     "T06": {
       "status": "pending"
@@ -115,6 +124,12 @@
     "T04 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T04/green-01/facts.json",
     "T04 green-02: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T04/green-02/facts.json",
     "T04: 17/17 guard scenarios across local/index/history/ref/merge views; original failures retained.",
-    "T04 checkpoint correction: the first code commit was rejected for a trailing blank line; pending staged T04 files were inadvertently included in 0071104 by the state helper. 39ac58f removes the whitespace and passes the full normal pre-commit checks. T04 completion now points to 39ac58f. The local checkpoint helper now requires an empty index. No history rewritten."
+    "T04 checkpoint correction: the first code commit was rejected for a trailing blank line; pending staged T04 files were inadvertently included in 0071104 by the state helper. 39ac58f removes the whitespace and passes the full normal pre-commit checks. T04 completion now points to 39ac58f. The local checkpoint helper now requires an empty index. No history rewritten.",
+    "T05 red-01: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T05/red-01/facts.json",
+    "T05 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T05/green-01/facts.json",
+    "T05 red-02: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T05/red-02/facts.json",
+    "T05 green-02: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T05/green-02/facts.json",
+    "T05 clone-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T05/clone-01/facts.json",
+    "T05: 41/41 installed binding/guard tests plus 1/1 fresh-clone local-bare push. Preserved failed hook sequencing cases; all normal pre-commit checks pass."
   ]
 }
