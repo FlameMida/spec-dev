@@ -12,9 +12,9 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 - **Requirement design** — `requirement-analysis`, an 8-phase design workflow: triage (light / standard / deep tiers), bounded internal/external exploration dispatched within actual capacity, one-question-at-a-time clarification, sequential-thinking adversarial validation + 2-3 option comparison, spec writing with double review (structured behavior requirements: Requirement + Scenario); a HARD-GATE guarantees zero implementation before the design is approved
 - **Visual preview** — `visual-preview`, a browser companion: JIT-proposed during design conversations, renders mockups, wireframes and layout comparisons, and collects click-through choices
 - **Implementation plans** — `writing-plans` decomposes specs into bite-sized tasks executable by an engineer who can read the repo: exact file paths, change notes with key diff snippets, embedded 5-step TDD, consume/produce interface contracts, no placeholders allowed
-- **Plan execution** — `executing-plans`: the main thread executes task-by-task (per-task commit + spec self-check), then a wrap-up review sized 1/2/5 routes by diff (reads execution receipts instead of re-running tests; rebuttal and critic only when high/medium candidates exist), merge and summary
+- **Plan execution** — main-thread implementation and commits, then independent final verification, 1/2/5 review routes, acceptance/reconciliation and delivery. Reuse verified originals; recheck gaps. High/medium candidates, large tier or explicit always trigger the critic.
 - **Optional parallel execution** — `executing-plans-parallel`: explicit selection, model declaration, task-boundary switching, exclusive progress, isolated implementation and interruption recovery; shared local/PR delivery.
-- **Engineering discipline** — `using-git-worktrees` (isolated workspaces, native tools first) and `test-driven-development` (no production code without a failing test) are standalone skills reusable from any workflow
+- **Engineering discipline** — `using-git-worktrees` (isolated workspaces, native tools first) and `test-driven-development` (valid red for behavior changes, green protection for refactors, and a single authorized exception policy) are standalone skills reusable from any workflow
 - **All-round acceptance** — `acceptance-qa` runs acceptance over the dimension × execution-nature matrix: unit/integration/API, Playwright E2E, visual regression, accessibility, performance (web CWV / k6 for APIs / client), AI autonomous acceptance (mandatory evidence + serial recheck + verify-assertions-first) and failure diagnosis
 - **Lightweight fix** — `quick-fix`, for decided fixes with no design space: evidence-backed diagnosis, one-question-at-a-time confirmation and TDD through the approved public seam. It offers escalation for contract scope, modules, dependencies, conflicting current specs or insufficient diagnostic evidence; comparable intermittent failures may stay in quick-fix. Closure checks reproduction rates, temporary instrumentation, the original symptom and root-cause evidence; acceptance-qa remains optional.
 - **Shared clarification** — `clarifying`, the grill-style questioning discipline (one question at a time down the decision tree, facts self-researched, each decision put to the user with a recommendation); referenced by requirement-analysis and quick-fix, and usable standalone with three exits (hand off to the main workflow / stop / write notes to md)
@@ -23,6 +23,9 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 - **4 specialized agents** — code-explorer, external-resource-explorer and code-reviewer handle analysis and verification; implementer writes code in an isolated worktree only after explicit parallel selection.
 
 ## Skill Pipeline
+
+Skill `evals/evals.json` files contain intent cases. Structural checks do not prove real-model behavior; the new boundary cases remain manual-pending. See the [plan contracts](skills/writing-plans/references/plan-format.md) and [guard boundaries](guardrail/README.md).
+
 
 ```
 exploring (unsettled idea → optional .spec-dev/explorations/<topic>.md)
@@ -33,7 +36,7 @@ requirement-analysis (design → .spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature
         ↓
 writing-plans (plan → plan/ split-file layout: index.md + tasks/ + progress.yaml)
         ↓
-executing-plans (isolated execution + review + summary)
+executing-plans (isolated implementation → final → review → acceptance/reconciliation → delivery)
    ├── executing-plans-parallel (opt-in, disjoint writes, model declaration, resume)
    ├── using-git-worktrees (isolated workspace)
    ├── test-driven-development (TDD discipline)
@@ -49,7 +52,7 @@ roadmap continuation (oversized goals)  ── decomposition registered at .spec
 
 The three entry points split by commitment and design space: **exploring** (undecided — should we even do this?), **quick-fix** (decided, no design space — a small bug or adjustment), **requirement-analysis** (decided, has design space — a feature or change). quick-fix reuses test-driven-development and acceptance-qa, and hands control back to requirement-analysis the moment a fix turns out to need real design.
 
-All artifacts (specs, plans, acceptance reports, exploration notes, ADRs, roadmaps) live under `.spec-dev/` at the project root; legacy artifacts under `docs/` are auto-migrated there by default (the guard installer ships `migrate-to-spec-dev.mjs`, and the session self-check migrates on sight of a legacy layout), while the drift guard keeps recognizing the old location until migration lands.
+All artifacts (specs, plans, acceptance reports, exploration notes, ADRs, roadmaps) live under `.spec-dev/` at the project root; legacy-plan recovery preserves its carrier and historical evidence. Location migration follows the authorization for that operation; the guard still recognizes `docs/`, and the installer retains its separate migration tool and options.
 
 Each skill also works standalone: start from exploring while the idea is unsettled; enter at writing-plans with an existing spec; go straight to executing-plans with an existing plan; acceptance-qa / using-git-worktrees / test-driven-development can be triggered from any workflow; quick-fix handles small already-decided fixes without the full design workflow; clarifying grills an idea into shared understanding without committing to any workflow.
 
@@ -193,8 +196,8 @@ The spec lands in the feature directory `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/
 /executing-plans execute .spec-dev/2026-07-04-auth/plan/index.md
 ```
 
-- **writing-plans**: assumes an executor who can read the repo but not the design rationale — every plan starts with a fixed Task 0 (set up an isolated workspace, with already-isolated detection and git fallback commands) and ends with a final task (merge & cleanup); when the spec's acceptance matrix has "acceptance task" rows, an acceptance task is generated between them. The worktree lifecycle closes within the plan, so it executes in order even outside this plugin. The header carries deviation-handling guidance; every task gets exact file paths, key diff snippets, the applicable behavior TDD, refactor protection or integration-group verification steps and consume/produce interface blocks; a five-way self-review (spec coverage / placeholders / type consistency / navigation table ↔ task files / dependency minimality) runs before handoff
-- **executing-plans**: after execution confirmation, starts from Task 0 (isolated workspace, discipline per using-git-worktrees) and executes tasks continuously on the main thread (per-task commit `feat(TN): xxx` + spec self-check); when all tasks complete it dispatches 1/2/5 code-reviewer routes by diff size (review-findings contract validation; reads execution/ receipts instead of re-running tests; adversarial recheck and completeness critic only when high/medium candidates exist), triggers acceptance-qa per the acceptance matrix, consults the user on finding disposition, then runs the final task (merge & cleanup) and summarizes
+- **writing-plans**: generates T00, implementation tasks, independent final task F and maximum-numbered delivery task D; acceptance A depends on F when needed. Exact scopes, interfaces, snippets, validation and ownership precede a five-way self-review (spec coverage / placeholders / type consistency / navigation table ↔ task files / dependency minimality).
+- **executing-plans**: reuses execution authorization and persisted mode, resumes current work first and verifies writes against committed scopes. Implementation is followed by final, independent review, acceptance and reconciliation. Fixes require affected verification and review. Delivery verifies the merge/squash mapping, transfers originals, cleans owned resources and anchors sync_commit.
 
 ## Using visual-preview
 

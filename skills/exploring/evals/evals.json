@@ -100,6 +100,11 @@
       "id": "ec-s30",
       "prompt": "加载 exploring 的 SKILL、openai 摘要或 README 任一语言版本；判断可做行为",
       "expected_output": "均表达默认只读探索和授权 spike 例外，不承诺任意写码，不把已承诺交付请求误导成探索。"
+    },
+    {
+      "id": "workflow-S25-bounded-investigation",
+      "prompt": "探索中持续重复尝试但没有新证据，原主题尚未承诺实施。",
+      "expected_output": "说明调查对象、方法和预期证据；无支持/排除/区分候选的进展时汇总原始输出与缺失条件，让用户决定下一步。保留未承诺边界，不为结束探索擅自开工。"
     }
   ]
 }

@@ -4,7 +4,7 @@
     {
       "id": "ep-continuous-execution",
       "prompt": "执行 .spec-dev/2026-07-03-export-report/plan/export-report-plan.md（存量单文件计划）（4 个任务，计划已获用户确认）",
-      "expected_output": "先批判性审阅计划并注册任务；执行任务 0 建立隔离工作区（纪律遵循 using-git-worktrees）；任务 1 起逐任务 TDD 执行，每任务 commit（feat(TN): xxx）+ 主线程 spec 自检（只查 over/under-building 与契约锚定）；任务之间不停下向用户汇报；全部完成后才进入收尾审查"
+      "expected_output": "先批判性审阅计划并注册任务；执行任务 0 建立隔离工作区（纪律遵循 using-git-worktrees）；任务 1 起逐任务 TDD 执行，每任务 commit（feat(TN): xxx）+ 主线程 spec 自检（只查 over/under-building 与契约锚定）；任务之间不停下向用户汇报；全部实施/组出口完成后先做独立 final，再进入审查、验收/对账和交付；恢复保留旧载体与已完成证据"
     },
     {
       "id": "ep-execution-confirm-gate",
@@ -14,7 +14,7 @@
     {
       "id": "ep-review-orchestration",
       "prompt": "（4 个任务全部完成，变更约 600 行，涉及 3 个模块）进入收尾审查",
-      "expected_output": "预检基线、完整 diff 与契约来源；按常规两路 AS/BC 审查，容量不足分批而不丢维度；D 仅按明确要求或结构证据追加。报告经契约校验；存在高/中候选时独立反驳并派 critic 核查证据覆盖，零候选时由 AS 路 coverage_note 收口；结果沿既有授权处置。"
+      "expected_output": "预检基线、完整 diff 与契约来源；按常规两路 AS/BC 审查，容量不足分批而不丢维度；D 仅按明确要求或结构证据追加。报告经契约校验；存在高/中候选时独立反驳并派 critic 核查证据覆盖，small/regular 的 on-findings 分支零高/中候选时由 AS 路 coverage_note 收口；large 或显式 always 仍派 critic；结果沿既有授权处置。"
     },
     {
       "id": "ep-spec-selfcheck-scope",
@@ -260,6 +260,11 @@
       "id": "plan-decomposition-s29",
       "prompt": "普通票不继承待验解锁特权\nGIVEN 无组 T01 返回 ready 但尚未集成，T02 依赖它。\nWHEN 新执行器调度。",
       "expected_output": "T02 仍等待 completed；手写 awaiting_verification 于无组票被拒绝，原 Git 接收和合并冲突规则仍生效。"
+    },
+    {
+      "id": "workflow-S07-S10-S17-resume",
+      "prompt": "恢复时 current=T03/in_progress，没有完成 commit；旧单文件任务已部分执行。本次最终审查按 large，初审零候选。",
+      "expected_output": "先核对并恢复当前票，不要求 in_progress 具有完成 SHA；旧单文件只补当前/未执行范围，保留已完成记录。large 仍实际派 critic，显式 on-findings 配置拒绝；图示不能绕过这些条件。"
     }
   ]
 }

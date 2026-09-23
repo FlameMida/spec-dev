@@ -9,12 +9,12 @@
 ## 特性
 
 - **探索模式** — `exploring` 保持未定想法的发散讨论：默认只读，授权受控 spike 回答必须运行的问题；可选后台调研追溯一手来源。关键分岔清单可见但每轮仍只问一题；可选笔记记录已排除选项及条件，交付问题明确后提议正式设计。
-- **需求设计** — `requirement-analysis` 8 阶段设计工作流：需求分诊（light / standard / deep 三档）、内外部并行探索（不设子代理上限）、逐题澄清、sequential-thinking 对抗验证 + 2-3 方案对比、spec 落盘与双重 review（行为规范结构化：Requirement + Scenario）；HARD-GATE 保证设计获批前零实施动作
+- **需求设计** — `requirement-analysis` 8 阶段设计工作流：需求分诊（light / standard / deep 三档）、按主题与实际容量分批探索、逐题澄清、sequential-thinking 对抗验证 + 2-3 方案对比、spec 落盘与双重 review（行为规范结构化：Requirement + Scenario）；HARD-GATE 保证设计获批前零实施动作
 - **可视化预览** — `visual-preview` 浏览器伴侣：设计对话中 JIT 提议，展示 mockup、线框、布局对比并回收点击选择
 - **实施计划** — `writing-plans` 把 spec 拆成可独立验证的 bite-sized 任务：精确文件路径、改动要点与关键 diff 片段、TDD 五步内嵌、接口消费/产出契约、禁止占位符
-- **计划执行** — `executing-plans` 主线程逐任务执行（每任务 commit + spec 自检）、收尾按规模 1/2/5 路审查（读执行回执不复跑测试；有高/中候选才反驳与 critic）、合并与总结
+- **计划执行** — 主线程逐票实施与提交，独立 final 后按规模做 1/2/5 路审查，再验收、对账与交付；有效原件可复用，缺口补验。critic 由高/中候选、large 或显式 always 触发。
 - **可选并发执行** — `executing-plans-parallel`: 显式选择；模型声明、任务边界切换、独占进度、隔离实现和中断恢复；共用本地/PR 交付闭环。
-- **工程纪律** — `using-git-worktrees`（原生工具优先的隔离工作区）与 `test-driven-development`（没有失败测试就没有生产代码）独立成 skill，可被任何工作流复用
+- **工程纪律** — `using-git-worktrees`（原生工具优先的隔离工作区）与 `test-driven-development`（行为变化先有效红、纯重构保绿、例外沿唯一清单与既有授权）独立成 skill，可被任何工作流复用
 - **全能验收** — `acceptance-qa` 按「验收维度 × 执行性质」矩阵验收：单元/集成/API、Playwright E2E、视觉回归、可访问性、性能（前端 CWV / 后端 k6 / 客户端）、AI 自主验收（证据强制 + 串行复核 + verify 断言优先）与失败诊断
 - **轻量修复** — `quick-fix`，用于已决定、无设计空间的小修：按证据诊断、逐题校对，沿获批公共落点 TDD 修复。范围、依赖、现行契约冲突或诊断证据不足时提议升级；偶发但可比较可继续。收尾核对复现率、临时插桩、原症状和根因证据，acceptance-qa 保持可选。
 - **共享澄清** — `clarifying`，grill 式提问纪律（沿决策树一次一题、事实自查、每个决策带推荐交用户裁决）；被 requirement-analysis 与 quick-fix 引用，也可独立调用，以三出口收束（转主流程/就此结束/写入 md）
@@ -23,6 +23,9 @@
 - **4 个专门化 agents** — code-explorer、external-resource-explorer、code-reviewer 负责分析与复跑；implementer 仅在显式选择并发时于独立 worktree 写码。
 
 ## Skill 管线
+
+意图案例位于各 skill 的 `evals/evals.json`；结构检查不代表真实模型评测，本次新增边界案例保持 manual-pending。流程字段见[计划格式](skills/writing-plans/references/plan-format.md)，守卫边界见[守卫说明](guardrail/README.zh-CN.md)。
+
 
 ```
 exploring（未定型想法 → 可选 .spec-dev/explorations/<topic>.md）
@@ -33,7 +36,7 @@ requirement-analysis（设计 → .spec-dev/YYYY-MM-DD-NN-<feature>/spec/<featur
         ↓
 writing-plans（计划 → 同特性目录 plan/ 分文件形态：index.md + tasks/ + progress.yaml）
         ↓
-executing-plans（隔离执行 + 审查 + 总结）
+executing-plans（隔离实施 → final → 审查 → 验收/对账 → 交付）
    ├── executing-plans-parallel (显式选择、独立写集合、模型声明、恢复)
    ├── using-git-worktrees（隔离工作区）
    ├── test-driven-development（TDD 纪律）
@@ -49,7 +52,7 @@ roadmap 续接（大目标）  ── 分解登记 .spec-dev/roadmaps/<project>.
 
 三个入口按承诺状态与设计空间分工：**exploring**（还没决定要不要做）、**quick-fix**（已决定、无设计空间——小 bug 或小调整）、**requirement-analysis**（已决定、有设计空间——功能或变更）。quick-fix 复用 test-driven-development 与 acceptance-qa，一旦修复需要真正的设计就把控制权交还 requirement-analysis。
 
-所有产物（spec、plan、验收报告、探索笔记、ADR、roadmap）统一收纳在项目根目录 `.spec-dev/` 下；历史项目 `docs/` 位置的产物默认自动迁移过去（守卫安装器自带 `migrate-to-spec-dev.mjs`，会话自检发现历史布局也会当场迁移），迁移前守卫仍识别旧位置兜底。
+所有产物（spec、plan、验收报告、探索笔记、ADR、roadmap）统一收纳在项目根目录 `.spec-dev/` 下；旧计划恢复保留原载体与历史证据，位置迁移按该动作的既有授权单独处理；守卫继续识别旧 `docs/` 位置，安装器保留独立迁移工具和选项。
 
 每个 skill 也可独立使用：想法未定型可从 exploring 开始；已有 spec 可直接从 writing-plans 进入；已有计划可直接 executing-plans；acceptance-qa / using-git-worktrees / test-driven-development 可被任意工作流触发；quick-fix 处理已决定、无设计空间的小修复，不走完整设计流程；clarifying 不承诺任何工作流，单独把一个想法逐题磨到共识。
 
@@ -182,7 +185,7 @@ skill 的发现路径有四条，全部只指向 `skills/`：Claude Code 读 `.c
 
 - **light** — 单文件/单模块小改动：主线程直查，方案可收敛为 1 个，spec 几句话级——但设计仍须展示并获批准（HARD-GATE 不豁免）
 - **standard** — 默认档：3-5 个 code-explorer 按层/模块并行 + external-resource-explorer 外部研究 + 完整方案对比
-- **deep** — 跨层架构变更/新技术栈：multi-modal sweep 盲扫（模态数不设上限）+ 契约 JSON 校验合并
+- **deep** — 跨层架构变更/新技术栈：multi-modal sweep 盲扫（主题按需求确定，在途数受平台容量限制）+ 契约 JSON 校验合并
 
 spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md` 并提交（后续计划落同目录 `plan/` 分文件形态：index.md + tasks/ + progress.yaml），经审查子代理对抗验证与用户 review 后交接 writing-plans。设计还核对实际参与者、约束归属和测试先例；行为需求以 **Requirement + Scenario**（GIVEN/WHEN/THEN）结构表达，测试与验收策略以**验收矩阵**表达——Scenario 被 writing-plans 映射到适用的行为红绿、纯重构保护或组验证、矩阵被收尾审查与 acceptance-qa 用作验收锚点；修改既有功能时用 ADDED/MODIFIED/REMOVED 差量三节。
 
@@ -193,8 +196,8 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-des
 /executing-plans 执行 .spec-dev/2026-07-04-auth/plan/index.md
 ```
 
-- **writing-plans**：假设执行者能读仓库但不知本次取舍——每份计划固定以任务 0（建立隔离工作区，含已隔离检测与 git 降级命令）开头、以最终任务（合并与清理）收尾，spec 验收矩阵含「验收任务」行时在两者之间固定生成验收任务，worktree 生命周期在计划内闭合、脱离插件也能按序执行；头部随行偏差处理指引；每任务给精确文件路径、关键 diff 片段、适用的行为红绿/纯重构保护/集成组验证步骤、接口消费/产出与关联 skill；写完跑五查（spec 覆盖/占位符/类型一致/导航表与任务文件一致/依赖最小性）再交接
-- **executing-plans**：执行确认后从任务 0（隔离工作区，纪律遵循 using-git-worktrees）开始，主线程逐任务连续执行（每任务 commit `feat(TN): xxx` + spec 自检），全部完成后按规模派 1/2/5 路 code-reviewer 审查（review-findings 契约校验；读 execution/ 回执不复跑；有高/中候选才对抗复核与 completeness critic），按验收矩阵触发 acceptance-qa 验收，审查处置征询用户后执行最终任务（合并与清理）并总结
+- **writing-plans**：固定 T00、实施票、独立 final F 和最大号交付 D；需要验收时 A 依赖 F，D 消费审查与 A/对账。计划给精确范围、接口、片段、验证与资源归属，写完跑五查（spec 覆盖/占位符/类型一致/导航表与任务文件一致/依赖最小性）。
+- **executing-plans**：复用执行授权与持久模式，先恢复 current；按已提交范围核验写入。实施结束先 final，再独立审查与验收/对账；修复后补验和复审。最终核验 merge/squash 映射、转存原件、按台账清理并锚定 sync_commit。
 
 ## visual-preview 使用方法
 

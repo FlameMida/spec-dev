@@ -4,11 +4,11 @@ description: >-
   编写实施计划——当已有 spec 或明确需求、准备开始多步骤开发任务、但尚未动代码时使用。把设计拆解为可独立验证的 bite-sized 任务（精确文件路径、改动要点与关键 diff 片段、TDD 步骤、预期输出），落盘特性目录的 plan/ 子目录并交接 executing-plans 执行。通常由 requirement-analysis 在 spec 获批后调用；也可对既有 spec/需求单独触发。
 ---
 
-> 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
+> 输出语言：用户显式指定（含平台语言设置）优先，其次跟随近期对话，否则使用英语。新产物使用创建时语言，增量修改沿用原文语言；固定话术按语义表达。
 
 > **插件根**：`${CLAUDE_PLUGIN_ROOT}`——本 skill 正文与其 references 中的插件根命令以此为准；若上式仍为变量字面量（平台未替换），按 requirement-analysis 的 references/exploration-patterns.md「插件根解析」序列推导。
 
-> **外部搜索统一入口**：需要联网检索（资料、库/框架文档、时效信息）时一律先用 anysearch skill（插件内嵌），不可用再降级 WebSearch/WebFetch；降级链与派发词要求见 requirement-analysis 的 references/exploration-patterns.md。
+> **外部搜索统一入口**：外部检索先用 anysearch；不可用时按[搜索与降级规则](../requirement-analysis/references/exploration-patterns.md)执行。
 
 # 编写实施计划
 
@@ -81,29 +81,18 @@ TDD 循环的完整纪律遵循 test-driven-development skill——普通行为�
 └── progress.yaml   # 唯一运行时状态
 ```
 
-## 可选集成组声明与 v2 进度
+## 按动作读取
 
+| 动作 | 必读资料 |
+|---|---|
+| 写头部、任务导航、scopes、绑定与唯一进度 | [计划格式](references/plan-format.md)；编写任何新计划前读取 |
+| 写 T00、普通行为票或纯重构票 | [任务模板](references/task-templates.md)；将代码、命令、预期与接口写入产物 |
+| 声明不可独立验证的集成组 | [集成组声明](references/integration-declaration.md)；无组不加载 |
+| 声明可并发实施票 | [并发声明](references/parallel-declaration.md)；写集合仍只在 scopes，声明不等于授权 |
+| 写独立 final F、验收 A 和最大号交付 D | [验收与交付模板](references/delivery-templates.md)；保留 F→审查→A/对账→D 顺序 |
+| 草稿 Self-Review 与恢复修订 | [计划自检](references/plan-review.md)；核对实际状态提交与资源归属 |
 
-组声明和 v2 的唯一字段定义见 [集成组声明](references/integration-declaration.md)，适用时先读全文；无组计划不加载。
-
-## 可选并发声明
-
-
-共用写集合及绑定在 [计划格式](references/plan-format.md)；并发资源和语法见 [并发声明](references/parallel-declaration.md)，声明不等于已选择并发。
-
-## 计划文档头部
-
-
-头部、任务导航表和公共接口传递见 [计划格式](references/plan-format.md)。完整计划仍为 index/tasks/progress 三件套。
-
-## 任务 0：建立隔离工作区（每份计划固定生成）
-
-
-T00 的检测、实际绑定、就绪和检查点步骤见 [任务模板](references/task-templates.md)。
-
-## 任务结构
-
-生成前读取 [完整任务模板](references/task-templates.md)，代码、命令、预期、接口必须写入产物，不以链接代替。
+工具、片段和失败分支必须进入生成的计划；链接用于取得定义，不能代替执行步骤。progress.yaml 的 resources 是资源台账唯一登记处。
 
 ## 计划体量
 
@@ -111,19 +100,6 @@ T00 的检测、实际绑定、就绪和检查点步骤见 [任务模板](refere
 - **禁止整文件内嵌**：不把目标文件的现行内容或改后全文抄进任务，执行者自行 Read 现行文件。片段与目标文件现行内容逐字重合超过 30 行即视为整文件内嵌。
 - **单任务文件上限 200 行**：`tasks/TNN.md` 超过 200 行先拆任务，仍超则把片段收敛为要点；`validate-output.mjs plan-index` 对超限文件报错 `expected: "<= 200 lines"`。
 - **体量参照**：全部 `tasks/*.md` 行数之和以不超过预期代码改动行数为目标，超出时在 index「体量说明」写一句原因。
-
-## progress.yaml 键结构
-
-普通字段与 **资源台账规范定义点** 位于 [计划格式](references/plan-format.md)，progress.yaml 的 resources 键预登记已知资源；并发扩展仅在 [并发声明](references/parallel-declaration.md) 定义。
-
-## 验收任务（矩阵含「验收任务」行时固定生成）
-
-
-每份计划固定生成独立 final 验证票 F；矩阵验收 A 依赖 F，最大号交付 D 消费有效 final、审查与对账。完整步骤见 [验收与交付模板](references/delivery-templates.md)。
-
-## 最终任务：合并与清理（每份计划固定生成）
-
-生成完整最终任务须读取 [验收与交付模板](references/delivery-templates.md)，全量先在独立 F 执行；D 消费有效回执，保留真实来源绑定、证据转存、资源归属、清理、锚定和最终状态保存。
 
 ## 禁止占位符
 
@@ -143,11 +119,6 @@ T00 的检测、实际绑定、就绪和检查点步骤见 [任务模板](refere
 - 精确命令 + 预期输出
 - DRY、YAGNI、TDD、频繁提交
 - 任务步骤会创建持久资源（容器、测试库/表、临时目录、后台服务）时，写计划时就在 progress.yaml 的初始 `resources` 键预登记对应行——资源不允许只活在对话里
-
-## Self-Review
-
-
-按 [计划自检](references/plan-review.md) 执行五查；按声明根解析路径并检查真实状态提交顺序，不运行生成的任务来验证计划。
 
 ## 执行交接
 

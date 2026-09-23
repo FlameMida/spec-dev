@@ -4,9 +4,9 @@ description: >-
   共享澄清纪律（grill 式）——沿决策树一次一题逼近共识：事实自查、每个决策带推荐交用户裁决；独立会话以共识摘要 + 三出口收束（转主流程/就此结束/写入 md），不强制产出。被 requirement-analysis 与 quick-fix 引用作提问纪律。当用户想把一个想法/计划/决定逐题磨清楚时独立使用；发散式的思考陪伴用 exploring；已承诺交付的开发工作直接用 requirement-analysis / quick-fix。
 ---
 
-> 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
+> 输出语言：用户显式指定（含平台语言设置）优先，其次跟随近期对话，否则使用英语。新产物使用创建时语言，增量修改沿用原文语言；固定话术按语义表达。
 
-> **外部搜索统一入口**：需要联网检索（资料、库/框架文档、时效信息）时一律先用 anysearch skill（插件内嵌），不可用再降级 WebSearch/WebFetch；降级链与派发词要求见 requirement-analysis 的 references/exploration-patterns.md。
+> **外部搜索统一入口**：外部检索先用 anysearch；不可用时按[搜索与降级规则](../requirement-analysis/references/exploration-patterns.md)执行。
 
 # 澄清纪律（Clarifying）
 

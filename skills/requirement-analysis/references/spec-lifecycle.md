@@ -2,6 +2,19 @@
 
 > 阅读时机：完整设计获批后、生成 spec 或变更状态之前。
 
+## 生命周期事件
+
+| 事件 | 新 spec 状态 | 旧 spec 标注 | 下一步 |
+|---|---|---|---|
+| 完整设计获批并落盘 | draft | 原样保留 | 完成适用 spec 审查 |
+| 定稿并取得计划编写授权 | active | 同提交写 Superseded-pending（如有） | writing-plans |
+| 实施与验证中 | active | pending 保留，现行/待取代边界仍可见 | 按获批计划推进 |
+| 真实交付完全取代 | active | 旧 spec superseded，superseded_by 指向后继 | 接管仍存在的 covers，旧 sync_commit 冻结 |
+| 真实交付部分取代 | active | 只标被取代的 Requirement；旧 spec 仍 active | 其余契约继续有效 |
+| 废弃未交付计划 | 按裁决记录 | 回收本次 pending | 保留已有历史与裁决 |
+
+Superseded-pending 只是正文标注，不是 status 状态枚举。激活发生在计划交接，取代回写随真实交付生效；读到 superseded 必须沿 superseded_by 找可达后继，缺失或成环不能猜当前契约。完整标注形制沿 spec 模板，不在表中另造格式。
+
 ## 阶段 6: 写 spec 并提交
 
 - 为本需求创建特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/`（所有 spec-dev 产物统一收纳在项目根目录 `.spec-dev/` 下；NN 为当日两位序号——扫描 `.spec-dev/` 下当日已有的日期前缀产物（特性目录，及 `reports/`、`roadmaps/` 下的文件名）取最大加一、01 起步，**落盘前重扫一次防并发撞号**：发现同号已被占则顺延并同步修正自引路径；feature 取需求主题的短语义名，跟随项目语言；存量旧命名 `YYYY-MM-DD-<feature>` 目录不改名（grandfather）；同一 NN 序列由全部 `.spec-dev/` 日期前缀产物共用），将批准的设计写入其 `spec/<feature>-design.md`（用户对 spec 位置的偏好优先于此默认值）

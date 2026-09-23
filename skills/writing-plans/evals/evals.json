@@ -110,6 +110,11 @@
       "id": "plan-decomposition-s32",
       "prompt": "迁移旧形不能永久遗留\nGIVEN expand 新增同用途新接口并暂存旧接口，但候选计划没有删除旧接口的工作。\nWHEN 方案或计划自检。",
       "expected_output": "不能以“允许 expand”通过检查；补明确 contract 和验证，或重新分解，八原则声明块仍存在。"
+    },
+    {
+      "id": "workflow-S25-F-A-D",
+      "prompt": "将获批设计写成带验收任务的新计划，工具返回 ok=true 但没有 scope_protocol_version。",
+      "expected_output": "生成 T00、实施、独立 final F、依赖 F 的验收 A 与最大号交付 D；共用 scopes 是唯一 writes 来源。含 scopes 而缺 scope_protocol_version:1 时不能宣称协议可执行；补齐工具能力或报告缺口。"
     }
   ]
 }

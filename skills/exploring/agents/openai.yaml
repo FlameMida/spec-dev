@@ -1,6 +1,6 @@
 interface:
   display_name: "Exploring"
-  short_description: "尚未决定实施时探索方向；默认只读，受控实验须有授权。"
+  short_description: "陪伴未定想法探索，默认只读；沿授权进行受控实验与有界调查，交付问题明确后建议正式设计。"
   default_prompt: "Use $exploring to think through this idea or problem with me before committing to build anything. / 用 $exploring 在决定要不要做之前陪我把这个想法或问题想清楚。"
 
 policy:

@@ -4,9 +4,11 @@ description: >-
   将已承诺且有设计空间的开发需求转化为获批 spec，再交接计划编写。适用于新功能、API、数据及行为设计；未定想法用 exploring，无设计空间小修用 quick-fix，纯问答或日常测试不适用。
 ---
 
-> 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
+> 输出语言：用户显式指定（含平台语言设置）优先，其次跟随近期对话，否则使用英语。新产物使用创建时语言，增量修改沿用原文语言；固定话术按语义表达。
 
 > **插件根**：`${CLAUDE_PLUGIN_ROOT}`——本 skill 正文与其 references 中的插件根命令以此为准；若上式仍为变量字面量（平台未替换），按 requirement-analysis 的 references/exploration-patterns.md「插件根解析」序列推导。
+
+> **外部搜索统一入口**：外部检索先用 anysearch；不可用时按[搜索与降级规则](references/exploration-patterns.md)执行。
 
 # 需求设计工作流
 
@@ -59,7 +61,7 @@ standard — 默认档。跨 2-3 模块或有方案取舍
            spec：light 五节 + 术语表 / 参与者与适用行为 / 影响面 / 约束归属与拒绝的解读 / 取代与共存 / 方案设计 / 风险与边缘情况
            批准：阶段 5 设计批准 + 阶段 7 一次整体 review
 deep     — 跨层架构变更、新技术栈、用户使用"彻底/全面/审计"等措辞
-           探索：multi-modal sweep，按模态数派发、不设上限；方案对比含更完整的风险分析
+           探索：主题按需求确定，在途代理数受平台容量限制，必要时分批完成；方案对比含更完整的风险分析
            spec：全模板；批准同 standard，spec-reviewer 子代理必派
 ```
 
@@ -70,6 +72,22 @@ deep     — 跨层架构变更、新技术栈、用户使用"彻底/全面/审�
 本 skill 同时兼容 Claude Code 和 Codex。工具映射（澄清 AskUserQuestion↔对话消息、进度 TaskCreate↔update_plan、并行 Agent↔spawn_agent+wait_agent、规范文件 CLAUDE.md↔AGENTS.md 优先序、搜索 anysearch 降级链）以 [codex-compat.md](references/codex-compat.md) 的工具映射总表为准——全 skill 共用的单一定义点，此处不复述整表；Codex 环境的完整规则同见该文件。
 
 ---
+
+### 入口判断
+
+先消费明确入口或恢复信息；新请求按最终交付目标、开发承诺与设计空间判断。报告通道不是实施后门，路由建议仍由用户裁决，已有决定不重复询问。
+
+```mermaid
+flowchart TD
+    E{"明确入口或恢复?"} -->|有| R["沿已确认入口与记录继续"]
+    E -->|无| G{"最终交付目标?"}
+    G -->|报告或分析| Report["建议报告通道"]
+    G -->|功能落地| C{"已承诺开发?"}
+    C -->|未承诺| Explore["建议 exploring"]
+    C -->|已承诺| D{"有设计空间?"}
+    D -->|有| Design["requirement-analysis"]
+    D -->|无或需据根因再判| Fix["建议 quick-fix"]
+```
 
 ## 阶段 1: 需求理解与分诊
 
@@ -99,7 +117,7 @@ deep     — 跨层架构变更、新技术栈、用户使用"彻底/全面/审�
 
 - **light**：主线程直查（Glob/Grep/Read 或 codegraph），或 1 个 `code-explorer`
 - **standard**：按架构层次或功能模块拆 3-5 个 `code-explorer`；阶段 1 标记了外部探索时，同波次加 1-2 个 `external-resource-explorer`
-- **deep**：multi-modal sweep——每个模态一个 `code-explorer` 彼此盲扫，模态数由项目形态决定、不设上限；外部按主题拆多个 `external-resource-explorer` 同波次发起
+- **deep**：multi-modal sweep——每个模态一个 `code-explorer` 彼此盲扫，模态主题由项目形态决定，在途代理数受平台容量限制，必要时分批完成；外部按主题拆多个 `external-resource-explorer` 同波次发起
 
 外部研究沿入口的首次材料分类和规则取得要求执行；分类、定义加载与派发细则以 [exploration-patterns.md](references/exploration-patterns.md) 为单点。
 

@@ -1,6 +1,6 @@
 interface:
   display_name: "Executing Plans"
-  short_description: "按获批书面计划与原模式恢复；先 final，再独立审查、验收对账与交付，核验并复用有效证据。"
+  short_description: "执行或恢复获批书面计划；当前任务优先，final 后审查验收，核验真实交付与证据。"
   default_prompt: "Use $executing-plans to execute the implementation plan task-by-task with TDD and final review. / 用 $executing-plans 以 TDD 逐任务执行实施计划并做收尾审查。"
 
 policy:

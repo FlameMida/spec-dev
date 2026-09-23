@@ -4,11 +4,11 @@ description: >-
   执行已批准的书面实施计划，支持逐任务执行、中断恢复、审查与交付；默认串行，已选择的并发按对应规则恢复。不用于没有书面计划的即兴修改。
 ---
 
-> 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
+> 输出语言：用户显式指定（含平台语言设置）优先，其次跟随近期对话，否则使用英语。新产物使用创建时语言，增量修改沿用原文语言；固定话术按语义表达。
 
 > **插件根**：`${CLAUDE_PLUGIN_ROOT}`——本 skill 正文与其 references 中的插件根命令以此为准；若上式仍为变量字面量（平台未替换），按 requirement-analysis 的 references/exploration-patterns.md「插件根解析」序列推导。
 
-> **外部搜索统一入口**：需要联网检索（资料、库/框架文档、时效信息）时一律先用 anysearch skill（插件内嵌），不可用再降级 WebSearch/WebFetch；降级链与派发词要求见 requirement-analysis 的 references/exploration-patterns.md。
+> **外部搜索统一入口**：外部检索先用 anysearch；不可用时按[搜索与降级规则](../requirement-analysis/references/exploration-patterns.md)执行。
 
 # 执行实施计划
 
@@ -30,6 +30,28 @@ description: >-
 4. **收尾审查** — 按规模 1/2/5 路审查，读执行回执不复跑；高/中候选才反驳；critic 按档位与显式配置触发；按验收矩阵触发 acceptance-qa
 5. **审查处置与交付对账** — 例外驱动：零发现且全 DELIVERED 静默通过；否则一次性征询修复与裁决
 6. **合并与总结** — 执行计划的最终任务（合并与清理，含 sync_commit 锚定），回写 roadmap 状态（如属），输出总结
+
+## 执行入口与恢复
+
+首次执行从 T00 开始；恢复先读已提交状态、实际工作区与证据，不重做已完成任务。终端档案只读核验；已合并但收尾未完的档案只进入交付恢复，不回到业务调度。组和并发沿各自协议，串行 current 优先。
+
+```mermaid
+flowchart TD
+    E{"首次还是恢复?"} -->|首次| T00["T00 隔离与基线"]
+    E -->|恢复| Check["核对状态 工作区 原件"]
+    T00 --> State["读取持久模式与状态"]
+    Check --> End{"终端档案或交付恢复?"}
+    End -->|是| Delivery["只读核验或继续交付收尾"]
+    End -->|否| State
+    State --> Group{"活动集成组?"}
+    Group -->|有| G["组协议与 plan-state"]
+    Group -->|无| Mode{"parallel 模式?"}
+    Mode -->|是| P["核对 claim 与原集成区"]
+    Mode -->|否| Current{"current 状态?"}
+    Current -->|in_progress| Resume["续接当前任务"]
+    Current -->|blocked| Block["先解除阻塞"]
+    Current -->|无| Ready["选择依赖完成的 ready 任务"]
+```
 
 ## 阶段 1：载入并批判性审阅计划
 
