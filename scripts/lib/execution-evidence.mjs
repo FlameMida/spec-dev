@@ -1,8 +1,8 @@
 import path from 'node:path';
 import {execFileSync,spawnSync} from 'node:child_process';
-import {readFileSync,writeFileSync,mkdirSync,realpathSync,existsSync,lstatSync} from 'node:fs';
-import {createHash} from 'node:crypto';
-import {parseUniqueJson} from '../../guardrail/lib/record-data.mjs';
+import {readFileSync,writeFileSync,mkdirSync,realpathSync,existsSync,lstatSync,readdirSync,linkSync,unlinkSync,rmSync} from 'node:fs';
+import {createHash,randomUUID} from 'node:crypto';
+import {parseUniqueJson,parseRecord} from '../../guardrail/lib/record-data.mjs';
 import {normalizeWrite} from '../../guardrail/lib/write-paths.mjs';
 const need=(ok,message)=>{if(!ok)throw new Error('evidence: '+message);};
 const sha=v=>typeof v==='string'&&/^[a-f0-9]{40,64}$/.test(v);
@@ -97,4 +97,80 @@ export function verifyReceipt({feature,record:recordPath,candidate}){
     const actual=digest(readFileSync(evidenceFile(ctx.feature,record[name])));need(actual===record[name+'_sha256'],'stream hash mismatch');files[name]={path:record[name],sha256:actual};
   }
   return {ok:true,record,record_path:recordPath,candidate,scope:record.scope,files};
+}
+function transferFiles(ctx){
+  const chosen=new Set(),stateFile=path.join(ctx.feature,'plan/progress.yaml');
+  const state=existsSync(stateFile)?parseRecord(readFileSync(stateFile,'utf8')):{};
+  function add(relative,optional=false){
+    const file=evidenceFile(ctx.feature,relative);
+    if(optional&&!existsSync(file))return;
+    const info=lstatSync(file);need(!info.isSymbolicLink(),'source evidence link');
+    if(info.isDirectory()){for(const name of readdirSync(file).sort())add(relative+'/'+name);}
+    else{need(info.isFile(),'evidence must be a regular file');chosen.add(relative);}
+  }
+  for(const root of ['execution/tasks','execution/groups'])add(root,true);
+  for(const task of Object.values(state.tasks??{})){
+    for(const ref of task.evidence_paths??[])add(ref);
+    if(task.result_path)add(task.result_path);
+    if(task.claim?.key){need(normalizeWrite(task.claim.key)===task.claim.key&&!task.claim.key.includes('/'),'invalid claim evidence key');add('execution/'+task.claim.key,true);}
+  }
+  for(const group of Object.values(state.integration?.groups??{}))for(const ref of group.evidence_paths??[])add(ref);
+  for(const ref of state.delivery?.receipt_paths??[])add(ref);
+  for(const entry of state.resources??[]){
+    const m=/^evidence:\s+(.+?)\s+——/.exec(entry);if(!m)continue;
+    const prefix=ctx.relative+'/';need(m[1].startsWith(prefix),'resource belongs to a different feature');add(m[1].slice(prefix.length).replace(/\/$/,''));
+  }
+  // Referenced streams extend the closure. Unknown registered files stay raw artifacts.
+  function streams(record){
+    for(const key of ['stdout','stderr'])if(Object.hasOwn(record,key+'_sha256')){
+      need(typeof record[key]==='string','stream path required');add(record[key]);
+      need(digest(readFileSync(evidenceFile(ctx.feature,record[key])))===record[key+'_sha256'],'source stream hash mismatch');
+    }
+    for(const operation of record.operations??[])streams(operation);
+  }
+  for(const relative of chosen){
+    if(!relative.endsWith('.json'))continue;
+    const value=parseUniqueJson(readFileSync(evidenceFile(ctx.feature,relative),'utf8'));
+    if(value?.version===1&&value.task&&path.posix.basename(relative)==='record.json')verifyReceipt({feature:ctx.feature,record:relative,candidate:value.commit});
+    else if(value?.command&&value.tree&&value.commit){
+      need(value.tree===businessTree(ctx.repo,ctx.relative,value.commit),'historical source tree mismatch');
+      need(typeof value.cwd==='string'&&path.isAbsolute(value.cwd),'historical cwd missing');
+    }
+    if(value&&typeof value==='object')streams(value);
+  }
+  return [...chosen].sort().map(relative=>({path:relative,sha256:digest(readFileSync(evidenceFile(ctx.feature,relative)))}));
+}
+export function publishEvidenceFile(source,target,expected){
+  const bytes=readFileSync(source);need(digest(bytes)===expected,'source evidence hash mismatch');
+  if(existsSync(target)){need(!lstatSync(target).isSymbolicLink()&&readFileSync(target).equals(bytes),'evidence target conflict');return {path:target,sha256:expected,reused:true};}
+  mkdirSync(path.dirname(target),{recursive:true});
+  const temporary=target+'.transfer-'+randomUUID();writeFileSync(temporary,bytes,{flag:'wx'});
+  try{need(digest(readFileSync(temporary))===expected,'staging hash mismatch');linkSync(temporary,target);}finally{unlinkSync(temporary);}
+  return {path:target,sha256:expected,reused:false};
+}
+export function transferEvidence({source,target}){
+  const completed=[];let staging=null;
+  try{
+    const ctx=evidenceContext(source);source=ctx.feature;
+    need(typeof target==='string'&&path.isAbsolute(target)&&path.resolve(target)===realpathSync(target),'canonical existing target directory required');
+    need(lstatSync(target).isDirectory(),'target must be a directory');
+    need(source!==target&&!source.startsWith(target+path.sep)&&!target.startsWith(source+path.sep),'source and target must be disjoint');
+    const manifest=transferFiles(ctx);need(manifest.length,'no referenced execution evidence');
+    // Reject every known conflict before writing any destination bytes.
+    for(const item of manifest){
+      const dest=evidenceFile(target,item.path);
+      if(existsSync(dest))need(lstatSync(dest).isFile()&&digest(readFileSync(dest))===item.sha256,'evidence target conflict: '+item.path);
+    }
+    staging=evidenceFile(target,'execution/.transfer-'+randomUUID());mkdirSync(staging,{recursive:true});
+    for(const item of manifest){
+      const bytes=readFileSync(evidenceFile(source,item.path));need(digest(bytes)===item.sha256,'source changed during transfer');
+      const file=path.join(staging,item.path);mkdirSync(path.dirname(file),{recursive:true});writeFileSync(file,bytes,{flag:'wx'});
+      need(digest(readFileSync(file))===item.sha256,'staging hash mismatch');
+    }
+    for(const item of manifest){
+      const dest=evidenceFile(target,item.path);publishEvidenceFile(path.join(staging,item.path),dest,item.sha256);
+      need(digest(readFileSync(dest))===item.sha256,'published hash mismatch');completed.push(item);
+    }
+    rmSync(staging,{recursive:true});return {ok:true,files:completed,source,target};
+  }catch(error){return {ok:false,files:completed,source,target,staging,error:error.message};}
 }
