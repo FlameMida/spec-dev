@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T08",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -89,7 +89,7 @@
       "tests": "pass"
     },
     "T08": {
-      "status": "completed",
+      "status": "in_progress",
       "evidence_paths": [
         "execution/T08/red-01/facts.json",
         "execution/T08/green-01/facts.json",
@@ -350,6 +350,7 @@
     "T04 review-R5-blob-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T04/review-R5-blob-green/facts.json",
     "T04 review-R5-multi-ref-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T04/review-R5-multi-ref-red/facts.json",
     "T04 review-R5-complete-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T04/review-R5-complete-green/facts.json",
-    "T04: R5 complete fix in cd7808e: pre-read associations across all refs before content checks; actual missing spec blob/tree plus multi-ref early failure tests and previous guard/install protections pass 47/47. Old failed attempts preserved."
+    "T04: R5 complete fix in cd7808e: pre-read associations across all refs before content checks; actual missing spec blob/tree plus multi-ref early failure tests and previous guard/install protections pass 47/47. Old failed attempts preserved.",
+    "T08: R6 independently confirmed: explicit delivery receipt references must be parsed regardless of filename suffix. Reuse real v1 disposition/squash fixture in plan-state tests to assert full transfer closure for an extensionless receipt."
   ]
 }
