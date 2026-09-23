@@ -1,6 +1,6 @@
 # ADR-0008: 集成组——独立任务待验，主线程独占并统一验证
 
-**Status**: Accepted (2026-09-07)
+**Status**: Superseded by [ADR-0010](0010-local-evidence-and-delivery.md) (2026-09-23)
 
 ## 背景
 
