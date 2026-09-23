@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T04",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -37,7 +37,7 @@
       "tests": "pass"
     },
     "T04": {
-      "status": "completed",
+      "status": "in_progress",
       "evidence_paths": [
         "execution/T04/red-01/facts.json",
         "execution/T04/green-01/facts.json",
@@ -340,6 +340,7 @@
     "T04: R5 fixed in ac4adab: history walk/message-object read failures reject before absence of association can be inferred; real authority/scope deletion and byte restoration across range/existing/new push plus legacy protections pass 40/40.",
     "T15: R1-R5 required fixes completed with scoped green evidence. Prior final retained but stale for repaired candidate; run complete formal final before affected-dimension re-review and reconciliation.",
     "T15 repaired candidate final: 438/438, 0 fail, 0 skipped; execution/tasks/T15/final-review-20260923T160831/record.json; independently re-review repairs next.",
-    "T15: Formal final attempt 03 passed 438/438, 0 fail, 0 skipped and is content-verified. Required affected-dimension re-review remains before T16; completed here means F only."
+    "T15: Formal final attempt 03 passed 438/438, 0 fail, 0 skipped and is content-verified. Required affected-dimension re-review remains before T16; completed here means F only.",
+    "T04: R5 residual independently confirmed: historical scope/spec blob read can fail before the task association later in the range is recognized. Pre-read commit messages for the bounded history before content checks, preserving known unbound legacy handling."
   ]
 }
