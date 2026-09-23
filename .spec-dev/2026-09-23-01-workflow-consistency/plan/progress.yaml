@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T11",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -135,13 +135,18 @@
       "tests": "pass"
     },
     "T11": {
-      "status": "in_progress",
+      "status": "completed",
       "evidence_paths": [
         "execution/T11/red-01/facts.json",
         "execution/T11/green-selected/facts.json",
-        "execution/T11/green-full/facts.json"
+        "execution/T11/green-full/facts.json",
+        "execution/T11/R06-permission-red/facts.json",
+        "execution/T11/R06-permission-green/facts.json",
+        "execution/T11/R06-permission-red-corrected/facts.json",
+        "execution/T11/R06-permission-green-corrected/facts.json",
+        "execution/T11/R06-controller-green/facts.json"
       ],
-      "commit": "37c4db3445f306c8ba67ece3c1d4f8f248dfb408",
+      "commit": "a475bc30893c3d3f0ebec544c995164ca6e77324",
       "tests": "pass"
     },
     "T12": {
@@ -381,6 +386,12 @@
     "T15: Actual evidence transfer preflight now passes; run complete final after R7/R8 repairs. Prior445/446 failure and source/current R06 controls preserved; no waiver or test relaxation.",
     "T15 final05: actual exit1, 448/449, same R06 termination-confirmation failure as final04; no additional blind full retry. B-simple is collecting first controller code/signal/stdout/stderr and segments in a bounded copied-test diagnostic; implementation unchanged.",
     "T15: Preserve final05 failure and bounded R06 diagnosis. R7/R8 actual transfer preflight passed; final cannot be marked pass on the isolated controls alone.",
-    "T11: User continued after concrete diagnosis. Add conservative R06 termination confirmation for signal-probe EPERM: reaped leader plus successfully parsed process table showing no live group members; keep blocked for active/unknown groups. Original process module/test were unchanged and original failures remain."
+    "T11: User continued after concrete diagnosis. Add conservative R06 termination confirmation for signal-probe EPERM: reaped leader plus successfully parsed process table showing no live group members; keep blocked for active/unknown groups. Original process module/test were unchanged and original failures remain.",
+    "T11 R06-permission-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T11/R06-permission-red/facts.json",
+    "T11 R06-permission-green: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T11/R06-permission-green/facts.json",
+    "T11 R06-permission-red-corrected: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T11/R06-permission-red-corrected/facts.json",
+    "T11 R06-permission-green-corrected: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T11/R06-permission-green-corrected/facts.json",
+    "T11 R06-controller-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T11/R06-controller-green/facts.json",
+    "T11: R06 conservative confirmation implemented; 13/13 R06 and 60/60 controlled-review pass. Six OS-boundary cases preserve blocked for active/invalid/unavailable/warning snapshots. First new harness incorrectly expected incomplete exit0; corrected to existing exit1 and obtained genuine blocked-vs-incomplete red against exact HEAD module, restoring owned candidate bytes afterward. Original failures/diagnosis untouched."
   ]
 }
