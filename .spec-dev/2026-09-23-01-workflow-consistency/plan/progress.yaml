@@ -180,7 +180,7 @@
       "tests": "pass"
     },
     "T15": {
-      "status": "in_progress",
+      "status": "blocked",
       "evidence_paths": [
         "execution/tasks/T15/final-20260923T150346-95972/record.json",
         "execution/tasks/T15/final-20260923T151646-79243/record.json",
@@ -218,8 +218,7 @@
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/ —— retain original task receipts through transfer",
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T15/ —— retain original task receipts through transfer",
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/tasks/T15/ —— retain formal final Receipt and every attempt through transfer",
-    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T15/review/ —— retain independent native review reports, reproducers and disposition receipts",
-    "worktree: /Users/maverick/feature-dev/.worktrees/workflow-consistency-baseline-check -- owned detached R06 source comparison; remove after check"
+    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T15/review/ —— retain independent native review reports, reproducers and disposition receipts"
   ],
   "notes": [
     "2026-09-23 用户确认 spec 定稿并授权编写计划；本记录尚不是实施授权。",
@@ -363,6 +362,8 @@
     "T15: R5 blob/multi-ref residual and new R6 independently confirmed and repaired; prior 438-pass final retained as stale for this new candidate. Run fresh complete final then narrowly verify these closures.",
     "T15 final-04-R06-diagnostic: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T15/final-04-R06-diagnostic/facts.json",
     "T15 final attempt 04: actual exit 1, 445/446, R06 worker termination acknowledgement assertion blocked vs incomplete; retain failure and compare exact source revision.",
-    "T15: Register exact-source detached R06 comparison; preserve failed final 04 and actual raw transfer preflight failure before further repairs."
+    "T15: Register exact-source detached R06 comparison; preserve failed final 04 and actual raw transfer preflight failure before further repairs.",
+    "T15 final04 R06 diagnosis: current 7/7 and exact source 5244a39 7/7; full-run termination acknowledgement failure not reproduced in isolated controls. No product/test change or waiver for R06; new full final remains required. Owned detached source comparison was clean and removed normally.",
+    "T15: Keep final04 failed and raw transfer preflight blocked until T08 original-artifact classification repair; R06 current/source controls both 7/7, no unsupported attribution or waiver."
   ]
 }
