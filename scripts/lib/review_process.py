@@ -96,6 +96,27 @@ def inspect_stream(path):
     return tools, final
 
 
+def group_has_no_live_members(pgid):
+    """A failed signal probe is not termination proof; require a complete OS snapshot."""
+    try:
+        snapshot = subprocess.run(['ps', '-A', '-o', 'pgid=', '-o', 'stat='],
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  text=True, timeout=2)
+    except (OSError, subprocess.SubprocessError, UnicodeError):
+        return False
+    rows = snapshot.stdout.splitlines()
+    if snapshot.returncode != 0 or snapshot.stderr.strip() or not rows:
+        return False
+    states = []
+    for row in rows:
+        fields = row.split()
+        if len(fields) != 2 or not fields[0].isdecimal():
+            return False
+        if int(fields[0]) == pgid:
+            states.append(fields[1])
+    return all(re.fullmatch(r'Z[<NLsl+]*', state) for state in states)
+
+
 def stop(proc):
     try: os.killpg(proc.pid, signal.SIGTERM)
     except ProcessLookupError: pass
@@ -108,7 +129,11 @@ def stop(proc):
     until = time.monotonic() + 0.5
     while time.monotonic() < until:
         try: os.killpg(proc.pid, 0)
-        except ProcessLookupError: break
+        except ProcessLookupError: return
+        except PermissionError:
+            if proc.poll() is not None and group_has_no_live_members(proc.pid):
+                return
+            raise
         time.sleep(0.02)
     try: os.killpg(proc.pid, signal.SIGKILL)
     except ProcessLookupError: pass

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {execFileSync, spawn, spawnSync} from 'node:child_process';
-import {mkdtempSync, writeFileSync, readFileSync, rmSync, mkdirSync, readdirSync, existsSync,realpathSync} from 'node:fs';
+import {mkdtempSync, writeFileSync, readFileSync, rmSync, mkdirSync, readdirSync, existsSync,realpathSync,chmodSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -281,6 +281,30 @@ test('R06 新worker不能继承旧worker的分页已读记录',async t=>{
  const deadline=Date.now()+10000;while(!existsSync(path.join(folder,'client.ready'))&&Date.now()<deadline)await new Promise(r=>setTimeout(r,50));
  assert.ok(existsSync(path.join(folder,'client.ready')),'first worker must really finish context delivery');proc.kill('SIGTERM');await closed;
  const resumed=invoke(['run','--run',f.run,'--budget-seconds','20']);assert.equal(resumed.data.status,'incomplete',JSON.stringify(resumed));assert.deepEqual(resumed.data.gaps,['critic-1 缺少完成回执']);
+});
+
+for(const view of ['absent','zombie','active','invalid','unavailable','warning'])test('R06 signal probe EPERM with '+view+' process evidence',async t=>{
+ const folder=realpathSync(mkdtempSync(path.join(tmpdir(),'review-signal-')));t.after(()=>rmSync(folder,{recursive:true,force:true}));
+ const f=fixture(t,{client:fakeClient(folder,'page-resume'),critic:'always',fixtureSpec:'### Requirement: total\n#### Scenario: empty\nempty returns zero\n'+('context detail\n'.repeat(1000))});
+ // Inject only the OS probe fault. Real workers, termination signals and the public CLI remain in use.
+ writeFileSync(path.join(folder,'sitecustomize.py'),`import os,json\nfrom pathlib import Path\noriginal=os.killpg\ndef probe(pgid,sig):\n if sig==0:\n  records=json.loads((Path(os.environ['REVIEW_FAULT_RUN'])/'segments.json').read_text())\n  if any(w['actor']=='critic-1' and w['pid']==pgid for s in records for w in s['workers']):\n   (Path(os.environ['REVIEW_FAULT_DIR'])/'pgid').write_text(str(pgid))\n   raise PermissionError(1,'injected signal probe permission error')\n return original(pgid,sig)\nos.killpg=probe\n`);
+ const ps=path.join(folder,'ps');writeFileSync(ps,`#!/bin/sh\ncase "$REVIEW_FAULT_VIEW" in\n absent) printf '1 S\\n' ;;\n zombie) printf '1 S\\n%s Z\\n' "$(cat "$REVIEW_FAULT_DIR/pgid")" ;;\n active) printf '1 S\\n%s S\\n' "$(cat "$REVIEW_FAULT_DIR/pgid")" ;;\n invalid) printf 'not-a-process-table\\n' ;;\n unavailable) exit 1 ;;\n warning) printf '1 S\\n'; printf 'partial process listing\\n' >&2 ;;\nesac\n`);chmodSync(ps,0o755);
+ const env={...process.env,PYTHONPATH:folder+(process.env.PYTHONPATH?path.delimiter+process.env.PYTHONPATH:''),PATH:folder+path.delimiter+process.env.PATH,REVIEW_FAULT_DIR:folder,REVIEW_FAULT_RUN:f.run,REVIEW_FAULT_VIEW:view};
+ const proc=spawn('python3',[cli,'run','--run',f.run,'--budget-seconds','20'],{env,stdio:['ignore','pipe','pipe']});let stdout='',stderr='';proc.stdout.on('data',x=>stdout+=x);proc.stderr.on('data',x=>stderr+=x);const closed=new Promise(resolve=>proc.on('close',(code,signal)=>resolve({code,signal})));t.after(()=>proc.kill());
+ const deadline=Date.now()+10000;
+ while(Date.now()<deadline){
+  if(existsSync(path.join(folder,'client.ready'))&&JSON.parse(readFileSync(path.join(f.run,'segments.json'),'utf8')).some(s=>s.workers.some(w=>w.actor==='critic-1')))break;
+  await new Promise(r=>setTimeout(r,50));
+ }
+ assert.ok(existsSync(path.join(folder,'client.ready')),'first worker must deliver context');proc.kill('SIGTERM');const exit=await closed;
+ assert.ok(existsSync(path.join(folder,'pgid')),'fault must be reached');
+ const segments=JSON.parse(readFileSync(path.join(f.run,'segments.json'),'utf8'));
+ const safe=['absent','zombie'].includes(view);
+ assert.equal(exit.code,1,JSON.stringify({exit,stdout,stderr})); // incomplete and blocked are both nonzero.
+ assert.equal(JSON.parse(stdout).status,safe?'incomplete':'blocked',JSON.stringify({exit,stdout,stderr}));assert.equal(Boolean(segments[0].finished),safe);
+ const resumed=invoke(['run','--run',f.run,'--budget-seconds','20']);
+ assert.equal(resumed.data.status,safe?'incomplete':'blocked',JSON.stringify(resumed));
+ if(safe)assert.deepEqual(resumed.data.gaps,['critic-1 缺少完成回执']);
 });
 
 test('R03 大校验错误也可在受控接口中完整读取',async t=>{
