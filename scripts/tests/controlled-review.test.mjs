@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {execFileSync, spawn} from 'node:child_process';
-import {mkdtempSync, writeFileSync, readFileSync, rmSync, mkdirSync, readdirSync, existsSync} from 'node:fs';
+import {execFileSync, spawn, spawnSync} from 'node:child_process';
+import {mkdtempSync, writeFileSync, readFileSync, rmSync, mkdirSync, readdirSync, existsSync,realpathSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -13,10 +13,11 @@ function invoke(args) {
   catch(e) {let data;try{data=JSON.parse(String(e.stdout))}catch{data={error:String(e.stderr)}} return {code:e.status,data};}
 }
 function fixture(t, extra={}) {
- const dir=mkdtempSync(path.join(tmpdir(),'controlled-review-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
+ const dir=realpathSync(mkdtempSync(path.join(tmpdir(),'controlled-review-')));t.after(()=>rmSync(dir,{recursive:true,force:true}));
  const repo=path.join(dir,'repo');mkdirSync(repo);
  const git=(...a)=>execFileSync('git',a,{cwd:repo,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
  git('init','-q');git('config','user.email','test@example.invalid');git('config','user.name','test');
+ writeFileSync(path.join(repo,'.gitignore'),'.spec-dev/**/execution/\n');
  writeFileSync(path.join(repo,'spec.md'),extra.fixtureSpec || '### Requirement: total\n#### Scenario: empty\nempty returns zero\n');
  writeFileSync(path.join(repo,'plan.md'),'Implement total.\n');
  writeFileSync(path.join(repo,'cart.py'),'def total(values):\n    return sum(values)\n');
@@ -25,11 +26,17 @@ function fixture(t, extra={}) {
  writeFileSync(path.join(repo,'cart.py'),'def total(values):\n    return sum(values) + 1\n');git('add','.');git('commit','-qm','change');
  const run=path.join(dir,'run');const config={repo,base,head:git('rev-parse','HEAD'),spec:'spec.md',plan:'plan.md',tier:'regular',capacity:2,tests:[{id:'related',argv:['python3','check.py']}],...extra};
  delete config.fixtureSpec;const expectInitError=config.expectInitError;delete config.expectInitError;
+ const prepareEvidence=config.prepareEvidence;delete config.prepareEvidence;if(prepareEvidence)config.evidence=prepareEvidence({repo,head:config.head});
  const cp=path.join(dir,'config.json');writeFileSync(cp,JSON.stringify(config));
  const initialized=invoke(['init','--config',cp,'--run',run]);
- if(expectInitError) return {dir,repo,run,config,init:initialized};
+ if(expectInitError) return {dir,repo,run,config,init:initialized,git};
  assert.equal(initialized.code,0,`生产CLI必须建立固定run: ${JSON.stringify(initialized.data)}`);
- return {dir,repo,run,config};
+ return {dir,repo,run,config,git};
+}
+function prepareReceipt({repo}){
+ const feature=path.join(repo,'.spec-dev/review-fixture');mkdirSync(feature,{recursive:true});
+ const r=spawnSync(process.execPath,[path.join(root,'scripts/execution-evidence.mjs'),'record','--feature',feature,'--task','T01','--phase','green','--attempt','actual','--',process.execPath,'-e','require("node:assert/strict").match(require("node:fs").readFileSync("cart.py","utf8"),/sum/);console.log("real external stdout");console.error("real external stderr")'],{cwd:repo,encoding:'utf8'});
+ assert.equal(r.status,0,r.stdout+r.stderr);return [{task:'T01',phase:'green',feature,record_path:JSON.parse(r.stdout).record}];
 }
 async function broker(t,run,actor) {
  const p=spawn('python3',[cli,'broker','--run',run,'--actor',actor],{stdio:['pipe','pipe','pipe']});
@@ -374,10 +381,41 @@ test('S3.2 零发现时无反驳无critic即可完成',t=>{
  assert.equal(r.data.status,'completed',JSON.stringify(r));assert.ok(!r.data.tasks.some(x=>/^(refute|critic)-/.test(x.actor)));
 });
 test('S3.3 tests 为空时以宿主 evidence 为证据',async t=>{
- const evidence=[{task:'T01',phase:'green',command:['node','--test','x.test.mjs'],exit_code:0,stdout_sha256:'a'.repeat(64),stderr_sha256:'b'.repeat(64)}];
- const f=fixture(t,{tests:[],evidence});const b=await broker(t,f.run,'AS');
- const c=await b.call('context');assert.equal(c.error,false);assert.deepEqual(c.data.execution_evidence,evidence);
+ const f=fixture(t,{tests:[],prepareEvidence:prepareReceipt});const b=await broker(t,f.run,'AS');
+ const c=await b.call('context');assert.equal(c.error,false);assert.equal(c.data.execution_evidence[0].stdout,'real external stdout\n');assert.equal(c.data.execution_evidence[0].exit_code,0);assert.match(c.data.execution_evidence[0].id,/^[a-f0-9]{64}$/);
  const r=await b.call('submit_report',cleanReport());assert.equal(r.error,false,JSON.stringify(r));
+});
+test('S19 hash-shaped self-report without originals is rejected',t=>{
+ const evidence=[{task:'T01',phase:'green',command:['node','--test','x.test.mjs'],exit_code:0,stdout_sha256:'a'.repeat(64),stderr_sha256:'b'.repeat(64)}];
+ const f=fixture(t,{tests:[],evidence,expectInitError:true});assert.notEqual(f.init.code,0);assert.match(JSON.stringify(f.init.data),/receipt|record|evidence|原件/i);
+});
+for(const defect of ['stdout','task','phase','escape'])test('S19 external receipt rejects '+defect,t=>{
+ const f=fixture(t,{tests:[],expectInitError:true,prepareEvidence:input=>{
+  const refs=prepareReceipt(input),ref=refs[0];
+  if(defect==='stdout'){const record=JSON.parse(readFileSync(path.join(ref.feature,ref.record_path)));writeFileSync(path.join(ref.feature,record.stdout),'forged');}
+  if(defect==='task')ref.task='T02';if(defect==='phase')ref.phase='final';if(defect==='escape')ref.record_path='../outside.json';return refs;
+ }});
+ assert.notEqual(f.init.code,0);assert.match(JSON.stringify(f.init.data),/receipt|hash|path|phase|task/);
+});
+test('S19 imported originals survive source deletion and remain hash protected',async t=>{
+ const f=fixture(t,{tests:[],prepareEvidence:prepareReceipt}),ref=f.config.evidence[0];rmSync(path.join(ref.feature,'execution'),{recursive:true});
+ const b=await broker(t,f.run,'AS'),c=await b.call('context');assert.equal(c.error,false,JSON.stringify(c));assert.equal(c.data.execution_evidence[0].stderr,'real external stderr\n');
+ const object=path.join(f.run,'objects',c.data.execution_evidence[0].stdout_object+'.json');writeFileSync(object,readFileSync(object,'utf8')+' ');
+ assert.equal(invoke(['status','--run',f.run]).data.status,'blocked');
+});
+for(const file of ['cart.py','check.py','spec.md'])test('S16 changed contract or command input cannot import an old receipt: '+file,t=>{
+ const f=fixture(t,{tests:[],prepareEvidence:prepareReceipt});writeFileSync(path.join(f.repo,file),'changed assertion or contract\n');f.git('add',file);f.git('commit','-qm','candidate changed');
+ const cp=path.join(f.dir,'new-config.json');writeFileSync(cp,JSON.stringify({...f.config,head:f.git('rev-parse','HEAD')}));
+ const r=invoke(['init','--config',cp,'--run',path.join(f.dir,'next-run')]);assert.notEqual(r.code,0);assert.match(JSON.stringify(r.data),/verification inputs changed/);
+});
+test('S16 progress-only commit requires a new strict run but permits evidence reuse',t=>{
+ const f=fixture(t,{tests:[],prepareEvidence:prepareReceipt}),ref=f.config.evidence[0],progress=path.join(ref.feature,'plan/progress.yaml');mkdirSync(path.dirname(progress),{recursive:true});writeFileSync(progress,'{"notes":["resumed"]}\n');
+ f.git('add',path.relative(f.repo,progress));f.git('commit','-qm','progress only');
+ assert.equal(invoke(['status','--run',f.run]).data.status,'blocked');
+ const cp=path.join(f.dir,'next-config.json'),run=path.join(f.dir,'next-run');writeFileSync(cp,JSON.stringify({...f.config,head:f.git('rev-parse','HEAD')}));
+ const r=invoke(['init','--config',cp,'--run',run]);assert.equal(r.code,0,JSON.stringify(r));
+ const manifest=JSON.parse(readFileSync(path.join(run,'manifest.json')));assert.ok(manifest.runtime_hashes['scripts/lib/execution-evidence.mjs']);assert.ok(manifest.runtime_hashes['guardrail/lib/record-data.mjs']);
+ assert.notEqual(manifest.id,JSON.parse(readFileSync(path.join(f.run,'manifest.json'))).id);
 });
 test('S3.5 critic=always 零发现仍派critic',t=>{
  const folder=mkdtempSync(path.join(tmpdir(),'review-client-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));

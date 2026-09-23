@@ -92,6 +92,21 @@ def test_view(record):
     return view
 
 
+def external_view(run, reference):
+    saved = object_get(run, reference['id'])
+    if saved['kind'] != 'external-receipt': raise ValueError('导入回执对象类型不符')
+    view = {**saved['verification']['record'], 'id': saved['id'], 'source': saved['reference']}
+    for name in ['stdout', 'stderr']:
+        stored = object_get(run, saved[name + '_object'])
+        raw = base64.b64decode(stored['base64'], validate=True)
+        if stored['kind'] != 'external-stream' or stored['stream'] != name or digest(raw) != view[name + '_sha256']:
+            raise ValueError('导入原始输出对象不符')
+        view[name] = raw.decode(errors='replace')
+        view[name + '_object'] = stored['id']
+        if view[name].encode() != raw: view[name + '_base64'] = stored['base64']
+    return view
+
+
 def context(run, actor):
     data = verify(run)
     all_tasks = tasks(run)
@@ -128,7 +143,7 @@ def context(run, actor):
             'spec': data['texts'][data['spec']], 'plan': data['texts'][data['plan']],
             'source_documents': documents,
             'architecture_scope': [ref for trigger in triggers for ref in trigger['citations']], 'architecture_sources': triggers,
-            'execution_evidence': data.get('evidence', []),
+            'execution_evidence': [external_view(run, ref) for ref in data.get('evidence', [])],
             'reports': reports, 'test_receipts': evidence, 'pending_report': report_get(run, actor),
             'note': '路径和行号取read_source实际原文；测试仅run_test。报告submitted不等于进程完成。'}
 

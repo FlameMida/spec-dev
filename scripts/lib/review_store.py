@@ -7,6 +7,7 @@ import os
 import tempfile
 import time
 import re
+import base64
 from contextlib import contextmanager
 import fcntl
 from pathlib import Path
@@ -37,6 +38,47 @@ def snapshot(repo):
             files[name] = None
     return {'head': git(repo, 'rev-parse', 'HEAD').decode().strip(), 'files': files,
             'status': git(repo, 'status', '--porcelain=v1').decode()}
+
+
+def verify_external_receipt(plugin, repo, head, ref):
+    expected = {'task', 'phase', 'feature', 'record_path'}
+    if not isinstance(ref, dict) or set(ref) != expected or not all(isinstance(v, str) for v in ref.values()):
+        raise ValueError('evidence必须为execution回执数组（引用真实record及原件）')
+    result = subprocess.run(['rtk', 'proxy', 'node', str(plugin / 'scripts/execution-evidence.mjs'),
+                             'verify', '--feature', ref['feature'], '--record', ref['record_path'],
+                             '--candidate', head], cwd=repo, capture_output=True, text=True)
+    if result.returncode:
+        raise ValueError('external receipt invalid: ' + result.stderr + result.stdout)
+    checked = json.loads(result.stdout)
+    if not checked.get('ok'):
+        raise ValueError('external receipt unverified')
+    if checked['record']['task'] != ref['task'] or checked['record']['phase'] != ref['phase']:
+        raise ValueError('external receipt task/phase mismatch')
+    feature = Path(ref['feature']).resolve(strict=True)
+
+    def read_original(relative, expected_hash=None):
+        file = feature / relative
+        if not file.is_relative_to(feature) or file.resolve(strict=True) != file:
+            raise ValueError('external receipt original path alias')
+        raw = file.read_bytes()
+        if expected_hash is not None and digest(raw) != expected_hash:
+            raise ValueError('external receipt original hash mismatch')
+        return raw
+
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result: raise ValueError('duplicate receipt JSON key')
+            result[key] = value
+        return result
+
+    record_raw = read_original(checked['record_path'])
+    if json.loads(record_raw, object_pairs_hook=unique) != checked['record']:
+        raise ValueError('external receipt changed after verification')
+    streams = {name: read_original(checked['files'][name]['path'], checked['files'][name]['sha256'])
+               for name in ['stdout', 'stderr']}
+    return {'reference': ref, 'verification': checked, 'record_base64': base64.b64encode(record_raw).decode(),
+            'verification_base64': base64.b64encode(result.stdout.encode()).decode(), 'streams': streams}
 
 
 def initialize(run, config):
@@ -70,13 +112,7 @@ def initialize(run, config):
         if set(item) != {'id', 'argv'} or not item['argv'] or not all(isinstance(x, str) for x in item['argv']):
             raise ValueError('tests必须为id及固定argv')
     evidence = config.get('evidence', [])
-    keys = {'task', 'phase', 'command', 'exit_code', 'stdout_sha256', 'stderr_sha256'}
-    def evidence_ok(x):
-        return (isinstance(x, dict) and set(x) == keys and isinstance(x['task'], str) and isinstance(x['phase'], str)
-                and isinstance(x['command'], list) and bool(x['command']) and all(isinstance(c, str) for c in x['command'])
-                and type(x['exit_code']) is int
-                and all(isinstance(x[k], str) and re.fullmatch('[0-9a-f]{64}', x[k]) for k in ['stdout_sha256', 'stderr_sha256']))
-    if not isinstance(evidence, list) or not all(evidence_ok(x) for x in evidence):
+    if not isinstance(evidence, list):
         raise ValueError('evidence必须为execution回执数组')
     if not config['tests'] and not evidence:
         raise ValueError('tests为空时必须提供evidence')
@@ -85,19 +121,36 @@ def initialize(run, config):
     critic = config.get('critic', 'always' if tier == 'large' else 'on-findings')
     if critic not in ['on-findings', 'always']:
         raise ValueError('critic必须为on-findings或always')
+    plugin = Path(__file__).resolve().parents[2]
+    originals = [verify_external_receipt(plugin, repo, head, ref) for ref in evidence]
+    if snapshot(repo) != state:
+        raise ValueError('导入期间被审快照发生变化')
     run.mkdir(parents=True)
     (run / 'objects').mkdir()
     (run / 'actors').mkdir()
-    plugin = Path(__file__).resolve().parents[2]
     source_paths = ['agents/code-reviewer.md', 'skills/executing-plans/references/review-orchestration.md', 'skills/writing-plans/references/design-principles.md']
     candidate_sources = {name: (plugin / name).read_text() for name in source_paths}
     runtime_paths = ['scripts/review-runner.py', 'scripts/lib/review_store.py', 'scripts/lib/review_broker.py', 'scripts/lib/review_process.py', 'scripts/validate-output.mjs', 'scripts/lib/parallel-plan.mjs', 'scripts/schemas/review-findings.json']
+    runtime_paths += ['scripts/execution-evidence.mjs', 'scripts/lib/execution-evidence.mjs',
+                      'scripts/lib/integration-plan.mjs', 'scripts/lib/delivery-proof.mjs',
+                      'guardrail/lib/record-data.mjs', 'guardrail/lib/write-paths.mjs',
+                      'guardrail/lib/task-scopes.mjs', 'guardrail/lib/task-binding.mjs']
     runtime_hashes = {name: digest((plugin / name).read_bytes()) for name in runtime_paths}
     data = {**config, 'runtime_hashes': runtime_hashes, 'candidate_sources': candidate_sources, 'repo': str(repo), 'base': base, 'head': head, 'id': uuid.uuid4().hex,
             'roles': roles, 'snapshot': state, 'texts': texts, 'diff': diff, 'critic': critic, 'evidence': evidence,
             'plugin_root': str(Path(__file__).resolve().parents[2])}
     for ref in data.get('d_request', []):
         citation(data, ref)
+    sealed = []
+    for original in originals:
+        streams = original.pop('streams')
+        for name, raw in streams.items():
+            stored = object_put(run, 'external-stream', 'host',
+                                {'stream': name, 'sha256': digest(raw), 'base64': base64.b64encode(raw).decode()}, run_id=data['id'])
+            original[name + '_object'] = stored['id']
+        stored = object_put(run, 'external-receipt', 'host', original, run_id=data['id'])
+        sealed.append({'id': stored['id']})
+    data['evidence'] = sealed
     (run / 'manifest.json').write_bytes(encode(data))
     (run / 'manifest.sha256').write_text(digest(encode(data)))
     for name in runtime_paths:
@@ -136,8 +189,8 @@ def lock(path, blocking=True):
         finally: fcntl.flock(f, fcntl.LOCK_UN)
 
 
-def object_put(run, kind, actor, payload):
-    data = {'kind': kind, 'run': manifest(run)['id'], 'actor': actor, **payload}
+def object_put(run, kind, actor, payload, *, run_id=None):
+    data = {'kind': kind, 'run': run_id if run_id is not None else manifest(run)['id'], 'actor': actor, **payload}
     raw = encode(data); key = digest(raw)
     path = run / 'objects' / (key + '.json')
     if path.exists():
