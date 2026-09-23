@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": null,
+  "current": "T15",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -180,7 +180,7 @@
       "tests": "pass"
     },
     "T15": {
-      "status": "completed",
+      "status": "in_progress",
       "evidence_paths": [
         "execution/tasks/T15/final-20260923T150346-95972/record.json",
         "execution/tasks/T15/final-20260923T151646-79243/record.json",
@@ -356,6 +356,7 @@
     "T08: R6 independently confirmed: explicit delivery receipt references must be parsed regardless of filename suffix. Reuse real v1 disposition/squash fixture in plan-state tests to assert full transfer closure for an extensionless receipt.",
     "T08 review-R6-red: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/review-R6-red/facts.json",
     "T08 review-R6-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/review-R6-green/facts.json",
-    "T08: R6 fixed in aa88d02: explicitly registered delivery receipts parsed irrespective of suffix; real nonzero v1 squash plus extensionless transfer retains comparison/authorization; 13/13 targeted including full transfer suite and existing group cleanup proof."
+    "T08: R6 fixed in aa88d02: explicitly registered delivery receipts parsed irrespective of suffix; real nonzero v1 squash plus extensionless transfer retains comparison/authorization; 13/13 targeted including full transfer suite and existing group cleanup proof.",
+    "T15: R5 blob/multi-ref residual and new R6 independently confirmed and repaired; prior 438-pass final retained as stale for this new candidate. Run fresh complete final then narrowly verify these closures."
   ]
 }
