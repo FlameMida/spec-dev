@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T08",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -76,7 +76,15 @@
       "tests": "pass"
     },
     "T08": {
-      "status": "in_progress"
+      "status": "completed",
+      "evidence_paths": [
+        "execution/T08/red-01/facts.json",
+        "execution/T08/green-01/facts.json",
+        "execution/T08/green-02/facts.json",
+        "execution/T08/green-03/facts.json"
+      ],
+      "commit": "d60b3ef6d74224a9c910532c7e54490c0d24a323",
+      "tests": "pass"
     },
     "T09": {
       "status": "pending"
@@ -153,6 +161,11 @@
     "T07 red-01: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T07/red-01/facts.json",
     "T07 red-02: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T07/red-02/facts.json",
     "T07 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T07/green-01/facts.json",
-    "T07: 10/10 real group recorder and Receipt v1 scenarios; exit7, signal and dirty outcomes preserved without staging logs."
+    "T07: 10/10 real group recorder and Receipt v1 scenarios; exit7, signal and dirty outcomes preserved without staging logs.",
+    "T08 red-01: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/red-01/facts.json",
+    "T08 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/green-01/facts.json",
+    "T08 green-02: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/green-02/facts.json",
+    "T08 green-03: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/green-03/facts.json",
+    "T08: 19/19 transfer and execution cases. A real partial publication permission failure retained staging and resumed. Plan calls the historical group record ten-field, but the existing reference has nine named fields; preserved the exact existing schema instead of inventing a tenth."
   ]
 }
