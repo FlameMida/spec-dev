@@ -185,6 +185,11 @@
       "id": "workflow-S25-unknown-contract",
       "prompt": "已决定修一个问题，但现有证据不足以判断会不会改变契约。",
       "expected_output": "未知不归入“不变”分支；保留原始输出与候选，回到澄清/升级，由用户裁决真实取舍，不伪造根因或守卫放行。"
+    },
+    {
+      "id": "workflow-S26-bound-quick-fix",
+      "prompt": "契约不变的小修已有有效任务绑定且完全在writes内，强制读取guardrail-handling后准备提交；另两例绑定已过期、以及确无绑定但有明确例外授权。",
+      "expected_output": "有效绑定例正常提交并保留Spec-Task，不混用off；过期例阻断并沿授权修订重绑，不clear或shell绕过；只有无关联且已授权例外才使用off环境变量和Spec-Guard trailer。"
     }
   ]
 }
