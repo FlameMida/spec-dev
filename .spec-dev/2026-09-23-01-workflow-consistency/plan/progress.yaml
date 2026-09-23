@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T14",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -145,7 +145,7 @@
       "tests": "pass"
     },
     "T14": {
-      "status": "in_progress",
+      "status": "completed",
       "evidence_paths": [
         "execution/T14/red-binding-audit/facts.json",
         "execution/T14/combined-01/facts.json",
@@ -153,7 +153,9 @@
         "execution/T14/combined-02/facts.json",
         "execution/T14/metadata-commits/facts.json",
         "execution/T14/red-review-object-transfer/facts.json"
-      ]
+      ],
+      "commit": "951fc36b0be5e04a2852f7ad94e6bfe92bd3bd31",
+      "tests": "pass"
     },
     "T15": {
       "status": "pending"
@@ -269,6 +271,7 @@
     "T08: Reopened for registered review-object transfer: inline stdout/stderr are raw bytes, not execution file references. Prior d60b3ef implementation and receipts preserved.",
     "T08 green-review-object-repair: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T08/green-review-object-repair/facts.json",
     "T08: T14 interoperability correction 38d658c: 20/20 transfer/receipt tests pass, including inline review stdout/base64 handling while formal receipt paths remain strict.",
-    "T14: Resumed after T08 correction. Source main HEAD and protected hooks hash were rechecked and still exactly match T00; no source branch writes. Scenario ledger is targeted evidence, not final/review completion."
+    "T14: Resumed after T08 correction. Source main HEAD and protected hooks hash were rechecked and still exactly match T00; no source branch writes. Scenario ledger is targeted evidence, not final/review completion.",
+    "T14: 94/94 composed tests, then 20/20 affected transfer tests after interoperability correction; package and committed metadata-pair checks passed. 16 partial markers prepared in 7 active specs, no tests retired. Coverage ledger: execution/T14/scenario-coverage.json. Final and independent review remain pending."
   ]
 }
