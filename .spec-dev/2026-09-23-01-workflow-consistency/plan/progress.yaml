@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T15",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -160,10 +160,13 @@
       "tests": "pass"
     },
     "T15": {
-      "status": "in_progress",
+      "status": "completed",
       "evidence_paths": [
-        "execution/tasks/T15/final-20260923T150346-95972/record.json"
-      ]
+        "execution/tasks/T15/final-20260923T150346-95972/record.json",
+        "execution/tasks/T15/final-20260923T151646-79243/record.json"
+      ],
+      "commit": "a5cd67fd3e4d1a248e0678d6215fd890bfa0b36f",
+      "tests": "pass"
     },
     "T16": {
       "status": "pending"
@@ -191,7 +194,8 @@
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T13/ —— retain original task receipts through transfer",
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/ —— retain original task receipts through transfer",
     "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T15/ —— retain original task receipts through transfer",
-    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/tasks/T15/ —— retain formal final Receipt and every attempt through transfer"
+    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/tasks/T15/ —— retain formal final Receipt and every attempt through transfer",
+    "evidence: .spec-dev/2026-09-23-01-workflow-consistency/execution/T15/review/ —— retain independent native review reports, reproducers and disposition receipts"
   ],
   "notes": [
     "2026-09-23 用户确认 spec 定稿并授权编写计划；本记录尚不是实施授权。",
@@ -290,6 +294,8 @@
     "T13: Final repair: update the old summary assertion to check trigger/responsibility in metadata and keep the 200-line rule verified in reachable canonical policy. This test path omission is corrected within the approved rule-relocation scope; no constraint removed.",
     "T13 green-final-repair: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T13/green-final-repair/facts.json",
     "T13: Final repair: 23/23 affected tests pass, including real 200-line CLI boundaries. Compact metadata retains entry responsibility, and the unchanged 200-line constraint remains checked through canonical reachable policy.",
-    "T15: Resumed after introduced documentation failures were compared against the exact clean source and corrected in T12/T13. Keep the first full exit1 receipt; rerun full suite on the new candidate before independent review."
+    "T15: Resumed after introduced documentation failures were compared against the exact clean source and corrected in T12/T13. Keep the first full exit1 receipt; rerun full suite on the new candidate before independent review.",
+    "T15 final attempt 2: {'tests': 420, 'pass': 420, 'fail': 0, 'cancelled': 0, 'skipped': 0}; formal record execution/tasks/T15/final-20260923T151646-79243/record.json verified against a5cd67fd3e4d1a248e0678d6215fd890bfa0b36f. F is verified; independent large-tier review is still pending and T16 must not begin before it and reconciliation finish.",
+    "T15: F complete only: final attempt 2 passed 420/420 with zero skips and actual exit_code=0. Independent review, reconciliation and T16 delivery remain outstanding."
   ]
 }
