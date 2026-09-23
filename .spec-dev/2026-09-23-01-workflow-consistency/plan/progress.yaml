@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T01",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -8,7 +8,12 @@
       "tests": "pass"
     },
     "T01": {
-      "status": "in_progress"
+      "status": "completed",
+      "evidence_paths": [
+        "execution/T01/green-01/facts.json"
+      ],
+      "commit": "2418aaf49d4a5c0a1409cc82e48e8504f81d75e7",
+      "tests": "pass"
     },
     "T02": {
       "status": "pending"
@@ -72,6 +77,8 @@
     "本计划默认串行；parallel 声明只表达可选资格，尚无用户选择或运行状态。",
     "2026-09-23 用户明确回复“开始吧”，授权按本计划默认串行执行。",
     "T00.binding={\"source_worktree\": \"/Users/maverick/feature-dev\", \"source_branch\": \"main\", \"source_head\": \"5244a3989e68c4c740b1fc694c913c343d5fbacc\", \"implementation_worktree\": \"/Users/maverick/feature-dev/.worktrees/workflow-consistency\", \"implementation_branch\": \"codex/workflow-consistency\", \"ownership\": \"created\", \"mechanism\": \"manual\", \"source_dirty_sha256\": \"89fae26d666a0d183794e0785a64b2361a82657959caa25035fa1258164a5020\", \"source_status\": \" M hooks/hooks.json\\n\"}",
-    "T00: 相关基线 142/142，0 skipped，98.024秒；原始记录 execution/T00/baseline-01/record.json。使用 Git 手工隔离，当前未提供原生工作区生命周期工具。"
+    "T00: 相关基线 142/142，0 skipped，98.024秒；原始记录 execution/T00/baseline-01/record.json。使用 Git 手工隔离，当前未提供原生工作区生命周期工具。",
+    "T01 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T01/green-01/facts.json",
+    "T01: 重构前绿复用 T00 同内容基线；重构后 64/64，官方 Codex 安装、15技能及 openai 同步 pre-commit 通过。"
   ]
 }
