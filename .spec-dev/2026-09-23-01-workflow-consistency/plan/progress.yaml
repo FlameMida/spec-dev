@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T03",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -26,7 +26,13 @@
       "tests": "pass"
     },
     "T03": {
-      "status": "in_progress"
+      "status": "completed",
+      "evidence_paths": [
+        "execution/T03/red-01/facts.json",
+        "execution/T03/green-01/facts.json"
+      ],
+      "commit": "edf3c5bc75335c45084098828df063940742bb20",
+      "tests": "pass"
     },
     "T04": {
       "status": "pending"
@@ -92,6 +98,9 @@
     "T02 red-01: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T02/red-01/facts.json",
     "T02 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T02/green-01/facts.json",
     "T02 green-02: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T02/green-02/facts.json",
-    "T02: 34/34 targeted tests; valid red and static-fingerprint checks retained."
+    "T02: 34/34 targeted tests; valid red and static-fingerprint checks retained.",
+    "T03 red-01: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T03/red-01/facts.json",
+    "T03 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T03/green-01/facts.json",
+    "T03: 51/51 actual Git binding and v2 state tests; red reproduced unknown binding rejection."
   ]
 }
