@@ -1,6 +1,6 @@
 interface:
   display_name: "Acceptance QA"
-  short_description: "功能、页面和接口验收及交互诊断；不用于日常测试、TDD 或文档审查；复用执行回执不复跑。"
+  short_description: "矩阵驱动验收与诊断；核验并复用有效原件，按档位审计 pass，缺口明确保留。"
   default_prompt: "Use $acceptance-qa to run acceptance on the target feature, page or endpoint. Provide a clear target description (URL, endpoint or feature) so the workflow can assemble the right acceptance matrix. / 用 $acceptance-qa 验收目标功能、页面或接口；请提供明确目标（URL、端点或功能描述）以装配验收矩阵。"
 
 policy:

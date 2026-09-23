@@ -38,7 +38,7 @@
    pytest 插件等），拿不准时询问用户；
 2) 无工具 → 范围 = 本特性将新增/修改的测试文件 + 直接 import/require 被改源文件的既有测试（grep 导入语句判定，一层即止，不做传递闭包）；不按目录 glob 圈入无关测试。
 纯文档特性（`covers` 为空数组或全为文档路径）→ 显式声明为空并注明原因。
-本声明约束任务 0 基线验证与各任务步骤 4（只跑本任务目标测试与本范围内的自有测试，回归不在任务内跑）；最终任务的全量验证不受本节约束（全量安全网，每特性一次）。]
+本声明约束任务 0 基线验证与各任务步骤 4（只跑本任务目标测试与本范围内的自有测试，回归不在任务内跑）；独立 final 验证票 F 的全量不受本节约束。F 先于审查与验收，后续修复按影响补验，不把“一次全量”解释成禁止重新验证。]
 
 ---
 ```
@@ -67,7 +67,71 @@ resources:              # 资源台账（唯一登记处；最终任务清理步
 notes: []               # 偏差与备注，append-only
 ```
 
-状态枚举：pending | in_progress | completed | blocked。写入纪律：每任务完成后原子更新（整文件重写）并随任务提交；worktree 合并不携带本文件冲突——它是执行档案，最终任务把它随特性目录归档。`resources` 键即**资源台账规范定义点**（生成时预登记 worktree 行、执行中创建即追加；最终任务清理遍历此清单）。
+状态枚举：pending | in_progress | completed | blocked。主线程用同目录临时文件 + rename 原子保存，再单独提交；completed.commit 指已经存在的实现或验证 SHA，不自引用。in_progress 可无完成 SHA；串行先恢复 current（blocked 先处理阻塞），没有当前任务才取 ready。progress 不由 implementer 合并覆盖。`resources` 键即**资源台账规范定义点**（生成时预登记，创建即追加，交付时逐条核对）。
+
+## 静态任务范围与能力标识（唯一定义点）
+
+每份新计划在 index 放一个 `json spec-dev-scopes` 块。示例的 T01 为实施、T02 为 F、T03 为验收 A、T04 为最大号交付 D；真实任务号、路径与授权来源由生成者填实。F 的依赖闭包覆盖全部实施/组出口，A 依赖 F，D 依赖 F 与所有 A；F 不依赖 A/D。
+
+```json spec-dev-scopes
+{"version":1,"final_task":"T02","acceptance_tasks":["T03"],"tasks":{"T01":{"writes":["src/cart.mjs","tests/cart.test.mjs"],"specs":[".spec-dev/cart/spec/cart-design.md"],"authorization_ref":"已核实的计划执行授权来源"}}}
+```
+
+`tasks` 中每项仅有 `writes/specs/authorization_ref`；实施写集非空，主线程隔离/验证/交付可为空；specs 非空。路径是精确仓库相对文件名，拒绝 glob、目录、逃逸、重复键/块与大小写/Unicode 碰撞。`.git` 永不授权；主线程管理任务可列精确 `.spec-dev` 文件，implementer 不可。新 parallel 块只列 resources，writes 从本块读取；同一任务有两份 writes 即拒绝。没有 scopes 的历史 parallel 声明仍按原形读取。
+
+运行 `node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" plan-index <实际plan目录>`；含 scopes 时必须同时取得 `ok:true` 与 `scope_protocol_version:1`。旧工具仅返回 ok 不证明能力；缺能力停止新协议动作并报告缺口。引导计划未声明新块时不伪造能力回执。
+
+静态指纹由 `guardrail/lib/task-scopes.mjs` 的 `scopeFingerprint(view,plan,task)` 计算，覆盖计划、任务正文与关联 spec。progress 和 execution 不混入静态范围；旧单文件仅归一化已识别任务内复选框的状态字符，保留正文、代码样例及所有授权内容。
+
+## 绑定与激活（唯一定义点）
+
+分文件 `tasks.TNN.binding` 仅含 `{scope_commit,scope_digest,authorization_ref,worktree,branch,claim_key,claim_checkpoint}`。scope_commit 是已经提交的静态版本，digest 由上述函数实算；worktree/branch 来自实际 Git，串行 claim 两项为 null。主线程核对已有用户授权、写入 in_progress/current 与 binding 后独立提交，得到 authority SHA，再激活本地引用。字段非空不证明用户授权或行为符合性。
+
+生成每张需写入的票时，把以下顺序及实际变量值写全：
+
+1. 提交 spec/plan/任务范围；用 `git show <scope_commit>:<路径>` 的原始内容构造 view（不能 trim blob），计算 digest。
+2. 主线程原子写入 binding 与任务状态，`git add -- <实际progress路径>` 后单独 commit；取得 `git rev-parse HEAD` 为 authority，不能把它回填进同一个提交。
+3. `node <实际task-binding.mjs路径> bind --plan <仓库相对入口> --task TNN --authority <完整SHA>`；再 `inspect` 核对回执。插件路径为 `guardrail/task-binding.mjs`，独立安装路径为 `scripts/spec-dev/task-binding.mjs`。
+4. 实施提交由 prepare-commit-msg 补单行 `Spec-Task: {"plan":...,"task":...,"authority":...}`，commit-msg 核对最终消息；普通 `Spec:` 只作追溯，不能代替绑定。任务关联不能混用宽跳过。
+5. 实现与验证提交已存在后，`clear --plan <入口> --task TNN` 清本地引用，再原子保存 completed 与该既存 SHA、独立提交进度。切票、范围过期或恢复时先核对旧引用，不能覆盖其他任务引用。
+
+普通分文件串行任务的实际绑定写入如下；生成计划时填写四个真实参数，并把随后的窄暂存/状态提交、取得 authority、bind 命令写全。v2 仍在既有主线程锁内调用；并发由主线程按 claim 检查点生成绑定，不使用此串行片段。
+
+```javascript
+// node --input-type=module - <实际lib/task-binding.mjs> <实际仓库根> <计划相对入口> <任务ID>
+import fs from 'node:fs';
+import path from 'node:path';
+import {pathToFileURL} from 'node:url';
+const [library,repo,plan,task]=process.argv.slice(2),url=pathToFileURL(library);
+const {git,commitView,worktreeView}=await import(url.href);
+const {readScopes,scopeFingerprint}=await import(new URL('./task-scopes.mjs',url).href);
+const {parseRecord}=await import(new URL('./record-data.mjs',url).href);
+const file=path.join(repo,path.dirname(plan),'progress.yaml'),state=parseRecord(fs.readFileSync(file,'utf8'));
+if(state.execution||!state.tasks[task]||['completed','blocked'].includes(state.tasks[task].status)||(state.current!==null&&state.current!==task))throw Error('resolve current/blocked state before binding');
+const scope_commit=git(repo,'rev-parse','HEAD'),view=commitView(repo,scope_commit);
+const scope=readScopes(view.readText(plan),Object.keys(state.tasks)).tasks[task];
+const scope_digest=scopeFingerprint(view,plan,task).digest;
+if(scopeFingerprint(worktreeView(repo),plan,task).digest!==scope_digest)throw Error('static inputs must be committed');
+state.tasks[task].binding={scope_commit,scope_digest,authorization_ref:scope.authorization_ref,worktree:fs.realpathSync(repo),branch:git(repo,'branch','--show-current'),claim_key:null,claim_checkpoint:null};
+state.tasks[task].status='in_progress';state.current=task;
+fs.writeFileSync(file+'.tmp',JSON.stringify(state,null,2)+'\n',{flag:'wx'});fs.renameSync(file+'.tmp',file);
+```
+
+本地引用由工具写到实际 Git dir 的 `spec-dev-task.json`，仅含 `{version:1,plan,task,authority,worktree,branch}`。并发 claim_checkpoint 指主线程保存真实 claim 的提交，可以不在 implementer 的祖先链上；scope_commit 必须先于 validated_commit，不能为适配绑定移动验证基线。主线程在 claim/工作区建立后保存绑定与 authority，才允许 implementer 激活。
+
+旧计划恢复不重写 completed、历史提交或原件：先核对已有授权，再在原载体补当前/未执行任务范围和必要步骤。旧单文件继续使用复选框，以稳定 TNN 选任务，authority 指原计划的已提交范围版本；不新增 progress。缺版本、路径或授权证据时报告具体缺口，不批量迁移。
+
+## 回执与交付映射（唯一定义点）
+
+未提交的 TDD 红绿保留原始工具输出与工作副本记录，不伪绑提交 SHA；正式 record 要求业务版本已提交。普通 Receipt v1：`{version:1,task,phase,command,cwd,exit_code,commit,tree,scope,stdout,stderr,stdout_sha256,stderr_sha256}`。phase 为 baseline/red/green/final/integration；scope 为 `{kind:"repository",outputs:[]}` 或获批精确验证范围 `{kind:"paths",paths:[...],digest,outputs:[]}`。默认覆盖全仓，仅排除本特性 progress/execution；outputs 只允许显式生成的 `acceptance/acceptance-report.md`，该文件若作为测试输入则不能排除。旧组记录保留现有九个原字段与 bytes，不补造字段。
+
+`execution-evidence.mjs record --feature <绝对特性目录> --task TNN --phase <phase> --attempt <唯一名> [--output acceptance/acceptance-report.md] -- <真实argv>` 真正执行并保存；工具 exit0 表示保存成功，还须读取 JSON.exit_code。信号/启动错误或额外写入留下 incomplete 与原始输出。`verify --feature <目录> --record <特性相对record路径> --candidate <SHA>` 核对原件与适用版本；`transfer --source <原特性目录> --target <存活特性目录>` 只复制并核对原件，不删除来源。原件不进 Git；提交引用，清理前转存并保存真实回执。
+
+分文件唯一 `progress.delivery`：`{version:1,channel,state,source_tip,source_tree,target_branch,merge_method,merge_commit,verified_target,history_ref,receipt_paths,post_merge}`。channel 为 local/pr；state 为 implementing/awaiting_merge/merged/completed；method 为 ff/merge/squash，未知事实填 null。source_tree 由 `businessTree(repo,feature,commit)` 实算；history_ref 使用 `refs/spec-dev/archive/<特性标识>/source`，保留并登记，不随工作分支删除。post_merge 项为 `{commit,kind,files}`，kind 为 progress/sync_commit/acceptance_delivery；仅允许精确进度、单一 sync_commit 或验收报告追加的“实际交付”节，其它改动须有当前版本补验。
+
+Git 原件为 `{version:1,kind:"git",source_tip,target_commit,method,operations}`，每个真实 operation 保存 `{argv,cwd,exit_code,stdout,stderr,stdout_sha256,stderr_sha256}`；PR 原件保存实际 API 响应文件及 hash、url、source_tip、target_commit、method。PR 状态不能自证已合并。Receipt 与 Git/PR 回执路径列在 receipt_paths；最终验证用 `verifyDelivery(root,state,feature)`，缺源对象或原件即未验证。
+
+未完成档案中旧 `execution.delivery` 在授权恢复时由主线程一次迁到顶层，旧值及来源提交记 notes；新形禁止双真源。已完成历史只读原形。旧单文件把同一 delivery 事实写入原最终任务的 `json spec-dev-delivery` 块，复选框仍是任务状态。
 
 
 ## 资源台账总则

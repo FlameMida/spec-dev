@@ -39,9 +39,9 @@ description: >-
 ### 四条铁律
 
 1. **能确定性验收的绝不交给 AI 判断**——脚本能断言的事不用 LLM 判读；Tier A 只兜"脚本测不了的语义与体验"。
-2. **无证据不给结论**——AI 层结果只有四态：`✅ 通过`（有证据且经审计）、`⚠️ 警告`、`❌ 阻塞`（均有证据）、`未验证`（无证据/证据不支撑/未执行）。无证据的 ✅ 比没有报告更有害。
+2. **无证据不给结论**——AI 层结果只有四态：`✅ 通过`（证据支持预期，按所选档位完成适用审计）、`⚠️ 警告`、`❌ 阻塞`（均有证据）、`未验证`（无证据/证据不支撑/未执行）。无证据的 ✅ 比没有报告更有害。
 3. **根因必须经假设验证才能写入报告**——按"若根因成立，做 X 应观察到 Y"实际验证一次，不一致则重新分类诊断。
-4. **不采信无回执的自报告**——验收结论来自可核验的回执：本次执行的退出码与输出，或特性目录 execution/ 下 facts.json 记录的命令、退出码与输出哈希；"实施时已经测过"这句话本身不是依据，回执才是。
+4. **不采信无回执的自报告**——验收结论来自可核验的回执：本次执行的退出码与输出，或经核验的 execution record 与 stdout/stderr 原件（历史 facts.json 同样核对实际来源、版本及范围）；"实施时已经测过"这句话本身不是依据，回执才是。
 
 ## 参数解析（三级：显式前缀 > 意图推断 > 询问）
 
@@ -69,7 +69,7 @@ description: >-
 | 用户直接触发且存在相关特性目录 | 定位对应 spec（`.spec-dev/YYYY-MM-DD-NN-<feature>/spec/`，旧命名目录按原样读取；仍在历史位置 `docs/` 的先自动迁移到 `.spec-dev/`——有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移），沿用其矩阵；定位后读 spec frontmatter `status`：为 `superseded` 时沿 `superseded_by` 跳转 active 后继（记录已访问路径防环，出现环停下报告环上文件；`superseded_by` 缺失或悬空时报告"无可达后继"并与用户确认验收依据），以后继矩阵验收，报告头记录原始路径、实际使用路径与跳转链；正文带 `Superseded-pending` 标注时在报告头注明"取代进行中"；用户描述可收窄范围 |
 | 独立触发（无 spec） | 从目标描述**现场生成迷你矩阵**（维度选择 + 每维度 3-6 条检查项），随报告前置呈现 |
 
-矩阵结构、Scenario→检查项的映射规则、与 writing-plans「验收任务」的分工见 [acceptance-matrix.md](references/acceptance-matrix.md)。**维度取舍原则**：矩阵行来自需求实际形态——纯后端接口不硬凑 visual 行，静态页面不硬凑 perf-api 行；被裁掉的维度在报告 `coverage_note` 中声明。执行窗口按矩阵行的 Lane 归属选择（fast 行随验收即时执行；final 行引用最终任务的全量回执、未到期记待执行；manual 行标 `manual-pending`、仅用户当轮显式要求时执行）——Lane 语义定义见 test-strategy skill。
+矩阵结构、Scenario→检查项的映射规则、与 writing-plans「验收任务」的分工见 [acceptance-matrix.md](references/acceptance-matrix.md)。**维度取舍原则**：矩阵行来自需求实际形态——纯后端接口不硬凑 visual 行，静态页面不硬凑 perf-api 行；被裁掉的维度在报告 `coverage_note` 中声明。执行窗口按矩阵行的 Lane 归属选择（fast 行随验收即时执行；计划验收的 final 行消费独立 F 的有效全量回执；独立局部验收尚未到 F 时点则明确待执行；manual 行标 `manual-pending`、仅用户当轮显式要求时执行）——Lane 语义定义见 test-strategy skill。
 
 ## 阶段 1：环境检测
 
@@ -91,7 +91,7 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/acceptance-qa/scripts/detect-env.mjs" [--cwd 
 
 按矩阵选中的维度依次执行（维度间无依赖，产物互不影响；同一测试进程内的并行由各框架自身管理）：
 
-1. **unit / integration**：先读特性目录 execution/ 的 facts.json——回执覆盖矩阵行对应测试、退出码为 0 且晚于最后一次相关变更提交 → 引用回执记 pass，不重新运行；缺回执、退出码非零或回执早于变更 → 运行并记录。覆盖率仅在项目已配置门槛或矩阵要求时断言。全量回归只在最终任务时点执行，验收子阶段不无条件追加全量；未到期的最终全量记待执行。报告区分本次新增失败与既有失败。
+1. **unit / integration**：先核验 execution record、原始输出、命令、候选内容与矩阵范围——实际 exit_code=0 且仍适用才引用为 pass；缺失、失败或输入条件变化则补验并记录原因。工具保存回执的 exit0 不代表测试成功。覆盖率仅在项目已配置门槛或矩阵要求时断言。全量先在独立 F 执行，验收子阶段不无条件追加全量；局部独立验收未到期的 final 记待执行，不能据此宣称计划验收完成。报告区分本次新增失败与既有失败。
 2. **e2e**：无既有用例则生成（模板 [templates/e2e-test.ts](templates/e2e-test.ts)、模式与选择器纪律见 [e2e-patterns.md](references/e2e-patterns.md)），只运行本次生成/涉及的文件：`npx playwright test <文件> --reporter=list`。每条用例至少一个会因功能破坏而失败的业务断言，禁止仅断言元素可见。
 3. **visual**：有基线 → 跑截图对比；无基线 → 生成基线并声明"本次为建线，不构成回归结论"。
 4. **a11y**：AxeBuilder `withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa'])` 扫描目标页，violations 为空即通过；无法自动化的项（焦点顺序合理性等）转 Tier A 或标注人工项。
@@ -153,7 +153,7 @@ pass 项   → deep 档派独立证据审计（只读证据不占浏览器，试
 
 - **light**：矩阵仅 1-2 个维度、Tier A 清单 ≤4 条、跳过 pass 审计（在 coverage_note 声明）
 - **standard**（默认）：按矩阵执行；fail/warn 项重执行复核；pass 项不派证据审计（coverage_note 注明）
-- **deep**（用户说"彻底/全面/审计"）：全维度 + Tier A 清单扩展 + pass 项独立证据审计 + pass 项抽 2 条重执行复核 + 性能多轮采样
+- **deep**（用户说"彻底/全面/审计"）：全维度 + Tier A 清单扩展 + pass 项独立证据审计 + pass 项抽至多 2 条重执行复核（不足 2 条检查全部）；性能/模型等 manual 行仍按当轮授权执行
 
 ## 不要做的事
 

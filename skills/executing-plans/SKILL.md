@@ -14,7 +14,7 @@ description: >-
 
 ## 概述
 
-载入计划 → 隔离工作区 → 主线程逐任务执行 → 收尾多维审查 → 合并与总结。
+载入计划 → 隔离工作区 → 主线程逐任务执行 → 独立 final 验证 → 多维审查与矩阵验收 → 对账与交付。
 
 **默认串行范式**：**主线程干活、子代理不写码**——实现代码由主线程编写（保证上下文连续与契约一致），子代理只承担审查、探索与复跑验证等分析性任务，不产出实现代码。显式选择 executing-plans-parallel 的 implementer 为已批准例外，主线程仍独占进度与合并。
 
@@ -27,13 +27,13 @@ description: >-
 1. **载入并批判性审阅计划** — 有疑虑先提出；开工前过执行确认门
 2. **隔离工作区** — 执行计划的任务 0（纪律遵循 using-git-worktrees）
 3. **逐任务执行** — TDD + 每任务提交 + spec 自检，连续执行
-4. **收尾审查** — 按规模 1/2/5 路审查，读执行回执不复跑；有候选才反驳与 critic；按验收矩阵触发 acceptance-qa
+4. **收尾审查** — 按规模 1/2/5 路审查，读执行回执不复跑；高/中候选才反驳；critic 按档位与显式配置触发；按验收矩阵触发 acceptance-qa
 5. **审查处置与交付对账** — 例外驱动：零发现且全 DELIVERED 静默通过；否则一次性征询修复与裁决
 6. **合并与总结** — 执行计划的最终任务（合并与清理，含 sync_commit 锚定），回写 roadmap 状态（如属），输出总结
 
 ## 阶段 1：载入并批判性审阅计划
 
-1. 读取计划（格式嗅探）：`plan/tasks/` 子目录存在 → 分文件形态（全部新生成计划的唯一形态），按下文「渐进加载与断点恢复」节渐进加载（启动只读、按需读任务文件）；不存在 → 存量单文件形态，按 `.spec-dev/YYYY-MM-DD-NN-<feature>/plan/*-plan.md` 原样一次性读取计划全文与同特性目录 `spec/<feature>-design.md`（旧命名 `YYYY-MM-DD-<feature>` 目录按原样读取）。**该读分支为冻结侧**——后续流程演进不再为其新增条款，仅维持既有语义。产物仍在历史位置 `docs/YYYY-MM-DD-<feature>/` 时，默认先自动迁移到 `.spec-dev/` 再执行（有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移并重写文件内路径引用），迁移单独提交
+1. 读取计划（格式嗅探）：`plan/tasks/` 子目录存在 → 分文件形态（全部新生成计划的唯一形态），按下文「渐进加载与断点恢复」节渐进加载（启动只读、按需读任务文件）；不存在 → 存量单文件形态，按 `.spec-dev/YYYY-MM-DD-NN-<feature>/plan/*-plan.md` 原样一次性读取计划全文与同特性目录 `spec/<feature>-design.md`（旧命名 `YYYY-MM-DD-<feature>` 目录按原样读取）。**该读分支为格式冻结侧**：保持单文件与复选框；恢复时核对已有授权，补当前/未执行项的范围、final 和交付步骤，保留已完成内容、SHA 与证据，不生成 progress。产物仍在历史位置 `docs/YYYY-MM-DD-<feature>/` 时保留原位置；仅沿已有明确迁移授权单独迁移，保留历史原件与提交，不把全局路径重写混入局部恢复
 2. 批判性审阅：步骤有歧义？接口块互相矛盾？与代码库现状不符？——**有疑虑先向用户提出，别带着疑虑开工**
 3. **执行确认门**：向用户呈现执行摘要（计划入口、任务数与依赖拓扑、将创建的 worktree 分支名）并确认开始——用户本轮已显式指示执行（如"执行这份计划"）或经 writing-plans 交接确认的，视为已确认、不重复问
 4. 把计划任务注册进任务管理（每任务一条，`T{n}: 任务名` 命名），进入阶段 2
@@ -57,11 +57,11 @@ description: >-
 - 偏差处理沿用主文件三级纪律；契约级偏差冻结受影响后继（导航表依赖闭包），修订 index 接口行与相关任务文件后再继续。
 
 **恢复执行（resume）**——检测到 `progress.yaml` 存在且有非 completed 任务时：
-1. 校验一致性：worktree/分支存在、`current`/completed 各任务的 commit 可 `git cat-file -e` 解析、progress 引用的任务文件都存在。任一不成立 → 停下向用户报告不一致，不猜测继续。
-2. 普通分支从下一 ready 任务（依赖全 completed 的最小编号 pending）续跑；组分支消费 plan-state 的 ready_tasks 并按 integration-groups 恢复。同前只读该任务文件与依赖接口行。
-3. 恢复不重跑已 completed 任务的测试（最终任务的全量验证是安全网）。
+1. 校验一致性：worktree/分支存在、completed 各任务的 commit 可 `git cat-file -e` 解析；current 的 in_progress/blocked 不要求完成 SHA，已有实现提交须核验但不据此自动标 completed、progress 引用的任务文件都存在。任一不成立 → 停下向用户报告不一致，不猜测继续。
+2. 普通串行先恢复 current：in_progress 续接，blocked 先处理阻塞；没有当前票才取下一 ready 任务（依赖全 completed 的最小编号 pending）；组分支消费 plan-state 的 ready_tasks 并按 integration-groups 恢复。同前只读该任务文件与依赖接口行。
+3. 恢复不无条件重跑 completed 任务；核验原件、版本与检查范围，缺口或变更按 test-strategy 补验，独立 F 保留全量安全网。
 
-**存量单文件的轻量恢复（兼容分支）**：单文件计划无 progress.yaml——按复选框判读：首个含未勾选步骤的任务即续跑点；勾选状态与 git log 的 `feat(TN)` 提交对照，不一致时以提交为准并报告。
+**存量单文件的轻量恢复（兼容分支）**：单文件计划无 progress.yaml——按复选框判读：首个含未勾选步骤的任务即续跑点；复选框与实际提交、验证原件逐项对照；提交存在不代表验证和状态保存已完成。补写当前/未执行范围后，按稳定 TNN 绑定，保留原历史。
 
 ## 集成组分支
 
@@ -80,16 +80,16 @@ description: >-
 
 下面普通票流程不对集成组成员强行标 completed；到组入口时按 integration-groups 完成整组（含独立组验证任务），组成功后回本流程。纯重构使用 TDD 的前后保护步骤，不伪造失败。
 
-任务 0 已在阶段 2 完成，计划的验收任务（如有）留待阶段 4、最终任务（合并与清理）留待阶段 6——两者都不参与本阶段连续执行；对其余每个任务（任务 1 起），按序：
+任务 0 已在阶段 2 完成；普通实施票按依赖连续执行，随后执行独立 final 验证票 F。验收 A 留待阶段 4，最大号交付 D 留待阶段 6；F 必须先于 A/D 完成，不能等待验收再首次全量。普通实施票按序：
 
-1. **标记 in_progress**，严格按计划步骤执行——计划已是 bite-sized 步骤，照做；TDD 循环遵循 test-driven-development skill（有效红→最小实现→绿）；写测试前直接消费获批 seam，存量只允许唯一提取并记录来源，缺失/冲突走主线程偏差处理。按 test-strategy 使用已有适用快检，仍执行目标测试与全部必需验证；重构候选交收尾；测试只跑本任务目标测试与计划「相关测试范围」内的自有测试，不在任务内跑回归或完整套件（最终任务一次全量）
+1. **标记 in_progress 并提交任务绑定**：先核对已有授权与精确 writes/specs，提交静态版本及绑定状态后激活 bind/inspect；完整字段与命令见 writing-plans/plan-format。再严格按计划步骤执行——计划已是 bite-sized 步骤，照做；TDD 循环遵循 test-driven-development skill（有效红→最小实现→绿）；写测试前直接消费获批 seam，存量只允许唯一提取并记录来源，缺失/冲突走主线程偏差处理。按 test-strategy 使用已有适用快检，仍执行目标测试与全部必需验证；重构候选交收尾；测试只跑本任务目标测试与计划「相关测试范围」内的自有测试，不在任务内跑回归或完整套件（独立 F 首次全量，修复按影响补验）
 2. **commit**：任务完成即提交（message 对齐编号：`feat(T3): xxx`）；非 git 仓库跳过并注明
 3. **spec 自检**（主线程，不派子代理）：对照本任务在计划中的验收标准重读本任务 diff，只查两件收尾审查不覆盖的事：
    - **over/under-building**——写了任务没要求的代码？漏了任务要求的产出？
    - **契约锚定**——本任务确立的契约（函数签名/数据结构/API 形态）与计划接口块一致？会不会被后续任务隐式重新解释？
 
    发现即就地修正并补提交（或 amend）。**禁止在此猎 bug、查风格、查规范**——那是阶段 4 的活，重复只造噪音与虚假安全感
-4. **标记任务 completed**，进入下一任务（分文件形态原子更新 progress.yaml 并随任务提交——progress.yaml 是唯一状态源；存量单文件计划沿用其复选框勾选）
+4. **标记任务 completed**，进入下一任务（分文件先 clear 本地引用，再原子更新 progress.yaml 并独立提交，commit 指既存实现 SHA——progress.yaml 是唯一状态源；存量单文件计划沿用其复选框勾选）
 
 **资源登记**：执行中创建了计划未预登记的持久资源（容器、测试库/表、临时目录、后台服务）时，当场登记进 progress.yaml 的 `resources` 键（writing-plans 的资源台账规范定义点；计划任务文件不被编辑）、不延迟到收尾补记，登记随本任务的提交一起提交、不为单个资源单独提交；执行**存量单文件计划**时就地编辑其最终任务内嵌的台账行（该侧冻结）。
 
@@ -103,13 +103,13 @@ description: >-
 
 ## 阶段 4：收尾审查
 
-全部任务完成后，编排独立代码审查。完整编排（维度定义、伪代码、契约校验、Codex 降级）见 [review-orchestration.md](references/review-orchestration.md)，要点：
+全部实施/组验证完成并取得当前候选的有效 final 回执后，编排独立代码审查；验收和交付票此时尚未完成。完整编排（维度定义、伪代码、契约校验、Codex 降级）见 [review-orchestration.md](references/review-orchestration.md)，要点：
 
 - **审查范围**：worktree 分支上本计划的全部变更（`git diff <base>...HEAD`）
 - **维度派发**：路数、各档 S 覆盖、D 的证据触发及容量不足分批均以 review-orchestration「维度与路数」为唯一规则；预检基线/diff/契约来源后派发全部选定维度，不在此复制路数表。
 - **契约校验**：每份报告落盘后 `node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" review-findings <file>`；校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「输出契约与校验」）
 - **候选处置**：高/中候选逐条派独立子代理对抗复核（指令=试图反驳）；去重后无新候选即收口，最多 2 轮；首轮零候选直接收口，不做多轮扇出
-- **completeness critic**：仅在存在高/中候选、大变更档或用户要求彻底时派发；零候选的小/常规档由 AS 路 coverage_note 承担覆盖声明。一个子代理检查现行文件/Scenario 的审查与测试覆盖，已取代项排除；S 判实现偏差，critic 查证据缺口，已审零发现不等于未审。未完成补查不能因零 confirmed 而当全交付，具体收口沿共用编排。
+- **completeness critic**：在存在高/中候选、大变更档、用户要求彻底或显式 critic=always 时派发；small/regular 的 on-findings 分支零高/中候选时由 AS 路 coverage_note 承担覆盖声明。一个子代理检查现行文件/Scenario 的审查与测试覆盖，已取代项排除；S 判实现偏差，critic 查证据缺口，已审零发现不等于未审。未完成补查不能因零 confirmed 而当全交付，具体收口沿共用编排。
 - **acceptance-qa**：计划含验收任务、或 spec 验收矩阵含「验收任务」行时，触发 acceptance-qa skill 按矩阵执行（输入=spec 路径+计划验收任务+本次变更文件清单+证据目录 `acceptance/`）；旧版计划无矩阵时，变更涉及 UI 即按其验收点触发。验收结论并入审查报告
 
 ## 阶段 5：审查处置与交付对账
@@ -119,16 +119,16 @@ description: >-
 **例外驱动的停顿门**（审查与对账共用一道门）：
 
 - **零 confirmed 发现且全部 DELIVERED**（常态）→ 输出覆盖声明与对账计数，直接进入阶段 6——没有要用户决策的事，不停顿
-- **存在 confirmed 发现或非 DELIVERED 嫌疑项** → **一次性征询**：按严重性分组展示发现 + 列出待裁决 Requirement（补做→回阶段 3 补任务 / DEFERRED 记一句原因 / DROPPED 记一句原因 / SUPERSEDED 记后继 spec 指向——契约已移交后继、行为仍存在时用此裁决，与"不再交付"的 DROPPED 区分）——哪些值得修、什么没交付是用户的优先级决策，不自动修复、不擅自定稿
+- **存在 confirmed 发现或非 DELIVERED 嫌疑项** → 先核对已有修复授权；范围内必要修复继续完成，只对尚未裁定的范围/优先级作**一次性征询**：按严重性分组展示发现 + 列出待裁决 Requirement（补做→回阶段 3 补任务 / DEFERRED 记一句原因 / DROPPED 记一句原因 / SUPERSEDED 记后继 spec 指向——契约已移交后继、行为仍存在时用此裁决，与"不再交付"的 DROPPED 区分）——新增范围、延后或放弃交付是用户的优先级决策；不重复询问已授权的修复，也不擅自把需求记为延后
 
-沿已有授权在 worktree 内处置：行为缺陷先写复现失败测试；纯重构按 test-driven-development「收尾纯重构」记录前后绿，缺保护先补刻画，不伪造红。修复后受影响维度复审一次；裁决结果即对账定稿。
+沿已有授权在 worktree 内处置：行为缺陷先写复现失败测试；纯重构按 test-driven-development「收尾纯重构」记录前后绿，缺保护先补刻画，不伪造红。修复产生新候选：先按影响补验，再复审受影响维度，并更新验收/Requirement 对账；证据仍适用才进入交付。旧 F completed、零 confirmed 或一次修复测试通过均不能替代这些门。
 
 ## 阶段 6：合并与总结
 
 分文件计划的本地/PR 交付统一遵循 [delivery-channels.md](references/delivery-channels.md)。ready 不等于已合并；尚 awaiting_merge 时最终任务与 roadmap 保持未完成，不提前 sync_commit。存量单文件保持原读取与记录形态。
 
 1. 审查与对账定稿后，**合并前在 worktree 内落盘并提交**：对账结果写入特性目录 `acceptance/acceptance-report.md` 的「Requirement Reconciliation」节——全绿一行带过，有偏差才展开差量表；acceptance-qa 未触发的特性按模板新建仅含头部与该节的轻量报告（一次交付一份时点记录）。DEFERRED / DROPPED 同时在 spec 原位标注（形制见 spec 模板行为规范节）；SUPERSEDED 的原位标注即取代机制的 Requirement 级 `Superseded` 标注（形制见 spec-template「取代标注形制」节，含后继指向）；DELIVERED 不标
-2. 执行计划的最终任务（全量验证——范围外失败的归属裁决与测试退役检查按 writing-plans 最终任务模板执行 → **取代回写**（按 spec 取代与共存节执行翻转/标注/covers 接管核对；`supersedes` 为空——缺失或空数组——则跳过） → 合并回来源分支 → 按资源台账逐条清理（合并前核对归属与清理计划；合并后核验资源实体、逐条清理并保存实际结果，复用资源移交原机制） → **sync_commit 锚定**：合并后主工作区 HEAD 写入 spec frontmatter 并单独提交；原生工具建的隔离用原生方式退出）；计划缺最终任务或缺锚定步骤（旧版计划）时按同等步骤（含取代回写）手工收尾；非 git 仓库跳过锚定并注明
+2. 执行最大号交付 D：消费有效 final、审查和验收/对账 → 核对已验证的取代材料 → 建立保留来源历史锚并实际合并 → 原件转存与 proof 核验 → 按台账清理 → sync_commit 与实际交付节 → 独立最终状态提交。完整命令以 writing-plans 的交付模板和本计划实际绑定为准；旧计划只补未执行步骤，非 Git 或无 spec 如实记不适用。
 3. **roadmap 状态回写（仅当 `.spec-dev/roadmaps/` 下某 active roadmap 引用本特性目录）**：把对应子项目行状态置 `delivered` 并提交，同时在该子项目的上下文胶囊追加一行「留给后继的注意事项」（交付摘要、接口变化、给下一子项目的提醒）；全部子项目已 delivered/dropped 时把该 roadmap frontmatter 的 `status` 翻 `done`。目录不存在或查无引用 → 跳过，零动作
 4. 输出总结：
    - **成果清单**：完成的任务、创建/修改的文件、对账计数（`X DELIVERED / Y DEFERRED / Z DROPPED / S SUPERSEDED / N ADDED-IN-FLIGHT`）
@@ -141,12 +141,14 @@ description: >-
 
 - "计划有点问题，我猜着改吧" → 契约级偏差停下问用户
 - "计划在手，直接开工" → 执行确认门：显式指示或交接确认之外，先获用户点头
-- "这个任务简单，跳过测试" → TDD 铁律无例外
+- "这个任务简单，跳过测试" → 仅沿 test-driven-development 的单点例外清单与既有授权，不凭简单程度豁免
 - "每完成一个任务都汇报一下" → 连续执行，别打断用户
 - "spec 自检时顺便找找 bug" → 自检只查 over/under-building 与契约锚定
-- "审查发现直接修了" → 先征询用户处理方式
+- "把新范围混入审查修复" → 先完成已授权修复，再把尚未裁定的范围/取舍交用户决定
 - "没做完的 Requirement 含糊带过" → 对账逐条裁决，DEFERRED/DROPPED/SUPERSEDED 必须记原因（SUPERSEDED 记后继指向）并回写 spec
 - "零发现且全 DELIVERED 仍停下征询" → 例外驱动：没有要决策的事就静默进入合并，总结带一行计数
 - "改动不大，审查跳过吧" → 收尾审查是强制步骤，规模只影响维度数
 - "自己写的代码自己看一遍就行" → 审查必须由独立子代理承担
 - "子项目交付了，roadmap 回头再更新" → 交付即回写 delivered 并提示续接，否则剩余子项目无声搁浅
+
+所有实施写入都受已核验任务范围约束；字段规范见 writing-plans/plan-format。恢复已有授权时不重复索取许可；scope/spec/task/worktree/claim 变化后旧绑定失效，不能自行扩大 writes。行为变更仍同步 spec；范围核验不替代测试和审查。

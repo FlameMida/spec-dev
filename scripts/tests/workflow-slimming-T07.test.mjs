@@ -18,3 +18,7 @@ test("S4.2 相关测试范围按自有测试与直接导入方推导",()=>{
 test("S4.3 任务内不跑回归",()=>{
   assert.match(raw('skills/executing-plans/SKILL.md'),/不在任务内跑回归或完整套件/);
 });
+test('S11 final verification has an independent predecessor slot before acceptance',()=>{
+ const text=raw('skills/writing-plans/references/delivery-templates.md');assert.match(text,/独立.*final|final.*验证票/);assert.match(text,/验收.*依赖.*final|final.*先于.*验收/);assert.doesNotMatch(text,/步骤 1：全量验证（安全网）与归属裁决/);
+ assert.match(text,/execution-evidence\.mjs/);assert.match(text,/verifyDelivery/);
+});

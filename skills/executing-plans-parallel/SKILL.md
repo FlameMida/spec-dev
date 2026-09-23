@@ -39,7 +39,7 @@ description: >-
 
 先使用 `node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" plan-index` 并传入实际计划目录。仅在用户已明确选择、声明合法、导航拓扑至少存在两张无相互依赖路径且资源隔离的实施票时进入；共同依赖 T00 不影响资格，实际派发仍须依赖全 completed。普通「继续」只沿用已持久化模式，未选模式默认串行。缺声明、能力不可用或只有依赖链则说明原因回 executing-plans，不自动改计划。
 
-T00、验收、最终任务只由主线程执行；已授权 TDD 例外、相关基线范围显式为空或无法预先确定写集合的票也由主线程排空在途 implementer 后执行，沿用原例外/空范围规则，不伪造 pass。已激活模式下一次只剩一票也保持 parallel。
+T00、独立 final 验证、验收、最终任务只由主线程执行；已授权 TDD 例外、相关基线范围显式为空或无法预先确定写集合的票也由主线程排空在途 implementer 后执行，沿用原例外/空范围规则，不伪造 pass。已激活模式下一次只剩一票也保持 parallel。
 
 ## 独占与恢复
 
@@ -70,6 +70,8 @@ T00、验收、最终任务只由主线程执行；已授权 TDD 例外、相关
 
 ## 收尾与交付
 
-全部实施票已集成后，把完整 `base_commit..集成 HEAD`、spec、progress、研究与证据指针交回 executing-plans 的阶段 4—6，审查定义以 executing-plans/references/review-orchestration.md 为准。维度审查、独立复核、completeness critic、矩阵验收、最终全量验证均保留，票内自检不能替代。
+全部实施票已集成并由主线程完成独立 final 验证后，把完整 `base_commit..集成 HEAD`、spec、progress、研究与证据指针交回 executing-plans 的阶段 4—6，审查定义以 executing-plans/references/review-orchestration.md 为准。维度审查、独立复核、completeness critic、矩阵验收、final 全量与修复后补验均保留，票内自检不能替代。
 
 串行与并发共用 executing-plans/references/delivery-channels.md：默认本地，PR 需既有授权；ready 不是已合并。清理只遍历 progress.resources，确认结果已接受且证据已归档后才移除 implementer worktree；未集成工作、失联代理与未归档证据保留。最终取代回写、实际 merge 证据、清理、sync_commit 与 roadmap 全部完成才宣称交付。
+
+新计划要求 scopes 能力回执，parallel 仅声明 resources。主线程核对静态 scope_commit 先于已验证派发基线，claim_checkpoint 对应真实认领，再提交 binding 取得 authority。implementer 只在指定工作区激活本地引用，不写进度；claim 检查点不必是实现初始 HEAD 的祖先，不能修改 validated_commit 来迁就绑定。

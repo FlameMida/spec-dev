@@ -1,12 +1,12 @@
 # 收尾审查编排（阶段 4）
 
-> **阅读时机**：executing-plans 的实施票全部完成后。串并行使用本文件唯一的维度、路数和收口规则。每个编排动作前用一句话说明进度。
+> **阅读时机**：executing-plans 的实施票与独立 final 验证票完成后。串并行使用本文件唯一的维度、路数和收口规则。每个编排动作前用一句话说明进度。
 
 ## 受控运行入口
 
 需要程序核验证据和收尾时，使用插件内 `scripts/review-runner.py`。此入口在 macOS/Linux 依赖 Python 3.9+、本机已认证 Claude CLI、Node 和 Git；本仓库命令经 rtk。其他客户端可继续下文原生编排，但不能声称具有受控运行器的证据写入隔离与状态保证。维度、D依据、相关测试命令及原始范围由主线程在预检后固定，不能让运行器替代这些语义裁决。
 
-配置JSON包含 `repo`（被审仓库绝对路径）、`base`、`head`、`spec`、`plan`（后两者是仓库相对路径）、`tier`（small/regular/large）、`capacity`（本次实际worker容量）、`tests`（如 `[{"id":"related","argv":["rtk","proxy","node","--test","test/cart.test.js"]}]`）、`critic`（`on-findings` 默认 / `always`；large 档默认 `always`）、`evidence`（可选，execution 回执数组，元素 `{task,phase,command,exit_code,stdout_sha256,stderr_sha256}`；提供时 `tests` 可为空数组）。可选 `d_request` 为真实结构摩擦的 `{file,line,quote}` 引用数组；`model`/`effort` 仅沿用户既有选择，省略时继承本机默认。运行目录必须在被审仓库之外，scope需对应干净HEAD。使用：
+配置JSON包含 `repo`（被审仓库绝对路径）、`base`、`head`、`spec`、`plan`（后两者是仓库相对路径）、`tier`（small/regular/large）、`capacity`（本次实际worker容量）、`tests`（如 `[{"id":"related","argv":["rtk","proxy","node","--test","test/cart.test.js"]}]`）、`critic`（small/regular 默认 on-findings，可显式 always；large 仅 always，large+on-findings 拒绝）、`evidence`（可选，真实回执引用数组 `{task,phase,feature,record_path}`；feature 为绝对特性目录，提供有效回执时 tests 可为空）。可选 `d_request` 为真实结构摩擦的 `{file,line,quote}` 引用数组；`model`/`effort` 仅沿用户既有选择，省略时继承本机默认。运行目录必须在被审仓库之外，scope需对应干净HEAD。使用：
 
 ```bash
 rtk proxy python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review-runner.py" init --config review-config.json --run /absolute/review-run
@@ -32,7 +32,7 @@ worker只拥有内嵌stdio提供的context/read_source/run_test/submit_report，
 
 ## 维度与路数
 
-- **A 功能正确性**：逻辑、边界、竞态、资源与错误处理；以特性目录 execution/ 下 facts.json 记录的命令、退出码、stdout/stderr sha256 为测试证据；回执缺失、退出码非零或未覆盖本次变更文件时才复跑，并说明复跑原因。
+- **A 功能正确性**：逻辑、边界、竞态、资源与错误处理；先核验 execution 的真实 record 及 stdout/stderr 原件、命令、候选版本和检查范围；旧 facts.json 仅按其真实原件与归属核对。有效证据可复用，缺失/失败或输入条件改变才补验并说明原因，不以文件覆盖或时间戳代替内容核验。
 - **B 代码质量**：命名、可读性、复杂度、DRY、抽象与公共行为测试覆盖；共享判据引用 writing-plans/references/design-principles.md。
 - **C 项目规范**：项目约定、已有工具、架构与抽象边界、接口及依赖组织。
 - **S 实现符合性**：核对现行契约的少做、多做、语义偏离。具体引用及报告要求见 agents/code-reviewer.md 的 S 定义；不把必要内部辅助函数当未批准行为。
@@ -62,7 +62,7 @@ repeat 最多 2 轮:
   每份报告一返回就校验，可先进入复核，不无故等齐
   fresh = 按 file:line+category 索引，再核对跨维度同根因
   无 fresh 则结束；否决候选也记 seen，避免反复出现
-  无高/中候选（首轮即空）→ 不派反驳、不派 critic，直接收口
+  无高/中候选（首轮即空）→ 结束反驳循环；仍执行适用 critic 与覆盖检查
   高/中候选各做独立反驳，成立者才记 confirmed
   同根因只保留一条处置记录，保留所有来源与 S 契约依据
 ```
@@ -81,7 +81,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" review-findings <file>
 
 ## completeness critic
 
-存在高/中候选、大变更档或用户要求彻底时，维度审查之后派发一个独立 critic 并收取回执；小 diff 与常规档零候选时不派 critic，由 AS 路逐条 Scenario 的 coverage_note 充当覆盖声明；派发时主线程自行填写覆盖总结不替代该动作，缺派发或回执时收尾仍未完成。critic 对照变更文件/风险面、现行 Requirement/Scenario、各路 coverage_note、测试/验收证据核查覆盖。被 Superseded 标注的条款及 Scenario 排除。已审且零发现、实际未覆盖、明确截断分开记录：没有 finding 不等于未审，审查已覆盖也不证明测试已覆盖。
+存在高/中候选、大变更档、用户要求彻底或 critic=always 时，维度审查之后派发一个独立 critic 并收取回执；small/regular 使用 on-findings 且零高/中候选时不派 critic，由 AS 路逐条 Scenario 的 coverage_note 充当覆盖声明；派发时主线程自行填写覆盖总结不替代该动作，缺派发或回执时收尾仍未完成。critic 对照变更文件/风险面、现行 Requirement/Scenario、各路 coverage_note、测试/验收证据核查覆盖。被 Superseded 标注的条款及 Scenario 排除。已审且零发现、实际未覆盖、明确截断分开记录：没有 finding 不等于未审，审查已覆盖也不证明测试已覆盖。
 
 Scenario 覆盖以实际核查该行为的记录和证据为准；共享文件、函数或源码位置，不意味着各 Scenario 均已审查。后续补查可以补齐缺口，但不能倒推前次已经覆盖，或把前次如实声明的未覆盖判为失实。报告区分原报告缺口与本次补查结果。
 
@@ -93,7 +93,7 @@ S 负责判定实现偏差，critic 负责发现覆盖证据缺口。后者交�
 
 计划有验收任务，或 spec 矩阵含「验收任务」行时，在维度审查之外触发 acceptance-qa；输入 spec、计划验收任务、完整变更文件清单与特性 acceptance 证据目录。裁剪记 coverage_note，Tier A 沿现行 GIVEN/WHEN/THEN，失败自动追加诊断；旧计划无矩阵时，涉及 UI 按其验收点触发。验收及 Requirement 覆盖结论并入报告。
 
-报告按严重性列 confirmed，包含 file:line、描述、影响、建议，合并 critic 覆盖声明与验收结果。沿 executing-plans 既有授权和例外驱动处置门：行为缺陷先复现失败测试；纯重构按 TDD「收尾纯重构」保留前后绿，缺保护先刻画，不造红。修复后受影响维度复审一次。零 confirmed 但有未完成覆盖不等于全交付；最终全量保留原计划时机。
+报告按严重性列 confirmed，包含 file:line、描述、影响、建议，合并 critic 覆盖声明与验收结果。沿 executing-plans 既有授权和例外驱动处置门：行为缺陷先复现失败测试；纯重构按 TDD「收尾纯重构」保留前后绿，缺保护先刻画，不造红。修复后受影响维度复审一次。零 confirmed 但有未完成覆盖不等于全交付；final 先于本轮审查；后续修复先补验、再复审对应维度并更新验收/对账。
 
 ## Codex 降级
 
@@ -102,3 +102,5 @@ spawn_agent/wait_agent 及上下文参数沿 requirement-analysis/references/cod
 ## 并发分支的审查输入
 
 executing-plans-parallel 全票集成后使用本文件完整编排，输入最初 base_commit 到当前集成 HEAD 的完整 diff、spec、progress、research 与 execution 指针。串行切换不把 base 换成切换检查点；implementer 自检不抵销任何审查维度、completeness critic、矩阵验收或最终全量。本地/PR 完成判据继续见 delivery-channels.md。
+
+导入先调用 execution-evidence verify，核对 task/phase、原件与 candidate，再把完整 bytes 封存为本 run 对象；broker 提供实际命令、退出码、输出及对象 ID，拒绝只报哈希。来源原件删除不影响已封存内容；strict snapshot 不放宽，进度或控制器变化仍须新 run。同内容测试回执可重新核验后供新 run 导入，不拼接不同 run 的审查完成结论。

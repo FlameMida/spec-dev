@@ -31,3 +31,5 @@
 | 实现已合入，completed checkpoint 未保存 | 实现提交 ancestry、集成验证证据 | 补未完成验证和状态提交，不重复 merge |
 
 恢复不能仅凭“时间过去了”抢锁，也不能仅凭工具返回空列表就断言旧执行者终止；必须结合该平台的会话可见性及 worktree 活动核实，不能核实时显式阻塞。已完成并有持久验证证据的任务不重跑；未完成的验证或证据丢失部分才补验。测试日志与结果证据必须可在中断后定位：implementer 将其保存在主线程预登记的该 claim 专用临时位置，主线程接收后归档到 execution/<claim_key>/，不能只留在对话中的“通过”一句。清理前核对证据已归档且相关任务已接受，未集成 worktree 与未归档结果保留。
+
+旧计划恢复先核对既有执行授权，按原载体补当前/未执行 scopes 与绑定；保留 completed、历史 claim、实现提交与原件。若旧 execution.delivery 尚未完成，按 writing-plans 的单点定义迁到 progress.delivery 并记录旧值/来源提交；已完成历史不批量迁移。恢复本地引用前核对 scope/spec/task、实际 worktree/branch 与当前 claim，版本或范围变化则重新建立主线程检查点。

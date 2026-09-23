@@ -1,6 +1,6 @@
 interface:
   display_name: "并发执行计划"
-  short_description: "显式并发、唯一进度写者与验证后集成；集成组排空在途票后主线程独占，统一通过后恢复原模式。"
+  short_description: "显式选择后按绑定范围并发实现；主线程独占状态和集成，完成 final、审查与有证据的交付。"
   default_prompt: "用 $executing-plans-parallel 执行已批准且具备并发声明的计划，先展示模型配置并核对恢复状态。"
 policy:
   allow_implicit_invocation: true

@@ -11,7 +11,7 @@ const policy=f=>readPolicy(root,f).text;
 test("S29 局部验收不无条件追加全量 S30 必需检查仍到期执行",()=>{
 
 const s=raw('skills/acceptance-qa/SKILL.md');
-assert.match(s,/不无条件追加全量/);assert.match(s,/未到期的最终全量记待执行/);
+assert.match(s,/不无条件追加全量/);assert.match(s,/局部独立验收.*final.*待执行/);
 const u=raw('skills/acceptance-qa/references/unit-integration.md');
 assert.match(u,/获批最终全量和变更后补验照常执行/);
 assert.doesNotMatch(u,/再跑全量套件/);

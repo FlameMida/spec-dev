@@ -19,7 +19,7 @@
 
 **步骤 2：建立 worktree**
 
-有原生 worktree 工具（如 EnterWorktree）或 using-git-worktrees skill 时优先使用（Codex 无原生 worktree 工具，直接走下面的手工路径）；否则手工降级：
+有原生 worktree 工具（如 EnterWorktree）或 using-git-worktrees skill 时优先使用（以本次平台实际能力为准）；否则手工降级：
 确认 `.worktrees/` 已被忽略（`git check-ignore -q .worktrees`，未忽略先加入 `.gitignore` 并提交），然后
 `git worktree add .worktrees/<分支名> -b <分支名>` 并切换到该目录（分支名对齐计划，如 `plan/YYYY-MM-DD-NN-<feature>`）。
 
@@ -28,7 +28,7 @@
 先读取项目声明的工具/命令、锁文件和已有环境；已就绪不强制重装。缺依赖时使用项目实际安装或构建命令，不仅因 package.json/pyproject.toml 存在就指定 npm/Poetry；存在冲突先核实，无法确定报告缺口。
 然后按计划头部「相关测试范围」运行基线验证：有声明 → 只跑声明范围（声明为空 → 跳过测试并注明；
 声明命令执行报错或工具不可用 → 改跑本特性自有测试文件——声明节列出的新增/修改测试，尚不存在则跳过——
-并注明声明已失效、建议修订计划，**不回退完整测试套件**：完整套件只在最终任务跑一次）；
+并注明声明已失效、建议修订计划，**不回退完整测试套件**：完整套件在独立 final 验证票 F 首次执行，后续改动按影响补验）；
 计划无该节（旧版计划）→ 跑该计划任务文件中出现的测试文件，同样不跑完整套件。
 基线测试失败 → 停下报告，先问再继续。
 
@@ -91,3 +91,5 @@ git add tests/test_pagination.py app/pagination.py
 git commit -m "feat(TN): add specific feature"
 ```
 ````
+
+任务模板的写入前置：按 [计划格式](plan-format.md#绑定与激活唯一定义点) 把获批范围、静态版本、状态 checkpoint 与实际 bind/inspect 命令展开到本票。代码提交完成后先 clear 本地引用，再保存 completed 与既存实现 SHA、单独提交状态。行为变更同步 spec；TDD 例外只沿已有授权和 test-driven-development 单点清单处理。无 Git 的旧流程不得伪造新绑定。
