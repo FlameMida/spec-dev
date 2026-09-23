@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T12",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -124,15 +124,16 @@
       "tests": "pass"
     },
     "T12": {
-      "status": "in_progress",
+      "status": "completed",
       "evidence_paths": [
         "execution/T12/red-01/facts.json",
         "execution/T12/green-01/facts.json",
         "execution/T12/red-template-json/facts.json",
         "execution/T12/green-02/facts.json",
-        "execution/T12/green-final/facts.json"
+        "execution/T12/green-final/facts.json",
+        "execution/T12/green-final-repair/facts.json"
       ],
-      "commit": "aa928ebe2734e3953e0ba14c751a6eeb68bc0630",
+      "commit": "99206e8e94d8429743d05295a3f588c432cd142d",
       "tests": "pass"
     },
     "T13": {
@@ -282,6 +283,8 @@
     "T15 first full suite: 418/420 pass, 2 fail, 0 skipped, exit_code=1. Comparing the two outside-original-target documentation assertions on source 5244a3989e68c4c740b1fc694c913c343d5fbacc in an owned detached comparison worktree; never run against dirty main.",
     "T15 source comparison at exact T00 base passed 3/3; both final failures are introduced by this change. The owned clean detached comparison worktree was removed; raw stdout/stderr and hashes retained in execution/T15/source-comparison. T12 will clarify batch cleanup save/commit; T13 will keep the 200-line limit checked at its canonical rule instead of requiring it in the compact UI summary.",
     "T15: Final attempt exit1 preserved. Source comparison passed; returning only the two introduced documentation assertions to T12/T13.",
-    "T12: Reopened from final: restore explicit once-per-cleanup-batch save and commit wording without altering actual ledger code."
+    "T12: Reopened from final: restore explicit once-per-cleanup-batch save and commit wording without altering actual ledger code.",
+    "T12 green-final-repair: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T12/green-final-repair/facts.json",
+    "T12: Final repair 99206e8: 10/10 affected tests pass. Cleanup wording now explicitly retains one atomic save and one commit per completed/interrupted batch; ledger code unchanged."
   ]
 }
