@@ -8,6 +8,9 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { parseParallelBlock } from "./lib/parallel-plan.mjs";
 import { validateIntegrationPlan, inspectPlanState } from "./lib/integration-plan.mjs";
+import {execFileSync} from "node:child_process";
+import {readScopes,validateScopeOrder} from "../guardrail/lib/task-scopes.mjs";
+import {resolveWrite} from "../guardrail/lib/write-paths.mjs";
 import { fileURLToPath } from "node:url";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -256,6 +259,17 @@ function validatePlanIndex(planDir) {
   };
   for (const id of ids) if (color.get(id) === 0) dfs(id);
 
+  let scopes=null;
+  try {
+    scopes=readScopes(readFileSync(indexPath,"utf8"),ids);
+    if(scopes){
+      validateScopeOrder(scopes,rows);
+      let repo=null;
+      try{repo=execFileSync("git",["-C",planDir,"rev-parse","--show-toplevel"],{encoding:"utf8",stdio:["ignore","pipe","pipe"]}).trim();}catch{}
+      if(repo)for(const task of Object.values(scopes.tasks))for(const file of [...task.writes,...task.specs])resolveWrite(repo,file,{allowSpecDev:true});
+    }
+  } catch(error){errors.push({path:"index.md#scopes",expected:"valid task scope declaration",actual:error.message});}
+
   try {
     parseParallelBlock(readFileSync(indexPath, "utf8"), ids);
   } catch (error) {
@@ -264,6 +278,6 @@ function validatePlanIndex(planDir) {
 
   errors.push(...validateIntegrationPlan(planDir));
   if (errors.length) failAndExit();
-  console.log(JSON.stringify({ ok: true, schema: "plan-index", file: planDir }, null, 2));
+  console.log(JSON.stringify({ ok: true, schema: "plan-index", file: planDir, ...(scopes?{scope_protocol_version:1}:{}) }, null, 2));
   process.exit(0);
 }

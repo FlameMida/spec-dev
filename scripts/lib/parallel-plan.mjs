@@ -1,34 +1,10 @@
 import path from "node:path";
-import { existsSync, realpathSync, lstatSync, statSync } from "node:fs";
-
-export function normalizeWrite(value) {
-  if (typeof value !== "string" || !value || /[\\\u0000-\u001f]/u.test(value) || path.posix.isAbsolute(value) || /^[A-Za-z]:/.test(value)) throw new Error("invalid write path");
-  if (/[?*\[\]{}]/u.test(value)) throw new Error("globs are not file paths");
-  const parts = value.split("/");
-  if (parts.some(p => !p || p === "." || p === "..")) throw new Error("invalid path segment");
-  const normalized = value.normalize("NFC");
-  if ([".git", ".spec-dev"].includes(parts[0].toLowerCase())) throw new Error("reserved write path");
-  return normalized;
-}
-export function resolveWrite(root, value) {
-  const base = realpathSync(root);
-  const lexical = normalizeWrite(value);
-  let probe = path.resolve(base, lexical);
-  const missing = [];
-  const entryExists = p => { try { lstatSync(p); return true; } catch (e) { if (e.code === "ENOENT") return false; throw e; } };
-  while (!entryExists(probe)) {
-    missing.unshift(path.basename(probe));
-    const parent = path.dirname(probe);
-    if (parent === probe) throw new Error("missing root");
-    probe = parent;
-  }
-  const resolved = path.join(realpathSync(probe), ...missing);
-  if (entryExists(resolved) && statSync(resolved).isDirectory()) throw new Error("directory authorization forbidden");
-  const relative = path.relative(base, resolved);
-  if (!relative || relative.startsWith(`..${path.sep}`) || relative === ".." || path.isAbsolute(relative)) throw new Error("write escapes repository");
-  return normalizeWrite(relative.split(path.sep).join("/"));
-}
+import {existsSync,realpathSync} from "node:fs";
+import {normalizeWrite,resolveWrite} from "../../guardrail/lib/write-paths.mjs";
+export {normalizeWrite,resolveWrite} from "../../guardrail/lib/write-paths.mjs";
+import {readScopes} from "../../guardrail/lib/task-scopes.mjs";
 export function parseParallelBlock(markdown, taskIds) {
+  const scopes=readScopes(markdown,taskIds);
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
   const starts = lines.flatMap((line, i) => /^```yaml spec-dev-parallel\s*$/.test(line) ? [i] : []);
   if (!starts.length) return null;
@@ -47,6 +23,7 @@ export function parseParallelBlock(markdown, taskIds) {
       tasks[current] = Object.create(null);
     } else if ((match = line.match(/^      (writes|resources):(?: (\[\]))?$/))) {
       if (!current || Object.hasOwn(tasks[current], match[1])) throw new Error("invalid or duplicate field");
+      if(scopes && match[1]==="writes") throw new Error("duplicate writes authority in scope and parallel");
       field = match[1]; tasks[current][field] = [];
       if (match[2]) field = null;
     } else if ((match = line.match(/^        - (".*")$/))) {
@@ -58,6 +35,11 @@ export function parseParallelBlock(markdown, taskIds) {
   }
   if (!Object.keys(tasks).length) throw new Error("empty parallel tasks");
   for (const [id, task] of Object.entries(tasks)) {
+    if(scopes){
+      if(!scopes.tasks[id])throw new Error("parallel task has no common scope: "+id);
+      task.writes=[...scopes.tasks[id].writes];
+      if([scopes.final_task,...scopes.acceptance_tasks].includes(id))throw new Error("verification/acceptance cannot be parallel");
+    }
     if (!Array.isArray(task.writes) || !task.writes.length || !Array.isArray(task.resources)) throw new Error(`incomplete task ${id}`);
     task.writes = task.writes.map(normalizeWrite);
     const keys = task.writes.map(p => p.normalize("NFC").toLowerCase());
