@@ -127,7 +127,7 @@ console.log(JSON.stringify(verifyDelivery(root,state,feature)));
 
 仅在目标 proof 和 transfer 均已核验、原 worktree 已接受且无待保存改动后执行台账的精确命令，例如 `git -C <来源> worktree remove <本计划创建的实施路径>`，再 `git -C <来源> branch -d <实际已合并分支>`；不得以 --force 吞掉 unknown dirty。squash 的分支删除只在来源历史已保留、内容映射及证据核验通过且有明确清理授权时使用对应已批准命令。
 
-逐条保存真实结果：成功/核实已不存在的条目销账；失败条目保留，D blocked；复用资源保留移交记录。中断时保存已完成动作，不笼统清空 resources。状态写入在存活来源进行，不能在被删 worktree 里继续操作；锁要求沿原载体保持。
+逐条核对真实结果，批次结束或中断时一次保存、一次提交，不逐资源 commit：成功/核实已不存在的条目销账；失败条目保留，D blocked；复用资源保留移交记录。中断时保存已完成动作，不笼统清空 resources。状态写入在存活来源进行，不能在被删 worktree 里继续操作；锁要求沿原载体保持。
 
 生成时内嵌下面的台账写入代码，并给出实际参数。results 文件在本次 execution/ 中保存真实工具回执的 `entry/outcome/receipt`（outcome 只用 removed/missing/retained/failed）；missing 须有实体确实不存在的检查，不能按删除命令报错猜测。随后只暂存进度并独立 commit；失败分支提交后停止。
 
