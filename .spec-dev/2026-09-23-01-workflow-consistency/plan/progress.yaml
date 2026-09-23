@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T15",
+  "current": "T12",
   "tasks": {
     "T00": {
       "status": "completed",
@@ -124,7 +124,7 @@
       "tests": "pass"
     },
     "T12": {
-      "status": "completed",
+      "status": "in_progress",
       "evidence_paths": [
         "execution/T12/red-01/facts.json",
         "execution/T12/green-01/facts.json",
@@ -281,6 +281,7 @@
     "T15 entry verified T00-T14 individually; review base is the actual T00 source_head. Formal final output excludes only its generated acceptance/acceptance-report.md, which is not read by the targeted test source scan.",
     "T15 first full suite: 418/420 pass, 2 fail, 0 skipped, exit_code=1. Comparing the two outside-original-target documentation assertions on source 5244a3989e68c4c740b1fc694c913c343d5fbacc in an owned detached comparison worktree; never run against dirty main.",
     "T15 source comparison at exact T00 base passed 3/3; both final failures are introduced by this change. The owned clean detached comparison worktree was removed; raw stdout/stderr and hashes retained in execution/T15/source-comparison. T12 will clarify batch cleanup save/commit; T13 will keep the 200-line limit checked at its canonical rule instead of requiring it in the compact UI summary.",
-    "T15: Final attempt exit1 preserved. Source comparison passed; returning only the two introduced documentation assertions to T12/T13."
+    "T15: Final attempt exit1 preserved. Source comparison passed; returning only the two introduced documentation assertions to T12/T13.",
+    "T12: Reopened from final: restore explicit once-per-cleanup-batch save and commit wording without altering actual ledger code."
   ]
 }
