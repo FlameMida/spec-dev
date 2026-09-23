@@ -60,6 +60,7 @@ export function readBinding(repo,reference,view=worktreeView(repo)){
     if(b.claim_key===null){
       need(state.current===r.task,'current task mismatch');need(ancestor(repo,r.authority,tip),'authority is not an ancestor');
       const now=stateAt(view,r.plan),task=now.tasks?.[r.task];
+      for(const snapshot of [state,now])if(!snapshot.execution)need(Object.values(snapshot.tasks).filter(t=>t.status==='in_progress').length<=1,'multiple serial tasks in_progress');
       need(now.current===r.task&&task?.status==='in_progress','current task is not running');
       need(JSON.stringify(task.binding)===JSON.stringify(b),'current binding changed');
     }else{

@@ -154,6 +154,7 @@ export function validateStateShape(p){
     if(x.active_group!==null)need((p.membership.get(s.current)??p.verification.get(s.current))===x.active_group,'current outside active group');
   }
   const running=Object.entries(s.tasks).filter(([,t])=>t.status==='in_progress');
+  if(!s.execution)need(running.length<=1,'multiple serial tasks in_progress');
   if(x.active_group!==null)need(running.every(([id])=>id===s.current),'other task running during group');
   if(s.execution){
     keys(s.execution,['mode','owner','integration_worktree','integration_branch','base_commit','validated_commit'],['activation','delivery'],'execution');
@@ -178,6 +179,11 @@ function readyTasks(p){
       return eligible?[id]:[];
     }
     return s.tasks[g.verify].status==='blocked'?[]:[g.verify];
+  }
+  if(!s.execution&&s.current!==null){
+    const task=s.tasks[s.current];
+    if(task.status==='blocked')return [];
+    if(task.status==='in_progress')return p.byId.get(s.current).deps.every(completed)?[s.current]:[];
   }
   const ready=[];
   for(const row of p.rows){

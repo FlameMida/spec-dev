@@ -121,6 +121,7 @@ function parsePlanInput(files){
   need(Object.keys(state.tasks).length===ids.length&&ids.every(id=>own(state.tasks,id)),'progress/navigation mismatch','inconsistent');
   need(state.current===null||ids.includes(state.current),'unknown current','inconsistent');
   for(const [id,t] of Object.entries(state.tasks))need(object(t)&&['pending','in_progress','completed','blocked',...(state.format_version===2?['awaiting_verification']:[])].includes(t.status),'invalid task status '+id,'inconsistent');
+  if(!state.execution)need(Object.values(state.tasks).filter(t=>t.status==='in_progress').length<=1,'multiple serial tasks in_progress','inconsistent');
   if(state.format_version===2){
    need(progress.trim().startsWith('{'),'v2 requires JSON','unsupported_syntax');
    const group=groupContext(index,progress,taskNames);need(group,'missing integration declaration','missing');validateStateShape(group);
@@ -139,7 +140,7 @@ function parsePlanInput(files){
  const [file,text]=legacy[0],tasks=[];let current=null;
  for(const line of outsideFences(text).split('\n')){
   const h=/^###\s+(?:任务|Task)\s+(\d+)\s*(?:[:：]\s*)?(.*)$/i.exec(line);
-  if(h){need(!tasks.some(t=>t.id===h[1]),'duplicate legacy task','inconsistent');current={id:h[1],title:h[2],checked:0,total:0};tasks.push(current);continue;}
+  if(h){need(!tasks.some(t=>Number(t.id)===Number(h[1])),'duplicate legacy task','inconsistent');current={id:h[1],title:h[2],checked:0,total:0};tasks.push(current);continue;}
   if(/^ {0,3}#{1,3}(?:\s|$)/.test(line)){current=null;continue;}
   const box=/^\s*-\s+\[([ xX])\]\s/.exec(line);if(box&&current){current.total++;if(box[1]!==' ')current.checked++;}
  }

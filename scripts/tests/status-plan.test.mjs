@@ -33,3 +33,12 @@ test('S15 非法语法与未知协议',()=>{
   const f=basic();f.progress=JSON.stringify({...JSON.parse(f.progress),...patch});assert.throws(()=>parsePlanFiles(f));
  }
 });
+test('S07 serial status rejects multiple running tasks without inventing an executor',()=>{
+ const f=basic(),s=JSON.parse(f.progress);s.current='T00';s.tasks.T00.status=s.tasks.T01.status='in_progress';f.progress=JSON.stringify(s);
+ assert.throws(()=>parsePlanFiles(f),/serial|running|in_progress/);
+});
+test('S10 new scope blocks do not change legacy checkbox counts or source bytes',()=>{
+ const text='### Task 0: setup\n- [x] done\n### Task 1: implementation\n- [ ] next\n```json spec-dev-scopes\n{"version":1,"note":"- [x] sample"}\n```\n';
+ const input={legacy:[['old.md',text]]},before=JSON.stringify(input),r=parsePlanFiles(input);
+ assert.equal(r.counts.checked,1);assert.equal(r.counts.unchecked,1);assert.equal(JSON.stringify(input),before);
+});

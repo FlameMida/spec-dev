@@ -13,6 +13,28 @@ test('S03 persisted task binding is a valid progress extension',()=>{
   f.save();assert.equal(run(f).status,0);
  }finally{rmSync(f.outer,{recursive:true});}
 });
+function ordinaryFixture(status='in_progress',parallel=false){
+ const f=fixture(),p=path.join(f.dir,'index.md');let s=readFileSync(p,'utf8');
+ s=s.replace('| T04 | T03 |','| T04 | T00 |').replace('"T04": "delivery"','"T06": "delivery"');
+ s=s.replace('\n\n```json','\n| T05 | T00 | x | y |\n| T06 | T03,T04,T05 | x | y |\n\n```json');
+ writeFileSync(p,s);for(const id of ['T05','T06'])writeFileSync(path.join(f.dir,'tasks',id+'.md'),'# '+id+'\n');
+ f.state.tasks.T05={status};f.state.tasks.T06={status:'pending'};f.state.current=parallel?null:'T05';f.save();
+ const h=git(f.wt,'rev-parse','HEAD');f.state.tasks.T00.commit=h;f.state.integration.base_commit=h;f.state.integration.validated_commit=h;
+ if(parallel)f.state.execution={mode:'parallel',owner:f.state.integration.owner,integration_worktree:f.wt,integration_branch:'fixture-work',base_commit:h,validated_commit:h};
+ f.save();return f;
+}
+test('S07 current ordinary task resumes before independent pending tasks',()=>{
+ const f=ordinaryFixture();try{assert.deepEqual(check(f).ready_tasks,['T05']);assert.equal(f.state.tasks.T05.commit,undefined);}finally{rmSync(f.outer,{recursive:true});}
+});
+test('S08 blocked current task does not schedule independent pending work',()=>{
+ const f=ordinaryFixture('blocked');try{assert.deepEqual(check(f).ready_tasks,[]);}finally{rmSync(f.outer,{recursive:true});}
+});
+test('S07 unexplained simultaneous serial work is inconsistent',()=>{
+ const f=ordinaryFixture();try{f.state.tasks.T04.status='in_progress';f.save();check(f,false);}finally{rmSync(f.outer,{recursive:true});}
+});
+test('S07 parallel null current retains independent ready tasks',()=>{
+ const f=ordinaryFixture('pending',true);try{assert.deepEqual(check(f).ready_tasks,['T01','T04','T05']);}finally{rmSync(f.outer,{recursive:true});}
+});
 test('S07 group can start after external dependencies complete',()=>{const f=fixture();try{assert.deepEqual(check(f).ready_tasks,['T01']);}finally{rmSync(f.outer,{recursive:true});}});
 test('S05/S07 waiting member permits only next in-group task',()=>{const f=fixture();try{enter(f);waiting(f,'T01');f.save();const j=check(f);assert.deepEqual(j.ready_tasks,['T02']);assert.equal(j.active_group,'G01');assert.equal(f.state.tasks.T01.status,'awaiting_verification');}finally{rmSync(f.outer,{recursive:true});}});
 test('S12 blocked group returns no ready task without pretending inconsistent data',()=>{const f=fixture();try{enter(f);waiting(f,'T01');Object.assign(f.state.integration.groups.G01,{status:'blocked'});f.state.tasks.T02={status:'blocked',tests:'fail'};f.save();assert.deepEqual(check(f).ready_tasks,[]);}finally{rmSync(f.outer,{recursive:true});}});

@@ -49,10 +49,12 @@ test('S03 clear removes only the matching local reference even when its scope ex
 });
 test('S10 legacy checkbox state does not invalidate a committed task scope',t=>{
   const f=workflowFixture(t),plan=f.feature+'/legacy-plan.md';
-  const text='# plan\n### Task 0: isolation\n- [x] ready\n### Task 1: implement\n- [ ] first\n- [ ] second\n### Task 2: final\n- [ ] verify\n### Task 3: delivery\n- [ ] merge\n\n```json spec-dev-scopes\n'+JSON.stringify(f.scopes)+'\n```\n';
+  const text='# plan\n### Task 0: isolation\n- [x] ready\n### Task 1: implement\n- [ ] first\n- [ ] second\n```md\n- [ ] code sample\n```\n### Task 2: final\n- [ ] verify\n### Task 3: delivery\n- [ ] merge\n\n```json spec-dev-scopes\n'+JSON.stringify(f.scopes)+'\n```\n';
   f.put(plan,text);const authority=f.commit();const r=f.run(cli,['bind','--plan',plan,'--task','T01','--authority',authority]);assert.equal(r.status,0,r.stderr);
   f.put(plan,text.replace('[ ] first','[x] first'));assert.equal(inspect(f).status,0);
   f.put(plan,text.replace('[ ] first','[x] different contract'));rejected(inspect(f));
+  f.put(plan,text.replace('[ ] code sample','[x] code sample'));rejected(inspect(f));
+  f.put(plan,text+'\n### Task 01: duplicate\n- [ ] duplicate\n');rejected(inspect(f));
 });
 test('S04 claim checkpoint can be on integration history outside implementer ancestry',t=>{
   const f=workflowFixture(t),branch=f.git('branch','--show-current'),base=f.git('rev-parse','HEAD'),wt=path.join(f.outer,'implementer');
@@ -65,4 +67,16 @@ test('S04 claim checkpoint can be on integration history outside implementer anc
   const authority=f.save(),r=f.run(cli,['bind','--plan',f.plan,'--task','T01','--authority',authority],{cwd:wt});
   assert.equal(r.status,0,r.stderr);assert.equal(f.run(cli,['inspect'],{cwd:wt}).status,0);
   f.state.tasks.T01.claim={...claim,key:'c2'};f.save();rejected(f.run(cli,['inspect'],{cwd:wt}));
+});
+test('S07 existing implementation commit does not complete or rewrite the task on inspect',t=>{
+ const f=workflowFixture(t);f.bind();f.put('src/app.mjs','implemented\n');const commit=f.commit();
+ f.state.tasks.T01.implementation_commit=commit;f.save();
+ const before=readFileSync(path.join(f.root,f.feature,'plan/progress.yaml')),head=f.git('rev-parse','HEAD');
+ assert.equal(inspect(f).status,0);assert.equal(f.state.tasks.T01.status,'in_progress');
+ assert.deepEqual(readFileSync(path.join(f.root,f.feature,'plan/progress.yaml')),before);assert.equal(f.git('rev-parse','HEAD'),head);
+});
+test('S08 blocked current and conflicting serial work cannot activate a new task',t=>{
+ const f=workflowFixture(t),{authority}=f.bind();f.state.tasks.T01.status='blocked';f.save();rejected(inspect(f));
+ rejected(f.run(cli,['bind','--plan',f.plan,'--task','T02','--authority',authority]));
+ f.state.tasks.T01.status='in_progress';f.state.tasks.T02.status='in_progress';f.save();rejected(inspect(f));
 });
