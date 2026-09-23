@@ -144,9 +144,14 @@
       "tests": "pass"
     },
     "T14": {
-      "status": "in_progress",
+      "status": "blocked",
       "evidence_paths": [
-        "execution/T14/red-binding-audit/facts.json"
+        "execution/T14/red-binding-audit/facts.json",
+        "execution/T14/combined-01/facts.json",
+        "execution/T14/group-combination-fix/facts.json",
+        "execution/T14/combined-02/facts.json",
+        "execution/T14/metadata-commits/facts.json",
+        "execution/T14/red-review-object-transfer/facts.json"
       ]
     },
     "T15": {
@@ -252,6 +257,13 @@
     "T03 red-history-repair: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T03/red-history-repair/facts.json",
     "T03 green-repair: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T03/green-repair/facts.json",
     "T03: T14 correction: 48/48 binding/guard/installed-hook tests pass. Dangling references fail closed; claim creation uses its validated checkpoint and real local integration context. Historical checks no longer require surviving branches/worktrees; advancement of the live validated baseline does not invalidate an existing claim.",
-    "T14: Resuming after T03 correction 44b7b16; all earlier implementation/evidence retained. Added guard audit assertions will be committed with the T14 combinations."
+    "T14: Resuming after T03 correction 44b7b16; all earlier implementation/evidence retained. Added guard audit assertions will be committed with the T14 combinations.",
+    "T14 combined-01: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/combined-01/facts.json",
+    "T14 group-combination-fix: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/group-combination-fix/facts.json",
+    "T14 combined-02: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/combined-02/facts.json",
+    "T14 coverage: execution/T14/scenario-coverage.json maps S01-S27 to actual receipts and explicit static/manual boundaries. combined-01 failed only because the new test omitted fs.existsSync; it is a test-harness error, not a product red. The import was fixed and combined-02 passes 94/94. No test retirement candidate was authorized or removed.",
+    "T14 metadata-commits: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/metadata-commits/facts.json",
+    "T14 red-review-object-transfer: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/red-review-object-transfer/facts.json",
+    "T14: A final transfer composition reproduced inline review stdout being mistaken for a path. Returning to T08 for a narrow artifact-classification correction; 94/94 core combinations remain historical evidence."
   ]
 }
