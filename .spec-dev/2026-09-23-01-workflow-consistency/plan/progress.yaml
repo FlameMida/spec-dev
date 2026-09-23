@@ -142,7 +142,10 @@
       "tests": "pass"
     },
     "T14": {
-      "status": "in_progress"
+      "status": "blocked",
+      "evidence_paths": [
+        "execution/T14/red-binding-audit/facts.json"
+      ]
     },
     "T15": {
       "status": "pending"
@@ -240,6 +243,8 @@
     "T13 green-01: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T13/green-01/facts.json",
     "T13 preview: mmdc and local mermaid package are unavailable. No renderer installed or downloaded. Local text fallback preview will be observed; graphical Mermaid rendering remains unverified.",
     "T13 text fallback preview observed through Chrome tab 1752375661 at http://127.0.0.1:49302/, with AX text and two screenshot tool receipts. Owned preview tab closed and server exec session 25174 stopped (exit 130 intentional). Mermaid graphical rendering unverified; no new renderer downloaded.",
-    "T13: 41/41 rule/navigation tests; three Mermaid decision diagrams, lifecycle/reading tables, bilingual README and eight skill summaries/case sets updated. Browser text fallback observed; graphical Mermaid rendering remains unverified and real-model cases manual-pending. No renderer installed. Normal pre-commit passed."
+    "T13: 41/41 rule/navigation tests; three Mermaid decision diagrams, lifecycle/reading tables, bilingual README and eight skill summaries/case sets updated. Browser text fallback observed; graphical Mermaid rendering remains unverified and real-model cases manual-pending. No renderer installed. Normal pre-commit passed.",
+    "T14 red-binding-audit: exit=1; .spec-dev/2026-09-23-01-workflow-consistency/execution/T14/red-binding-audit/facts.json",
+    "T14: Binding audit produced three real failing CLI assertions: dangling receipt treated as absent; claim baseline and integration worktree not checked. Reopening T03 for the owned behavior, preserving its prior implementation and evidence."
   ]
 }
