@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "current": "T15",
+  "current": null,
   "tasks": {
     "T00": {
       "status": "completed",
@@ -190,16 +190,17 @@
       "tests": "pass"
     },
     "T15": {
-      "status": "in_progress",
+      "status": "completed",
       "evidence_paths": [
         "execution/tasks/T15/final-20260923T150346-95972/record.json",
         "execution/tasks/T15/final-20260923T151646-79243/record.json",
         "execution/tasks/T15/final-review-20260923T160831/record.json",
         "execution/T15/final-04-R06-diagnostic/facts.json",
         "execution/tasks/T15/final-closure-20260923T162925/record.json",
-        "execution/tasks/T15/final-delivery-20260923T165023/record.json"
+        "execution/tasks/T15/final-delivery-20260923T165023/record.json",
+        "execution/tasks/T15/final-r06-20260923T173117/record.json"
       ],
-      "commit": "6b8a8b4aeae0a0ddd86b1f8eeae73fa9331297fe",
+      "commit": "bd72d9272c6282728d20f0f914559f430030b5dc",
       "tests": "pass"
     },
     "T16": {
@@ -393,6 +394,8 @@
     "T11 R06-permission-green-corrected: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T11/R06-permission-green-corrected/facts.json",
     "T11 R06-controller-green: exit=0; .spec-dev/2026-09-23-01-workflow-consistency/execution/T11/R06-controller-green/facts.json",
     "T11: R06 conservative confirmation implemented; 13/13 R06 and 60/60 controlled-review pass. Six OS-boundary cases preserve blocked for active/invalid/unavailable/warning snapshots. First new harness incorrectly expected incomplete exit0; corrected to existing exit1 and obtained genuine blocked-vs-incomplete red against exact HEAD module, restoring owned candidate bytes afterward. Original failures/diagnosis untouched.",
-    "T15: Resume final after independently assessed conservative R06 cleanup repair and complete controller green; preserve full04/05 and all diagnosis. No tests weakened and no failure waiver applied."
+    "T15: Resume final after independently assessed conservative R06 cleanup repair and complete controller green; preserve full04/05 and all diagnosis. No tests weakened and no failure waiver applied.",
+    "T15 final06: 455/455, 0 fail, 0 skipped, actual exit0; formal receipt verified; affected closure review remains.",
+    "T15: Final06 verified 455/455, 0 failed/skipped/cancelled after all repairs; completion here is F only. Finish affected-dimension closure and reconciliation before T16."
   ]
 }
