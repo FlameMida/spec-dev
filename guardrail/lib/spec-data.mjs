@@ -111,4 +111,3 @@ function globToRegExp(glob) {
   }
   return new RegExp(re + "$");
 }
-
