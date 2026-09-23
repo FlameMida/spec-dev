@@ -15,6 +15,16 @@ for(const name of ['prepare-commit-msg','commit-msg'])for(const runtime of ['pyt
   assert.equal(f.git('status','--porcelain'),'','preflight must precede installer writes');
   f.put('ordinary.txt','after rejected install\n');f.commit('original hook still works');
 });
+test('S06 interpreter names ending in sh are not treated as shell scripts',t=>{
+  const f=workflowFixture(t);f.git('config','core.hooksPath','.custom-hooks');
+  const python=spawnSync('python3',['-c','import sys; print(sys.executable)'],{encoding:'utf8'});assert.equal(python.status,0,python.stderr);
+  symlinkSync(python.stdout.trim(),path.join(f.root,'python-sh'));
+  const file=path.join(f.root,'.custom-hooks/prepare-commit-msg');
+  f.put('.custom-hooks/prepare-commit-msg','#!'+path.join(f.root,'python-sh')+'\nimport sys\nsys.exit(0)\n');chmodSync(file,0o755);
+  f.commit('original custom interpreter');const before=readFileSync(file);
+  const r=install(f);assert.notEqual(r.status,0);assert.deepEqual(readFileSync(file),before);assert.equal(f.git('status','--porcelain'),'');
+  f.git('commit','--allow-empty','-qm','original still executes');
+});
 function installed(t){
   const f=workflowFixture(t);f.git('config','--unset','core.hooksPath');const r=install(f);assert.equal(r.status,0,r.stderr);
   assert.ok(existsSync(path.join(f.root,'scripts/spec-dev/task-binding.mjs')),'installed binding CLI is required');

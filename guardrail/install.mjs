@@ -184,10 +184,20 @@ function preflightMessageHooks(repo) {
     const target = path.join(dir, name);
     if (!existsSync(target)) continue;
     const body = readFileSync(target, "utf8"), shebang = body.split("\n", 1)[0];
-    if (shebang.startsWith("#!") && !/(?:sh|bash|dash|zsh)(?:\s|$)/.test(shebang)) {
+    if (shebang.startsWith("#!") && !isShellShebang(shebang)) {
       throw new Error(`cannot inject into a non-shell ${name} hook: ${target}; preserve it and configure a shell wrapper before installing`);
     }
   }
+}
+
+function isShellShebang(shebang) {
+  const words = shebang.slice(2).trim().split(/\s+/);
+  let interpreter = path.basename(words.shift() || "");
+  if (interpreter === "env") {
+    if (words[0] === "-S") words.shift();
+    interpreter = path.basename(words.shift() || "");
+  }
+  return ["sh", "bash", "dash", "zsh"].includes(interpreter);
 }
 
 function installGitHooks(repo) {
@@ -225,7 +235,7 @@ function installGitHooks(repo) {
         let next;
         if(name==='commit-msg'){
           const nl=cur.indexOf('\n'),shebang=cur.startsWith('#!')?cur.slice(0,nl<0?undefined:nl):'#!/bin/sh';
-          if(!/(?:sh|bash|dash|zsh)(?:\s|$)/.test(shebang))throw new Error('cannot inject into a non-shell commit-msg hook: '+target);
+          if(!isShellShebang(shebang))throw new Error('cannot inject into a non-shell commit-msg hook: '+target);
           const body=cur.startsWith('#!')?(nl<0?'':cur.slice(nl+1)):cur;
           // A subshell preserves legacy exit codes, then validates its final message.
           next=shebang+'\n(\n'+body+'\n) || exit $?\n'+guard;
