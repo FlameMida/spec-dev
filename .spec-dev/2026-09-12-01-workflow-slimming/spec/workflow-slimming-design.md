@@ -49,6 +49,8 @@ spec_dev:
 
 # 工作流瘦身设计
 
+> **Superseded-pending (2026-09-23)** — 本 spec 的「Requirement: R3 收尾审查路数与证据（改了什么：四路改两路、复跑改读回执、critic 改条件派发）」、「Requirement: R4 本地三时点测试（改了什么：删除全量回退，任务内不跑回归）」、「Requirement: R5 本地三 lane（改了什么：fast/PR/nightly 改为 fast/final/manual）」、「Requirement: R6 验收复用执行证据（改了什么：standard 不再默认全套复核与审计）」、「Requirement: R7 执行证据留存（改了什么：证据与验收产物不进 git，历史一次性清除）」将被 .spec-dev/2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
+
 > 档位：light（本 spec 按 light 五节成稿；因存在相交 active spec，保留「取代与共存」节）。
 
 ## 背景与目标

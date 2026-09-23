@@ -40,6 +40,8 @@ spec_dev:
 
 # 可选并发执行（concurrent-execution）设计
 
+> **Superseded-pending (2026-09-23)** — 本 spec 的「Requirement: 特性级双交付通道」、「Requirement: 既有收尾审查全量继承」将被 .spec-dev/2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
+
 
 > roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) 子项目 #2；吸收报告 AB-44 / AB-10 / AB-11 / AB-33。用户于 2026-09-06 确认含模型声明、切换与恢复的修订稿；本 spec 已激活，用户已指示开始实施；实施与必需验收已完成，已合入本地 main 并清理本次临时资源。
 

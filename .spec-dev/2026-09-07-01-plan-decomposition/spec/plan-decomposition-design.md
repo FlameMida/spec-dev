@@ -48,6 +48,8 @@ spec_dev:
 
 # 计划分解与集成组设计
 
+> **Superseded-pending (2026-09-23)** — 本 spec 的「Requirement: M01 plan 单一形态（增加组声明与类型化步骤）」、「Requirement: M02 渐进执行与断点恢复（扩展组检查点）」、「Requirement: A08 集成组恢复核对事实」、「Requirement: A09 协议能力检查先于写入」将被 .spec-dev/2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
+
 > roadmap [skill-ecosystem-absorption](../../roadmaps/2026-09-03-01-skill-ecosystem-absorption.md) #5，吸收 AB-06/07/08/30/35/29。用户于 2026-09-07 选择“方案 2：多张小任务卡组成集成组”，并以 `ok` 批准整篇设计。本文件为批准设计的可执行化规格；2026-09-07用户确认执行后已完成T00—T07；T08必需验收及独立完整性审查已通过，T09本地交付已完成，状态见plan/progress.yaml与实施记录。
 
 > 独立审查 **Approved**，23 条 Requirement / 33 个 Scenario，见 [design-review.md](design-review.md)。用户已 review 通过并于 2026-09-07 以 `ok` 同意编写实施计划；现已激活；[实施计划](../plan/index.md) 已保存（T00—T09），用户已明确确认执行；T00—T09均已完成，23条Requirement/33个Scenario必需证据齐备，已合入本地main。

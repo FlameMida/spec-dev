@@ -1,5 +1,7 @@
 ---
 # —— spec-dev 漂移守卫锚点（机器可校验，勿删）——
+
+> **Superseded-pending (2026-09-23)** — 本 spec 的「Requirement: 装机侧把 superseded 重写为生命周期终态」将被 .spec-dev/2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。
 spec_dev:
   version: 1
   feature: supersede-lifecycle
