@@ -446,13 +446,35 @@
 
     // ---- theme (apply before Mermaid renders) ----
     var theme = load(THEME_KEY);
-    if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+    var themeState = theme === 'light' || theme === 'dark' ? theme : 'auto';
+    var systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
     function isDark() {
-      var t = document.documentElement.dataset.theme;
-      if (t === 'dark') return true;
-      if (t === 'light') return false;
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return themeState === 'dark' || (themeState === 'auto' && systemTheme.matches);
     }
+    function syncContentTheme() {
+      // Semi components (including portals attached to body) use theme-mode,
+      // independently of the frame's data-theme palette.
+      var mode = isDark() ? 'dark' : 'light';
+      if (document.body.getAttribute('theme-mode') !== mode) {
+        document.body.setAttribute('theme-mode', mode);
+      }
+    }
+    function applyTheme() {
+      if (themeState === 'auto') delete document.documentElement.dataset.theme;
+      else document.documentElement.dataset.theme = themeState;
+      syncContentTheme();
+    }
+    applyTheme();
+    // Deferred mockups may initialize body to light after this script runs.
+    // Keep the frame's selected theme authoritative without a mutation loop.
+    new MutationObserver(syncContentTheme).observe(document.body, {
+      attributes: true, attributeFilter: ['theme-mode']
+    });
+    systemTheme.addEventListener('change', function() {
+      if (themeState !== 'auto') return;
+      applyTheme();
+      if (document.querySelector('.mermaid')) window.location.reload();
+    });
 
     // ---- Mermaid: lazy local load, only when the screen has diagrams ----
     var mermaidNodes = document.querySelectorAll('.mermaid');
@@ -493,15 +515,13 @@
     // ---- theme toggle: 系统 → 浅色 → 深色 → 系统 (reload so Mermaid re-themes) ----
     var themeBtn = document.getElementById('theme-toggle');
     var themeLabels = { auto: '主题：系统', light: '主题：浅色', dark: '主题：深色' };
-    var themeState = theme === 'light' || theme === 'dark' ? theme : 'auto';
     themeBtn.textContent = themeLabels[themeState];
     themeBtn.addEventListener('click', function() {
       themeState = themeState === 'auto' ? 'light' : themeState === 'light' ? 'dark' : 'auto';
       if (themeState === 'auto') { try { sessionStorage.removeItem(THEME_KEY); } catch (e) {} }
       else store(THEME_KEY, themeState);
+      applyTheme();
       if (document.querySelector('.mermaid')) { window.location.reload(); return; }
-      if (themeState === 'auto') delete document.documentElement.dataset.theme;
-      else document.documentElement.dataset.theme = themeState;
       themeBtn.textContent = themeLabels[themeState];
     });
 

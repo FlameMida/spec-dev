@@ -65,6 +65,8 @@ bash "${CLAUDE_SKILL_DIR}/scripts/start-server.sh" --project-dir /path/to/projec
 
 fragment 写法、可用 CSS 类、events 格式、命名细则见 [preview-guide.md](references/preview-guide.md)。
 
+**主题适配**：fragment 的文字与背景使用主题变量，不锁定全局浅色或深色；接入组件库时检查内容区和弹层是否跟随 frame 切换，具体规则见 [preview-guide.md「设计要点」](references/preview-guide.md#设计要点)。
+
 ## 清理
 
 ```bash

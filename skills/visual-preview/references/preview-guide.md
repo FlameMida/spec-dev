@@ -124,6 +124,9 @@ flowchart LR
 ## 设计要点
 
 - **主题颜色匹配问题**——深色和浅色主题的颜色搭配要保证可见性
+  - fragment 使用 frame 的 `var(--text-primary)`、`var(--text-secondary)`、`var(--bg-primary)`、`var(--bg-secondary)` 等变量；文字与背景成对适配，避免写死浅色值。`--theme-css` 注入的项目配色也需提供深浅色规则。
+  - frame 以 `html[data-theme]` 控制手动主题；系统模式移除此属性并跟随 `prefers-color-scheme`。Semi 内容与挂在 `body` 的弹层由 frame 同步 `body[theme-mode="light"/"dark"]`，fragment 不要自行写入全局主题，也不要在内容根节点使用 `semi-always-light` / `semi-always-dark` 锁定整页配色。确需固定主题的局部示例须同时提供匹配的背景与文字色。完整 HTML 文档不经过 frame，需自行同步主题。
+  - 检查浅色 → 深色 → 系统、刷新后的主题恢复，以及弹层内文字、输入框和背景。逐层检查页面底板、工作区、滚动容器、卡片与弹层的实际背景色；透明子容器会透出祖先写死的浅色底板，组件与文字变色不代表整页适配完成。截取完整工作区复核，不只看页头或局部卡片。
 - **保真度匹配问题**——布局问题用线框，观感问题才做视觉打磨
 - **图示优先 Mermaid**——架构图、流程图、状态机、时序图用 `<pre class="mermaid">`，不要 div 手拼
 - **每屏解释问题**——写"哪种布局更专业？"而不是只写"选一个"
