@@ -71,7 +71,7 @@ fragment 写法、可用 CSS 类、events 格式、命名细则见 [preview-guid
 bash "${CLAUDE_SKILL_DIR}/scripts/stop-server.sh" "$SESSION_DIR"
 ```
 
-项目内会话同规则：特性目录下的 `visual/` 会话与 `.spec-dev/visual/` 会话的 mockup 均保留供日后查看（`stop-server.sh` 的删除逻辑只认 `/tmp` 前缀，特性目录会话自然保留）；仅 `/tmp` 会话在停止时删除。服务器空闲 4 小时自动退出（`--idle-timeout-minutes` 可调）。
+项目内会话同规则：特性目录下的 `visual/` 会话与 `.spec-dev/visual/` 会话的 mockup 均保留供日后查看（`stop-server.sh` 的删除逻辑只认 `/tmp` 前缀，特性目录会话自然保留）；仅 `/tmp` 会话在停止时删除。
 
 **归档约定**：被设计采纳的定稿 mockup 复制为特性目录 `spec/assets/<名称>.html` 入库——这是唯一入 git 的 visual 产物。
 
