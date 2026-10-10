@@ -1,6 +1,6 @@
 # 可视化预览详细指南
 
-> **Language / 语言**: The Chinese copy in the HTML examples below is structural placeholder only — write actual mockup copy (headings, option labels, annotations) in the conversation language. / 下文 HTML 示例中的中文文案仅为结构示意，实际 mockup 文案（标题、选项、标注）以对话语言书写。
+> **Language / 语言**: 下文 HTML 示例中的中文文案仅为结构示意，实际 mockup 文案（标题、选项、标注）以对话语言书写。
 
 > **阅读时机**：用户接受可视化预览提议、准备推第一屏之前。
 
@@ -123,6 +123,7 @@ flowchart LR
 
 ## 设计要点
 
+- **主题颜色匹配问题**——深色和浅色主题的颜色搭配要保证可见性
 - **保真度匹配问题**——布局问题用线框，观感问题才做视觉打磨
 - **图示优先 Mermaid**——架构图、流程图、状态机、时序图用 `<pre class="mermaid">`，不要 div 手拼
 - **每屏解释问题**——写"哪种布局更专业？"而不是只写"选一个"

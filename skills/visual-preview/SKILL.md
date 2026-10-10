@@ -56,7 +56,7 @@ bash "${CLAUDE_SKILL_DIR}/scripts/start-server.sh" --project-dir /path/to/projec
 
 ## 循环
 
-1. **确认服务器存活**（`$STATE_DIR/server-info` 存在且 `server-stopped` 不存在；已停则用**相同 `--project-dir`** 重启，端口复用、已打开的标签页自动重连），然后**写 HTML fragment** 到 `screen_dir` 的新文件——语义化命名（`layout.html`）、**永不复用文件名**、用文件创建工具而非 cat/heredoc，服务器自动展示最新文件
+1. **确认服务器存活**（`$STATE_DIR/server-info` 存在且 `server-stopped` 不存在；已停则用**相同 `--project-dir`** 重启，端口复用、已打开的标签页自动重连），然后**写 HTML fragment** 到 `screen_dir` 的新文件——语义化命名（`layout.html`）、**永不复用文件名**、**区分与检查浅色/深色主题的配色**、用文件创建工具而非 cat/heredoc，服务器自动展示最新文件
 2. **告知用户并结束回合**：重发 URL（每一步都发）、一句话概括屏上内容、请用户看完在终端回复（想选就点击选项）
 3. **下一回合**：读 `$STATE_DIR/events`（JSON lines，浏览器交互记录）——终端文字是主反馈，events 提供结构化补充；`type:"confirm"` 是用户的明确最终选择（含随附备注），`click` 带 `selected` 区分选中/取消，`annotate` 是用户点选的"要改的位置"；文件不存在说明用户没和浏览器交互
 4. **迭代或推进**：反馈改当前屏就写新文件（`layout-v2.html`）；当前问题验证完才进下一题
