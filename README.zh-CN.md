@@ -13,14 +13,14 @@
 - **可视化预览** — `visual-preview` 浏览器伴侣：设计对话中 JIT 提议，展示 mockup、线框、布局对比并回收点击选择
 - **实施计划** — `writing-plans` 把 spec 拆成可独立验证的 bite-sized 任务：精确文件路径、改动要点与关键 diff 片段、TDD 五步内嵌、接口消费/产出契约、禁止占位符
 - **计划执行** — 主线程逐票实施与提交，独立 final 后按规模做 1/2/5 路审查，再验收、对账与交付；有效原件可复用，缺口补验。critic 由高/中候选、large 或显式 always 触发。
-- **可选并发执行** — `executing-plans-parallel`: 显式选择；模型声明、任务边界切换、独占进度、隔离实现和中断恢复；共用本地/PR 交付闭环。
+- **统一执行入口** — `executing-plans`：默认按任务图并发补位，依赖或资源受限时顺序推进，遵从明确串行要求；独占进度与集成，共用恢复、审查和交付。
 - **工程纪律** — `using-git-worktrees`（原生工具优先的隔离工作区）与 `test-driven-development`（行为变化先有效红、纯重构保绿、例外沿唯一清单与既有授权）独立成 skill，可被任何工作流复用
 - **全能验收** — `acceptance-qa` 按「验收维度 × 执行性质」矩阵验收：单元/集成/API、Playwright E2E、视觉回归、可访问性、性能（前端 CWV / 后端 k6 / 客户端）、AI 自主验收（证据强制 + 串行复核 + verify 断言优先）与失败诊断
 - **轻量修复** — `quick-fix`，用于已决定、无设计空间的小修：按证据诊断、逐题校对，沿获批公共落点 TDD 修复。范围、依赖、现行契约冲突或诊断证据不足时提议升级；偶发但可比较可继续。收尾核对复现率、临时插桩、原症状和根因证据，acceptance-qa 保持可选。
 - **共享澄清** — `clarifying`，grill 式提问纪律（沿决策树一次一题、事实自查、每个决策带推荐交用户裁决）；被 requirement-analysis 与 quick-fix 引用，也可独立调用，以三出口收束（转主流程/就此结束/写入 md）
 - **契约化编排** — 子代理输出走 JSON Schema 契约，`validate-output.mjs` 确定性校验，失败退回补全
 - **零 MCP 依赖** — 结构化推理以内嵌 skill 提供（`sequential-thinking`，vendored）；浏览器自动化 MCP（playwright / chrome-devtools）按项目自配，见 `skills/acceptance-qa/references/mcp-setup.md`
-- **4 个专门化 agents** — code-explorer、external-resource-explorer、code-reviewer 负责分析与复跑；implementer 仅在显式选择并发时于独立 worktree 写码。
+- **4 个专门化 agents** — code-explorer、external-resource-explorer、code-reviewer 负责分析与复跑；implementer 在计划执行获准后于独立 worktree 写认领代码。
 
 ## Skill 管线
 
@@ -37,7 +37,6 @@ requirement-analysis（设计 → .spec-dev/YYYY-MM-DD-NN-<feature>/spec/<featur
 writing-plans（计划 → 同特性目录 plan/ 分文件形态：index.md + tasks/ + progress.yaml）
         ↓
 executing-plans（隔离实施 → final → 审查 → 验收/对账 → 交付）
-   ├── executing-plans-parallel (显式选择、独立写集合、模型声明、恢复)
    ├── using-git-worktrees（隔离工作区）
    ├── test-driven-development（TDD 纪律）
    └── acceptance-qa（矩阵化验收）
@@ -136,7 +135,7 @@ node scripts/validate-skills.mjs
 `skills/*/evals/` 下有两类文件，定位不同：
 
 - `evals.json` — **设计意图文档**：记录各 skill 关键行为的预期（HARD-GATE 拒绝、交接门、降级路径等），供人工 review 与未来评测 harness 使用。仓库内没有运行器，且多数用例带对话前置状态、断言为散文——它们**不构成自动化回归防线**，改动 skill 行为时应把它们当 checklist 人工过一遍
-- `trigger-evals.json` — **可冷启动、可判定的触发面用例**（should-trigger / should-not-trigger 单发 prompt + near-miss 负例）：目前覆盖 `acceptance-qa`、`clarifying`、`exploring`、`quick-fix`、`requirement-analysis`、`test-strategy`, `executing-plans-parallel` 七个 skill，接入任意评测 harness 即可直接运行判定
+- `trigger-evals.json` — **可冷启动、可判定的触发面用例**（should-trigger / should-not-trigger 单发 prompt + near-miss 负例）：目前覆盖 `acceptance-qa`、`clarifying`、`exploring`、`quick-fix`、`requirement-analysis`、`test-strategy`, `executing-plans` 七个 skill，接入任意评测 harness 即可直接运行判定
 
 ### 提交前 hook
 
@@ -254,14 +253,14 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-des
 
 ## 专门化 Agents
 
-默认串行由主线程写码。显式选择 executing-plans-parallel 后，implementer 在独立 worktree 内按认领写码；主线程仍独占进度与合并，其他 agents 保持分析职责：
+executing-plans 默认将就绪任务交给独立 worktree 中的 implementer，按依赖与资源约束控制并行数量，遵从明确串行要求；主线程仍独占进度与合并，其他 agents 保持分析职责：
 
 | Agent | 用途 | 使用场景 |
 |-------|------|---------|
 | **code-explorer** | 深度分析代码库 | requirement-analysis 阶段 2 并行探索 |
 | **external-resource-explorer** | 外部资源探索，可引用证据 | requirement-analysis 阶段 2 外部波次与回补探索 |
 | **code-reviewer** | 代码审查、Spec 符合性及可选架构深化 | 统一收尾编排；完整性 critic 独立核对覆盖证据 |
-| **implementer** | 单票 TDD 与自检 | executing-plans-parallel 独立 worktree |
+| **implementer** | 单票 TDD 与自检 | executing-plans 并发模式、独立 worktree |
 
 ## 目录结构
 
@@ -279,7 +278,7 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 │   ├── pre-commit                   # 提交前校验插件包与 skills
 │   ├── post-commit                  # 提交后自动发版（升版本 + CHANGELOG + tag）
 │   └── pre-push                     # 发布兜底（校验 CHANGELOG 条目、补打版本 tag）
-├── agents/                          # 4 个 agents，含 opt-in implementer
+├── agents/                          # 4 个 agents，含隔离 implementer
 ├── commands/                        # /doctor、/triage 命令
 ├── guardrail/                       # spec 漂移守护（可装入目标仓库）
 ├── skills/
@@ -290,7 +289,6 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 │   ├── visual-preview/              # 浏览器可视化预览
 │   ├── writing-plans/               # 实施计划编写
 │   ├── executing-plans/             # 计划执行 + 收尾审查
-│   ├── executing-plans-parallel/    # 显式选择的并发执行与恢复
 │   ├── using-git-worktrees/         # 隔离工作区纪律
 │   ├── test-driven-development/     # TDD 纪律
 │   ├── test-strategy/               # 测试策略纪律（Lane / 治理 / 验收矩阵对接）

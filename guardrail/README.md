@@ -37,7 +37,7 @@ The frontmatter `sync_commit` is the delivery anchor: the commit where code and 
 
 At edit time (`--hook`), "already synced" includes existing working-tree changes (staged + unstaged + untracked): **update the spec first, then touch the covered code, and you pass**; dirty files in the working tree do not expand the trigger set, and editing unrelated files is unaffected by pre-existing drift. The wrap-up audit (`--worktree`) uses the whole working tree as the change set, backstopping files written by tools that bypassed the tool surface within the turn.
 
-Explicit parallel execution uses `executing-plans-parallel` only with declared independent writes and isolated resources; default execution stays serial. Only its implementer writes claimed code in isolated worktrees. `Spec: <repo-relative spec path>` is a traceability trailer, not a drift-guard bypass.
+Once plan execution is authorized, `executing-plans` dispatches ready tasks to implementers in isolated worktrees by default. Dependencies and write/resource conflicts limit concurrency; an explicit serial preference takes precedence. The coordinator owns progress and integration, and declared task scopes remain mandatory. `Spec: <repo-relative spec path>` is a traceability trailer, not a drift-guard bypass.
 
 ## Task-scoped authorization
 

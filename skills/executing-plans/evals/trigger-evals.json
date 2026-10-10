@@ -1,0 +1,49 @@
+{
+  "skill_name": "executing-plans",
+  "description_under_test": "执行已批准的书面实施计划，默认按依赖图并发派发就绪任务，支持持续补位、中断恢复、审查与交付。遵从明确串行要求，依赖或资源受限时顺序推进，不用于无计划的即兴修改。",
+  "should_trigger": [
+    {
+      "id": "approved-execution",
+      "prompt": "用 $executing-plans 执行这份已批准的分文件计划，有合法派发声明和独立任务。"
+    },
+    {
+      "id": "plain-continue",
+      "prompt": "继续这份已获准执行的书面计划，先核对 progress 和当前任务。"
+    },
+    {
+      "id": "chain-only",
+      "prompt": "已批准计划的 T01 到 T04 是单条依赖链，请开始执行。"
+    },
+    {
+      "id": "parallel-resume",
+      "prompt": "progress 已记录 parallel，恢复中断任务并先核对旧 claim。"
+    },
+    {
+      "id": "explicit-serial",
+      "prompt": "执行这份获批计划，但全程由主线程串行实施。"
+    },
+    {
+      "id": "boundary-switch",
+      "prompt": "继续获批计划，当前 T02 做完后取消之前的串行限制，恢复默认编排。"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "id": "parallel-research",
+      "prompt": "并行查三个库的官方文档，不实施计划。"
+    },
+    {
+      "id": "missing-plan",
+      "prompt": "直接写一个新功能，目前没有 spec 或计划。"
+    },
+    {
+      "id": "write-plan",
+      "prompt": "根据已批准的 spec 编写实施计划，现在不要执行。"
+    },
+    {
+      "id": "daily-test",
+      "prompt": "只运行现有单元测试并报告结果。"
+    }
+  ],
+  "notes": "唯一执行入口默认按依赖图并发，明确串行要求优先；触发不等于获得执行授权或满足派发准入。"
+}

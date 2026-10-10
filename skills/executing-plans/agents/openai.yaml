@@ -1,7 +1,7 @@
 interface:
   display_name: "Executing Plans"
-  short_description: "执行获批书面计划；按绑定与记录恢复明确任务，final 后审查验收，核验真实交付与证据。"
-  default_prompt: "用 $executing-plans 以 TDD 逐任务执行实施计划并做收尾审查。"
+  short_description: "执行获批书面计划，默认按依赖图并发调度；保留串行限制、恢复、验证和交付。"
+  default_prompt: "用 $executing-plans 执行获批计划，默认并发派发就绪任务，按依赖和资源限制顺序推进并恢复已有状态。"
 
 policy:
   allow_implicit_invocation: true

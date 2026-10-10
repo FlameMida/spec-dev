@@ -4,9 +4,12 @@ spec_dev:
   feature: concurrent-execution
   status: active
   covers:
-    - "skills/executing-plans-parallel/**"
     - "agents/implementer.md"
     - "skills/executing-plans/SKILL.md"
+    - "skills/executing-plans/references/parallel-execution.md"
+    - "skills/executing-plans/references/parallel-activation-recovery.md"
+    - "skills/executing-plans/references/parallel-result-integration.md"
+    - "skills/executing-plans/references/feature-lock.md"
     - "skills/executing-plans/agents/openai.yaml"
     - "skills/executing-plans/evals/**"
     - "skills/executing-plans/references/review-orchestration.md"
@@ -46,13 +49,13 @@ spec_dev:
 
 ## 背景与目标
 
-默认 executing-plans 由主线程逐票实现，已有依赖导航表和渐进加载能力，却不能安全编排多个写代码的子代理。上游 implement-spec beta 提供独立 worktree 与 frontier 模式，但没有本项目要求的 TDD、进度唯一写者和契约自检协议。本特性为既有执行链增加明确选择后才启用的并发分支，并把其结果收回既有审查、验收和交付闭环。
+executing-plans 统一编排实施任务。参考上游 implement-spec 的 worktree 与 frontier 方式，用户已明确要求默认并发：获得执行授权后按依赖图派发，具备多个无冲突 ready 票时并发，依赖链自然逐票推进。保留本项目的 TDD、唯一进度写者、契约自检及统一审查、验收和交付闭环。
 
-**成功标准**：未选择并发的请求保持串行；合格的独立任务可在不同 worktree 同时执行；越界写、重复认领与未集成结果不能解锁后继；中断后从可核验事实恢复；本地与 PR 两种交付通道都有明确完成证据。
+**成功标准**：执行获准后默认按图编排，明确串行要求优先；合格的独立任务可在不同 worktree 同时执行；越界写、重复认领与未集成结果不能解锁后继；中断后从可核验事实恢复；本地与 PR 两种交付通道都有明确完成证据。
 
 ## 非目标
 
-- 不替换默认串行范式，不改变 TDD、一次一题、契约偏差裁决或最终多维审查纪律；不吸收 roadmap #3—#8 的行为。
+- 不覆盖用户明确串行限制，不改变 TDD、一次一题、契约偏差裁决或最终多维审查纪律；不吸收 roadmap #3—#8 的行为。
 - 不实现多人分布式调度、远端队列、自动抢占租约、merger 子代理或通用 Agent 运行时。
 - 不迁移存量单文件计划、不自动把缺写集合的历史计划补成并发计划；不默认推送、创建 PR 或合并远端 PR。
 - 不在任务写到一半时转交实现上下文，不迁移未提交业务改动；串行转并发只发生在任务完成并保存的边界。
@@ -68,15 +71,15 @@ spec_dev:
 
 ## 影响面与定义点
 
-- 新增 `skills/executing-plans-parallel/`（SKILL、openai.yaml、evals 与 trigger-evals）和 `agents/implementer.md`；登记 Claude marketplace，其他平台继续按现有目录发现。元数据与新增语言协议采用中文；不清理无关历史文本。
-- executing-plans 增条件提议与分支委托；串行/并发共用 `references/delivery-channels.md` 定义本地/PR 出口，收尾审查仍引用 review-orchestration。默认串行介绍保留，README 与 guardrail snippet 中无条件的“子代理不写码”改成默认模式限定。
+- 执行规则与并发协议统一归入 `skills/executing-plans/`；其 evals 包含并发行为和入口触发用例，`agents/implementer.md` 保持单票职责。Claude marketplace 只登记统一执行 skill，其他平台按现有目录发现。旧独立并发目录移除，不改写历史计划与已交付记录。
+- executing-plans 统一默认调度与串行分流；串行/并发共用 `references/delivery-channels.md` 定义本地/PR 出口，收尾审查仍引用 review-orchestration。README 与 guardrail snippet 同步默认并发及实施授权边界，只有被认领的 implementer 可以写任务代码。
 - writing-plans 是写集合、progress 扩展与资源台账的定义点；新 skill 只规定编排流程。TDD、worktree、插件根解析、失败隔离、Codex 工具映射继续引用原定义点。
 - `scripts/validate-output.mjs` 保留原 plan-index 行为并增加并发声明验证；`scripts/lib/parallel-plan.mjs` 承载可测试的声明、路径及结果核验逻辑，不负责调模型、调度或合并；新增 implementation-result schema。既有 check-plugin/validate-skills 自动发现能力无需修改。
 - 执行期只读探索笔记由主线程收纳到同特性目录 `research/`，结果证据收纳到 `execution/<claim_key>/`；它们是输入/证据，不是另一份任务状态源。
 
 ## 已确认的关键决策
 
-- 正式独立 skill、显式 opt-in、主线程唯一状态写者与 merger；每票 TDD + 契约自检、全局收尾纪律继承（[ADR-0007](../../adr/0007-opt-in-concurrent-execution.md)）。
+- 统一执行入口、默认按图并发、主线程唯一状态写者与 merger；每票 TDD + 契约自检、集成组与本地证据/交付纪律继承（[ADR-0011](../../adr/0011-default-graph-execution.md)，整体取代 ADR-0007 与 ADR-0010）。
 - 写集合放 index 的可选机器可读声明、运行状态放 progress：保留三件套与四列导航；拒绝独立调度文件造成重复索引，也不为并发扩充导航表列数。声明代表能力，不代表用户已经选择并发。
 - 一个特性同一时刻只有一个编排主线程；认领与锁只用于排他和恢复，不引入分布式调度。
 - 任务完成以集成后验证为准；资源先登记后创建；PR ready 与实际合并分别记账。上述细节落实用户批准的七项设计，不扩大交付范围。
@@ -85,7 +88,7 @@ spec_dev:
 
 ## 取代与共存
 
-- [部分取代] `.spec-dev/2026-08-27-01-plan-single-format/spec/plan-single-format-design.md`：Requirement「plan 单一形态」增加可选并发声明与运行扩展；「渐进执行与断点恢复」增加多 worktree、认领、集成完成、任务边界切换与恢复语义；「资源登记纪律」增加子代理创建前由主线程登记。下文 MODIFIED 完整继承串行与存量读取行为，分别定义 opt-in 例外。其「存量计划兼容读取」保持冻结，不取代。
+- [部分取代] `.spec-dev/2026-08-27-01-plan-single-format/spec/plan-single-format-design.md`：Requirement「plan 单一形态」增加可选并发声明与运行扩展；「渐进执行与断点恢复」增加多 worktree、认领、集成完成、任务边界切换与恢复语义；「资源登记纪律」增加子代理创建前由主线程登记。已取代的 MODIFIED 保留历史原文；当前默认和恢复分流见下文现行 Requirement。其「存量计划兼容读取」保持冻结，不取代。
 - [部分取代] `.spec-dev/2026-09-03-02-portability-hygiene/spec/portability-hygiene-design.md`：Requirement「README 漂移修正」中的固定 13 skill、6 trigger-evals 与 schema 计数随新增正式 skill/schema 更新，保留四项 Self-Review 和 scripts 目录事实；其余插件根、依赖区分、纯壳委托、失败隔离、区间展开纪律分面共存。
 - [分面共存] `.spec-dev/2026-08-26-01-major-upgrade/spec/major-upgrade-design.md`：新增 skill 登记和输出 schema 使用既有分发与校验机制；相关旧计划/恢复/资源条款已有 Superseded 标注，不再作为取代目标。现行搜索优先级、编号与 roadmap 胶囊语义继承。
 - [分面共存] `.spec-dev/2026-08-10-supersede-lifecycle/spec/supersede-lifecycle-design.md`：只修改所覆盖文件的执行模式/追溯说明，取代时序、covers 双声明和守卫机制不变；Spec trailer 是追溯字段，不是绕过守卫的指令。
@@ -139,7 +142,7 @@ writing-plans SHALL 始终生成 index.md + tasks/TNN.md + progress.yaml：index
 
 ### Requirement: README 漂移修正（改了什么：新增 skill 后按实际集合更新计数）
 
-README 双语 SHALL 与磁盘正式 skill、trigger-evals 和 schema 集合一致：本次增加 executing-plans-parallel 正式 skill 及 trigger-evals，目录列出它和 implementer；保留 doctor/update-vendored 条目及 writing-plans 四项自检；区分子代理输出 schema 与 vendored manifest schema，加入 implementation-result。计数测试比较实际集合，避免把旧数字作为永久契约。
+README 双语 SHALL 与磁盘正式 skill、trigger-evals 和 schema 集合一致：只登记统一 executing-plans，合并后的 evals/trigger-evals 由其承载，目录列出它和 implementer；保留 doctor/update-vendored 条目及 writing-plans 四项自检；区分子代理输出 schema 与 vendored manifest schema，加入 implementation-result。计数测试比较实际集合，避免把旧数字作为永久契约。
 
 #### Scenario: S06 正式登记与文档集合一致
 - **GIVEN** 新 skill、openai.yaml、evals 和 schema 已就位。
@@ -150,11 +153,11 @@ README 双语 SHALL 与磁盘正式 skill、trigger-evals 和 schema 集合一�
 
 ### Requirement: 并发执行前声明模型与思考强度
 
-executing-plans-parallel SHALL 在首次启动、串行转并发激活前及中断后恢复编排前，按用户指定的三列表格「角色｜模型｜思考强度」（主线程行带 👤、实现子代理行带 🤖）展示配置，表格下用简短说明交代配置来源和是否尚未启动；统一配置可合并成一行，不同配置按子代理或任务组分别列明。声明区分已核实的运行配置、计划派发配置与继承关系，不能把本地默认配置或计划参数冒充已运行事实；平台未暴露的项目写“未知/平台未提供”，不猜值、不因无法读取而新增无关批准门。后续派发配置变化时，在受影响执行者继续工作前重新声明；相同配置的正常连续派发不逐票重复输出。用户明确指定的模型/强度约束仍须满足，不能借“未知”或声明本身授权更换模型、降档或绕过约束。
+executing-plans 的并发模式 SHALL 在首次启动、串行转并发激活前及中断后恢复编排前，按用户指定的三列表格「角色｜模型｜思考强度」（主线程行带 👤、实现子代理行带 🤖）展示配置，表格下用简短说明交代配置来源和是否尚未启动；统一配置可合并成一行，不同配置按子代理或任务组分别列明。声明区分已核实的运行配置、计划派发配置与继承关系，不能把本地默认配置或计划参数冒充已运行事实；平台未暴露的项目写“未知/平台未提供”，不猜值、不因无法读取而新增无关批准门。后续派发配置变化时，在受影响执行者继续工作前重新声明；相同配置的正常连续派发不逐票重复输出。用户明确指定的模型/强度约束仍须满足，不能借“未知”或声明本身授权更换模型、降档或绕过约束。
 
 #### Scenario: S28 首次并发前展示两类执行者配置
 - **GIVEN** 已选择并发，主线程实际配置可核实，实现子代理按工具语义继承或显式配置，但尚未派发。
-- **WHEN** 进入 executing-plans-parallel。
+- **WHEN** 进入统一执行器的并发模式。
 - **THEN** 首次执行动作前展示带 👤/🤖 的「角色｜模型｜思考强度」三列表格，列出主线程模型/强度，以及子代理计划使用的模型/强度或继承关系，表格下说明来源与未启动状态；不把尚未启动的子代理写成已经核实运行。所有子代理配置相同时可合并一行，不硬编码本次开发会话的模型名称。
 
 #### Scenario: S29 不同配置与平台未暴露字段
@@ -167,23 +170,59 @@ executing-plans-parallel SHALL 在首次启动、串行转并发激活前及中�
 - **WHEN** 新主线程准备恢复编排，或为下一批任务改变派发配置。
 - **THEN** 恢复前重新展示当前主线程、原存活 implementer 及拟派发者的各自配置与可核实程度，不假定它们全部跟随新主线程；新增配置声明关联到后续认领，旧认领保留原声明。仅做声明不会重派存活 implementer，也不会产生新的模型变更授权。
 
-### Requirement: 并发入口三条件
+### Requirement: 默认并发准入
 
-executing-plans SHALL 仅在用户明确选择、导航拓扑存在至少两个无相互依赖路径的可并发实施任务、写集合及资源隔离检查通过时委托 executing-plans-parallel；满足资格但用户未选择时只提议。入口判断拓扑潜力，不要求 T00 已完成；实际派发必须等依赖全 completed、任务成为 ready。共享 T00 或共同前置不妨碍独立；T00、验收和最终任务永不派给 implementer。只剩一票时可继续已选择模式，但同时在途票之间始终无写/资源冲突；能力不可用或声明缺失时说明原因走串行。
+串行和并发 SHALL 共用 executing-plans 主入口及收尾流程，并发协议按需从其 references 读取。独立并发 skill 和旧 reference 目录移除，正式引用直达统一执行器；已有 mode/claim/锁按真实状态恢复。仅有文档链接或 skill 自动加载不构成执行授权。
 
-#### Scenario: S07 普通继续不自动并发
-- **GIVEN** 导航表有两条独立链、声明有效，用户只说“继续计划”。
+executing-plans SHALL 在用户授权执行计划且没有明确串行限制时，默认使用合法声明中的合格实施票进行任务图编排，不另设并发选择门，也不要求两条独立链。单票 ready、依赖链或排他资源使并行数量降为一；多票就绪且互不冲突时并发。主线程先完成模型声明、取锁及 T00，实际派发等依赖 completed。缺声明、无合格票或平台不能隔离时主线程顺序推进；声明损坏、未知执行者或恢复不一致先处理阻塞。T00、final、验收和交付等主线程专属票不派给 implementer。
+
+#### Scenario: S34 唯一执行入口保留原状态
+- **GIVEN** 执行与并发协议已合并，已有计划保留 mode/claim/锁与验证基线。
+- **WHEN** 从正式清单和执行入口载入。
+- **THEN** 仅发现 executing-plans，行为和触发评估均归入该目录；恢复核对原状态，不重建认领。历史计划/交付记录保留，不为移除旧 skill 批量改写。
+
+#### Scenario: S07 普通执行默认编排
+- **GIVEN** 用户要求执行/继续计划，声明有效，没有明确串行限制，也没有当前半成品或未知认领。
 - **WHEN** executing-plans 载入。
-- **THEN** 不把该话语视作并发选择；沿用已记录的模式，首次模式未定时默认串行并可提议。
+- **THEN** 默认激活并发编排，无需用户另外选择；如有串行 current 或活动组则先续接，完成边界才激活，既有 parallel 则恢复原状态。
 
-#### Scenario: S08 显式选择后的真实并发
-- **GIVEN** 用户已选并发、T01/T02 均依赖尚未执行的 T00、写集合不相交且资源可隔离。
-- **WHEN** 运行编排。
-- **THEN** 入口接受并发选择，先由主线程完成 T00 再派两票；两票在不同 worktree 有重叠的执行时间，最终由主线程逐个核验并集成；最终任务不被提前派发。
+#### Scenario: S08 默认派发真实并发
+- **GIVEN** 用户已授权执行，T01/T02 均依赖未完成 T00，声明合法且写集合和资源无冲突。
+- **WHEN** 主线程完成声明、取锁、T00 和激活检查点。
+- **THEN** 两票在独立 worktree 有重叠执行时间，由主线程逐票核验集成；不额外询问并发许可，不提前派 final/交付。
+
+#### Scenario: S35 单链保持同一编排
+- **GIVEN** T01→T02 是纯依赖链，两票有合法声明、测试和隔离条件。
+- **WHEN** 开始已授权执行。
+- **THEN** 激活任务图编排，先派 T01，待其集成验证和 completed 保存后再派 T02；不因缺第二条链拒绝启用或制造空任务。
+
+#### Scenario: S36 明确串行与未授权边界
+- **GIVEN** 一例已有明确全程主线程串行决定，另一例仅收到计划链接而无执行请求。
+- **WHEN** 载入规则。
+- **THEN** 前者保存并遵从串行限制，普通继续不撤销；后者只读审阅并走原执行确认门，不创建工作区或派发。
+
+### Requirement: 就绪任务持续补位
+
+主线程 SHALL 将计划按依赖图持续调度，每次集成验证并持久化 completed 后重新检查就绪任务；容量允许且无冲突时补位，不设置固定批次完成屏障。准入比较覆盖全部尚未释放的认领与外部资源，包括未接收结果及停止事实不明的 blocked/失联票。仅有资源冲突时暂缓该票并检查其他候选，不伪造语义依赖。主线程专属票/集成组被选中后先停止补位并收拢在途工作；集成失败仍按既有规则全局暂停派发与合入。写集合、scopes、claim、progress 格式及授权边界不变。
+
+#### Scenario: S31 快链解锁后继无需等待慢链
+- **GIVEN** T01/T02 并发在途，T03 仅依赖 T01，T03 与 T02 无冲突且有名额。
+- **WHEN** T01 集成验证成功并保存 completed。
+- **THEN** 从新 validated_commit 派发 T03，不等待 T02；T02 保留原 claim.base_commit，不自行 merge/rebase 集成分支或 reset 工作区。
+
+#### Scenario: S32 补位检查旧认领的占用
+- **GIVEN** T03 已就绪但与在途 T02 使用同一不可隔离测试库，T04 独立且无冲突。
+- **WHEN** 有名额可补位，随后 T02 回报 blocked 但停止事实仍未知。
+- **THEN** 暂缓 T03，可派 T04；blocked 回报不自动释放 T02 的资源，不重派旧认领或推定其进程已停止。
+
+#### Scenario: S33 主线程专属票有收拢边界
+- **GIVEN** 下一执行项是已 ready 的主线程专属票，仍有在途 implementer 和其他独立候选。
+- **WHEN** 主线程准备执行该票。
+- **THEN** 停止新补位、接收并核验在途结果，确认可以独占后执行；不能不断补派独立票使其无法开始，完成后沿原 parallel 模式恢复。
 
 ### Requirement: 任务边界上的串行转并发
 
-执行链 SHALL 在用户明确要求切换后，等当前票完成测试/自检并提交进度、当前隔离工作区干净、没有未结束的执行者或未解决的契约偏差，再核对剩余任务的并发声明、拓扑与资源资格；通过后复用该工作区作为集成工作区，取得特性锁并持久化切换检查点，然后才允许新认领和子代理派发。completed 记录、原始审查基线与交付通道不变；不满足资格不改变模式，说明原因后继续获准的串行工作；已有任务本身 blocked 时按原阻塞纪律处理，不为切换强行结束任务。并发模式内只剩一票或遇到主线程专属票时沿既有调度规则处理，不因此写回串行模式。
+执行链 SHALL 在默认策略适用且没有明确串行限制，或用户已要求切换时，等当前票完成测试/自检并提交进度、当前隔离工作区干净、没有未结束的执行者或未解决的契约偏差，再核对剩余任务的并发声明、拓扑与资源资格；通过后复用该工作区作为集成工作区，取得特性锁并持久化切换检查点，然后才允许新认领和子代理派发。completed 记录、原始审查基线与交付通道不变；不满足资格不改变模式，说明原因后继续获准的串行工作；已有任务本身 blocked 时按原阻塞纪律处理，不为切换强行结束任务。并发模式内只剩一票或遇到主线程专属票时沿既有调度规则处理，不因此写回串行模式。
 
 #### Scenario: S23 串行完成两票后切换
 - **GIVEN** T00/T01 已完成并提交，用户在执行 T02 期间要求后面转并发，剩余 T03/T04 无相互依赖且声明有效。
@@ -191,9 +230,9 @@ executing-plans SHALL 仅在用户明确选择、导航拓扑存在至少两个�
 - **THEN** 复用当前隔离工作区，从最新已验证代码所在的检查点创建 T03/T04 的 worktree；T00—T02 不重做，原始 base_commit 不替换成切换点，最终审查仍覆盖切换前后的所有代码。两票均仅在切换检查点提交后派发。
 
 #### Scenario: S24 切换条件不足继续串行
-- **GIVEN** 用户要求切换，但剩余任务只有依赖链，或没有合法并发声明，或资源不能隔离。
+- **GIVEN** 执行已授权，但没有并发声明、没有合格票，或平台无法可靠隔离。
 - **WHEN** 主线程检查切换资格。
-- **THEN** 保留串行模式和已有进度，说明不满足的条件，不创建 implementer；缺声明时不借切换预读全部任务并自动补写，需单独修订计划并通过原审查/校验后重新评估。不重复询问已经给出的并发选择。
+- **THEN** 保留串行模式和已有进度，说明不满足的条件，不创建 implementer；缺声明时不借切换预读全部任务并自动补写，需单独修订计划并通过原审查/校验后重新评估。不重复询问已有执行授权；声明损坏或状态不明不按普通降级绕过。
 
 #### Scenario: S25 切换检查点前后中断
 - **GIVEN** 串行检查点 H 已保存，主线程取得锁并准备并发状态。
@@ -203,7 +242,7 @@ executing-plans SHALL 仅在用户明确选择、导航拓扑存在至少两个�
 #### Scenario: S26 切换请求先于当前任务完成时中断
 - **GIVEN** 用户在 T02 执行中要求转并发，主线程已将带 request_id 的授权原话或可恢复引用记入 notes 并单独提交，T02 尚未完成。
 - **WHEN** 新会话收到“继续”。
-- **THEN** 从已有状态恢复 T02，不把它拆给子代理；T02 完成并提交后沿已保存授权重新检查切换资格，不丢失请求、不重复询问同一授权。若中断早于请求持久化且无法从可用会话记录核实授权，则保持串行，不凭空推定用户已选择并发。
+- **THEN** 从已有状态恢复 T02，不把它拆给子代理；T02 完成并提交后沿已保存授权重新检查切换资格，不丢失请求、不重复询问同一授权。若中断早于请求持久化，不伪造用户并发选择；核对执行授权和明确串行限制后，才能按默认规则在完成边界重新生成激活意图。
 
 #### Scenario: S27 已认领但派发回执缺失时中断
 - **GIVEN** 模式切换已提交，T03 claim 已持久化，主线程在调用 spawn 与记录 agent_id 之间中断。
@@ -326,11 +365,11 @@ resources 是该票使用的排他外部资源键（如数据库、端口、输�
 
 ### progress 扩展与独占写
 
-保留 `format_version: 1`、四种任务 status、resources、notes；增加可选 `execution`，其 `mode: parallel` 为并发语义的明确判别项。未出现该项的存量 progress 原样串行读取。`current` 只指主线程正在执行的串行票；并发派发期间为 null，不用它推断所有任务空闲，活动票以 tasks 中 in_progress 的认领为准。
+保留 `format_version: 1`、四种任务 status、resources、notes；增加可选 `execution`，其 `mode: parallel` 为并发语义的明确判别项。未出现该项的存量 progress 先续接当前票或活动组，再在可核验完成边界按默认规则激活；明确串行限制优先。`current` 只指主线程正在执行的串行票；并发派发期间为 null，不用它推断所有任务空闲，活动票以 tasks 中 in_progress 的认领为准。
 
 `execution` 字段：`mode`、`owner`（会话唯一标识）、`integration_worktree`（绝对路径）、`integration_branch`、`base_commit`（特性审查基线）、`validated_commit`（最后通过集成验证的 tip）。可选 `delivery`：`channel: local|pr`、`state: implementing|awaiting_merge|merged|completed`、`source_branch`、`pr_url`、`merge_commit`；记录事实变化，不以 state 自证合并。
 
-中途升级时增加可选 `execution.activation: { from: serial, request_id: <切换请求唯一标识>, checkpoint_commit: <H>, authorization_ref: <已保存请求 notes 的定位> }`；H 是切换前已保存串行完成状态的提交，不是包含 activation 的提交。notes 以现有 append-only 字符串项保存 `parallel-switch/<request_id>: requested; authorization=<原话或可恢复引用>`，成功切换时追加同 ID 的 activated 事件；不另建待办状态文件，实际模式仍以已提交 execution 为准。初始就选择并发不要求该 activation 字段。用户的切换授权和任务声明是两个独立条件，声明存在不能代替授权。
+中途升级时增加可选 `execution.activation: { from: serial, request_id: <切换请求唯一标识>, checkpoint_commit: <H>, authorization_ref: <已保存请求 notes 的定位> }`；H 是切换前已保存串行完成状态的提交，不是包含 activation 的提交。notes 以现有 append-only 字符串项保存 `parallel-switch/<request_id>: requested; authorization=<原话或可恢复引用>`，成功切换时追加同 ID 的 activated 事件；不另建待办状态文件，实际模式仍以已提交 execution 为准。首次默认启动不要求 activation。authorization 引用执行授权与默认规则或用户切换来源，不能伪造用户并发原话；明确串行/恢复默认偏好沿现有 notes 保存，字段定义以 writing-plans 为准。
 
 `tasks.TNN` 继承 status/commit/tests/deviations，增加 `claim: { key, owner, agent_id, worktree, branch, base_commit }`、`implementation_commit`、`result_path`。claim.owner 表示最初认领的编排会话，execution.owner 表示当前持锁编排者；恢复接管可以更新后者，身份与通信已核验的存活 implementer 保留原 claim，不因主线程换会话而换 key。agent_id 在工具返回后补写；派发前 claim 已持久化，若在派发与补写之间崩溃则核对运行中 agent 与 worktree，不盲重派。completed 的 `commit` 是通过集成验证的提交，不能填包含该 SHA 字段的状态提交；实现提交和进度 checkpoint 分开，后者随特性分支保存。每次新尝试以新 key 替换 claim，旧 key 与处置原因追加 notes，历史结果文件保留。progress 使用临时文件+rename 原子更新，不允许子代理副本合并回来。
 
@@ -338,7 +377,7 @@ resources 是该票使用的排他外部资源键（如数据库、端口、输�
 
 ### 模型声明的呈现与核验
 
-声明定义落在新 skill 的开始说明与恢复入口，executing-plans 的并发委托只引用该规则。固定沿用用户选定的三列表格形态（下面尖括号为生成时填入的值，不是指定某个模型）：
+声明定义落在 executing-plans 的 parallel-execution reference，统一入口按需引用该规则。固定沿用用户选定的三列表格形态（下面尖括号为生成时填入的值，不是指定某个模型）：
 
 | 角色 | 模型 | 思考强度 |
 |---|---|---|
@@ -355,7 +394,7 @@ resources 是该票使用的排他外部资源键（如数据库、端口、输�
 
 ### 串行转并发的交接顺序
 
-1. 用户在任务中途提出切换时，为请求生成 request_id，在 progress.notes 保存其授权原话或可恢复引用并单独提交（只暂存进度，不夹带当前业务半成品）；当前票仍由原主线程完成，不转交半成品。请求持久化前不声称已保存；若提交失败则说明尚未保存，继续保护当前任务改动。进入已提交、无未完成执行者的任务边界后，读取 index/progress 检查剩余任务的拓扑潜力、声明和资源，遵循三条件及 S22。无法定位原始审查基线、工作区并未隔离、存在未知改动或认领时不猜测修复，不激活并发。
+1. 默认策略在串行完成边界适用或用户提出切换时，为激活意图生成 request_id，在 progress.notes 保存执行授权与默认规则来源，或用户切换原话/引用，并单独提交（只暂存进度，不夹带当前业务半成品）；当前票仍由原主线程完成，不转交半成品。请求持久化前不声称已保存；若提交失败则说明尚未保存，继续保护当前任务改动。进入已提交、无未完成执行者的任务边界后，读取 index/progress 检查剩余任务的拓扑潜力、声明和资源，遵循默认并发准入及 S22。无法定位原始审查基线、工作区并未隔离、存在未知改动或认领时不猜测修复，不激活并发。
 2. 沿用当前有效隔离 worktree，不重新执行 T00、不拷贝未提交业务代码。保存串行检查点 H 并核对其业务代码与最近通过验证的代码一致；检查点中新出现的非业务进度记录不要求重跑已完成票。`base_commit` 继承原计划执行周期的审查基线（必须可核验），`validated_commit` 初始化为 H；二者不可混用。切换后为每个新 worktree 建立基线的验证仍按既有派发规则执行。
 3. 取得同一特性锁，原子写入 execution、activation、notes，清空仅用于指向刚结束串行票的 current，保留 tasks 的全部完成记录、resources 和 delivery。此时不创建子 worktree 或外部资源。把模式切换和进度作为一个独立 checkpoint 提交；其提交不得夹带业务实现、扩大计划范围或改变发布权限。仓库自动发版钩子按获准的文档/状态提交规则处理，不能因切换生成未经验证的版本改动。
 4. 只有包含完整切换状态的提交成功且状态/分支核对一致，才进入既有“先认领、再派发”。切换准备失败时不派发；能正常收尾则仅撤销本次未提交的模式准备改动并释放自己持有的锁，串行检查点 H 保留。崩溃恢复先查已提交 progress，再比对未提交准备差异；不可把文件里的 mode 单独当作已成功切换。未知差异或活跃旧 owner 按原恢复规则报告阻塞，不覆盖他人内容。

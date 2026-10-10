@@ -29,7 +29,7 @@
     {
       "id": "wp-parallel-declaration",
       "prompt": "已批准 spec；T01/T02 只依赖 T00，分别修改 src/a.mjs 与 src/b.mjs，测试资源隔离。编写计划。",
-      "expected_output": "保持三件套与四列导航；index 生成一个 yaml spec-dev-parallel 块，精确声明两个 writes，resources 使用 JSON 字符串数组；校验通过，声明不等于已选择并发。"
+      "expected_output": "保持三件套与四列导航，scopes 唯一声明 writes，parallel 声明所有合格票的 resources，取得 scope_protocol_version:1。计划尚未获准执行时不启动；执行获准后默认按图编排。"
     },
     {
       "id": "wp-parallel-exceptions",
@@ -115,6 +115,26 @@
       "id": "workflow-S25-F-A-D",
       "prompt": "将获批设计写成带验收任务的新计划，工具返回 ok=true 但没有 scope_protocol_version。",
       "expected_output": "生成 T00、实施、独立 final F、依赖 F 的验收 A 与最大号交付 D；共用 scopes 是唯一 writes 来源。含 scopes 而缺 scope_protocol_version:1 时不能宣称协议可执行；补齐工具能力或报告缺口。"
+    },
+    {
+      "id": "parallel-readiness-shared-registration",
+      "prompt": "已授权写计划：CSV/JSON 使用已落地扩展点，各能独立测试，但都要改 formats/index.ts 注册。给出切片、依赖、共享文件所有者和组合验证。",
+      "expected_output": "按可观察格式行为纵向切片；将共享注册及组合验证归入依赖两票的汇总任务，或依据实际不能拆分的原因排他实施；保留独立验证，不让两个并发写集同时占用注册文件。index 写准备说明，scopes 为 writes 唯一来源，parallel 只列 resources。"
+    },
+    {
+      "id": "parallel-readiness-contract-gap",
+      "prompt": "用户已要求计划并希望并行。两个消费者需要共享错误协议，但 spec 没有确定错误码、重试语义，也没有既有实现可推导。",
+      "expected_output": "先定位受影响的共同契约缺口，沿原澄清同步 spec；不为两票各自编造协议，不把外部结果模拟成已获批替换边界。已确定的独立范围可继续梳理。"
+    },
+    {
+      "id": "parallel-readiness-handoff",
+      "prompt": "新计划中 T01 为共同前置，T02/T03 独立，T04 仅依赖 T02；完整测试与资源隔离条件成立，用户未选择执行模式。",
+      "expected_output": "不加无理由的 T03→T04 边；为所有合格实施票准备声明，交接说明默认并发和资源限制，只沿原门确认开始或 review；不额外设置模式选择，保留明确串行要求。"
+    },
+    {
+      "id": "default-graph-plan-chain",
+      "prompt": "已授权写计划，现有设计只能形成 T01→T02 链，两票都能独立验证并有精确写集。",
+      "expected_output": "仍给两票生成资源声明并由 scopes 定义写入；不省略声明、不凑独立票，执行时逐票派发。尚未授权开始时只交接，不创建运行身份或 SHA。"
     }
   ]
 }

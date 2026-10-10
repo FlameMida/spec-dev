@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "中英双语的设计→计划→执行 skill 管线与全能验收工作流插件集",
-    "version": "8.9.1"
+    "version": "9.0.0"
   },
   "plugins": [
     {
@@ -22,7 +22,6 @@
         "./skills/visual-preview",
         "./skills/writing-plans",
         "./skills/executing-plans",
-        "./skills/executing-plans-parallel",
         "./skills/using-git-worktrees",
         "./skills/test-driven-development",
         "./skills/acceptance-qa",

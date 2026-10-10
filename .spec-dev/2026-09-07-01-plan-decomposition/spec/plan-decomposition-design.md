@@ -8,13 +8,14 @@ spec_dev:
     - "skills/writing-plans/agents/openai.yaml"
     - "skills/writing-plans/evals/**"
     - "skills/writing-plans/references/design-principles.md"
+    - "skills/writing-plans/references/parallel-readiness.md"
+    - "skills/writing-plans/references/parallel-declaration.md"
+    - "skills/writing-plans/references/plan-review.md"
+    - "skills/writing-plans/references/task-templates.md"
     - "skills/executing-plans/SKILL.md"
     - "skills/executing-plans/agents/openai.yaml"
     - "skills/executing-plans/evals/**"
     - "skills/executing-plans/references/integration-groups.md"
-    - "skills/executing-plans-parallel/SKILL.md"
-    - "skills/executing-plans-parallel/agents/openai.yaml"
-    - "skills/executing-plans-parallel/evals/**"
     - "skills/test-driven-development/SKILL.md"
     - "skills/test-driven-development/agents/openai.yaml"
     - "skills/test-driven-development/evals/**"
@@ -112,7 +113,7 @@ spec_dev:
 
 分面共存（各 spec 的现有 covers 保持，新切面由本 spec covers 声明）：
 
-- concurrent-execution 其余条款：入口三条件、模型声明、锁、claim、资源预登记、普通 implementer、串并行切换、交付与收尾继续有效；组成员及验证票不进入 parallel 写集合，组期间是既有主线程专属任务分流的扩展。尚未组完成不是“串行完成任务边界”。
+- concurrent-execution 其余现行条款：默认并发准入、模型声明、锁、claim、资源预登记、普通 implementer、串并行切换、交付与收尾继续有效；组成员及验证票不进入 parallel 写集合，组期间是既有主线程专属任务分流的扩展。尚未组完成不是“串行完成任务边界”。
 - tdd-seam 其余条款：公共 seam 上游权威、独立真值、mock、静态快检、例外授权和 quick-fix 仍有效；本设计不以组身份重开 seam、不把无法运行的目标测试记为已执行通过。
 - major-upgrade 其余现行条款：编号、测试 Lane、搜索和澄清纪律保持；已 Superseded 的阈值、恢复和资源条款只作历史。
 - `.spec-dev/2026-09-06-03-review-conformance/spec/review-conformance-design.md`：S、critic、共享模块判据和派发完成条件保持单点；新增约束分配与计划审阅属于其他切面。
@@ -268,10 +269,22 @@ plan-index SHALL 拒绝违反方案设计中组成员、验证票、依赖出口
 
 writing-plans SHALL 在原四查之后核对每条依赖的接口、验证或安全顺序理由，同时补漏边并删除无实际理由的边。
 
+划分前 SHALL 从已批准 spec/现行实现提取共享契约、Scenario 与测试 seam，并落实到既有导航和任务接口块；功能票优先按可独立验证的纵向行为切片。公共类型、注册文件、锁文件、生成物和测试资源须明确所有者或排他关系；只争用文件/资源不构成语义依赖，实际消费前票实现则保留依赖。index 的并发准备说明记录共同前置、可重叠任务链及限制，不新增进度或协议字段。新计划声明所有合格票（包括依赖链），交接说明默认并发并沿原门确认开始；明确串行要求保留，无需再选择并发。
+
 #### Scenario: S20 删除冗余而保留必要边
 - **GIVEN** 独立文案票被无理由串到 API 票之后，迁移 contract 又遗漏对最后一个 migrate 的依赖。
 - **WHEN** Self-Review。
 - **THEN** 删除前一冗余边、补后一必要边，保留 T00/验收/最终任务和整组出口；同步导航与任务接口，不把结构校验当成依赖语义证明。
+
+#### Scenario: S34 共享注册不迫使全部功能串行
+- **GIVEN** 两种导出格式使用已确定且已落地的公共接口，可分别调用和测试，但最终注册会修改同一文件。
+- **WHEN** 生成任务图。
+- **THEN** 按格式划独立行为票，把公共注册及真实组合验证归于依赖两票的汇总票，或说明不能拆开的具体原因并排他实施；不让两个 implementer 同写注册文件，不删除组合验证。
+
+#### Scenario: S35 独立上下文取得同一契约
+- **GIVEN** 执行者仅有 spec、index、本票及依赖接口行，公共协议存在跨票消费。
+- **WHEN** 计划 Self-Review。
+- **THEN** 能定位精确接口、错误/状态语义、Scenario 与获批替换边界；未知语义先澄清并同步 spec，不让各票自行设计，也不把契约声明当成依赖实现已完成。
 
 ### Requirement: A12 产物审阅检查点
 

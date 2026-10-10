@@ -1,6 +1,6 @@
 ---
 name: implementer
-description: 在主线程认领的独立工作区内完成单票实现、测试与自检，按 implementation-result 回报；只用于显式选择的并发执行。
+description: 在主线程认领的独立工作区内完成单票实现、测试与自检，按 implementation-result 回报；用于 executing-plans 已授权的默认任务图编排。
 tools: LSP, Glob, Grep, LS, Read, Bash, Edit, Write, NotebookRead
 model: inherit
 color: green

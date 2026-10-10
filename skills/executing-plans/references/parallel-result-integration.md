@@ -2,7 +2,7 @@
 
 > 阅读时机：首次接收、核验或集成结果之前；异常恢复时取得相关完整规则。
 
-持锁与恢复依 [特性锁](feature-lock.md)、[激活与恢复](activation-recovery.md)。
+持锁与恢复依 [特性锁](feature-lock.md)、[激活与恢复](parallel-activation-recovery.md)。
 
 ## 接收与集成
 
@@ -17,5 +17,7 @@
 仅持锁主线程逐票执行保留 ancestry 的 merge，不用 squash/cherry-pick。合并前工作区干净；HEAD 为 validated_commit 或仅领先可核验的主线程进度/证据提交且业务树相同，不能含未验证实现；实际 git merge 冲突时保留冲突现场交用户，不自动选 ours/theirs。合并后运行该票集成测试并归档日志，全部通过才把 accepted integration SHA 写 tasks.TNN.commit、implementation tip 写 implementation_commit、状态 completed；在同一次原子进度更新中把 execution.validated_commit 同步设为该 accepted integration SHA，再单独提交进度，禁止自引用 SHA。后继票从更新后的 validated_commit 创建，包含已接受的前置实现；恢复补记与主线程执行例外票完成也遵循此规则，验证失败保持旧值。
 
 集成失败时冻结受影响任务和后继，暂停新派发/新合并；已在旧 validated_commit 工作的独立票可完成并暂存报告，不能以失败 HEAD 派新票。恢复发现实现 tip 已是集成 HEAD 祖先时不重复 merge，只补缺失验证/状态；无证据不猜 pass。解释不清的提交、丢失任务文件或 worktree 冻结相关恢复，不从来源分支的陈旧 progress 新起一套。
+
+成功保存 completed 后回到 [持续调度](parallel-execution.md#持续调度就绪任务) 检查后继，不等其他独立票结束。任务接收和外部资源释放分别核验：仍运行的服务、未终止的写入进程或待保全的现场不会因状态变成 completed/blocked 自动消失，确认释放之前保留相应排他占用。收到较旧基线的合法结果并非失败；implementer 不自行拉入集成分支，主线程在当前候选上逐票合并与验证。
 
 清理 implementer 工作区前用 execution-evidence transfer 转存并核对已登记的原件，保存失败尝试；提交 evidence_paths，不提交 ignored 日志。上述保留 ancestry 的要求只用于票级接收；最终来源→目标 merge/squash 按 delivery-proof 核验。集成完成后由主线程先做独立 final，再审查、验收/对账和交付。

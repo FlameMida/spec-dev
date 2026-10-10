@@ -101,6 +101,6 @@ spawn_agent/wait_agent 及上下文参数沿 requirement-analysis/references/cod
 
 ## 并发分支的审查输入
 
-executing-plans-parallel 全票集成后使用本文件完整编排，输入最初 base_commit 到当前集成 HEAD 的完整 diff、spec、progress、research 与 execution 指针。串行切换不把 base 换成切换检查点；implementer 自检不抵销任何审查维度、completeness critic、矩阵验收或最终全量。本地/PR 完成判据继续见 delivery-channels.md。
+并发模式全票集成后使用本文件完整编排，输入最初 base_commit 到当前集成 HEAD 的完整 diff、spec、progress、research 与 execution 指针。串行切换不把 base 换成切换检查点；implementer 自检不抵销任何审查维度、completeness critic、矩阵验收或最终全量。本地/PR 完成判据继续见 delivery-channels.md。
 
 导入先调用 execution-evidence verify，核对 task/phase、原件与 candidate，再把完整 bytes 封存为本 run 对象；broker 提供实际命令、退出码、输出及对象 ID，拒绝只报哈希。来源原件删除不影响已封存内容；strict snapshot 不放宽，进度或控制器变化仍须新 run。同内容测试回执可重新核验后供新 run 导入，不拼接不同 run 的审查完成结论。

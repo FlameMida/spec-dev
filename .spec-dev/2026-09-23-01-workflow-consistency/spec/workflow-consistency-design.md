@@ -22,7 +22,6 @@ spec_dev:
     - "skills/requirement-analysis/**"
     - "skills/writing-plans/**"
     - "skills/executing-plans/**"
-    - "skills/executing-plans-parallel/**"
     - "skills/quick-fix/**"
     - "skills/test-driven-development/**"
     - "skills/test-strategy/**"
@@ -59,7 +58,7 @@ spec_dev:
 
 - 不新增工作流引擎、授权服务、第二份任务状态源、编译计划快照或远端证据服务。
 - 不把文件范围匹配说成语义正确或用户批准的独立证明；不取消原有授权、TDD、独立审查与真实交付要求。
-- 不默认并发，不扩大 implementer 权限，不批量迁移已完成计划或改写历史失败。
+- 默认调度已由 concurrent-execution 现行条款及 ADR-0011 调整为按图并发；本特性的任务范围、证据与交付约束继续有效，不扩大 implementer 写入权限，不批量迁移已完成计划或改写历史失败。
 - 不修改 AnySearch、sequential-thinking 及其上游更新逻辑；不因语言协议整理改写无关第三方指南。
 - 本设计保存不授权实施、推送或发版；不改变无关的用户配置和工作区内容。
 

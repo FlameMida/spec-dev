@@ -13,14 +13,14 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 - **Visual preview** — `visual-preview`, a browser companion: JIT-proposed during design conversations, renders mockups, wireframes and layout comparisons, and collects click-through choices
 - **Implementation plans** — `writing-plans` decomposes specs into bite-sized tasks executable by an engineer who can read the repo: exact file paths, change notes with key diff snippets, embedded 5-step TDD, consume/produce interface contracts, no placeholders allowed
 - **Plan execution** — main-thread implementation and commits, then independent final verification, 1/2/5 review routes, acceptance/reconciliation and delivery. Reuse verified originals; recheck gaps. High/medium candidates, large tier or explicit always trigger the critic.
-- **Optional parallel execution** — `executing-plans-parallel`: explicit selection, model declaration, task-boundary switching, exclusive progress, isolated implementation and interruption recovery; shared local/PR delivery.
+- **Unified execution** — `executing-plans`: parallel task-graph scheduling by default with continuous refill, exclusive progress and integration, and shared recovery/review/delivery.
 - **Engineering discipline** — `using-git-worktrees` (isolated workspaces, native tools first) and `test-driven-development` (valid red for behavior changes, green protection for refactors, and a single authorized exception policy) are standalone skills reusable from any workflow
 - **All-round acceptance** — `acceptance-qa` runs acceptance over the dimension × execution-nature matrix: unit/integration/API, Playwright E2E, visual regression, accessibility, performance (web CWV / k6 for APIs / client), AI autonomous acceptance (mandatory evidence + serial recheck + verify-assertions-first) and failure diagnosis
 - **Lightweight fix** — `quick-fix`, for decided fixes with no design space: evidence-backed diagnosis, one-question-at-a-time confirmation and TDD through the approved public seam. It offers escalation for contract scope, modules, dependencies, conflicting current specs or insufficient diagnostic evidence; comparable intermittent failures may stay in quick-fix. Closure checks reproduction rates, temporary instrumentation, the original symptom and root-cause evidence; acceptance-qa remains optional.
 - **Shared clarification** — `clarifying`, the grill-style questioning discipline (one question at a time down the decision tree, facts self-researched, each decision put to the user with a recommendation); referenced by requirement-analysis and quick-fix, and usable standalone with three exits (hand off to the main workflow / stop / write notes to md)
 - **Contract-driven orchestration** — subagent output goes through JSON Schema contracts, deterministically validated by `validate-output.mjs`, with one retry on failure
 - **Zero MCP dependency** — structured reasoning ships as a vendored skill (`sequential-thinking`); browser automation MCPs (playwright / chrome-devtools) are opt-in per project, see `skills/acceptance-qa/references/mcp-setup.md`
-- **4 specialized agents** — code-explorer, external-resource-explorer and code-reviewer handle analysis and verification; implementer writes code in an isolated worktree only after explicit parallel selection.
+- **4 specialized agents** — code-explorer, external-resource-explorer and code-reviewer handle analysis and verification; implementer writes claimed code in an isolated worktree once plan execution is authorized.
 
 ## Skill Pipeline
 
@@ -37,7 +37,6 @@ requirement-analysis (design → .spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature
 writing-plans (plan → plan/ split-file layout: index.md + tasks/ + progress.yaml)
         ↓
 executing-plans (isolated implementation → final → review → acceptance/reconciliation → delivery)
-   ├── executing-plans-parallel (opt-in, disjoint writes, model declaration, resume)
    ├── using-git-worktrees (isolated workspace)
    ├── test-driven-development (TDD discipline)
    └── acceptance-qa (matrix-driven acceptance)
@@ -136,7 +135,7 @@ The script looks for the Codex built-in `skill-creator` first, and also supports
 `skills/*/evals/` holds two kinds of files with different roles:
 
 - `evals.json` — **design-intent documents**: they record the expected key behaviors of each skill (HARD-GATE refusals, handoff gates, degradation paths, etc.) for human review and a future evaluation harness. There is no runner in the repo, and most cases carry conversational preconditions with prose assertions — they are **not** an automated regression line; treat them as a checklist to walk through manually when changing skill behavior
-- `trigger-evals.json` — **cold-startable, decidable trigger-surface cases** (should-trigger / should-not-trigger single-shot prompts + near-miss negatives): currently covering seven skills — `acceptance-qa`, `clarifying`, `exploring`, `quick-fix`, `requirement-analysis`, `test-strategy`, `executing-plans-parallel`; plug into any evaluation harness and run the verdicts directly
+- `trigger-evals.json` — **cold-startable, decidable trigger-surface cases** (should-trigger / should-not-trigger single-shot prompts + near-miss negatives): currently covering seven skills — `acceptance-qa`, `clarifying`, `exploring`, `quick-fix`, `requirement-analysis`, `test-strategy`, `executing-plans`; plug into any evaluation harness and run the verdicts directly
 
 ### Pre-commit hooks
 
@@ -255,14 +254,14 @@ Hosts supporting commands can use the status command instructions. Codex uses th
 
 ## Specialized Agents
 
-The main thread implements by default. With explicit executing-plans-parallel selection, implementer writes claimed files in its own worktree; the main thread owns progress and integration, while other agents retain analysis roles:
+executing-plans dispatches ready tasks to implementers in independent worktrees by default; dependencies and resource conflicts limit concurrency, explicit serial preferences are honored, and the main thread owns progress and integration, while other agents retain analysis roles:
 
 | Agent | Purpose | Where it's used |
 |-------|------|---------|
 | **code-explorer** | Deep codebase analysis | requirement-analysis phase 2 parallel exploration |
 | **external-resource-explorer** | External resource research with citable evidence | requirement-analysis phase 2 external wave and follow-up exploration |
 | **code-reviewer** | Code review, spec conformance and optional architecture deepening | Shared wrap-up review; coverage checking remains a separate critic |
-| **implementer** | Single-task TDD and self-check | executing-plans-parallel isolated worktrees |
+| **implementer** | Single-task TDD and self-check | executing-plans parallel mode, isolated worktrees |
 
 ## Directory Layout
 
@@ -280,7 +279,7 @@ spec-dev/                            # repo root is the plugin root (flat layout
 │   ├── pre-commit                   # validates the plugin package and skills before commit
 │   ├── post-commit                  # auto-release after commit (version bump + CHANGELOG + tag)
 │   └── pre-push                     # release backstop (checks CHANGELOG entry, backfills version tag)
-├── agents/                          # 4 agents, including opt-in implementer
+├── agents/                          # 4 agents, including isolated implementer
 ├── commands/                        # /doctor, /triage commands
 ├── guardrail/                       # spec drift guard (installable into target repos)
 ├── skills/
@@ -291,7 +290,6 @@ spec-dev/                            # repo root is the plugin root (flat layout
 │   ├── visual-preview/              # browser visual preview
 │   ├── writing-plans/               # implementation plan writing
 │   ├── executing-plans/             # plan execution + wrap-up review
-│   ├── executing-plans-parallel/    # opt-in parallel execution and recovery
 │   ├── using-git-worktrees/         # isolated workspace discipline
 │   ├── test-driven-development/     # TDD discipline
 │   ├── test-strategy/               # test strategy discipline (lanes / governance / acceptance-matrix link)
