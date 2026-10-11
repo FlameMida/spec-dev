@@ -135,6 +135,31 @@
       "id": "default-graph-plan-chain",
       "prompt": "已授权写计划，现有设计只能形成 T01→T02 链，两票都能独立验证并有精确写集。",
       "expected_output": "仍给两票生成资源声明并由 scopes 定义写入；不省略声明、不凑独立票，执行时逐票派发。尚未授权开始时只交接，不创建运行身份或 SHA。"
+    },
+    {
+      "id": "wp-vertical-behavior-not-layer-chain",
+      "prompt": "获批需求是创建产品并发布首价。拟拆票A建全部表、B建全部API、C建全部页面，A/B都将真实用户行为验证留给C；没有机械迁移理由。审阅拆票。",
+      "expected_output": "指出按技术层串联且前票不能独立证明交付；按一条窄的完整可观察行为重划实际所需UI/API/存储/测试，保留首价原子性。不为凑并发造空票，也不把编译通过当用户行为已完成。"
+    },
+    {
+      "id": "wp-approved-transport-seam-versus-real-code",
+      "prompt": "页面票只导入既有SDK，DTO已冻结，获批传输fixture可验证交互；拟依赖尚未开始的整条后端发布链。另一票实际导入后端尚未存在的函数并需真实已发布记录。审查两种阻塞边。",
+      "expected_output": "分别核对实施和最终组合验证：前者可依实际合同/SDK前置独立验证，将真实接线归后置票，不自动等待整条后端；后者保留代码/真实数据依赖。不把fixture当全链通过，不无条件把所有UI前移。"
+    },
+    {
+      "id": "wp-shared-export-owner-conflict",
+      "prompt": "index称公共API总导出只由T05汇总，但T02/T03各自scopes都含该文件；两票业务独立，T05依赖二者。审查计划。",
+      "expected_output": "发现职责说明与writes矛盾；核实普通票能独立验证后将总导出交汇总所有者，或如实保留不可拆的共享写入并说明互斥。不因两票只写不同段而宣称无冲突；修改接口块/任务文件与scopes保持一致。"
+    },
+    {
+      "id": "wp-ready-frontier-after-conflicts",
+      "prompt": "T00完成后T01/T02/T03均ready。T01/T02共同修改sqlc.yaml并共享pg:owned，T03写独立页面且无共享服务。交接时计划声称可同时运行三票。",
+      "expected_output": "纸上走查先找ready再扣除具体文件/资源冲突：T01或T02可与T03重叠，三票不能同时跑。核对可集中归属的共享文件，不改资源名绕过同一实例；在index准备说明给实际窗口，不新增状态真源或worktree来证明并行。"
+    },
+    {
+      "id": "wp-semantic-review-with-delegation-unavailable",
+      "prompt": "多票计划有跨模块事务及公共SDK写入，结构校验通过。当前平台明确禁止子代理。准备交接。",
+      "expected_output": "主线程完成自检及单独第二遍任务图语义审查，注明未独立验证；不派子代理、不执行任务、不建工作区。检查真实前置、完整切片和共享所有者；简单无这些风险的计划不强制额外审查流程。"
     }
   ]
 }

@@ -23,7 +23,7 @@
 
 ## 入口与定义点
 
-启动只读 index、progress、spec；任务正文按需读取。声明与 progress 字段按 [计划格式](../../writing-plans/references/plan-format.md)、[并发声明](../../writing-plans/references/parallel-declaration.md) 及适用的 [集成组声明](../../writing-plans/references/integration-declaration.md) 取得唯一完整定义；TDD、worktree、测试 Lane 分别遵循 test-driven-development、using-git-worktrees、test-strategy；工具映射见 requirement-analysis 的 references/codex-compat.md；探索、插件根、失败隔离与输出契约见 requirement-analysis 的 references/exploration-patterns.md，不复制其完整纪律。
+启动只读 index、progress、spec；任务正文按需读取。声明与 progress 字段按 [计划格式](../../writing-plans/references/plan-format.md)、[并发声明](../../writing-plans/references/parallel-declaration.md) 及适用的 [集成组声明](../../writing-plans/references/integration-declaration.md) 取得唯一完整定义；TDD、worktree、测试 Lane 分别遵循 test-driven-development、using-git-worktrees、test-strategy；工具映射见 requirement-analysis 的 references/codex-compat.md；探索、插件根、研究子题失败隔离与输出契约见 requirement-analysis 的 references/exploration-patterns.md，实施失败沿 [结果接收](parallel-result-integration.md) 分类，不复制完整纪律。
 
 先使用 `node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" plan-index` 并传入实际计划目录。执行授权有效、没有明确串行限制、声明合法且至少一张普通实施票具备可核验的写集合/资源边界时，默认进入；不需要额外并发选择或两张独立票。共同依赖 T00 不影响初始化，实际派发仍须依赖全 completed。依赖链或排他资源让实际并行数降为一，不改变模式。明确串行、缺声明、无可派发票或平台不支持隔离时沿主入口串行分流；声明损坏先修订校验，未知执行者先恢复核验，不自动改计划或覆盖状态。
 
@@ -54,6 +54,10 @@ T00、独立 final 验证、验收、最终任务只由主线程执行；已授�
 
 有报告先按接收协议逐票集成，成功保存后立即检查新 frontier 并补位；无报告且有在途票时等待其事件，不重复派发。无合法候选时区分依赖未完成、容量/资源占用和真实 blocked，不能把“目前无 ready”当作全部完成。主线程专属票或集成组一旦被选为下一执行项，先停止补位、收拢在途工作再进入，避免不断补票使其无法开始；它们完成后恢复原并发模式。集成失败按接收协议全局暂停新派发/合入。
 
+**实际调度诊断**：首次派发、接收补位及阻塞原因变化时，简短列明活跃票、可派发票与暂缓原因；原因定位到依赖任务、相交文件、资源键或平台容量。ready 不等于可同时运行，mode=parallel 和工作区数量不作为并行证据。这个诊断从已提交 progress 和真实认领推导，不另存第二套调度状态。发现等待来自未消费的依赖或可消除共享写入时，带证据交回 writing-plans 修订未派发票；已有声明修订前不越界派发，不通过放宽安全边或改资源名制造并发。
+
+**通信**：派发以任务/spec/index/研究/证据指针加真实 binding 和必要限制为主；续接只发新增事实、待处理问题及其指针，不反复复制整票指令。无新事实时等待事件，不轮询子代理来复述同一等待。日志落盘不等于每次候选都要额外提交；检查点纪律沿主入口的资源登记节。
+
 例如 T01/T02 在途，T03 仅依赖 T01：T01 集成、验证并保存 completed 后，若 T03 与仍运行的 T02 无冲突且有名额，立即从新 validated_commit 派 T03。T02 保留原 claim.base_commit；不要求它自行 merge/rebase 集成分支，也不 reset 已有工作来追赶 tip。其结果仍由主线程按真实 ancestry 和当前集成候选验证。
 
 ## 接收与集成
@@ -66,6 +70,6 @@ T00、独立 final 验证、验收、最终任务只由主线程执行；已授�
 
 全部实施票已集成并由主线程完成独立 final 验证后，把完整 `base_commit..集成 HEAD`、spec、progress、研究与证据指针交回 executing-plans 的阶段 4—6，审查定义以 executing-plans/references/review-orchestration.md 为准。维度审查、独立复核、completeness critic、矩阵验收、final 全量与修复后补验均保留，票内自检不能替代。
 
-串行与并发共用 executing-plans/references/delivery-channels.md：默认本地，PR 需既有授权；ready 不是已合并。清理只遍历 progress.resources，确认结果已接受且证据已归档后才移除 implementer worktree；未集成工作、失联代理与未归档证据保留。最终取代回写、实际 merge 证据、清理、sync_commit 与 roadmap 全部完成才宣称交付。
+串行与并发共用 executing-plans/references/delivery-channels.md：默认本地，PR 需既有授权；ready 不是已合并。票级闲置工作区按 [票级退役](parallel-result-integration.md#票级-worktree-退役) 在任务边界处理，集成工作区留待最终交付；未集成工作、失联代理与未归档证据保留。最终取代回写、实际 merge 证据、清理、sync_commit 与 roadmap 全部完成才宣称交付。
 
 新计划要求 scopes 能力回执，parallel 仅声明 resources。主线程核对静态 scope_commit 先于已验证派发基线，claim_checkpoint 对应真实认领，再提交 binding 取得 authority。implementer 只在指定工作区激活本地引用，不写进度；claim 检查点不必是实现初始 HEAD 的祖先，不能修改 validated_commit 来迁就绑定。

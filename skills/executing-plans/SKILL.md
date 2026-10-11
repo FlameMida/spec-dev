@@ -87,7 +87,7 @@ flowchart TD
 - 偏差处理沿用主文件三级纪律；契约级偏差冻结受影响后继（导航表依赖闭包），修订 index 接口行与相关任务文件后再继续。
 
 **恢复执行（resume）**——检测到 `progress.yaml` 存在且有非 completed 任务时：
-1. 校验一致性：worktree/分支存在、completed 各任务的 commit 可 `git cat-file -e` 解析；current 的 in_progress/blocked 不要求完成 SHA，已有实现提交须核验但不据此自动标 completed、progress 引用的任务文件都存在。任一不成立 → 停下向用户报告不一致，不猜测继续。
+1. 校验一致性：集成工作区及仍活跃认领的 worktree/分支存在，completed 各任务的 commit 可 `git cat-file -e` 解析，progress 引用的任务文件都存在。已按台账合法退役的 implementer 工作区沿 [票级退役](references/parallel-result-integration.md#票级-worktree-退役) 核对保留提交、证据及清理回执，不要求目录或分支仍存在，不重建它来重跑 completed。current 的 in_progress/blocked 不要求完成 SHA，已有实现提交须核验但不据此自动标 completed。缺失且无合法退役依据 → 停下向用户报告不一致，不猜测继续。
 2. 普通串行先恢复 current：in_progress 续接，blocked 先处理阻塞；没有当前票才取下一 ready 任务（依赖全 completed 的最小编号 pending）；组分支消费 plan-state 的 ready_tasks 并按 integration-groups 恢复。同前只读该任务文件与依赖接口行。
 3. 恢复不无条件重跑 completed 任务；核验原件、版本与检查范围，缺口或变更按 test-strategy 补验，独立 F 保留全量安全网。
 
@@ -122,6 +122,8 @@ flowchart TD
 4. **标记任务 completed**，进入下一任务（分文件先 clear 本地引用，再原子更新 progress.yaml 并独立提交，commit 指既存实现 SHA——progress.yaml 是唯一状态源；存量单文件计划沿用其复选框勾选）
 
 **资源登记**：执行中创建了计划未预登记的持久资源（容器、测试库/表、临时目录、后台服务）时，当场登记进 progress.yaml 的 `resources` 键（writing-plans 的资源台账规范定义点；计划任务文件不被编辑）、不延迟到收尾补记，登记随本任务的提交一起提交、不为单个资源单独提交；执行**存量单文件计划**时就地编辑其最终任务内嵌的台账行（该侧冻结）。
+
+资源创建前仍须由协调器原子持久化登记，失败日志和原件及时落盘；例行登记、候选测试失败及证据索引并入下一必要检查点，不把每次工具调用变成独立状态提交。claim/authority、范围变更、阻塞、接收完成及实际清理等可恢复状态边界仍按各自协议单独提交，不能用减重省略它们。
 
 **连续执行**：任务之间不停下来向用户汇报或请示——用户已经确认过计划。进度汇报、阶段性提交和测试通过都不是结束点；回答用户的进度询问后，也继续原计划。仅三种情况停下：无法自行解除的 BLOCKED、真正阻断前进的歧义、全部任务完成。
 

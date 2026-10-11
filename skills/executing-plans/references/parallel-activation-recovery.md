@@ -31,6 +31,7 @@
 | claim 已保存，agent_id 回执不完整 | 旧编排 owner 状态、claim_key、分支/worktree、可见运行中 agent | 先取得编排锁并持久化新 owner，再核实是否已派发；未知则阻塞，禁止重复 spawn |
 | 子代理执行中或已完成但报告未收齐 | 新编排 owner、活跃 implementer 身份与通信、任务分支、实际 diff、持久证据 | 先完成编排接管，存活 implementer 可继续原票；确认终止后核验遗留结果，缺证据不判通过 |
 | 实现已合入，completed checkpoint 未保存 | 实现提交 ancestry、集成验证证据 | 补未完成验证和状态提交，不重复 merge |
+| completed 的 implementer 工作区已按台账退役 | 存活仓库中的保留提交、接收证据、notes 中对应原资源的 cleanup 结果及真实清理回执 | 沿 [票级退役](parallel-result-integration.md#票级-worktree-退役) 核验后继续，不要求 resources 保留已销账条目，不重建目录或重跑 completed；缺保留依据仍阻塞 |
 
 恢复不能仅凭“时间过去了”抢锁，也不能仅凭工具返回空列表就断言旧执行者终止；必须结合该平台的会话可见性及 worktree 活动核实，不能核实时显式阻塞。已完成并有持久验证证据的任务不重跑；未完成的验证或证据丢失部分才补验。测试日志与结果证据必须可在中断后定位：implementer 将其保存在主线程预登记的该 claim 专用临时位置，主线程接收后归档到 execution/<claim_key>/，不能只留在对话中的“通过”一句。清理前核对证据已归档且相关任务已接受，未集成 worktree 与未归档结果保留。
 

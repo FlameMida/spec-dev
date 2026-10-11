@@ -35,7 +35,7 @@ rtk proxy node "${CLAUDE_PLUGIN_ROOT}/scripts/execution-evidence.mjs" record \
 
 ## 最大号交付任务 D（每份计划固定生成）
 
-以下七步必须写入实际任务。资源台账仍是 progress.resources；只清本计划拥有且已接受的资源，台账外不动、共享缓存默认保留、复用资源移交。T00 的来源路径、分支和 created/inherited 归属必须来自真实回执。
+以下七步必须写入实际任务。资源台账仍是 progress.resources；只清本计划拥有且已接受的资源，台账外不动、共享缓存默认保留、复用资源移交。T00 的来源路径、分支和 created/inherited 归属必须来自真实回执。implementer 工作区可沿 executing-plans 的 [票级退役](../../executing-plans/references/parallel-result-integration.md#票级-worktree-退役) 提前清理；最终任务核对这些记录和剩余资源，不要求重新创建或重复删除。下面的整体 delivery-proof 门用于最终集成工作区与交付收尾，不倒推要求所有闲置票级目录留到最后。
 
 **步骤 1：消费有效验证、审查和验收结果**
 
