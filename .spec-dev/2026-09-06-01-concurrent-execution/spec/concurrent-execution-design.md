@@ -414,7 +414,7 @@ resources 是该票使用的排他外部资源键（如数据库、端口、输�
 | 子代理执行中或已完成但报告未收齐 | 新编排 owner、活跃 implementer 身份与通信、任务分支、实际 diff、持久证据 | 先完成编排接管，存活 implementer 可继续原票；确认终止后核验遗留结果，缺证据不判通过 |
 | 实现已合入，completed checkpoint 未保存 | 实现提交 ancestry、集成验证证据 | 沿 S03 补未完成验证和状态提交，不重复 merge |
 
-恢复不能仅凭“时间过去了”抢锁，也不能仅凭工具返回空列表就断言旧执行者终止；必须结合该平台的会话可见性及 worktree 活动核实，不能核实时显式阻塞。已完成并有持久验证证据的任务不重跑；未完成的验证或证据丢失部分才补验。测试日志与结果证据必须可在中断后定位：implementer 将其保存在主线程预登记的该 claim 专用临时位置，主线程接收后归档到 execution/<claim_key>/，不能只留在对话中的“通过”一句。清理前核对证据已归档且相关任务已接受，未集成 worktree 与未归档结果保留。
+恢复不能仅凭“时间过去了”抢锁，也不能仅凭工具返回空列表就断言旧执行者终止；必须结合该平台的会话可见性及 worktree 活动核实，不能核实时显式阻塞。已完成并有持久验证证据的任务不重跑；未完成的验证或证据丢失部分才补验。测试日志与结果证据必须可在中断后定位：implementer 将其保存在主线程预登记的该 claim 专用临时位置，主线程接收后归档到 execution/<claim_key>/，不能只留在对话中的“通过”一句。清理前核对证据已归档且相关任务已接受，未集成 worktree 与未归档结果保留。〔Superseded (2026-10-22)：仅本清理条款由 [workflow-consistency A04](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-a04-票级-worktree-退役闭环) 承接；其余恢复与交付条件继续有效。〕
 
 ### 派发、结果与集成
 
@@ -432,7 +432,7 @@ implementation-result JSON 的必填字段为 `task_id`、`claim_key`、`status:
 
 delivery-channels 同时供串行和并发引用：受保护分支仍在隔离特性分支实现。首个实际差异可来自已批准的 spec/plan，不为开 PR 造无意义提交；已有特性 PR 就复用。文案引用 spec、progress、验收对账位置，只有明确存在对应 issue 且适合关闭时写 closing 关键词。推送/创建/ready/合并动作按已有会话授权与仓库约定执行，探测本身不提供发布授权。
 
-awaiting_merge 可以结束当前执行会话，但不是“全部任务完成”；保留恢复所需分支/状态，闲置 implementer worktree 在核验已集成并登记后可清理。只有取得实际合并证据并完成全部文档回写才进入 completed 与 roadmap delivered；若回写需要另一个 PR，记录其链接并继续 awaiting_merge，不提前宣称已交付。最终 sync_commit 指向实际受保护目标上核验过的代码提交，后续只含文档的锚定提交不形成自引用。取代 pending 的实际翻转随最终交付完成，不以 draft/ready 代替。
+awaiting_merge 可以结束当前执行会话，但不是“全部任务完成”；保留恢复所需分支/状态，闲置 implementer worktree 在核验已集成并登记后可清理。〔Superseded (2026-10-22)：仅本清理条款由 [workflow-consistency A04](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-a04-票级-worktree-退役闭环) 承接；其余恢复与交付条件继续有效。〕只有取得实际合并证据并完成全部文档回写才进入 completed 与 roadmap delivered；若回写需要另一个 PR，记录其链接并继续 awaiting_merge，不提前宣称已交付。最终 sync_commit 指向实际受保护目标上核验过的代码提交，后续只含文档的锚定提交不形成自引用。取代 pending 的实际翻转随最终交付完成，不以 draft/ready 代替。
 
 ## 测试与验收策略
 

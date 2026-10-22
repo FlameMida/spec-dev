@@ -40,4 +40,6 @@ TDD 的纪律与例外以 test-driven-development 为定义点；按任务五步
 
 最终只返回符合插件 `scripts/schemas/implementation-result.json` 的 JSON，schema 定义完整字段与 ready/blocked 条件。必须填写实际 task_id、claim_key、worktree、branch、base_commit、从基线至 tip 的 commits、changed_files、tests（command/phase/exit_code/evidence_path）、self_check 两项结论、deviations、resources、blockers、coverage_note。
 
+回报前停止本票自有且不再需要的临时进程，并在现有 resources/coverage_note（阻塞时 blockers）申报仍存活或待移交进程的真实 PID/用途/消费者；未知归属或他人进程不终止，不把回报 ready 当作停止证明，schema 不增加字段。
+
 ready 需要真实非空提交、红绿证据、两项自检 pass、干净工作区及无 blocker；不能用 ready 宣称已集成或交付。blocked 的 blockers 非空，可无提交；解释保留的改动和证据。报告保存在本 claim 预登记目录并返回其指针，主线程将结果与日志归档到共享特性 execution 目录，子代理不写共享档案。

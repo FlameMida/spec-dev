@@ -131,7 +131,7 @@ rtk proxy node "${CLAUDE_PLUGIN_ROOT}/scripts/execution-evidence.mjs" transfer \
   --source "<实际实施特性目录>" --target "<存活目标特性目录>"
 ```
 
-检查 JSON.ok 及逐文件 hash，保存转存回执。冲突或中断保留来源、已完成条目和 staging 路径；重试先核对磁盘，不覆盖不同 bytes。原 cwd 不改写，失败尝试一并转存。
+最终交付不传 --task/--claim，整组路径与全特性登记材料仍须存在；票级退役才使用集成区 source 加本票 scope。检查 JSON.ok 及逐文件 hash，保存转存回执。冲突、中断或缺失路径保留来源与实际已发布条目，按 error 定位原件；工具仅清扫本次 staging，清扫失败返回 staging/cleanup_error 并报告。重试先核对磁盘，同 hash 条目幂等复用，不覆盖不同 bytes；失败记 outcome=failed、不销账。原 cwd 不改写，失败尝试一并转存。
 
 主线程把真实 source_tip/source_tree、target_branch、merge_method/merge_commit、verified_target、history_ref、Git/PR 与 F/补验 record 路径填入唯一 delivery。未取得的事实为 null；目标有业务差异先在目标完成必要补验并更新审查/验收结论。保存映射检查点后，用实际校验器只读核对：
 
@@ -151,9 +151,9 @@ console.log(JSON.stringify(verifyDelivery(root,state,feature)));
 
 **步骤 5：台账清理与中断保存**
 
-仅在目标 proof 和 transfer 均已核验、原 worktree 已接受且无待保存改动后执行台账的精确命令，例如 `git -C <来源> worktree remove <本计划创建的实施路径>`，再 `git -C <来源> branch -d <实际已合并分支>`；不得以 --force 吞掉 unknown dirty。squash 的分支删除只在来源历史已保留、内容映射及证据核验通过且有明确清理授权时使用对应已批准命令。
+先对账本计划 created 的所有票级 worktree（含历史 claim、retirement 决策与 cleanup 回执）：已退役核验不重删，尚存且可退役者必须兜底补清，其他项逐一记录具体保留/移交依据及复查点。不能只检查最终集成目录或把没有销账的项遗漏。仅在目标 proof 和 transfer 均已核验、原 worktree 已接受且无待保存改动后执行台账的精确命令，例如 `git -C <来源> worktree remove <本计划创建的实施路径>`，再 `git -C <来源> branch -d <实际已合并分支>`；不得以 --force 吞掉 unknown dirty。squash 的分支删除只在来源历史已保留、内容映射及证据核验通过且有明确清理授权时使用对应已批准命令。
 
-逐条核对真实结果，批次结束或中断时一次保存、一次提交，不逐资源 commit：成功/核实已不存在的条目销账；失败条目保留，D blocked；复用资源保留移交记录。中断时保存已完成动作，不笼统清空 resources。状态写入在存活来源进行，不能在被删 worktree 里继续操作；锁要求沿原载体保持。
+逐条核对真实结果，汇总已清理/有因保留或移交/失败计数及未处置项；任何无因闲置项都必须补清或取得具体保留依据，不能只写“后续清理”。批次结束或中断时一次保存、一次提交，不逐资源 commit：成功/核实已不存在的条目销账；失败条目保留，D blocked；复用资源保留移交记录。中断时保存已完成动作，不笼统清空 resources。状态写入在存活来源进行，不能在被删 worktree 里继续操作；锁要求沿原载体保持。
 
 生成时内嵌下面的台账写入代码，并给出实际参数。results 文件在本次 execution/ 中保存真实工具回执的 `entry/outcome/receipt`（outcome 只用 removed/missing/retained/failed）；missing 须有实体确实不存在的检查，不能按删除命令报错猜测。随后只暂存进度并独立 commit；失败分支提交后停止。
 
@@ -198,7 +198,7 @@ p.write_text('---\n'+header+'\n---'+text[match.end():])
 
 **步骤 7：最终状态保存**
 
-前述适用动作全部有真实回执后，在存活工作区用临时文件 + rename 保存 D completed、current=null、delivery.state=completed，commit 引用已存在的核验目标；再只暂存进度独立提交。v2 同步允许的全局 validated_commit，但成员 implementation_commit、组验证 SHA 与旧 cwd/binding 原样保留。运行实际 verifyDelivery，组档案另运行 plan-state 并确认 ready_tasks=[]；失败保留未完成状态，不伪写 completed 来绕过预检。
+前述适用动作全部有真实回执、票级回收对账无未处置/失败项且剩余资源均有具体保留或移交依据后，在存活工作区用临时文件 + rename 保存 D completed、current=null、delivery.state=completed，commit 引用已存在的核验目标；再只暂存进度独立提交。v2 同步允许的全局 validated_commit，但成员 implementation_commit、组验证 SHA 与旧 cwd/binding 原样保留。运行实际 verifyDelivery，组档案另运行 plan-state 并确认 ready_tasks=[]；失败保留未完成状态，不伪写 completed 来绕过预检。
 
 ```javascript
 // node --input-type=module - <实际delivery-proof.mjs> <目标根> <特性相对目录> <D的ID>

@@ -373,7 +373,7 @@ state = json.loads(git(worktree, "show", "HEAD:" + feature_key + "/plan/progress
 1. 原绑定区持锁核对已提交状态和有效 F/审查/验收原件，保存 D in_progress；记录 T00 的实际来源路径、分支、common-dir 与资源归属。source_tip 指已存在的受验版本，source_tree 实算；创建并登记 refs/spec-dev/archive/<特性>/source，不做 SHA 自引用。
 2. 在锁内完成原区状态保存，干净结束并按维护门释放自己的锁。只读核对来源检出；锁空窗不 merge、不写 notes。来源侧重新取得同一特性锁的新 receipt，核对实际 owner/工作区/原 tip，不改旧 receipt 的 worktree 跨区续接。
 3. 在来源锁内按授权取得真实 Git/PR 合并回执。将新事实写顶层 delivery，保存原件和来源对象；普通 merge 核对 ancestry，最终 squash 由 verifyDelivery 核对来源历史与实际目标，不放松票级 verifyResult。
-4. 实际调用 execution-evidence transfer，把引用原件和失败尝试放到清理后仍存活的目录并核对哈希。冲突、中断、缺源对象或未接受实现时保留原区和台账。只有 proof/transfer 成立后才按资源归属清理，不改历史 cwd、不删除保留的 history_ref。
+4. 实际调用 execution-evidence transfer，以原集成特性目录为 source、另一存活特性目录为 target，不传 --task/--claim；整组与最终交付必须覆盖 `execution/groups/` 和全部登记原件、失败尝试，不能借票级 scope 缩小闭包。核对 JSON.ok/files 与哈希。冲突、中断、缺源对象或未接受实现时保留原区和台账；失败记录实际已发布项，本次 staging 自动清扫，cleanup_error/残留 staging 另行报告，重试复用同 hash 条目。只有 proof/transfer 成立后才按资源归属清理，不改历史 cwd、不删除保留的 history_ref。
 5. 目标有差异先补验、复审受影响维度并更新验收/对账；sync_commit 和实际交付节只按声明的记录性变化单列 post_merge。验收报告正文或契约变化不因文件类型自动放行。
 6. 全部收尾完成后，使用已存在的目标验证 SHA 保存 D completed/current=null 与 delivery.completed；全局 validated_commit 可指实际 verified_target，组和成员历史仍在 source_tip 内核验。现有 checkpoint 原子保存并独立提交，plan-state 终端分支应 exit0/ready=[]，另核对 verifyDelivery。
 

@@ -550,12 +550,12 @@
     {
       "id": "parallel-retired-completed-resume",
       "prompt": "T01已接收集成且completed，提交在集成历史中，证据已转存到存活目录并有hash/接收及清理回执；原created worktree和分支条目已从resources销账，notes保留对应entry/outcome=removed/receipt的cleanup记录，目录和票分支已删除。T02仍进行中。恢复执行。",
-      "expected_output": "核验存活仓库的提交、接收证据及notes中对应原资源的cleanup结果和真实清理回执，合法退役不当丢失；不要求resources保留removed条目，不重建T01目录、不重跑completed、不删除历史claim/binding/cwd，继续原T02。只有仍活跃认领与集成区要求目录存在；缺保留依据则冻结恢复。"
+      "expected_output": "核验存活仓库的提交、接收归档和 notes 中对应原资源的 cleanup 真实回执，不要求已销账 resources 条目、原目录或分支；不重建、不重跑 completed、不改历史 claim/cwd。恢复同次复查其他 completed 未退役项并报告闲置清单。只有目录缺失、缺保留依据仍冻结相关退役。"
     },
     {
       "id": "parallel-retire-dirty-or-live-writer",
       "prompt": "旧失败票HEAD已是集成祖先，但有7个未提交文件；另一票干净且已接收，却仍有未知写者或消费者链接其目录。协调器准备按已合入清理。",
-      "expected_output": "逐项保留现场：HEAD ancestry不证明未提交代码已保存，归档链接字节不证明target可删除。先转存tracked实际修改、untracked文件和失败原件并核hash，核实写者和依赖；只有已有授权、归属明确且当前字节匹配副本的本claim改动才逐路径移交或恢复，不处理未知改动、不reset/stash/clean或force。达到干净工作区等退役条件后用正常remove；实际失败保留resources条目，在notes追加outcome=failed的真实清理回执，不销账或伪写removed结果。"
+      "expected_output": "两票均作有因保留，记录具体 dirty/未知写者或链接消费者与解除条件，下个接收/派发/恢复边界复查并显示占用。祖先关系不能代替 dirty、归档和停止事实；先保全本 claim 修改/失败原件及 hash，未知改动不动，不 reset/stash/clean/force。有因保留不计无因闲置软上限，但计入磁盘水位；不得将业务 completed 回退。实际清理失败保留 resources，记 outcome=failed 及真实回执。"
     },
     {
       "id": "parallel-test-failure-keep-valid-claim",
@@ -570,7 +570,7 @@
     {
       "id": "parallel-idle-worktree-ticket-retirement",
       "prompt": "T01已接收，工作区干净且无写者/链接消费者，tip已保留；结果与全部失败原件转存回执/hash齐全。全特性尚有T02/T03未完成。",
-      "expected_output": "任务边界按本计划created台账退役T01，无需等全特性交付；用正常worktree remove及有提交保留依据的分支清理，保存真实命令/退出回执，成功条目从resources销账并在notes追加entry/outcome=removed/receipt的cleanup记录，同次原子保存并提交，保留历史claim/cwd。补位不因例行退役等待；最终从notes核对已退役记录，只处理resources剩余资源，不重复删除，集成区及最终delivery proof仍留到整体交付。"
+      "expected_output": "保存 completed 时同次保存 retirement 决策 retire；在当次调度边界必须执行正常 worktree remove 和有保留依据的 branch -d，不等全特性交付。复用集成区完整归档/hash 回执，需另存则 source=集成区加 --claim 本票 key。实际删除成功才销账并记 cleanup entry/outcome=removed/receipt；保留原 claim/cwd/SHA。报告闲置清单/占用与清理计数，再按容量补位。最终核验已退役项不重删，补清剩余可退役项；集成区仍留待整体交付。"
     },
     {
       "id": "parallel-checkpoints-not-per-tool-commit",
@@ -580,7 +580,42 @@
     {
       "id": "parallel-missing-worktree-not-proven-retired",
       "prompt": "T01工作区不见了，resources原条目仍在，且没有清理回执或提交保留依据；主线程猜测已经退役，想直接销账后恢复T02。",
-      "expected_output": "目录缺失没有合法退役依据仍是不一致，保存现场并冻结相关恢复；不自行销账或伪造notes中的cleanup回执，不重建空worktree或completed证据。即使resources条目已消失也不能据此推定合法退役，例外只适用于可核验提交/接收/转存/实际清理记录。"
+      "expected_output": "仅目录消失不能推定已退役，不能伪造 cleanup 或自行销账。先核对是否处于删除成功但未保存窗口：有删除前 retirement 决策、存活提交/归档、真实删除命令退出回执和实体核对才补账；本例无这些依据，冻结相关退役并报告不一致，不重建空 worktree、不重跑 completed。"
+    },
+    {
+      "id": "parallel-transfer-failure-keeps-ledger",
+      "prompt": "本票已集成 completed，集成区归档转存返回 ok=false，files 只有部分已发布项；准备退役 task worktree。",
+      "expected_output": "保留原 worktree/resources 与已发布文件，notes 记录 outcome=failed/真实回执及具体原因、复查条件；业务 completed 不回退，不写 removed 或销账。仅清扫本次 staging；清扫失败报告 staging/cleanup_error，不清其他调用目录。"
+    },
+    {
+      "id": "parallel-transfer-missing-original",
+      "prompt": "集成区执行 transfer --claim c1 返回 evidence: missing source evidence: execution/c1/failed.log；另一个 worktree 有原始失败日志候选。",
+      "expected_output": "沿路径和原登记归属核对候选原件并归档/hash，之后重试同票 scope；找不到或无法核验则冻结该退役并记录原因。不能全局 optional 化、伪造日志或改用缺他票 ignored 证据的目录碰运气；未登记来源只调查，不擅自删除。"
+    },
+    {
+      "id": "parallel-transfer-partial-idempotent-retry",
+      "prompt": "第一次 transfer 发布两个文件后失败，源完整，目标前两项 hash 相同，另有其他调用的 .transfer-old 目录。准备重试。",
+      "expected_output": "重算同 scope 清单，核对并复用已发布同 hash 条目，再发布缺项；不覆盖不同字节，不删除源或其他调用 staging。成功前不退役/销账，失败记录原件与真实 files；清扫只限本次创建的 staging。"
+    },
+    {
+      "id": "parallel-retirement-backpressure",
+      "prompt": "平台当前可用 implementer 名额为2；已有4个已接收闲置 worktree，没有具体保留原因，另有1个因消费者链接暂留；下一票已 ready。",
+      "expected_output": "先处置并回收最旧可退役项，使无因闲置数低于4，再创建下一票；有因保留项不计软上限但继续报告占用并复查。每次派发前核对磁盘，名额空闲不替代水位检查，不通过空泛保留原因绕过执行。"
+    },
+    {
+      "id": "parallel-retirement-low-disk",
+      "prompt": "有空闲执行名额但目标盘剩余空间低于项目水位；唯一闲置 task worktree 有尚未停止的消费者。",
+      "expected_output": "暂停新建，继续接收/保全在途工作；记录磁盘实测、保留原因与解除条件，不强删消费者目录、不假定容量足够。有可退役项先清再测，无则报告具体容量阻塞。"
+    },
+    {
+      "id": "parallel-retirement-checkpoint-recovery",
+      "prompt": "T01 completed/retirement=retire 已提交但 worktree 仍在；T02 删除前决策、归档/hash、真实删除退出0回执均在，目录已不存在而 resources 仍有条目。",
+      "expected_output": "T01核验现场后补执行清理；T02核对实体和回执后补 cleanup 销账，不重删；两票 completed/原claim/cwd/SHA保持，不重跑实现。报告补清/补账及剩余保留项，恢复后沿原调度推进。"
+    },
+    {
+      "id": "parallel-retirement-delivery-fallback",
+      "prompt": "最终交付 proof 通过，但本计划还有一个无因闲置 task worktree；status 同时标记另一个特性的终态目录为可疑残留。",
+      "expected_output": "本计划可退役项必须补清并对账清理/有因保留或移交/失败计数，无未处置和失败项才完成收尾；verifyDelivery通过不能替代文档层回收门。另一特性只读报告，不删台账外资源，不把可疑残留当作安全删除结论。"
     }
   ]
 }

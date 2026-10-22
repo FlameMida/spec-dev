@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,writeFileSync,mkdirSync,existsSync,symlinkSync,rmSync,chmodSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync,existsSync,symlinkSync,rmSync,chmodSync,readdirSync} from 'node:fs';
 import path from 'node:path';
 import {workflowFixture} from './helpers/workflow-fixture.mjs';
 import {createHash} from 'node:crypto';
 import {evidence} from './helpers/group-fixture.mjs';
+import {transferEvidence} from '../lib/execution-evidence.mjs';
 const cli='scripts/execution-evidence.mjs';
 function setup(t){
   const f=workflowFixture(t),source=path.join(f.root,f.feature),target=path.join(f.root,'archive',f.feature);mkdirSync(target,{recursive:true});
@@ -57,9 +58,70 @@ test('S21 existing group receipt fields are copied without rewriting',t=>{
 test('S22 publication failure returns completed files and can resume after permissions are restored',t=>{
   const f=setup(t);f.make('z-last','console.log("last")');const blocked=path.join(f.target,'execution/tasks/T01/z-last');mkdirSync(blocked,{recursive:true});chmodSync(blocked,0o555);
   let r;try{r=f.transfer();}finally{chmodSync(blocked,0o755);}
-  assert.equal(r.status,1,r.stdout+r.stderr);const result=JSON.parse(r.stdout);assert.ok(result.files.length>0);assert.ok(result.staging&&existsSync(result.staging));
+  assert.equal(r.status,1,r.stdout+r.stderr);const result=JSON.parse(r.stdout);assert.ok(result.files.length>0);assert.equal(result.staging,null);
+  assert.deepEqual(readdirSync(path.join(f.target,'execution')).filter(n=>n.startsWith('.transfer-')),[]);
   assert.ok(existsSync(path.join(f.source,f.record)));const retry=f.transfer();assert.equal(retry.status,0,retry.stdout+retry.stderr);
   assert.deepEqual(readFileSync(path.join(f.target,f.record)),readFileSync(path.join(f.source,f.record)));
+});
+
+test('S21 scoped transfer from a new worktree does not require other tickets ignored evidence',t=>{
+ const f=setup(t),prior='execution/accepted-T00/result.json';
+ f.put(f.feature+'/'+prior,'old accepted evidence');f.state.tasks.T00.result_path=prior;f.save();
+ const child=path.join(f.outer,'ticket');f.git('worktree','add','-b','ticket/T01',child,'HEAD');
+ const source=path.join(child,f.feature),own='execution/tasks/T01/a1/raw.log';
+ mkdirSync(path.dirname(path.join(source,own)),{recursive:true});writeFileSync(path.join(source,own),'ticket evidence');
+ const full=transferEvidence({source,target:f.target});
+ assert.equal(full.ok,false);assert.equal(full.error,'evidence: missing source evidence: '+prior);
+ assert.equal(readFileSync(path.join(source,own),'utf8'),'ticket evidence');
+ const scoped=transferEvidence({source,target:f.target,scope:{task:'T01'}});
+ assert.equal(scoped.ok,true,scoped.error);assert.deepEqual(scoped.files.map(x=>x.path),[own]);
+ assert.equal(readFileSync(path.join(f.target,own),'utf8'),'ticket evidence');
+});
+
+test('S21 task scope selects its own attempts and group subtree without copying unrelated evidence',t=>{
+ const f=setup(t);
+ for(const p of ['execution/tasks/T02/other/raw.log','execution/groups/G01/T01/a/raw.log','execution/groups/G01/T02/a/raw.log','execution/native/shared/raw.log'])f.put(f.feature+'/'+p,p);
+ f.state.resources.push('evidence: '+f.feature+'/execution/ —— whole feature');f.save();
+ const r=transferEvidence({source:f.source,target:f.target,scope:{task:'T01'}});
+ assert.equal(r.ok,true,r.error);assert.equal(r.files.length,4);
+ assert.ok(existsSync(path.join(f.target,'execution/groups/G01/T01/a/raw.log')));
+ for(const p of ['execution/tasks/T02','execution/groups/G01/T02','execution/native'])assert.equal(existsSync(path.join(f.target,p)),false);
+});
+
+test('S21 claim scope preserves the complete claim archive and skips other claims and task attempts',t=>{
+ const f=setup(t),own='execution/claim-one';
+ f.state.tasks.T01.claim={key:'claim-one'};f.state.tasks.T01.result_path=own+'/result.json';
+ f.state.tasks.T01.evidence_paths=[own+'/failed.log'];
+ f.state.tasks.T00.result_path='execution/claim-old/missing.json';
+ for(const p of ['result.json','failed.log','attachments/raw.txt'])f.put(f.feature+'/'+own+'/'+p,p);
+ f.state.resources.push('evidence: '+f.feature+'/'+own+'/ —— claim archive');f.save();
+ const r=transferEvidence({source:f.source,target:f.target,scope:{claim:'claim-one'}});
+ assert.equal(r.ok,true,r.error);assert.equal(r.files.length,3);assert.ok(r.files.every(x=>x.path.startsWith(own+'/')));
+ assert.equal(existsSync(path.join(f.target,f.record)),false);
+});
+
+test('S22 scope never makes selected registered references optional',t=>{
+ const f=setup(t),missing='execution/tasks/T01/missing/raw.log';
+ f.state.tasks.T01.evidence_paths=[missing];f.save();
+ const r=transferEvidence({source:f.source,target:f.target,scope:{task:'T01'}});
+ assert.equal(r.ok,false);assert.equal(r.error,'evidence: missing source evidence: '+missing);
+ assert.ok(existsSync(path.join(f.source,f.record)));assert.deepEqual(r.files,[]);
+});
+
+test('S22 invalid or empty scopes cannot fall back to whole-feature transfer',t=>{
+ const f=setup(t);
+ for(const scope of [{},{task:'T01',claim:'c1'},{task:'../T01'},{task:'T99'},{claim:'../escape'},{claim:'tasks'},{claim:'unknown'},{other:'T01'}]){
+  const r=transferEvidence({source:f.source,target:f.target,scope});assert.equal(r.ok,false,JSON.stringify(scope));assert.match(r.error,/^evidence:/);assert.deepEqual(r.files,[]);
+ }
+});
+
+test('S21 existing normalized claim keys remain valid in full and scoped transfers',t=>{
+ const f=setup(t),key='claim-修复',file='execution/'+key+'/result.json';
+ f.put(f.feature+'/'+file,'existing claim');f.state.tasks.T01.claim={key};f.state.tasks.T01.result_path=file;f.save();
+ for(const scope of [undefined,{claim:key}]){
+  const r=transferEvidence({source:f.source,target:f.target,scope});assert.equal(r.ok,true,r.error);
+  assert.ok(r.files.some(x=>x.path===file));
+ }
 });
 test('S21 registered review objects preserve inline outputs rather than treating them as paths',t=>{
  const f=setup(t),receipt=JSON.parse(readFileSync(path.join(f.source,f.record)));

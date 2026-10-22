@@ -45,6 +45,15 @@ test('S23 查询前后文件、index、refs、配置不变',()=>fixture(root=>{
  const before=digest(root),r=call(root);assert.equal(r.exit,0);assert.equal(r.data.verification,'not_performed');assert.deepEqual(digest(root),before);
 }));
 
+test('S31 residue is included by default in JSON and text without a failing exit or mutation',()=>fixture((root,dir)=>{
+ const other=path.join(dir,'retained');git(root,'worktree','add','-qb','retained',other);
+ plan(other,{tasks:{T00:{status:'completed'},T01:{status:'completed'}}});
+ const before=digest(root),j=call(root),text=call(root,[]);
+ assert.equal(j.exit,0);assert.equal(text.exit,0);assert.equal(j.data.summary.suspected_worktree_residues,1);
+ assert.equal(j.data.features[0].sources[0].worktree_residue.reason,'terminal_plan');assert.match(text.out,/可疑残留/);
+ assert.deepEqual(digest(root),before);
+}));
+
 test('S12/S13 旧任务区域结束后不消费附录复选框',()=>fixture(root=>{
  const file='.spec-dev/Old/plan/old-plan.md';
  for(const heading of ['## 后续候选','### 独立附录']){

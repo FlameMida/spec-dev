@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,writeFileSync,rmSync} from 'node:fs';
+import {readFileSync,writeFileSync,rmSync,mkdirSync,existsSync} from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fixture,git,projectRoot} from './helpers/group-fixture.mjs';
@@ -8,6 +8,18 @@ import {workflowFixture} from './helpers/workflow-fixture.mjs';
 const cli='scripts/execution-evidence.mjs';
 const record=(f,attempt,script,extra=[])=>f.run(cli,['record','--feature',path.join(f.root,f.feature),'--task','T01','--phase','green','--attempt',attempt,...extra,'--',process.execPath,'-e',script]);
 const verify=(f,recordPath)=>f.run(cli,['verify','--feature',path.join(f.root,f.feature),'--record',recordPath,'--candidate',f.git('rev-parse','HEAD')]);
+test('S21 transfer CLI accepts one task or claim selector without weakening full transfer',t=>{
+ const f=workflowFixture(t),source=path.join(f.root,f.feature),target=path.join(f.outer,'archive');mkdirSync(target);
+ const own='execution/claim-one/result.json';f.put(f.feature+'/'+own,'claim bytes');
+ f.state.tasks.T01.claim={key:'claim-one'};f.state.tasks.T01.result_path=own;
+ f.state.tasks.T00.result_path='execution/old/missing.json';f.save();
+ const args=['transfer','--source',source,'--target',target];
+ assert.equal(f.run(cli,args).status,1);
+ for(const extra of [['--task','T01'],['--claim','claim-one']]){
+  const r=f.run(cli,[...args,...extra]);assert.equal(r.status,0,r.stdout+r.stderr);assert.equal(JSON.parse(r.stdout).ok,true);assert.ok(existsSync(path.join(target,own)));
+ }
+ for(const extra of [['--task','T01','--claim','claim-one'],['--task'],['--claim','claim-one','--claim','claim-one']])assert.equal(f.run(cli,[...args,...extra]).status,2);
+});
 test('S21 original group recorder retains ignored evidence without staging it',()=>{
   const f=fixture();try{
     writeFileSync(path.join(f.wt,'.gitignore'),'.spec-dev/**/execution/\n');f.save('ignore evidence');

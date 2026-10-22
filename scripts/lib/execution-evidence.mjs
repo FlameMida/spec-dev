@@ -98,29 +98,56 @@ export function verifyReceipt({feature,record:recordPath,candidate}){
   }
   return {ok:true,record,record_path:recordPath,candidate,scope:record.scope,files};
 }
-function transferFiles(ctx){
+function transferFiles(ctx,scope){
   const chosen=new Set(),stateFile=path.join(ctx.feature,'plan/progress.yaml');
   const state=existsSync(stateFile)?parseRecord(readFileSync(stateFile,'utf8')):{};
-  const deliveryReceipts=new Set(state.delivery?.receipt_paths??[]);
+  const deliveryReceipts=new Set(scope?[]:state.delivery?.receipt_paths??[]);
+  const tasks=Object.entries(state.tasks??{}),roots=[];
+  const claimRoot=key=>{
+    let valid=false;
+    try{valid=typeof key==='string'&&normalizeWrite(key)===key&&!key.includes('/')&&(!scope||!['tasks','groups'].includes(key));}catch{}
+    need(valid,'invalid claim evidence key');
+    return 'execution/'+key;
+  };
+  let selected=tasks;
+  if(scope!==undefined){
+    need(scope!==null&&typeof scope==='object'&&!Array.isArray(scope)&&Object.keys(scope).length===1&&['task','claim'].includes(Object.keys(scope)[0]),'scope requires exactly one task or claim');
+    if(Object.hasOwn(scope,'task')){
+      need(typeof scope.task==='string'&&/^T\d\d$/.test(scope.task)&&Object.hasOwn(state.tasks??{},scope.task),'unknown or invalid scope task');
+      selected=tasks.filter(([id])=>id===scope.task);roots.push('execution/tasks/'+scope.task);
+      const groups=evidenceFile(ctx.feature,'execution/groups');
+      if(existsSync(groups))for(const group of readdirSync(groups).sort())roots.push('execution/groups/'+group+'/'+scope.task);
+      for(const [,task]of selected)if(task.claim?.key)roots.push(claimRoot(task.claim.key));
+    }else{
+      const root=claimRoot(scope.claim);roots.push(root);
+      selected=tasks.filter(([,task])=>task.claim?.key===scope.claim);
+      need(selected.length<=1,'claim belongs to multiple tasks');
+      need(existsSync(evidenceFile(ctx.feature,root)),'missing source evidence: '+root);
+    }
+  }
+  const inScope=ref=>roots.some(root=>ref===root||ref.startsWith(root+'/'));
   function add(relative,optional=false){
     const file=relative==='execution'?path.join(ctx.feature,'execution'):evidenceFile(ctx.feature,relative);
     if(optional&&!existsSync(file))return;
-    const info=lstatSync(file);need(!info.isSymbolicLink(),'source evidence link');
+    let info;try{info=lstatSync(file);}catch(error){need(error.code!=='ENOENT','missing source evidence: '+relative);throw error;}
+    need(!info.isSymbolicLink(),'source evidence link');
     if(relative==='execution')need(info.isDirectory(),'registered execution root must be a directory');
     if(info.isDirectory()){for(const name of readdirSync(file).sort())add(relative+'/'+name);}
     else{need(info.isFile(),'evidence must be a regular file');chosen.add(relative);}
   }
-  for(const root of ['execution/tasks','execution/groups'])add(root,true);
-  for(const task of Object.values(state.tasks??{})){
+  for(const root of scope?roots:['execution/tasks','execution/groups'])add(root,true);
+  // Scoped selection excludes other tickets; selected registrations stay strict.
+  for(const [,task] of selected){
     for(const ref of task.evidence_paths??[])add(ref);
     if(task.result_path)add(task.result_path);
-    if(task.claim?.key){need(normalizeWrite(task.claim.key)===task.claim.key&&!task.claim.key.includes('/'),'invalid claim evidence key');add('execution/'+task.claim.key,true);}
+    if(task.claim?.key)add(claimRoot(task.claim.key),true);
   }
-  for(const group of Object.values(state.integration?.groups??{}))for(const ref of group.evidence_paths??[])add(ref);
+  for(const group of Object.values(state.integration?.groups??{}))for(const ref of group.evidence_paths??[])if(!scope||inScope(ref))add(ref);
   for(const ref of deliveryReceipts)add(ref);
   for(const entry of state.resources??[]){
     const m=/^evidence:\s+(.+?)\s+——/.exec(entry);if(!m)continue;
-    const prefix=ctx.relative+'/';need(m[1].startsWith(prefix),'resource belongs to a different feature');add(m[1].slice(prefix.length).replace(/\/$/,''));
+    const prefix=ctx.relative+'/';need(m[1].startsWith(prefix),'resource belongs to a different feature');
+    const ref=m[1].slice(prefix.length).replace(/\/$/,'');if(!scope||inScope(ref))add(ref);
   }
   // Referenced streams extend the closure. Unknown registered files stay raw artifacts.
   function streams(record){
@@ -164,14 +191,14 @@ export function publishEvidenceFile(source,target,expected){
   try{need(digest(readFileSync(temporary))===expected,'staging hash mismatch');linkSync(temporary,target);}finally{unlinkSync(temporary);}
   return {path:target,sha256:expected,reused:false};
 }
-export function transferEvidence({source,target}){
+export function transferEvidence({source,target,scope}){
   const completed=[];let staging=null;
   try{
     const ctx=evidenceContext(source);source=ctx.feature;
     need(typeof target==='string'&&path.isAbsolute(target)&&path.resolve(target)===realpathSync(target),'canonical existing target directory required');
     need(lstatSync(target).isDirectory(),'target must be a directory');
     need(source!==target&&!source.startsWith(target+path.sep)&&!target.startsWith(source+path.sep),'source and target must be disjoint');
-    const manifest=transferFiles(ctx);need(manifest.length,'no referenced execution evidence');
+    const manifest=transferFiles(ctx,scope);need(manifest.length,'no referenced execution evidence');
     // Reject every known conflict before writing any destination bytes.
     for(const item of manifest){
       const dest=evidenceFile(target,item.path);
@@ -188,5 +215,10 @@ export function transferEvidence({source,target}){
       need(digest(readFileSync(dest))===item.sha256,'published hash mismatch');completed.push(item);
     }
     rmSync(staging,{recursive:true});return {ok:true,files:completed,source,target};
-  }catch(error){return {ok:false,files:completed,source,target,staging,error:error.message};}
+  }catch(error){
+    let cleanupError;
+    // Only this invocation owns this staging directory. Published bytes and source stay intact.
+    if(staging)try{rmSync(staging,{recursive:true,force:true});staging=null;}catch(cleanup){cleanupError=cleanup.message;}
+    return {ok:false,files:completed,source,target,staging,error:error.code==='ENOENT'?'evidence: missing path: '+error.path:error.message,...(cleanupError?{cleanup_error:cleanupError}:{})};
+  }
 }

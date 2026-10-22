@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as fs from 'node:fs/promises';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {collectStatus,groupSources} from '../lib/status.mjs';
+import {collectStatus,groupSources,renderStatus} from '../lib/status.mjs';
 const scope=path.resolve('.worktrees/status-overview-qa');
 const git=(cwd,...args)=>execFileSync('git',args,{cwd,encoding:'utf8',env:{...process.env,GIT_OPTIONAL_LOCKS:'0'},stdio:['ignore','pipe','pipe']}).trim();
 async function fixture(fn){
@@ -19,6 +19,32 @@ async function plan(root,state='pending'){
  await write(root,'.spec-dev/F/plan/tasks/T00.md','do not read this task body');
  await write(root,'.spec-dev/F/plan/progress.yaml',JSON.stringify({format_version:1,current:null,tasks:{T00:{status:state}},resources:[],notes:[]}));
 }
+test('S31 terminal linked worktree is a visible suspicion, not a deletion or read failure',()=>fixture(async(root,dir)=>{
+ const other=path.join(dir,'retained');git(root,'worktree','add','-qb','retained',other);
+ await plan(root,'completed');await plan(other,'completed');
+ const file=path.join(other,'.spec-dev/F/plan/progress.yaml'),before=await fs.readFile(file,'utf8');
+ const r=await collectStatus(root),sources=r.features[0].sources;
+ assert.equal(sources.find(s=>s.worktree===root).worktree_residue,null);
+ assert.equal(sources.find(s=>s.worktree===other).worktree_residue.reason,'terminal_plan');
+ assert.equal(r.summary.suspected_worktree_residues,1);assert.deepEqual(r.diagnostics,[]);
+ assert.match(renderStatus(r),/可疑残留/);assert.match(renderStatus(r),/未核验删除条件/);
+ assert.equal(await fs.readFile(file,'utf8'),before);assert.equal(git(root,'worktree','list','--porcelain').includes(other),true);
+}));
+test('S31 a copied terminal plan bound to another worktree is not evidence of local residue',()=>fixture(async(root,dir)=>{
+ const other=path.join(dir,'active');git(root,'worktree','add','-qb','active',other);await plan(other,'completed');
+ const file=path.join(other,'.spec-dev/F/plan/progress.yaml'),state=JSON.parse(await fs.readFile(file,'utf8'));
+ state.execution={mode:'parallel',integration_worktree:root};await fs.writeFile(file,JSON.stringify(state));
+ const r=await collectStatus(root);assert.equal(r.features[0].sources[0].worktree_residue,null);assert.equal(r.summary.suspected_worktree_residues,0);
+}));
+test('S31 explicit dropped roadmap flags residue but superseded spec alone does not',()=>fixture(async(root,dir)=>{
+ const other=path.join(dir,'abandoned');git(root,'worktree','add','-qb','abandoned',other);await plan(other);
+ await write(other,'.spec-dev/F/spec/f-design.md',spec.replace('active','superseded'));
+ assert.equal((await collectStatus(root)).features[0].sources[0].worktree_residue,null);
+ await write(other,'.spec-dev/roadmaps/p.md','---\nspec_dev_roadmap:\n  project: P\n  status: active\n---\n## 子项目\n| # | 子项目 | 范围 | 依赖 | 状态 | 特性目录 |\n|---|---|---|---|---|---|\n| 1 | F | x | — | dropped | .spec-dev/F/ |');
+ const r=await collectStatus(root);assert.equal(r.features[0].sources[0].worktree_residue.reason,'dropped_plan');assert.equal(r.diagnostics.length,0);
+ await write(other,'.spec-dev/F/plan/progress.yaml','invalid : [ yaml');
+ const unknown=await collectStatus(root);assert.equal(unknown.features[0].sources[0].worktree_residue,null);assert.ok(unknown.diagnostics.length);
+}));
 test('S03 主工作区与 detached 工作区 / S16 相同进度折叠 / S17 状态不同',()=>fixture(async(root,dir)=>{
  const other=path.join(dir,'other tree'),detached=path.join(dir,'detached');git(root,'worktree','add','-qb','other',other);git(root,'worktree','add','--detach',detached);
  await plan(root);await plan(other);await plan(detached,'blocked');

@@ -44,7 +44,7 @@ export function groupSources(sources){
  });
 }
 export async function collectStatus(repoPath,overrides={}){
- const io={...defaults,...overrides},result={schema_version:1,verification:'not_performed',repository:{requested_path:path.resolve(repoPath),worktree:null,common_dir:null},worktrees:[],roadmaps:[],features:[],diagnostics:[],summary:{features:0,source_records:0},collected_at:io.now()};
+ const io={...defaults,...overrides},result={schema_version:1,verification:'not_performed',repository:{requested_path:path.resolve(repoPath),worktree:null,common_dir:null},worktrees:[],roadmaps:[],features:[],diagnostics:[],summary:{features:0,source_records:0,suspected_worktree_residues:0},collected_at:io.now()};
  const diagnostic=(worktree,file,e)=>result.diagnostics.push({worktree,path:file,code:e.code&&['missing','invalid_format','unsupported_version','unsupported_syntax','inconsistent','unstable','symlink_skipped'].includes(e.code)?e.code:'unreadable',message:e.message});
  let root,common;
  try{root=(await io.git(repoPath,['rev-parse','--show-toplevel'])).trim();common=await io.real((await io.git(root,['rev-parse','--path-format=absolute','--git-common-dir'])).trim());}
@@ -53,10 +53,13 @@ export async function collectStatus(repoPath,overrides={}){
  let worktrees;
  try{worktrees=parseWorktrees(await io.git(root,['worktree','list','--porcelain','-z']));}
  catch(e){diagnostic(root,'',e);return result;}
- const sources=[],roadmaps=[];
+ const sources=[],roadmaps=[],sourceStates=new Map();
  for(const wt of worktrees){
   wt.read_status='ok';result.worktrees.push(wt);
-  try{const c=await io.real((await io.git(wt.path,['rev-parse','--path-format=absolute','--git-common-dir'])).trim());if(c!==common)throw fault('inconsistent','worktree common-dir mismatch');}
+  try{
+   const c=await io.real((await io.git(wt.path,['rev-parse','--path-format=absolute','--git-common-dir'])).trim());if(c!==common)throw fault('inconsistent','worktree common-dir mismatch');
+   wt.linked=await io.real((await io.git(wt.path,['rev-parse','--absolute-git-dir'])).trim())!==common;
+  }
   catch(e){wt.read_status='error';diagnostic(wt.path,'',e);continue;}
   const secure=async rel=>{
    const abs=path.resolve(wt.path,rel),r=path.relative(wt.path,abs);
@@ -83,7 +86,7 @@ export async function collectStatus(repoPath,overrides={}){
    }throw fault('unstable','record changed during both reads: '+rel);
   };
   const feature=async(key,specOnly=null)=>{
-   let source={key,worktree:wt.path,files:[],specs:[],plan:null,roadmaps:[],read_status:'ok'};
+   let source={key,worktree:wt.path,files:[],specs:[],plan:null,roadmaps:[],read_status:'ok',worktree_residue:null};
    try{
     const captured=await bounded(key,async({probe,directory,read})=>{
      const specs=[],files=[];let index=null,progress=null,taskNames=null,legacy=[];
@@ -102,7 +105,10 @@ export async function collectStatus(repoPath,overrides={}){
      try{const meta=parseMeta(text,'spec');source.specs.push({path:file,feature:meta.feature??null,status:meta.status??null});if(!['draft','active','superseded'].includes(meta.status))throw fault('invalid_format','unknown spec status: '+meta.status);}
      catch(e){source.read_status='partial';diagnostic(wt.path,file,e);}
     }
-    try{source.plan=parsePlanFiles(captured);for(const e of source.plan?.diagnostics??[]){source.read_status='partial';diagnostic(wt.path,key+'/plan',e);}}
+    try{
+     source.plan=parsePlanFiles(captured);for(const e of source.plan?.diagnostics??[]){source.read_status='partial';diagnostic(wt.path,key+'/plan',e);}
+     if(captured.progress!==null)sourceStates.set(source,parseRecord(captured.progress));
+    }
     catch(e){let raw_version=null;try{raw_version=parseRecord(captured.progress)?.format_version??null;}catch{}source.read_status='partial';source.plan={format:'unknown',raw_version,counts:null,tasks:[],groups:[],current:null,error:e.message};diagnostic(wt.path,key+'/plan',e);}
    }catch(e){source.read_status='partial';diagnostic(wt.path,key,e);}
    sources.push(source);
@@ -145,10 +151,19 @@ export async function collectStatus(repoPath,overrides={}){
  }
  for(const source of sources){
   source.roadmaps=roadmaps.filter(r=>r.worktree===source.worktree).flatMap(r=>r.rows.filter(row=>row.feature_key===source.key).map(row=>({path:r.path,id:row.id,status:row.status,roadmap_status:r.meta?.status??null}))).sort((a,b)=>sort(a.path+'\0'+a.id,b.path+'\0'+b.id));
+  const wt=worktrees.find(w=>w.path===source.worktree),state=sourceStates.get(source),p=source.plan;
+  if(!wt?.linked||wt.read_status!=='ok'||source.read_status!=='ok'||!p?.counts)continue;
+  // A copied historical progress file does not establish ownership of this worktree.
+  const owners=[state?.execution?.integration_worktree,state?.integration?.worktree,...Object.values(state?.tasks??{}).flatMap(t=>[t.claim?.worktree,t.binding?.worktree])].filter(x=>typeof x==='string');
+  if(owners.length&&!owners.includes(source.worktree))continue;
+  const terminal=p.counts.total>0&&(p.format==='legacy'?p.counts.checked:p.counts.completed)===p.counts.total;
+  const associated=roadmaps.filter(r=>r.worktree===source.worktree&&r.rows.some(row=>row.feature_key===source.key));
+  const dropped=source.roadmaps.length>0&&source.roadmaps.every(r=>r.status==='dropped')&&associated.every(r=>r.read_status==='ok');
+  if(terminal||dropped)source.worktree_residue={reason:terminal?'terminal_plan':'dropped_plan',ownership:owners.length?'recorded':'unbound'};
  }
  result.features=groupSources(sources);
  const rm=new Map();for(const r of roadmaps){if(!rm.has(r.path))rm.set(r.path,[]);rm.get(r.path).push(r);}result.roadmaps=[...rm].sort(([a],[b])=>sort(a,b)).map(([key,all])=>({key,sources:all}));
- result.summary={features:result.features.length,source_records:sources.length};
+ result.summary={features:result.features.length,source_records:sources.length,suspected_worktree_residues:sources.filter(s=>s.worktree_residue).length};
  result.diagnostics.sort((a,b)=>sort(a.worktree+'\0'+a.path+'\0'+a.code,b.worktree+'\0'+b.path+'\0'+b.code));
  return result;
 }
@@ -158,6 +173,7 @@ export function renderStatus(snapshot){
  if(snapshot.diagnostics.length)lines.push('未知不等于没有：任务读取失败时，不能据空列表断言没有进行中、待验或阻塞任务；这些状态无法判断。','');
  lines.push('WORKTREE | 分支 / HEAD | 读取');
  for(const w of snapshot.worktrees)lines.push(`${display(w.path)} | ${display(w.branch??('detached '+w.head))} | ${display(w.read_status)}`);
+ lines.push(`可疑残留记录 ${snapshot.summary.suspected_worktree_residues??0} 项；未核验删除条件，不代表 worktree 可安全删除。`);
  lines.push('','ROADMAP | 来源 | 记录状态 | 子项目');
  for(const g of snapshot.roadmaps)for(const r of g.sources){
   lines.push(`${display(g.key)} | ${display(r.worktree)} | ${display(r.meta?.status)} | ${r.rows.length}`);
@@ -171,6 +187,7 @@ export function renderStatus(snapshot){
    else if(p?.format==='legacy')summary=p.counts?`复选框记录：全勾选 ${p.counts.checked}/${p.counts.total}`:'复选框记录：比例未知';
    else if(p)summary=p.counts?`已完成记录 ${p.counts.completed}/${p.counts.total}；进行中 ${p.counts.in_progress}；待验 ${p.counts.awaiting_verification}；阻塞 ${p.counts.blocked}`:'比例未知';
    lines.push(`${display(f.key)} | ${display(s.worktree)} | ${s.specs.map(x=>display(x.status)).join(', ')||'无 spec 记录'} | ${summary}`);
+   if(s.worktree_residue)lines.push(`  可疑残留：${s.worktree_residue.reason==='terminal_plan'?'终态计划记录':'关联 roadmap 已废弃'}；${s.worktree_residue.ownership==='recorded'?'记录绑定本工作区':'归属未绑定，仅为候选'}；路径 ${display(s.worktree)}；未核验删除条件。`);
    for(const file of s.files)lines.push('  文件：'+display(file));
    if(p){lines.push('  记录中的当前票：'+display(p.current));for(const t of p.tasks)lines.push(`  ${display(t.id)} ${display(t.title)} | ${display(t.status)}`);for(const g of p.groups)lines.push(`  组 ${display(g.id)} | ${display(g.status)}`);}
   }

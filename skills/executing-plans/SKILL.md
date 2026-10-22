@@ -83,11 +83,11 @@ flowchart TD
 
 - 启动只读：`index.md` + `progress.yaml`（+ 同特性目录 spec）。**不读任何 tasks/ 正文**。
 - 执行 TN 时只读：`tasks/TN.md` + 导航表中 TN 依赖行的「产出接口」列。不提前读无关后继任务正文。
-- 普通任务完成条件（全部满足才置 completed）：依赖全 completed、适用 TDD/纯重构步骤完成、测试通过、commit 可解析、接口块与导航表一致、progress.yaml 已原子更新并随任务提交。含组成员/验证票的完成与 ready 由 integration-groups 定义；本票操作已保存不等于 completed。
+- 普通任务完成条件（全部满足才置 completed）：依赖全 completed、适用 TDD/纯重构步骤完成、测试通过、commit 可解析、接口块与导航表一致、progress.yaml 已原子更新并随任务提交。含 claim 的票还须与 completed 同次在 notes 保存二元退役处置，接收后执行清理/有因保留复查；物理删除独立留回执，不因清理失败回退业务状态。含组成员/验证票的完成与 ready 由 integration-groups 定义；本票操作已保存不等于 completed。
 - 偏差处理沿用主文件三级纪律；契约级偏差冻结受影响后继（导航表依赖闭包），修订 index 接口行与相关任务文件后再继续。
 
 **恢复执行（resume）**——检测到 `progress.yaml` 存在且有非 completed 任务时：
-1. 校验一致性：集成工作区及仍活跃认领的 worktree/分支存在，completed 各任务的 commit 可 `git cat-file -e` 解析，progress 引用的任务文件都存在。已按台账合法退役的 implementer 工作区沿 [票级退役](references/parallel-result-integration.md#票级-worktree-退役) 核对保留提交、证据及清理回执，不要求目录或分支仍存在，不重建它来重跑 completed。current 的 in_progress/blocked 不要求完成 SHA，已有实现提交须核验但不据此自动标 completed。缺失且无合法退役依据 → 停下向用户报告不一致，不猜测继续。
+1. 校验一致性：集成工作区及仍活跃认领的 worktree/分支存在，completed 各任务的 commit 可 `git cat-file -e` 解析，progress 引用的任务文件都存在。completed 但未退役者沿票级协议补处置并复查；已删除未销账者须凭删除前处置、存活归档与真实删除回执补账，不凭目录消失推定成功。已按台账合法退役的 implementer 工作区沿 [票级退役](references/parallel-result-integration.md#票级-worktree-退役) 核对保留提交、证据及清理回执，不要求目录或分支仍存在，不重建它来重跑 completed。current 的 in_progress/blocked 不要求完成 SHA，已有实现提交须核验但不据此自动标 completed。缺失且无合法退役依据 → 停下向用户报告不一致，不猜测继续。
 2. 普通串行先恢复 current：in_progress 续接，blocked 先处理阻塞；没有当前票才取下一 ready 任务（依赖全 completed 的最小编号 pending）；组分支消费 plan-state 的 ready_tasks 并按 integration-groups 恢复。同前只读该任务文件与依赖接口行。
 3. 恢复不无条件重跑 completed 任务；核验原件、版本与检查范围，缺口或变更按 test-strategy 补验，独立 F 保留全量安全网。
 
@@ -101,7 +101,7 @@ flowchart TD
 
 ## 阶段 2：隔离工作区
 
-执行计划的任务 0（建立隔离工作区）——完整纪律遵循 using-git-worktrees skill（已隔离检测、原生工具优先、git 降级、基线测试验证），分支名对齐计划（如 `plan/2026-07-03-export-report`）。计划缺任务 0（旧版计划）时，直接调用 using-git-worktrees 补齐同等效果。基线验证范围遵循计划头部「相关测试范围」声明（判据见 using-git-worktrees Step 3 与 writing-plans 任务 0 模板）；旧版计划无该节 → 按全量执行。
+执行计划的任务 0（建立隔离工作区）——完整纪律遵循 using-git-worktrees skill（已隔离检测、原生工具优先、git 降级、基线测试验证），分支名对齐计划（如 `plan/2026-07-03-export-report`）。计划缺任务 0（旧版计划）时，直接调用 using-git-worktrees 补齐同等效果。T00 无论新建或复用隔离，都消费 using-git-worktrees Step 1b 的跨特性残留只读报告；同一现场已有报告则复用，不重复扫描或删除其他特性资源。基线验证范围遵循计划头部「相关测试范围」声明（判据见 using-git-worktrees Step 3 与 writing-plans 任务 0 模板）；旧版计划无该节 → 按全量执行。
 
 **降级**：非 git 仓库或无法建立隔离时，按 using-git-worktrees 的既有纪律记录并处理；来源分支受保护不是原地实施理由，仍在隔离特性分支工作。交付与权限遵循 references/delivery-channels.md，策略无法查询时记未知。
 
@@ -160,7 +160,7 @@ flowchart TD
 分文件计划的本地/PR 交付统一遵循 [delivery-channels.md](references/delivery-channels.md)。ready 不等于已合并；尚 awaiting_merge 时最终任务与 roadmap 保持未完成，不提前 sync_commit。存量单文件保持原读取与记录形态。
 
 1. 审查与对账定稿后，**合并前在 worktree 内落盘并提交**：对账结果写入特性目录 `acceptance/acceptance-report.md` 的「Requirement Reconciliation」节——全绿一行带过，有偏差才展开差量表；acceptance-qa 未触发的特性按模板新建仅含头部与该节的轻量报告（一次交付一份时点记录）。DEFERRED / DROPPED 同时在 spec 原位标注（形制见 spec 模板行为规范节）；SUPERSEDED 的原位标注即取代机制的 Requirement 级 `Superseded` 标注（形制见 spec-template「取代标注形制」节，含后继指向）；DELIVERED 不标
-2. 执行最大号交付 D：消费有效 final、审查和验收/对账 → 核对已验证的取代材料 → 建立保留来源历史锚并实际合并 → 原件转存与 proof 核验 → 按台账清理 → sync_commit 与实际交付节 → 独立最终状态提交。完整命令以 writing-plans 的交付模板和本计划实际绑定为准；旧计划只补未执行步骤，非 Git 或无 spec 如实记不适用。
+2. 执行最大号交付 D：消费有效 final、审查和验收/对账 → 核对已验证的取代材料 → 建立保留来源历史锚并实际合并 → 原件转存与 proof 核验 → 按台账兜底补清票级闲置项并对账已清理/有因保留或移交/失败计数（无未处置项才继续）→ sync_commit 与实际交付节 → 独立最终状态提交。完整命令以 writing-plans 的交付模板和本计划实际绑定为准；旧计划只补未执行步骤，非 Git 或无 spec 如实记不适用。
 3. **roadmap 状态回写（仅当 `.spec-dev/roadmaps/` 下某 active roadmap 引用本特性目录）**：把对应子项目行状态置 `delivered` 并提交，同时在该子项目的上下文胶囊追加一行「留给后继的注意事项」（交付摘要、接口变化、给下一子项目的提醒）；全部子项目已 delivered/dropped 时把该 roadmap frontmatter 的 `status` 翻 `done`。目录不存在或查无引用 → 跳过，零动作
 4. 输出总结：
    - **成果清单**：完成的任务、创建/修改的文件、对账计数（`X DELIVERED / Y DEFERRED / Z DROPPED / S SUPERSEDED / N ADDED-IN-FLIGHT`）
