@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readdirSync, renameSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -18,7 +18,7 @@ if (args.has("--help")) {
 }
 
 for (const arg of args) {
-  if (arg !== "--help") {
+  if (!["--help", "--size-only"].includes(arg)) {
     console.error(`Unknown option: ${arg}`);
     printUsage();
     process.exit(2);
@@ -26,9 +26,24 @@ for (const arg of args) {
 }
 
 try {
+  const skills = findSkills();
+  // Conservative UTF-8 byte budget, not a claim about every host's character cut.
+  const sizes = skills.map((skillPath) => ({
+    label: path.relative(repoRoot, skillPath),
+    bytes: readFileSync(path.join(skillPath, "SKILL.md")).length,
+  }));
+  const oversized = sizes.filter(({bytes}) => bytes >= 20000);
+  if (oversized.length) {
+    throw new Error("Skill entrypoints must be under 20000 UTF-8 bytes:\n" +
+      oversized.map(({label, bytes}) => `  ${label}/SKILL.md: ${bytes} bytes`).join("\n") +
+      "\nMove conditional detail into references/ and read it at the relevant step.");
+  }
+  if (args.has("--size-only")) {
+    for (const {label, bytes} of sizes) console.log(`${label}/SKILL.md: ${bytes} bytes`);
+    process.exit(0);
+  }
   const quickValidate = findQuickValidate();
   const python = resolvePython();
-  const skills = findSkills();
 
   for (const skillPath of skills) {
     const label = path.relative(repoRoot, skillPath);
@@ -51,9 +66,11 @@ try {
 }
 
 function printUsage() {
-  console.log(`Usage: node scripts/validate-skills.mjs
+  console.log(`Usage: node scripts/validate-skills.mjs [--size-only]
 
-Validates all plugin skills (skills/) with skill-creator/scripts/quick_validate.py.
+Checks every SKILL.md is under 20000 UTF-8 bytes, then validates with skill-creator.
+The byte budget is deliberately stricter than a 20000-character host limit.
+--size-only runs the entrypoint budget check without Python or external validators.
 
 Environment:
   SKILL_CREATOR_QUICK_VALIDATE   Absolute path to quick_validate.py.

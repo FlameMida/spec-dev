@@ -128,6 +128,8 @@ node scripts/check-plugin.mjs --codex-validate
 node scripts/validate-skills.mjs
 ```
 
+`validate-skills.mjs` 同时检查每份 `SKILL.md` 严格小于 20,000 UTF-8 字节；`--size-only` 可离线单跑体积检查。条件性细则移入 references，并在对应阶段明确读取。该保守预算不等于所有宿主都有相同字符截断阈值。
+
 该脚本会优先查找 Codex 内置 `skill-creator`，也支持通过 `SKILL_CREATOR_QUICK_VALIDATE` 或 `SKILL_CREATOR_HOME` 指定校验脚本路径。若当前 Python 缺少 `PyYAML`，脚本会使用临时 venv 安装依赖后执行校验。
 
 ### evals 定位

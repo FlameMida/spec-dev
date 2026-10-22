@@ -128,6 +128,8 @@ Validate the bundled skills with `skill-creator`'s `quick_validate.py`:
 node scripts/validate-skills.mjs
 ```
 
+`validate-skills.mjs` also enforces a conservative UTF-8 budget of less than 20,000 bytes per `SKILL.md`. Use `--size-only` for the offline size check; move conditional detail to references with explicit reading points. This budget does not assert that every host truncates at the same character count.
+
 The script looks for the Codex built-in `skill-creator` first, and also supports `SKILL_CREATOR_QUICK_VALIDATE` or `SKILL_CREATOR_HOME` to point at a validator path. If the current Python lacks `PyYAML`, the script installs it into a temporary venv before validating.
 
 ### About evals

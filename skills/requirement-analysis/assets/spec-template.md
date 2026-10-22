@@ -48,6 +48,8 @@ spec_dev:
 
 [明确不做的事——防止范围蔓延；没有可写"无" / What we explicitly will not do; write "none" if empty]
 
+[若存在“即使功能完成也不可接受”的结果，在此说明并落到可验证的约束或 Scenario，例如不得新增常驻服务。没有则省略，不机械增加栏目；它与暂不实现的功能范围不同。]
+
 ## 术语表
 
 [共享术语引用仓库 .spec-dev/glossary.md 的规范名、适用域与来源；局部术语定义在本 spec。冲突与保存规则以 requirement-analysis/references/context-reuse.md 为准；不因模板存在此节创建空词汇表。]
@@ -66,7 +68,7 @@ spec_dev:
 
 ## 已确认的关键决策
 
-[阶段 3 澄清结论与阶段 4 方案选择：每条一行，含取舍理由。
+[阶段 3 澄清结论与阶段 4 方案选择：每条一行，含取舍理由及来源：用户明确决定、已有项目约束，或授权范围内的代理选择。代理默认值不得写成用户原话；仍需用户决定的事项留在未决区，不混入已确认项。
 同时满足"难以逆转、缺上下文会费解、真实取舍"三判据的决策，额外沉淀为仓库级 `.spec-dev/adr/NNNN-<slug>.md`（全项目统一目录与编号），此处保留一行摘要并链接对应 ADR / One line per decision with rationale; decisions meeting the ADR bar also land in .spec-dev/adr/ with a link here]
 
 - [决策 1]：[选择] —— [理由]

@@ -243,8 +243,8 @@ function isFullDocument(html) {
 
 function wrapInFrame(content) {
   return renderBranding(frameTemplate)
-    .replace('<!-- THEME -->', themeCssInjection())
-    .replace('<!-- CONTENT -->', content);
+    .replace('<!-- THEME -->', () => themeCssInjection())
+    .replace('<!-- CONTENT -->', () => content);
 }
 
 // Project design tokens: BRAINSTORM_THEME_CSS points at a CSS file whose

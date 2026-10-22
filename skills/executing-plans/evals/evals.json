@@ -616,6 +616,11 @@
       "id": "parallel-retirement-delivery-fallback",
       "prompt": "最终交付 proof 通过，但本计划还有一个无因闲置 task worktree；status 同时标记另一个特性的终态目录为可疑残留。",
       "expected_output": "本计划可退役项必须补清并对账清理/有因保留或移交/失败计数，无未处置和失败项才完成收尾；verifyDelivery通过不能替代文档层回收门。另一特性只读报告，不删台账外资源，不把可疑残留当作安全删除结论。"
+    },
+    {
+      "id": "ep-compaction-reload-rules",
+      "prompt": "会话压缩摘要只写“当前票进行中，部分完成票的 worktree 已删，可以继续”；持久进度含用户明确串行偏好、current in_progress，某完成票的退役回执尚未核验。继续前应采取什么动作？",
+      "expected_output": "从磁盘重新读取 task-recovery 及适用状态规则，核对真实 index/progress/current 与工作区、退役证据；不凭摘要推定合法删除、不重做 completed、不把继续解释为撤销串行偏好，也不重派未完成票。"
     }
   ]
 }
