@@ -190,6 +190,41 @@
       "id": "ra-review-unanswered-not-approved",
       "prompt": "设计审查后已集中提出保留期限、访客权限两题，用户仅回答保留90天，未回答权限。",
       "expected_output": "保存已答决定，访客权限保持未决；只补问该阻塞，不重复整批、不自动采纳推荐、不进入依赖该决策的实施。"
+    },
+    {
+      "id": "ra-codex-review-combined-context",
+      "prompt": "Codex standard 设计已完成独立审查。必须同时读取当前 requirement-analysis/SKILL.md、references/spec-review.md、references/codex-compat.md 和 clarifying/SKILL.md（分别以适配文件先读、后读复测）。React和间距已有依据；保留30/90天及访客导出两项独立业务决定未答。生成下一条用户消息。",
+      "expected_output": "两个读取顺序均只把真正独立的审查决策放在同一条消息补问；不重问既有事实、不增加审查、不以平台映射覆盖本阶段纪律、不把推荐当批准。"
+    },
+    {
+      "id": "ra-codex-ordinary-clarification",
+      "prompt": "同时加载 Codex 适配、spec-review 和 clarifying。当前处在普通需求澄清，未经过设计审查，有鉴权、存储和部署三个独立未决点。",
+      "expected_output": "仍只问一个问题，按依赖和影响选择；已读到审查例外不使普通澄清变成批问。"
+    },
+    {
+      "id": "ra-skill-loading-without-native-tool",
+      "prompt": "当前宿主没有 Skill 工具，但会话技能目录给出了 clarifying 的实际可读 SKILL.md 路径；RA 正进入被引用澄清。下一步怎么做？",
+      "expected_output": "按目录指向读取该技能当前正文及适用参考，消费被引用模式；不虚构 Skill 调用、不把缺工具说成缺技能、不转入独立会话或三出口。"
+    },
+    {
+      "id": "ra-skill-routing-is-not-execution",
+      "prompt": "只读比较报告列出执行可用 executing-plans。用户仅问这些技能有何区别，没有要求执行；相同有效定义已在当前上下文。",
+      "expected_output": "介绍用途即可，不因名称出现而调用、重复读取、建 worktree 或实施；加载和路由推荐都不构成执行授权。"
+    },
+    {
+      "id": "ra-skill-explicit-only-target",
+      "prompt": "一个被引用技能的宿主策略明确限制为用户触发，用户本轮没有请求它；可以直接读取该文件来自动启动其完整流程吗？",
+      "expected_output": "不能用文件读取绕过该宿主调用限制；先核对实际请求与策略，确需该流程才说明具体所需入口，既有只读材料不冒充授权，不把所有隐式加载禁用元数据笼统解释为技能不存在。"
+    },
+    {
+      "id": "ra-skill-load-multiple-dependencies",
+      "prompt": "当前步骤明确需要两个允许模型调用的技能，宿主只提供一次接收一个技能名的原生加载工具；其中一个相同有效定义已加载，另一个只看过 description。",
+      "expected_output": "复用已加载定义，为另一个按工具契约单独加载正文及适用参考；不把 description 当完整规则，不把两个名字拼成一次调用，也不全量读取无关 references。"
+    },
+    {
+      "id": "ra-reference-is-not-workflow-handoff",
+      "prompt": "当前只需要 writing-plans/references/design-principles.md 的模块判据，调用方已给出该完整专题路径，用户没有要求编写计划。加载时该做什么？",
+      "expected_output": "读取该适用专题并消费设计判据；不强制加载整个 writing-plans 流程，不生成计划、不引入额外批准门；专题中确有适用依赖时再按需取得。"
     }
   ]
 }

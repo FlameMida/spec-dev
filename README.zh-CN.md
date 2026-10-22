@@ -332,6 +332,7 @@ FlameMida
 ## 指令加载与统一文档规范
 
 技能入口保留用途、触发及持续生效的边界；详细流程、声明、模板、恢复和审查按动作条件取得完整专题。
+跨技能动作按 [共享加载约定](skills/requirement-analysis/references/exploration-entry.md#技能定义与流程调用) 区分介绍、引用纪律和完整流程转交；宿主工具缺失不等于技能缺失，读取定义也不等于获得实施授权。
 现有 exploration-patterns.md 为有效导航；插件根、派发与恢复、输出契约分别保留一个完整权威。
 writing-plans 的字段和资源台账位于 references/plan-format.md，专项声明与任务/交付模板按需读取；生成计划包含关键片段、命令和接口，单任务文件不超过 200 行。
 DDD 独立使用及被主流程调用均采用 .spec-dev/glossary.md、对应 spec 局部术语节和 .spec-dev/adr/。

@@ -333,6 +333,7 @@ Issues and pull requests are welcome!
 ## Instruction loading and shared document conventions
 
 Skill entry files retain purpose, trigger boundaries and persistent constraints; detailed workflows, declarations, templates and recovery protocols load before the applicable action.
+The [shared loading convention](skills/requirement-analysis/references/exploration-entry.md#技能定义与流程调用) distinguishes mentioning a skill, consuming its rules and handing off a workflow. A missing native loader does not imply a missing skill, and reading instructions does not authorize implementation.
 The existing exploration-patterns.md remains a valid navigation entry. Plugin-root resolution, dispatch/recovery and output contracts each retain one complete authoritative definition.
 The planning fields and resource ledger live in writing-plans/references/plan-format.md; generated plans carry key snippets, commands and interfaces, with each task file capped at 200 lines.
 DDD uses .spec-dev/glossary.md, feature-local spec terms and .spec-dev/adr/ in both standalone and delegated use.
