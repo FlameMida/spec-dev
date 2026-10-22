@@ -96,4 +96,4 @@ git commit -m "feat(TN): add specific feature"
 
 接口块同时写清本票为何需要这些前置、公共契约的来源及实际需要的错误/状态语义；无需重抄 spec 全文。不消费相邻票产物时不因编号相邻增加依赖。
 
-任务模板的写入前置：按 [计划格式](plan-format.md#绑定与激活唯一定义点) 把获批范围、静态版本、状态 checkpoint 与实际 bind/inspect 命令展开到本票。代码提交完成后先 clear 本地引用，再保存 completed 与既存实现 SHA、单独提交状态。行为变更同步 spec；TDD 例外只沿已有授权和 test-driven-development 单点清单处理。无 Git 的旧流程不得伪造新绑定。
+任务模板的写入前置：按 [计划格式](plan-format.md#绑定与激活唯一定义点) 写全获批范围、静态版本、状态 checkpoint 与实际 bind/inspect 命令；共用协议集中到 index，本票以明确节名指针和实参调用，本票特有步骤就地展开。代码提交完成后先 clear 本地引用，再保存 completed 与既存实现 SHA、单独提交状态。行为变更同步 spec；TDD 例外只沿已有授权和 test-driven-development 单点清单处理。无 Git 的旧流程不得伪造新绑定。
