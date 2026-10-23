@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildDistribution } from "./build-distribution.mjs";
+import { inspectCodexHooks, assertCodexHooks } from "./lib/codex-hook-check.mjs";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
@@ -36,7 +37,7 @@ try {
   console.log("Plugin package checks passed.");
 
   if (codexValidate) {
-    runOfficialCodexInstallCheck();
+    await runOfficialCodexInstallCheck();
   }
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
@@ -50,7 +51,7 @@ Verifies that the five plugin manifests share the same version and that the
 plugin package contains no symlinks.
 
 Options:
-  --codex-validate   Use the official Codex CLI in a temporary CODEX_HOME to install the local marketplace package.`);
+  --codex-validate   Install the Git distribution in isolated Codex state, then verify hooks/list and plugin/read without trusting or running hooks.`);
 }
 
 // 三份清单各自面向 Claude marketplace、Claude 插件、Codex 插件，版本号必须一致
@@ -142,7 +143,7 @@ function assertNoSymlinks(root) {
   }
 }
 
-function runOfficialCodexInstallCheck() {
+async function runOfficialCodexInstallCheck() {
   const marketplacePath = path.join(repoRoot, ".agents", "plugins", "marketplace.json");
   const pluginManifestPath = path.join(repoRoot, ".codex-plugin", "plugin.json");
   const marketplace = readJson(marketplacePath);
@@ -159,7 +160,7 @@ function runOfficialCodexInstallCheck() {
 
   const codexHome = mkdtempSync(path.join(os.tmpdir(), "spec-dev-codex-validate-"));
   try {
-    const distribution = buildDistribution(path.join(codexHome, "distribution"));
+    const distribution = buildDistribution(path.join(codexHome, "distribution"), { format: "git" });
     runCodex(["plugin", "marketplace", "add", distribution], codexHome);
     runCodex(["plugin", "add", `${pluginName}@${marketplaceName}`], codexHome);
     const cache = path.join(codexHome, "plugins", "cache", marketplaceName, pluginName);
@@ -174,7 +175,18 @@ function runOfficialCodexInstallCheck() {
         throw new Error("Installed Codex plugin is missing runtime skills");
       }
     }
-    console.log(`Official Codex CLI install check passed: ${pluginName}@${marketplaceName}`);
+    const pluginId = `${pluginName}@${marketplaceName}`;
+    const hookFile = readJson(path.join(distribution, pluginManifest.hooks));
+    const expectedEvents = Object.entries(hookFile.hooks).flatMap(([event, groups]) =>
+      groups.flatMap(group => group.hooks.map(() => event[0].toLowerCase() + event.slice(1))));
+    const actual = await inspectCodexHooks({
+      env: { ...sanitizedEnv(), CODEX_HOME: codexHome },
+      cwd: distribution,
+      marketplacePath: path.join(distribution, ".agents/plugins/marketplace.json"),
+      pluginName,
+    });
+    const count = assertCodexHooks(actual, { pluginId, expectedEvents });
+    console.log(`Official Codex CLI install and hook discovery passed: ${pluginId} (${count} untrusted hooks; plugin details agree)`);
   } catch (error) {
     // Codex 未安装（ENOENT）是常见的开发机情形，不应阻断提交——软跳过并提示。
     // 网络/安装失败等 codex 确实存在却出错的情况仍作为硬错误抛出。

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// All installable Git/ZIP distributions use the same file selection as npm / Pi.
+// Shared runtime selection; Git omits the portable manifest for Codex hook support.
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
@@ -8,7 +8,8 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-export function buildDistribution(output) {
+export function buildDistribution(output, { format = "portable" } = {}) {
+  if (!["portable", "git"].includes(format)) throw new Error(`Unsupported distribution format: ${format}`);
   const destination = path.resolve(output);
   if (destination === repoRoot || destination.startsWith(`${repoRoot}${path.sep}`)) {
     throw new Error("Distribution output must be outside the source checkout.");
@@ -25,6 +26,9 @@ export function buildDistribution(output) {
     mkdirSync(destination, { recursive: true });
     created = true;
     run("tar", ["-xzf", path.join(temporary, pack.filename), "-C", destination, "--strip-components=1"]);
+    // Codex 0.164.0 unconditionally skips hooks for Agent Plugins packages.
+    // Keep plugin.json in portable archives/npm; Git consumers use host manifests.
+    if (format === "git") rmSync(path.join(destination, "plugin.json"));
 
     // The source catalogs redirect existing installs to dist. Inside a filtered
     // distribution, both catalogs resolve locally, including offline validation.
@@ -62,12 +66,12 @@ function run(command, args) {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
-  if (args.length !== 2 || args[0] !== "--output") {
-    console.error("Usage: node scripts/build-distribution.mjs --output <new-directory-outside-checkout>");
+  if (args[0] !== "--output" || ![2, 4].includes(args.length) || (args.length === 4 && args[2] !== "--format")) {
+    console.error("Usage: node scripts/build-distribution.mjs --output <new-directory-outside-checkout> [--format portable|git]");
     process.exitCode = 1;
   } else {
     try {
-      console.log(buildDistribution(args[1]));
+      console.log(buildDistribution(args[1], { format: args[3] || "portable" }));
     } catch (error) {
       console.error(error.message);
       process.exitCode = 1;

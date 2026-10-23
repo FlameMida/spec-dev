@@ -1,5 +1,5 @@
 {
-  "$comment": "spec-dev: spec notice plus model-scoped collaboration; hooks must be enabled/trusted by the host.",
+  "description": "spec-dev: spec notice plus model-scoped collaboration; hooks must be enabled/trusted by the host.",
   "hooks": {
     "SessionStart": [
       {

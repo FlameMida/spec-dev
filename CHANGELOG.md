@@ -9,6 +9,11 @@
 
 ## [Unreleased]
 
+## [9.1.2] - 2026-10-23
+
+- 修复 Codex 0.164.0 更新后显示 No hooks：Git dist 包省略导致 hooks 被跳过的根级 Agent Plugins 清单，通用 ZIP/tar.gz/npm 包保留该清单；hook 文件使用受支持的 description 字段。
+- 发布检查改为在隔离安装后实际读取 Codex hooks/list 与 plugin/read，要求四个 hooks 一致且保持未信任，拒绝零发现及解析告警；CI 固定 Codex 0.164.0 验证。
+
 ## [9.1.1] - 2026-10-23
 
 - 修复分发工作流在 job 级 env 中引用不可用的 runner.temp：改为在 runner 步骤内通过 GITHUB_ENV 初始化包目录，覆盖包含空格的临时路径。
