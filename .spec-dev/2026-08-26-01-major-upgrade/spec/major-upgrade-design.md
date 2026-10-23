@@ -18,6 +18,10 @@ spec_dev:
     - "scripts/**"
     - "guardrail/install.mjs"
     - "guardrail/session-context.mjs"
+    - "guardrail/model-context.mjs"
+    - "guardrail/model-policy.md"
+    - "hooks/**"
+    - "skills/requirement-analysis/references/model-collaboration.md"
     - "guardrail/templates/**"
     - "skills/test-strategy/**"
     - "skills/sequential-thinking/**"
@@ -95,6 +99,32 @@ spec-dev 现为 Claude Code + Codex 双平台 skill 插件（v7.21.1）。本次
 - [零动作] `.spec-dev/2026-08-08-triage-routing/spec/triage-routing-design.md`：不改 `commands/triage.md`，doctor 为新增命令无行为交集。
 
 ## ADDED Requirements
+
+### Requirement: 按实际模型启用协作增强（2026-10-23）
+
+用户授权直接实现，不另走技能设计/计划流程。增强 SHALL 按本代理的实际模型启用：GPT/Codex、Kimi/Moonshot、GLM 启用，Claude 与未知模型不启用。宿主工具、endpoint 或父代理的模型不能代替本代理身份。行为唯一来源为 `model-collaboration.md`，现有技能仅在启用状态下引用相应阶段；复用 spec/index/progress，不新增任务状态机或批准门，不改变既有授权、TDD、绑定与交付协议。
+
+#### Scenario: Claude Code 调用非 Claude 模型
+- **GIVEN** Claude Code 的启动事件报告 GLM/Kimi，或可信的启动配置精确映射代理别名到该模型
+- **WHEN** 生命周期 hook 加载协作上下文
+- **THEN** 在没有已跟踪 spec 甚至非 Git 目录时也加载规则；按目标结果、必要工作、证据与边界理解任务，普通可逆取舍自行处理，证据不足先调查；Claude/未知 ID 不加载增强正文
+
+#### Scenario: 切换、恢复与子代理隔离
+- **GIVEN** 主代理已启用增强
+- **WHEN** Claude Code 的 PostModelSwitch 或 Codex 的当前事件报告 Claude/未知模型
+- **THEN** 停用先前增强，后续缺少身份的事件不猜测启用；恢复缺身份不沿用旧会话选择，compact 重新取得完整规则；子代理按自己的已知模型判断，无模型字段时停用，不继承主代理启用结论
+
+#### Scenario: 原目标与完整交付
+- **GIVEN** 已启用增强，用户补充问题或某项工作受阻
+- **WHEN** 进入任务边界、恢复或准备交付
+- **THEN** 保留原目标及明确变更，继续独立且已授权的部分，不自行缩小范围；最终检查实际使用缺口及尚未兑现的承诺，已授权且可完成的必要工作继续做，分析请求仍以分析作为交付
+
+#### Scenario: 安装与验证边界
+- **GIVEN** 插件或仓库安装器分发规则
+- **WHEN** 两端加载各自事件配置
+- **THEN** 保留原 spec notice 与漂移守卫，规则副本来自唯一原件，重装保留用户 hooks；未知路由不启用，缓存故障不阻断任务；CLI 测试与真实模型效果分别报告
+
+确定性验证：`node --test scripts/tests/model-collaboration.test.mjs`，覆盖实际 hook 命令、模型路由、显式别名、切换停用、压缩、混合子代理、无 spec 场景、安装幂等及损坏输入；分发沿 distribution 测试。真实协作效果保留为行为评测项，不由结构测试推定已改善。
 
 ### Requirement: 根级 Agent plugins 1.0.0 manifest
 

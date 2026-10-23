@@ -7,6 +7,8 @@
 
 ## 环境判定
 
+以下只判定工具宿主，不判定模型家族。[模型协作增强](model-collaboration.md) 独立按本代理当前 hook 状态启用；Claude Code 中的 Kimi/GLM 也可启用，不能因缺少 Claude 工具就推定模型不是 Claude。
+
 满足以下任一特征即视为运行在 Codex：
 
 - 会话内不存在 `AskUserQuestion`、`TaskCreate`/`TaskUpdate`、`Agent` 等 Claude Code 工具

@@ -24,7 +24,7 @@ test("npm / Pi package excludes repository specs and retains plugin runtime file
   const files = pack.files.map(({ path: name }) => name);
   const leaked = files.filter((name) => name.split("/").includes(".spec-dev"));
   assert.equal(leaked.length, 0, `repository specs leaked into npm package: ${leaked.slice(0, 3).join(", ")}`);
-  for (const name of ["plugin.json", ".claude-plugin/plugin.json", ".codex-plugin/plugin.json", "hooks/hooks.json", "guardrail/install.mjs", "scripts/validate-output.mjs", "skills/exploring/SKILL.md", "LICENSE"]) {
+  for (const name of ["plugin.json", ".claude-plugin/plugin.json", ".codex-plugin/plugin.json", "hooks/hooks.json", "hooks/codex-hooks.json", "guardrail/install.mjs", "guardrail/model-context.mjs", "skills/requirement-analysis/references/model-collaboration.md", "scripts/validate-output.mjs", "skills/exploring/SKILL.md", "LICENSE"]) {
     assert.ok(files.includes(name), `missing runtime file: ${name}`);
   }
 });
@@ -65,6 +65,14 @@ test("built plugin is self-contained; Git publication excludes specs, updates sa
   assert.equal(claude.plugins[0].source, "./");
   assert.deepEqual(codex.plugins[0].source, { source: "local", path: "./" });
   assert.match(run(process.execPath, ["scripts/check-plugin.mjs"], distribution), /Plugin package checks passed/);
+  const context = spawnSync(process.execPath, [path.join(distribution, 'guardrail/model-context.mjs'), '--host', 'codex'], {
+    cwd: dir, encoding: 'utf8',
+    env: { PATH: process.env.PATH, SPEC_DEV_COLLABORATION_STATE_DIR: path.join(dir, 'model-state') },
+    input: JSON.stringify({ session_id: 'distributed', hook_event_name: 'SessionStart', source: 'startup', model: 'gpt-6' }),
+  });
+  assert.equal(context.status, 0, context.stderr);
+  assert.match(context.stdout, /collaboration: enabled/);
+  assert.match(context.stdout, /最后答复/);
   const existing = spawnSync(process.execPath, [path.join(root, "scripts/build-distribution.mjs"), "--output", distribution], { env, encoding: "utf8" });
   assert.notEqual(existing.status, 0);
   assert.match(existing.stderr, /already exists/);

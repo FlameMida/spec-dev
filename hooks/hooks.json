@@ -1,5 +1,5 @@
 {
-  "$comment": "spec-dev 插件级 hooks：安装插件即自动注册 SessionStart 会话上下文注入（无需先手动运行 guardrail 安装器）。guardrail/install.mjs 仍负责 git 闸门（pre-commit/pre-push/CI）与 PreToolUse/Stop 漂移守卫——两者互补。",
+  "$comment": "spec-dev: spec notice plus model-scoped collaboration; hooks must be enabled/trusted by the host.",
   "hooks": {
     "SessionStart": [
       {
@@ -7,6 +7,44 @@
           {
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/guardrail/session-context.mjs\"",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/guardrail/model-context.mjs\" --host claude",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/guardrail/model-context.mjs\" --host claude",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/guardrail/model-context.mjs\" --host claude",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostModelSwitch": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/guardrail/model-context.mjs\" --host claude",
             "timeout": 10
           }
         ]

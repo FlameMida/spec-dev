@@ -14,6 +14,10 @@ Installs into the current git repository by default; idempotent and safe to re-r
 
 > **Running the installer inside the Codex sandbox**: the Codex workspace-write sandbox forces git config and `.codex/` read-only (anti-privilege-escalation), so the `core.hooksPath` config and `.codex/hooks.json` fail to write inside the sandbox. Run the installer outside the sandbox (user terminal); defenses that do install inside the sandbox still work, and the versioned `.githooks/` files land normally.
 
+## Model-scoped collaboration
+
+The installer also copies model-scoped collaboration guidance and merges lifecycle hooks for both hosts. This is independent of spec discovery and adds no blocking gate. GPT/Codex, Kimi and GLM are enabled; Claude and unknown models are excluded. See [model policy](model-policy.md) for aliases, switching and subagent limits.
+
 ## Defense layers
 
 | Layer | Mechanism | Scope | Bypassable |

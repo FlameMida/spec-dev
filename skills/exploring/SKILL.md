@@ -36,6 +36,8 @@ description: >-
 
 ## 姿态
 
+本代理当前 `spec-dev collaboration: enabled` 时，按 [模型协作增强](../requirement-analysis/references/model-collaboration.md) 保持目标、决策与分析交付完整性；Claude、未知模型及仅继承父代理状态者不启用。增强不把探索转为实施，也不要求探索必须收敛出方案。
+
 相关共享术语与历史决定按 [context-reuse.md](../requirement-analysis/references/context-reuse.md) 读取；保存遵循原授权。
 
 **基于上下文披露**：先读相关材料，再按 clarifying 第 0 条简要说明本次相关的假设、信息缺口和具体风险，不强制三段开场。已知决定直接复用；尚未读取的历史数值或决定保持未知，不补造或改换数值的角色。没有关键分岔时继续陪伴式探索，不为格式制造问题。

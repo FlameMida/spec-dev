@@ -14,6 +14,10 @@ node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
 
 > **在 Codex 沙箱内运行安装器的注意事项**：Codex workspace-write 沙箱强制 git config 与 `.codex/` 只读（防提权），`core.hooksPath` 配置与 `.codex/hooks.json` 在沙箱内会写入失败。请在沙箱外（用户终端）运行安装器；沙箱内只装成功的防线照常生效，版本化的 `.githooks/` 文件本身可正常落盘。
 
+## 模型协作增强
+
+安装器还复制按模型启用的协作增强脚本和唯一规则副本，并合并两端生命周期 hooks。它独立于 spec 发现，不新增拦截门；GPT/Codex、Kimi、GLM 启用，Claude/未知模型不启用。配置、切换与子代理边界见 [模型策略](model-policy.md)。
+
 ## 防线分层
 
 | 层 | 机制 | 作用域 | 可绕过性 |

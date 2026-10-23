@@ -91,6 +91,8 @@ flowchart TD
 
 ## 阶段 1: 需求理解与分诊
 
+本代理当前 `spec-dev collaboration: enabled` 时，在理解、方案判断及交接前消费 [模型协作增强](references/model-collaboration.md) 的适用检查点；Claude、未知模型及仅继承父代理状态者不启用，不改变现有批准门。
+
 开始分诊或续接前实际读取 [需求分诊细则](references/request-triage.md)，按最终交付目标、承诺状态与设计空间判断；先复用已有决定和上下文，再核对档位、范围及契约姿态。报告通道不能作为实施后门；已有明确入口直接消费，不重复索取已给出的同范围授权。
 
 ## 阶段 2: 并行探索

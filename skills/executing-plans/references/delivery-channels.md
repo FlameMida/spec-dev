@@ -1,5 +1,7 @@
 # 特性级交付通道（串行与并发共用）
 
+仅本代理当前 `spec-dev collaboration: enabled` 时，最终答复前执行 [交付前遗漏检查](../../requirement-analysis/references/model-collaboration.md#交付前遗漏检查)；原请求内已授权且可完成的必要工作继续完成，不放入“后续建议”。Claude、未知模型及仅继承父代理状态者不启用此补充。
+
 默认 channel=local。用户已授权 PR 工作流或仓库明确要求 PR 时采用 channel=pr；这不自动授权 push/create/ready/merge，各动作复用已有会话授权。缺发布授权时先准备完整变更与 PR 文案，再请求该发布动作。
 
 受保护来源分支仍使用隔离特性分支，不能因此原地实施；远端策略查不到记未知。一个特性复用一个 PR，首个实际差异可来自已批准 spec/plan；零差异不造空提交。标题/正文围绕最终行为，附 spec、progress、验收对账指针；只有真实对应且应关闭的 issue 才写 closing 关键词。

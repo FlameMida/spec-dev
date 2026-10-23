@@ -28,6 +28,8 @@ description: >-
 
 ## 范围检查
 
+本代理当前 `spec-dev collaboration: enabled` 时，拆票与交接前按 [模型协作增强](../requirement-analysis/references/model-collaboration.md) 核对必要工作、完成证据及原目标覆盖；Claude、未知模型及仅继承父代理状态者不启用。复用现有 index/spec/progress，不新增状态格式或批准门。
+
 spec 聚焦单一交付物（绝大多数情况）→ 本节零动作。若 spec 覆盖多个独立子系统、或含阶段化结构（"第一阶段/Phase 1/先做 X 再做 Y"），这本应在需求设计阶段拆成子项目并登记 roadmap（requirement-analysis 的范围分解检查）；发现没拆时：
 
 - **首选回炉**：建议回 requirement-analysis 补分解——spec 收缩到第一个子项目、其余登记 `.spec-dev/roadmaps/`，然后只为收缩后的 spec 编写本计划

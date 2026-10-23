@@ -9,6 +9,7 @@
 
 ## [Unreleased]
 
+- 新增按实际模型启用的协作增强：GPT/Codex、Kimi、GLM 共用目标、必要工作、决策、恢复与交付遗漏检查；Claude 和未知模型不启用。两端 hooks 分别适配，支持明确别名、模型切换停用、代理隔离及无 spec 项目，复用现有进度与授权边界。
 - 新增 `wtf` skill：用 10 岁小孩也能理解的大白话和终端字符图表解释概念、代码与流程，以图为主、少量文字补充；配套插件注册、Codex 元数据、双语说明和行为意图用例。
 - 同步 Claude Code / Grok Build、Codex、Pi/npm 与通用 Agent Plugins 分发清单的 `wtf` 介绍，补齐关键词和 Codex 示例入口；沿用统一 `skills/` 打包规则。
 

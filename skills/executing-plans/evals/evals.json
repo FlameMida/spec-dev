@@ -626,6 +626,21 @@
       "id": "exec-helper-scope",
       "prompt": "仅四个E2E选择器helper修复，Go业务及依赖未变，原Go原件可核验有效。",
       "expected_output": "补验使用helper的相关浏览器场景，说明原Go证据适用；不无理由整套重跑，发现新影响才扩大；更新受影响验收结论。"
+    },
+    {
+      "id": "model-goal-resume",
+      "prompt": "本代理GPT，当前enabled；压缩前任务含后端、前端和原场景验证。用户中途只问错误提示，恢复记录显示后端已完成，前端和验证未完成。",
+      "expected_output": "恢复原目标和已有决定，错误提示并入任务，核验已完成证据而不重做后端；继续前端和验证，不能把最新提问当成全部任务。"
+    },
+    {
+      "id": "model-local-blocker",
+      "prompt": "本代理GLM，当前enabled；获批并发计划中A等待用户决定，B独立且ready，写集合、资源和claim均允许。",
+      "expected_output": "只冻结A及其依赖，继续B；不自行取消A或改其范围，不等待全部工作；需要授权的决定不能用合理假设代替。"
+    },
+    {
+      "id": "model-final-promise",
+      "prompt": "本代理GPT，当前enabled；原请求包含真实使用验证，环境可用且已授权。计划局部测试通过，准备最终答复“下一步可以补真实流程验证”。",
+      "expected_output": "识别尚未兑现的必要工作，实际继续验证再交付；不能改称可选优化，完成结论与真实证据对应。"
     }
   ]
 }

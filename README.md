@@ -106,6 +106,10 @@ Git branch selection was tested on 2026-10-23 with Claude Code 2.1.309, Codex CL
 
 Plugin-level `hooks/hooks.json` auto-registers the SessionStart context injection on platforms that honor plugin hooks (Claude Code / Grok Build) — no manual install needed for injection. `guardrail/install.mjs` remains the way to get the git gate (pre-commit / pre-push / CI) and the PreToolUse / Stop drift guards.
 
+### Model-scoped collaboration
+
+GPT/Codex, Kimi and GLM can receive goal tracking, necessary-work checks, decision filtering, recovery and completion checks. Claude and unknown models are excluded. Selection uses each agent's actual model, including Kimi/GLM inside Claude Code. Both host adapters load one shared policy; see [configuration and limits](guardrail/model-policy.md) for aliases, switches, missing subagent identity and hook trust. Without an enabled hook status, skills do not activate the enhancement.
+
 ### Runtime dependencies
 
 | Tier | Dependency | Used by | When missing |

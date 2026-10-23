@@ -106,6 +106,10 @@ Grok Build 也支持 Claude marketplace 插件条目的 `source.ref: "dist"`；�
 
 插件级 `hooks/hooks.json` 在支持插件 hooks 的平台（Claude Code / Grok Build）上安装即自动注册 SessionStart 会话注入——注入不再依赖手动安装。`guardrail/install.mjs` 仍是获得 git 闸门（pre-commit / pre-push / CI）与 PreToolUse / Stop 漂移守卫的途径。
 
+### 按模型启用的协作增强
+
+GPT/Codex、Kimi、GLM 可启用目标保持、必要工作补全、决策筛选、恢复与交付遗漏检查；Claude 与未知模型不启用。按本代理实际模型判断，Claude Code 调用 Kimi/GLM 同样适用。两端 hooks 分别加载同一规则，代理别名、切换停用、子代理身份缺失及宿主信任要求见 [配置与边界](guardrail/model-policy.md)。没有 hook 启用状态时不擅自加载增强。
+
 ### 运行时依赖
 
 | 分级 | 依赖 | 用途 | 缺失时 |

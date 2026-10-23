@@ -21,6 +21,33 @@
             "type": "command",
             "command": "node scripts/spec-dev/session-context.mjs",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)/scripts/spec-dev/model-context.mjs\" --host codex",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)/scripts/spec-dev/model-context.mjs\" --host codex",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)/scripts/spec-dev/model-context.mjs\" --host codex",
+            "timeout": 10
           }
         ]
       }

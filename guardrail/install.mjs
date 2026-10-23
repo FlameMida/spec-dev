@@ -6,9 +6,11 @@
 // 装什么：
 //   scripts/spec-dev/check-spec-drift.mjs   核心校验器
 //   scripts/spec-dev/session-context.mjs    会话上下文注入脚本（含守卫健康自检）
+//   scripts/spec-dev/model-context.mjs      按实际模型启用协作增强（无 spec 也适用）
+//   scripts/spec-dev/model-collaboration.md 共享规则的安装副本
 //   scripts/spec-dev/migrate-to-spec-dev.mjs 历史产物迁移脚本（docs/ → .spec-dev/）
-//   .claude/settings.json                   合并 PreToolUse + Stop + SessionStart hooks（Claude Code）
-//   .codex/hooks.json                       合并 PreToolUse + SessionStart hooks（Codex）
+//   .claude/settings.json                   合并漂移守卫与模型生命周期 hooks（Claude Code）
+//   .codex/hooks.json                       合并漂移守卫与模型生命周期 hooks（Codex）
 //   CLAUDE.md / AGENTS.md                    追加/更新守卫软提示段（标记块内幂等替换）
 //   .githooks/{pre-commit,pre-push}          版本化 git hooks + git config core.hooksPath（除非 --no-git-hook；
 //                                            已设 core.hooksPath 时写入既有目录，不改配置）
@@ -50,8 +52,10 @@ copyFileSync(path.join(HERE, "task-binding.mjs"), path.join(scriptsDir, "task-bi
 mkdirSync(path.join(scriptsDir,"lib"),{recursive:true});
 for(const name of ['record-data','write-paths','task-scopes','task-binding','git-view','spec-data'])copyFileSync(path.join(HERE,'lib',name+'.mjs'),path.join(scriptsDir,'lib',name+'.mjs'));
 copyFileSync(path.join(HERE, "session-context.mjs"), path.join(scriptsDir, "session-context.mjs"));
+copyFileSync(path.join(HERE, "model-context.mjs"), path.join(scriptsDir, "model-context.mjs"));
+copyFileSync(path.resolve(HERE, "../skills/requirement-analysis/references/model-collaboration.md"), path.join(scriptsDir, "model-collaboration.md"));
 copyFileSync(path.join(HERE, "migrate-to-spec-dev.mjs"), path.join(scriptsDir, "migrate-to-spec-dev.mjs"));
-done.push("scripts/spec-dev/{check-spec-drift,task-binding,session-context,migrate-to-spec-dev}.mjs + lib/");
+done.push("scripts/spec-dev/{check-spec-drift,task-binding,session-context,model-context,migrate-to-spec-dev}.mjs + model-collaboration.md + lib/");
 
 // 2) Claude settings.json —— 深合并 hooks
 mergeJsonHooks(

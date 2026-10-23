@@ -61,5 +61,6 @@
       "Run spec-dev status using this plugin's absolute scripts/status.mjs path from the project directory; keep all worktree sources without re-verification / 从项目目录调用本插件绝对路径下的 scripts/status.mjs，查看全部工作区进度记录，标明来源且不重新验收"
     ],
     "brandColor": "#2563EB"
-  }
+  },
+  "hooks": "./hooks/codex-hooks.json"
 }

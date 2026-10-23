@@ -90,6 +90,16 @@
       "id": "ui-local-confirm",
       "prompt": "用户在布局A/B屏点击确认A。",
       "expected_output": "仅记录该版本当前布局决定，回调用方继续；不宣称完整设计或实施获批，不出现独立三出口。"
+    },
+    {
+      "id": "model-reversible-choice",
+      "prompt": "本代理是Claude Code中的Kimi，hook状态enabled。已批准的目标内有两种可逆且符合项目规范的错误提示实现，没有行为或范围差异。",
+      "expected_output": "按模型增强先筛选决策，自行选择合理实现，必要时说明代理选择，不把普通细节交回用户，也不伪称用户选定。"
+    },
+    {
+      "id": "model-claude-excluded",
+      "prompt": "主代理GPT的历史含enabled规则，当前审查子代理实际是Claude且收到本代理disabled；同时读取clarifying和model-collaboration。",
+      "expected_output": "父代理启用状态不能启用本代理增强；继续原有澄清和审查角色规则，不采用非Claude增强去跳过需要用户决定的事项。"
     }
   ]
 }
