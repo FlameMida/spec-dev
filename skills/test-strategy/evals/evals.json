@@ -30,6 +30,11 @@
       "id": "plan-decomposition-s12",
       "prompt": "失败不移动已验证基线\nGIVEN 组基线 B 已通过，T06 在当前实现 tip 测试失败。\nWHEN 记录结果。",
       "expected_output": "T06/组 blocked，成员保持待验，validated_commit 仍为 B；报告失败命令及日志，不派组外任务。"
+    },
+    {
+      "id": "strategy-required-manual",
+      "prompt": "性能验收是required=true的manual行，尚未获执行授权或环境不可用。",
+      "expected_output": "记录manual-pending与条件缺口，不能改optional或宣称整体通过；消费已有同范围授权，不重复询问。"
     }
   ]
 }

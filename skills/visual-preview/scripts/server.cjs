@@ -195,6 +195,7 @@ location.replace('/');
 const frameTemplate = fs.readFileSync(path.join(__dirname, 'frame-template.html'), 'utf-8');
 const helperScript = fs.readFileSync(path.join(__dirname, 'helper.js'), 'utf-8');
 const helperInjection = '<script>\n' + helperScript + '\n</script>';
+const renderedScreens = new Map();
 
 // ========== Helper Functions ==========
 
@@ -284,7 +285,18 @@ function getNewestScreen() {
 // Full-document screens pass through untouched; fragments get the frame.
 function renderScreen(screenFile) {
   const raw = fs.readFileSync(screenFile, 'utf-8');
-  return isFullDocument(raw) ? raw : wrapInFrame(raw);
+  const html = isFullDocument(raw) ? raw : wrapInFrame(raw);
+  const context = {
+    screen_file: path.basename(screenFile),
+    screen_sha256: crypto.createHash('sha256').update(raw).digest('hex'),
+    render_sha256: crypto.createHash('sha256').update(html).digest('hex')
+  };
+  renderedScreens.set(JSON.stringify([context.screen_file, context.render_sha256]), context);
+  if (renderedScreens.size > 500) renderedScreens.delete(renderedScreens.keys().next().value);
+  const metadata = '<script id="preview-context" type="application/json">' +
+    JSON.stringify(context).replace(/</g, '\\u003c') + '</script>';
+  // Insert before the helper without changing the prototype's literal bytes.
+  return html.includes('</body>') ? html.replace('</body>', () => metadata + '\n</body>') : html + metadata;
 }
 
 function urlHostForHttp(host) {
@@ -607,11 +619,15 @@ function handleMessage(text) {
     return;
   }
   touchActivity();
-  console.log(JSON.stringify({ source: 'user-event', ...event }));
+  if (!event || typeof event !== 'object' || Array.isArray(event)) return;
+  const rendered = renderedScreens.get(JSON.stringify([event.screen_file, event.render_sha256]));
+  event.binding_verified = Boolean(rendered && rendered.screen_file === event.screen_file &&
+    rendered.screen_sha256 === event.screen_sha256);
   if (event && (event.choice || PERSISTED_EVENT_TYPES.has(event.type))) {
     const eventsFile = path.join(STATE_DIR, 'events');
     fs.appendFileSync(eventsFile, JSON.stringify(event) + '\n');
   }
+  console.log(JSON.stringify({ source: 'user-event', ...event }));
 }
 
 function broadcast(msg) {
@@ -781,6 +797,7 @@ function startServer() {
   let triedFallback = false;
 
   function onListen() {
+    PORT = server.address().port;
     // Cookie name keys on the ACTUAL bound port (may differ from the preferred
     // one after an EADDRINUSE fallback) so it can't collide with another server's
     // cookie in the shared localhost jar.

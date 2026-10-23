@@ -10,7 +10,7 @@ description: >-
 
 # 测试策略纪律
 
-普适纪律在本文；栈特定处方按需加载 references（阅读时机见各文件头）。
+普适纪律在本文；栈特定处方按需加载 references。生成验证范围或修复后补验先读 [验证归属与按影响复验](references/verification-scope.md)，明确必需程度、执行时机和执行条件；三者不互相替代。
 
 ## 三 Lane 模型（调度维度是执行时点，不是业务模块；全部本地运行，无 CI/PR 槽位）
 
@@ -18,7 +18,7 @@ description: >-
 |---|---|---|---|
 | **fast** | 每任务，< 1 min | 本任务目标测试 + 特性自有测试文件；纯内存或本地可控 IO | 不碰网络与 LLM |
 | **final** | 实施结束后的独立 final 验证票 F，先于审查与验收 | 项目完整测试套件，含真实容器/库集成与主干 E2E | 首次全量；后续改动按影响补验，失败按归属裁决 |
-| **manual** | 用户当轮显式要求 | 模型评测、性能多轮采样、全量 E2E、迁移演练等长耗时/概率性检查 | 永不由 executing-plans 或 acceptance-qa 自动触发；交付路径上的 manual 行标 `manual-pending` |
+| **manual** | 有明确执行授权和所需条件（消费已批准计划及同范围授权） | 模型评测、性能多轮采样、全量 E2E、迁移演练等特殊条件检查 | 未获授权或条件未满足标 `manual-pending`；必需行仍阻止整体通过 |
 
 小团队（1-5 人）不建按模块的测试选择系统；final 首次全量提供安全网，选择/分片只在 final 超过 15 min 时再议。
 
@@ -64,7 +64,7 @@ description: >-
 - L1.5 prompt 快照（fast）：快照装配后的最终 prompt（确定性），不是模型输出
 - L2 工具契约（fast）：工具=普通函数单测
 - L3 回放（fast）：录制回放（脱敏），周期性重录
-- L4 廉价模型冒烟（manual，仅 agent 相关变更且用户要求）：小模型 + 严格 schema 断言
+- L4 廉价模型冒烟（manual，仅 agent 相关变更且有明确授权）：小模型 + 严格 schema 断言
 - L5 完整 eval（manual）：真实模型、多 trial、pass^k、按维度隔离 judge
 
 断言纪律：`temperature=0` 不是确定性——断言面向结构与 schema，永不面向精确文本；评结果不评路径（精确工具序列断言脆弱）。
@@ -73,11 +73,11 @@ description: >-
 
 - **requirement-analysis 写矩阵时**：每行标注 Lane 归属（fast/final/manual）——unit/docs 行默认 fast，integration/e2e 行默认 final，perf/eval/实际模型任务行默认 manual；性能行必须带阈值数字。
 - **writing-plans 翻译时**：任务的失败测试步骤继承该行 Lane 归属并写明运行命令所属 lane；DB/容器类测试步骤引用 references/db-testing.md 处方（模板克隆、两速隔离），不得每测试起容器。
-- **acceptance-qa 执行时**：阶段 0 装配按 Lane 选择执行窗口；manual 行在交付路径标 `manual-pending`，仅用户当轮显式要求时执行。
+- **acceptance-qa 执行时**：阶段 0 装配按 Lane 选择执行窗口；manual 行在交付路径标 `manual-pending`，按已有明确执行授权和实际条件执行。
 
 ## Red Flags
 
 - 每测试/每文件一个容器；每测试重放迁移 → 读 db-testing.md 处方
 - 用 mock 测出来的绿当集成信心 → mock 只属 fast lane，集成信心来自 final lane 真实容器
-- eval 分数波动就改断言阈值 → 先查 flaky 治理顺序，eval 属 manual 不阻塞
+- eval 分数波动就改断言阈值 → 先查 flaky 治理顺序，eval 属 manual；是否阻塞由矩阵 required 决定
 - 为测试选择系统引缝 → 缝跟着真实交付边界走，1-5 人先全量

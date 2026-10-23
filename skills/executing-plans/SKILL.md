@@ -108,6 +108,8 @@ flowchart TD
 - **契约级偏差**（接口/数据结构与计划不符且影响后续任务）→ 停下向用户确认修正方向，不猜着改；卡在子问题想不清时可切 exploring skill 想透再回来，洞见按其归位表回填（设计决策→修 spec 并请用户 review、新任务→补进 plan）
 - **意图级偏差**（真正要做的已是另一件工作：意图变了、范围爆炸如"修登录 bug"变成"重写认证"、或原计划可独立标记完成而新工作自成一体）→ 停下建议收尾当前计划，新工作另起特性目录走 requirement-analysis——**更新保留上下文，新起提供清晰**；收尾废弃计划时，若其 spec 已激活并已打出 Superseded-pending 标注，一并回收（删除旧 spec 上的 pending 行）并在最终总结注明
 
+**早期闭环**：首个真实流程就绪即对照定稿 HTML 验证。决定复用、设计偏差、失败分类及按影响复验沿 [验证归属](../test-strategy/references/verification-scope.md)。
+
 ## 阶段 4：收尾审查
 
 全部实施/组验证完成并取得当前候选的有效 final 回执后，编排独立代码审查；验收和交付票此时尚未完成。完整编排（维度定义、伪代码、契约校验、Codex 降级）见 [review-orchestration.md](references/review-orchestration.md)，要点：
@@ -117,7 +119,7 @@ flowchart TD
 - **契约校验**：每份报告落盘后 `node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" review-findings <file>`；校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「输出契约与校验」）
 - **候选处置**：高/中候选逐条派独立子代理对抗复核（指令=试图反驳）；去重后无新候选即收口，最多 2 轮；首轮零候选直接收口，不做多轮扇出
 - **completeness critic**：在存在高/中候选、大变更档、用户要求彻底或显式 critic=always 时派发；small/regular 的 on-findings 分支零高/中候选时由 AS 路 coverage_note 承担覆盖声明。一个子代理检查现行文件/Scenario 的审查与测试覆盖，已取代项排除；S 判实现偏差，critic 查证据缺口，已审零发现不等于未审。未完成补查不能因零 confirmed 而当全交付，具体收口沿共用编排。
-- **acceptance-qa**：计划含验收任务、或 spec 验收矩阵含「验收任务」行时，触发 acceptance-qa skill 按矩阵执行（输入=spec 路径+计划验收任务+本次变更文件清单+证据目录 `acceptance/`）；旧版计划无矩阵时，变更涉及 UI 即按其验收点触发。验收结论并入审查报告
+- **acceptance-qa**：计划含验收任务、或 spec 验收矩阵含「验收任务」行时，页面按定稿 HTML 对照与业务证据核验的三步路径，其他目标按行为矩阵执行（输入=spec 路径+计划验收任务+本次变更文件清单+证据目录 `acceptance/`）；旧版计划无矩阵时，变更涉及 UI 即按其验收点触发。验收结论并入审查报告
 
 ## 阶段 5：审查处置与交付对账
 

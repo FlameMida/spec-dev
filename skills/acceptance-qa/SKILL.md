@@ -1,193 +1,90 @@
 ---
 name: acceptance-qa
 description: >-
-  对功能、页面或接口执行矩阵驱动的验收，以及交互、渲染和性能故障诊断。适用于 E2E、视觉、可访问性及性能验收；不用于日常跑测试、开发中 TDD、代码或需求文档审查。
+  对功能、页面或接口执行验收与故障诊断。页面默认核对定稿 HTML 和运行版本、对照实际布局交互及状态、复用业务证据并补验缺口；后端按行为契约，E2E、视觉、可访问性和性能专项按需执行。不用于日常跑测试、开发中 TDD 或需求文档审查。
 ---
 
-> 输出语言：用户显式指定（含平台语言设置）优先，其次跟随近期对话，否则使用英语。新产物使用创建时语言，增量修改沿用原文语言；固定话术按语义表达。
+> 输出语言：用户显式指定优先，其次跟随近期对话，否则使用英语。报告沿对话语言，固定术语按契约。
 
 > **插件根**：`${CLAUDE_PLUGIN_ROOT}`——本 skill 正文与其 references 中的插件根命令以此为准；若上式仍为变量字面量（平台未替换），按 requirement-analysis 的 references/exploration-patterns.md「插件根解析」序列推导。
+> **外部搜索统一入口**：外部检索先用 anysearch；不可用按同一 exploration-patterns 的降级规则。
 
-> **外部搜索统一入口**：外部检索先用 anysearch；不可用时按[搜索与降级规则](../requirement-analysis/references/exploration-patterns.md)执行。
+# 验收与缺口补验
 
-# 全能验收工作流（acceptance-qa）
+页面默认只有三步：**核对依据与证据 → 对照实际页面 → 补验缺口并给结论**。单测、API、数据库和完整回归由实施/最终验证阶段承担；当前有效原件直接复用。纯后端沿行为契约，明确的专项请求直接进入对应细则，不为每次页面验收遍历全部工具。
 
-参数格式：`[<维度>...|all] <target-description>`（维度前缀可选：`unit|integration|e2e|visual|a11y|perf-web|perf-api|diagnose`；自然语言触发时按意图推断）。
+## 入口与执行性质
 
-## 心智模型：验收维度 × 执行性质
+参数兼容 `[unit|integration|e2e|visual|a11y|perf-web|perf-api|diagnose|all] <目标>`。页面/功能验收使用三步路径；明确的 E2E 编写、视觉回归、性能、诊断按对应维度进入。意图不明确时按 clarifying 先问必要目标；已有决定不重问。
 
-每个验收项都落在一个**维度**（验收什么）和一种**执行性质**（怎么得出结论）上：
+| 性质 | 判据 |
+|---|---|
+| D 确定性 | 真实命令、退出码和业务断言 |
+| A AI 自主 | 实际界面操作与可回看证据，模型负责语义判读 |
+| X 诊断 | 对失败提出可证伪预测并实际验证 |
 
-| 执行性质 | 定义 | 结论来源 |
-|---------|------|---------|
-| **D 确定性** | 由真实命令和明确断言判定结果，不依赖模型判断 | 退出码与断言输出 |
-| **A AI 自主** | Agent 经 MCP 驱动真实界面/设备探索验收 | 证据（快照/截图/trace）+ 判读 |
-| **X 诊断** | 对失败项追根因 | 经假设验证的根因链 |
+D/A/X、unit/e2e/visual 等维度、fast/final/manual 时机与 required 必需程度是不同字段，不重新解释。矩阵与来源见 [acceptance-matrix.md](references/acceptance-matrix.md)，验证时机及复验范围沿 [test-strategy](../test-strategy/references/verification-scope.md)。
 
-| 维度 | Tier D 工具 | Tier A 兜底 | 细则 |
-|------|------------|-------------|------|
-| unit 单元 | 项目测试框架 + 覆盖率门槛 | — | [unit-integration.md](references/unit-integration.md) |
-| integration 集成/API | 测试框架、Playwright request、schema 断言 | — | [unit-integration.md](references/unit-integration.md) |
-| e2e 端到端 | Playwright 原生代码（PW Test Agents 按需） | MCP 探索式流程验收 | [e2e-patterns.md](references/e2e-patterns.md) / [ai-acceptance.md](references/ai-acceptance.md) |
-| visual 视觉 | `toHaveScreenshot` 截图回归 | AI 视觉判读（限界内） | [visual-a11y.md](references/visual-a11y.md) |
-| a11y 可访问性 | AxeBuilder（WCAG A/AA）、lighthouse_audit | 键盘走查 | [visual-a11y.md](references/visual-a11y.md) |
-| perf-web 前端性能 | CWV lab 数据（trace/LHCI）对阈值 | — | [performance.md](references/performance.md) |
-| perf-api 后端性能 | k6 thresholds（失败即非零退出码） | — | [performance.md](references/performance.md) |
+## 三条证据纪律
 
-桌面客户端（Electron/Tauri）与移动端不是独立维度，而是 e2e/visual/perf 维度的**运行环境修饰**——适配方式见各维度细则与 [mcp-setup.md](references/mcp-setup.md)。
+1. **不采信无回执的自报告**：核对真实 execution record 与 stdout/stderr、命令、退出码、范围和候选；旧 facts.json 也核原件。工具保存成功的 exit0 不等于测试通过，零测试/SKIP 不计通过。
+2. **证据须支持预期**：检查项四态 `pass | warn | fail | unverified`。已操作、元素可见、截图文件存在均不自动证明业务结果。确定性断言能表达的事用实际断言；无证据只能 unverified。
+3. **缺口不能变成整体通过**：矩阵必需项 fail 阻塞；warn/unverified/manual-pending 保持未完成。延期/放弃沿用户明确决定记录，不自行改为 optional。根因只有实际假设验证一致后才确认。
 
-### 四条铁律
+## 第一步：核对依据与证据
 
-1. **能确定性验收的绝不交给 AI 判断**——脚本能断言的事不用 LLM 判读；Tier A 只兜"脚本测不了的语义与体验"。
-2. **无证据不给结论**——AI 层结果只有四态：`✅ 通过`（证据支持预期，按所选档位完成适用审计）、`⚠️ 警告`、`❌ 阻塞`（均有证据）、`未验证`（无证据/证据不支撑/未执行）。无证据的 ✅ 比没有报告更有害。
-3. **根因必须经假设验证才能写入报告**——按"若根因成立，做 X 应观察到 Y"实际验证一次，不一致则重新分类诊断。
-4. **不采信无回执的自报告**——验收结论来自可核验的回执：本次执行的退出码与输出，或经核验的 execution record 与 stdout/stderr 原件（历史 facts.json 同样核对实际来源、版本及范围）；"实施时已经测过"这句话本身不是依据，回执才是。
+工作流输入包含 spec、验收任务、当前候选/实际运行版本、完整变更范围、有效 F 回执和证据目录；UI 另外取得定稿 HTML、确认来源、适用角色/视口/状态与模拟边界，沿 [原型契约](../visual-preview/references/ui-prototype-contract.md)。核对原型和文字契约是否一致，缺依据时澄清受影响事项，不在验收现场自行重设计。
 
-## 参数解析（三级：显式前缀 > 意图推断 > 询问）
+存在相关 spec 时定位当前 active 契约；superseded 沿 superseded_by 跳转并记录链，缺失/环报告具体缺口。只排除明确 Superseded 的条款；取代进行中保留未完成事实。没有 spec 时从用户确认的目标和原始场景形成小型清单，不把机械的 3-6 条当覆盖保证。
 
-解析 `$ARGUMENTS`：
+先核对清单是否覆盖关键用户入口、正常与失败结果及适用权限状态。矩阵每个现行 Scenario 至少一行；用户看到页面的角色/状态必须有对应证据。缺项先补入检查范围，不能只审计已有 pass。按影响裁剪需声明理由和保留必需链路，不单凭文件未改就排除共享入口。
 
-1. **显式前缀**：`unit|integration|e2e|visual|a11y|perf-web|perf-api|diagnose|all <描述>` → 按指定维度执行（兼容老用法：`layer1`→e2e(D)、`layer2`→e2e(A)、`layer3`→diagnose）
-2. **无前缀 → 意图推断**：
-   - "补充/编写 E2E、回归测试" → e2e(D)
-   - "验收/检查/看看这个页面|功能" → e2e(A) + visual(A)（发现失败自动追加诊断）
-   - "压测/负载/能扛多少 QPS/RPS" → perf-api
-   - "首屏/加载慢/性能分/卡不卡" → perf-web（交互卡顿类失败转诊断）
-   - "视觉回归/UI 长得对不对/样式炸没炸" → visual
-   - "无障碍/可访问性/a11y/键盘可用" → a11y
-   - "诊断/排查/为什么…不工作" → diagnose
-   - "全面验收/完整验收/彻底测试" → 按验收矩阵全维度（无矩阵则装配，见阶段 0）
-3. **意图模糊**（如只给一个 URL、无动词）→ 询问验收目标与期望维度
+把已有证据分为仍适用、已失效、缺失；旧回执按实际版本/范围核验。首次 final 在独立 F 执行，验收不无条件追加全量；局部独立验收尚未到期的 final 标待执行，不能宣称计划验收完成。manual 消费已有明确执行授权和实际条件，条件不齐记 manual-pending。
 
-## 阶段 0：验收上下文装配
-
-验收范围由**验收矩阵**（哪些检查项 × 哪个维度 × 哪种性质 × 什么证据）决定，按触发方装配：
-
-| 触发方 | 矩阵来源 |
-|--------|---------|
-| executing-plans 收尾（或其他工作流） | 读特性目录 spec 的「测试与验收策略」矩阵 + 计划「验收任务」的验收点，按本次变更面裁剪，并跳过被 `Superseded` 标注 Requirement 对应行（独立裁剪原因，见 acceptance-matrix 裁剪规则）；报告与证据落盘特性目录 `acceptance/` 子目录并回传路径 |
-| 用户直接触发且存在相关特性目录 | 定位对应 spec（`.spec-dev/YYYY-MM-DD-NN-<feature>/spec/`，旧命名目录按原样读取；仍在历史位置 `docs/` 的先自动迁移到 `.spec-dev/`——有 `scripts/spec-dev/migrate-to-spec-dev.mjs` 则运行之，否则 `git mv` 等效迁移），沿用其矩阵；定位后读 spec frontmatter `status`：为 `superseded` 时沿 `superseded_by` 跳转 active 后继（记录已访问路径防环，出现环停下报告环上文件；`superseded_by` 缺失或悬空时报告"无可达后继"并与用户确认验收依据），以后继矩阵验收，报告头记录原始路径、实际使用路径与跳转链；正文带 `Superseded-pending` 标注时在报告头注明"取代进行中"；用户描述可收窄范围 |
-| 独立触发（无 spec） | 从目标描述**现场生成迷你矩阵**（维度选择 + 每维度 3-6 条检查项），随报告前置呈现 |
-
-矩阵结构、Scenario→检查项的映射规则、与 writing-plans「验收任务」的分工见 [acceptance-matrix.md](references/acceptance-matrix.md)。**维度取舍原则**：矩阵行来自需求实际形态——纯后端接口不硬凑 visual 行，静态页面不硬凑 perf-api 行；被裁掉的维度在报告 `coverage_note` 中声明。执行窗口按矩阵行的 Lane 归属选择（fast 行随验收即时执行；计划验收的 final 行消费独立 F 的有效全量回执；独立局部验收尚未到 F 时点则明确待执行；manual 行标 `manual-pending`、仅用户当轮显式要求时执行）——Lane 语义定义见 test-strategy skill。
-
-## 阶段 1：环境检测
-
-**脚本优先**（一次输出全部文件系统可判定项）：
+环境信息不足或确有缺口时才运行：
 
 ```bash
-node "${CLAUDE_PLUGIN_ROOT}/skills/acceptance-qa/scripts/detect-env.mjs" [--cwd <project>]
+node "${CLAUDE_PLUGIN_ROOT}/skills/acceptance-qa/scripts/detect-env.mjs" --cwd <项目根>
 ```
 
-输出 JSON 含 `stacks`（node/python/go/rust/java）、`test_frameworks`、`e2e_framework`、`coverage_config`、`perf_tools`、`visual_baseline`、`suggestions`，按 `suggestions` 逐条处置后进入执行。脚本不可用时手工检测同等项。
+输出含 stacks、projects 和各项目的框架/配置/目录。Go 根加 web 前端按各自 project_root 执行，不在仓库根误装一套工具；suggestions 只处置选中检查需要的项目。复用实际已连接的浏览器/Playwright/MCP 能力；不分发浏览器 MCP，不自动注册浏览器 MCP。未配置或无效时按 [mcp-setup.md](references/mcp-setup.md) 与可用工具链降级，缺工具/网络/账号标 unverified，不能假装执行成功或自动开启外部业务写入。
 
-**MCP 就绪**（脚本无法探测，会话内确认）：`playwright` MCP（Tier A 必需）、`chrome-devtools` MCP（perf-web 与诊断推荐）。未连接 → [mcp-setup.md](references/mcp-setup.md) 排查；不可用时的降级见各维度细则。
+持久资源沿 [资源台账总则](../writing-plans/references/plan-format.md#资源台账总则)：可隔离则复用并只登记自建隔离单元，无法确认隔离才建自有实例；共享实例不做破坏性操作。计划内登记 progress.resources，独立验收对话记账并在报告保留清理去向。
 
-**缺件处置**：所需工具缺失时——可静默安装的项目内 devDependency（如 `@playwright/test`、`@axe-core/playwright`）征得同意后安装；全局工具（如 k6）给出安装命令请用户执行；无法补齐 → 该维度标记 `unverified`（原因：环境缺件）而不是跳过不提。**不要运行交互式向导**（如 `npm init playwright@latest`），改用非交互序列（细则见各 reference）。
+## 第二步：对照实际页面或行为契约
 
-**已有服务复用判定**：检测到运行中的可复用服务实例（如数据库容器）时，按序判定——能创建隔离单元（独立 database/schema/唯一前缀表/独立命名空间）→ 复用该实例并**仅登记自建的隔离单元**；无法隔离（无建库权限、服务不支持多租）或隔离能力无法确认 → 新建专用实例并整体登记。复用或新建的决定向用户声明一句。**对共享实例绝不执行破坏性操作**（DROP DATABASE、清空数据卷、停止/重启非自建容器）。登记目标按载体分流：由 executing-plans 触发时写入计划的资源台账（progress.yaml 的 resources 键；存量单文件计划为其最终任务内嵌台账行——行格式以 writing-plans 的资源台账定义（[完整权威](../writing-plans/references/plan-format.md#资源台账总则)）为准）；独立触发（无计划）时对话内记账，并在验收报告结尾附「本次创建资源清理清单」。
+页面使用定稿 HTML 与实际应用的相同角色、数据、操作和视口，逐个核对约定布局、组件、文案、导航、编辑/保存以及适用的加载/空数据/错误/无权限状态。HTML 中模拟的保存、价格和权限结果另外核对真实业务证据；已有有效结果直接引用，没有才补真实闭环。用户关闭预览/小修改无原型时，以已确认文字和既有界面契约为依据，不虚构原型批准。
 
-## 阶段 2：Tier D 确定性验收
+浏览器会话内串行操作，优先用当前工具实际提供的确定性断言；结构/语义/视觉无法表达的部分再判读快照或截图。测试至少有一条功能破坏会失败的业务断言，禁止仅凭元素可见判定业务成功。截图回归新建基线只是建线，不替代定稿对照。
 
-按矩阵选中的维度依次执行（维度间无依赖，产物互不影响；同一测试进程内的并行由各框架自身管理）：
+关键结论、弱证据、结果矛盾或不稳定项进行有界复核；需要独立判断时只交对应原件和预期给审计者。已解决的覆盖缺口和稳定结果不机械整套复跑。编排细则见 [ai-acceptance.md](references/ai-acceptance.md)。
 
-1. **unit / integration**：先核验 execution record、原始输出、命令、候选内容与矩阵范围——实际 exit_code=0 且仍适用才引用为 pass；缺失、失败或输入条件变化则补验并记录原因。工具保存回执的 exit0 不代表测试成功。覆盖率仅在项目已配置门槛或矩阵要求时断言。全量先在独立 F 执行，验收子阶段不无条件追加全量；局部独立验收未到期的 final 记待执行，不能据此宣称计划验收完成。报告区分本次新增失败与既有失败。
-2. **e2e**：无既有用例则生成（模板 [templates/e2e-test.ts](templates/e2e-test.ts)、模式与选择器纪律见 [e2e-patterns.md](references/e2e-patterns.md)），只运行本次生成/涉及的文件：`npx playwright test <文件> --reporter=list`。每条用例至少一个会因功能破坏而失败的业务断言，禁止仅断言元素可见。
-3. **visual**：有基线 → 跑截图对比；无基线 → 生成基线并声明"本次为建线，不构成回归结论"。
-4. **a11y**：AxeBuilder `withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa'])` 扫描目标页，violations 为空即通过；无法自动化的项（焦点顺序合理性等）转 Tier A 或标注人工项。
-5. **perf-web / perf-api**：按 [performance.md](references/performance.md) 的阈值纪律执行——先明确预算（矩阵/项目配置/CWV 默认阈值），多次采样取中位数，报告附原始数字。
+## 第三步：补验缺口并给结论
 
-每个维度记录：执行命令、退出码、关键输出摘录、产物路径。**失败项 → 标记为诊断候选**，不在本阶段猜原因。
+只补失效/缺失的证据，范围沿 test-strategy；先区分产品缺陷、helper/fixture、环境与级联失败。局部修复不自动重跑无关完整套件；新影响才扩大验证。发现失败才按 [diagnose.md](references/diagnose.md) 提出预测并实际验证；证据不足保留候选，不猜根因。
 
-## 阶段 3：Tier A AI 自主验收
+报告使用 [acceptance-report.md](templates/acceptance-report.md)：依据与运行版本、实际差异、复用/新增证据、剩余缺口、必需项结论。有 spec 时逐 Scenario 对照；executing-plans 主线程填写 Requirement 对账。报告完成不代表验收通过，必需行缺失不得整体 DELIVERED；经用户批准的 DEFERRED/DROPPED/SUPERSEDED 分别记录。
 
-**前提**：playwright MCP 已连接、目标应用可访问。**全程串行——单浏览器会话是硬约束，并行驱动会互相破坏状态。**
+结构化检查记录包含 check、dimension、tier、ops、expected、observed、required、result、evidence_ref；有证据时记录 evidence_sha256。工具回执/快照落为实际原件，evidence_ref 为相对 JSON 或绝对文件路径；recheck 同样保存其原件与哈希。
 
-流程骨架（完整编排伪代码、对抗复核与证据审计细则见 [ai-acceptance.md](references/ai-acceptance.md)）：
-
-```
-checklist = 矩阵中 Tier A 行（无矩阵：两段式生成——定制项 3-6 条 + 适用通用项）
-for item in checklist:   # 串行
-    执行 item.ops（navigate / click / fill_form ...）
-    断言优先用 browser_verify_* 工具（element_visible/text_visible/list_visible/value）
-    取证：verify 结果 + browser_snapshot 关键片段 或 截图文件名
-    无证据 → 只能记 unverified
-
-落盘 acceptance-check-items 契约 JSON → validate-output.mjs 校验 → 校验失败发回补全一次，再失败标记 unverified（acceptance-qa 变体；通用规则见 exploration-patterns「输出契约与校验」）
-fail/warn 项 → 以"不信任原结论"视角重执行复核（第二份证据）
-pass 项   → deep 档派独立证据审计（只读证据不占浏览器，试图反驳每个 pass）；standard/light 只记录证据指针
-复核/审计结论回写 items[].recheck 并重新校验
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" acceptance-check-items <检查记录.json>
 ```
 
-`browser_verify_*` 是确定性断言原语——**能用 verify 工具判定的检查项不允许用"看快照感觉没问题"替代**；verify 无法表达的（布局观感、文案语义、交互流畅性）才落快照/截图判读。AI 视觉判读的可靠边界见 [visual-a11y.md](references/visual-a11y.md)。
+校验检查结构、非空项、证据文件和 SHA-256；reported_result 汇总必需行的自报告状态。`ok:true` 与 `evidence_verified:true` 不证明原件支持结论、来源真实、清单完整或运行版本正确，`semantic_review_required:true` 必须由上述核对完成。校验失败补全一次，再失败将缺失项标记 unverified 并说明（acceptance-qa 变体；通用规则见 exploration-patterns「输出契约与校验」），不能为了格式转绿而填假证据。历史报告原样保留，新产物使用现行契约。
 
-## 阶段 4：Tier X 诊断
+工作流触发时报告/原件落特性 acceptance/ 并回传路径；直接触发可对话输出。小修用简短结果，不强制整套 JSON/大型报告。acceptance/ 除 acceptance-report.md 外不进 Git，原件仍按台账保留/转存。
 
-**触发**：阶段 2/3 存在失败项，或用户直接要求诊断。仅对失败项执行。
+## 按需专项能力与档位
 
-| 失败类别 | 诊断工具 | 细则 |
-|---------|---------|------|
-| 渲染/布局 | playwright MCP 快照与截图对比；Shadow DOM/iframe 穿透 | [diagnose.md](references/diagnose.md) |
-| 前端性能 | chrome-devtools MCP：`performance_start_trace` → insight（LCPBreakdown 等）；`emulate` CPU/网络节流复现 | [performance.md](references/performance.md) |
-| 内存泄漏 | chrome-devtools MCP 堆快照对比（take/compare_heapsnapshots） | [diagnose.md](references/diagnose.md) |
-| 网络/接口 | `list_network_requests` 瀑布 + 后端日志对照 | [diagnose.md](references/diagnose.md) |
-| 逻辑/状态 | MCP 交互复现 + 源码分析 | [diagnose.md](references/diagnose.md) |
-| 后端性能 | k6 结果分层（p95 分布、错误率拐点）+ 服务端指标 | [performance.md](references/performance.md) |
+- unit/integration/API：[unit-integration.md](references/unit-integration.md)，核验/复用真实回执，缺口才执行。
+- E2E：[e2e-patterns.md](references/e2e-patterns.md)，沿既有工具与业务断言；healer 修改断言/skip 后不能直接算通过。
+- visual/a11y：[visual-a11y.md](references/visual-a11y.md)，原型对照、截图回归和自动扫描各自有边界。
+- perf-web/perf-api：[performance.md](references/performance.md)，明确预算，多次采样取中位数，沿执行授权。
+- diagnose：[diagnose.md](references/diagnose.md)，只处理实际失败或明确诊断请求。
 
-根因遵循铁律 3：预测 → 验证 → 一致才写报告；验证不一致回到分类重来。
+light/standard 默认采用上述三步和风险复核；deep 扩大适用状态与独立证据审计，仍复用有效证据。档位不能降低必需程度，全面验收也不自动授权外部写入。任何裁剪、缺件、降级和未执行项进入 coverage_note；不得靠缩检查范围取得通过。
 
-## 阶段 5：汇总报告
+## 环境兼容
 
-结构（模板 [templates/acceptance-report.md](templates/acceptance-report.md)）：
-
-1. **总览矩阵**：维度 × {通过/失败/警告/未验证} 计数 + 每维度执行方式（D/A）与耗时
-2. **Requirement 覆盖对照**（有 spec 时）：矩阵每行的最终状态；未覆盖行显式列出
-3. **Requirement 对账**（executing-plans 收尾触发时由其主线程填写；独立触发时省略本节）：全部 DELIVERED 一行带过；存在 DEFERRED / DROPPED / SUPERSEDED / ADDED-IN-FLIGHT 时展开差量表，逐条附原因（SUPERSEDED＝契约已移交后继 spec；与 DROPPED 的分界：行为是否继续存在——存在但契约易主记 SUPERSEDED，不再交付记 DROPPED）
-4. **关键发现**：按严重性排序，标注来源维度与诊断根因（如有）
-5. **证据索引**：契约 JSON 路径、测试文件、截图/trace/报告产物清单
-6. **coverage_note**：被裁剪的维度、未验证项及原因——截断必须显式声明
-
-**输出约定**：由 executing-plans（或其他工作流）触发 → 报告+证据落盘调用方指定目录（默认特性目录 `acceptance/`）并回传路径；直接面向用户 → 对话输出，产物路径附后。 acceptance/ 下除 acceptance-report.md 外不进 git（仓库 `.gitignore` 规则）；JSON 回执、日志与 model/ 夹具留在本地。
-
-## 执行档位（对齐上游 light/standard/deep）
-
-- **light**：矩阵仅 1-2 个维度、Tier A 清单 ≤4 条、跳过 pass 审计（在 coverage_note 声明）
-- **standard**（默认）：按矩阵执行；fail/warn 项重执行复核；pass 项不派证据审计（coverage_note 注明）
-- **deep**（用户说"彻底/全面/审计"）：全维度 + Tier A 清单扩展 + pass 项独立证据审计 + pass 项抽至多 2 条重执行复核（不足 2 条检查全部）；性能/模型等 manual 行仍按当轮授权执行
-
-## 不要做的事
-
-- **不要用 MCP/LLM 跑确定性测试**——Tier D 必须是真实框架命令，断言精确匹配（铁律 1）
-- **不要并行驱动浏览器**——Tier A 的检查与重执行复核全部串行（证据审计子代理只读已落盘证据，可并行发起）
-- **不要在 CI 中跑 Tier A**——AI 验收消耗 token 且非确定性，仅手动/工作流触发；进 CI 的是 Tier D 产物（测试文件、k6 脚本、LHCI 配置）
-- **不要把性能单次采样当结论**——lab 数据必须多次采样取中位数（细则见 performance.md）
-- **不要静默缩范围**——裁剪维度、跳过检查项、降档执行都必须写进 coverage_note
-- **不要让 healer 自动改断言后直接计入通过**——Playwright Test Agents 的 healer 结论（含改 locator/skip）须经确认才算验收结果（见 e2e-patterns.md）
-
-## 灵活调整
-
-- 非 Node 技术栈：unit/integration 用对应框架（pytest/go test/cargo test 等，见 unit-integration.md）；e2e 可适配 Cypress 等既有框架，无则默认 Playwright
-- 用户只要快速验收：跳过 Tier D 直接 Tier A（在 coverage_note 声明）
-- 全部通过：诊断自动跳过
-- 移动端目标：Tier A 经 mobile-mcp（按需接入，见 mcp-setup.md）；无设备环境则声明不可验收
-
-## 执行环境兼容性（Codex）
-
-本 skill 两平台通用，Codex 环境按以下映射降级：
-
-- **子代理**：pass 项证据审计的"独立子代理"用 `spawn_agent` 派发（审计者不应继承主会话立场，不继承上下文：`fork_turns: "none"`；参数的新旧版本兼容见 requirement-analysis 的 codex-compat.md），`wait_agent` 收集；子代理能力不可用时降级为主进程以"不信任原结论"视角自行复审，并在 coverage_note 声明
-- **MCP**：插件不分发浏览器 MCP；按用户项目实际配置核验 playwright / chrome-devtools 能力。已配置则复用，未配置或无效则按 [mcp-setup.md](references/mcp-setup.md) 说明及适用工具链降级，不能自动注册全局服务或声称安装插件即已就绪。
-- **沙箱网络**：Codex workspace-write 沙箱**默认禁网**——依赖网络的步骤（npx 临时拉包、访问非本地 URL、k6 打远端、Lighthouse 拉外部资源）会失败。处置：请用户为会话开启网络或在沙箱外执行该步骤；无法放行时相关维度标记 `unverified`（原因：沙箱禁网），不要静默跳过
-- **进度与提问**：任务管理用 `update_plan`；意图模糊时的询问用对话消息（一次一个问题）
-
-## 参考资料
-
-- 验收矩阵与上下游集成契约: [references/acceptance-matrix.md](references/acceptance-matrix.md)
-- test-strategy skill：三 Lane 调度、治理顺序、Agent 测试骨架（矩阵行 Lane 归属的定义方）
-- 单元/集成/API: [references/unit-integration.md](references/unit-integration.md)
-- E2E 模式与 Playwright Test Agents: [references/e2e-patterns.md](references/e2e-patterns.md)
-- 视觉回归与可访问性: [references/visual-a11y.md](references/visual-a11y.md)
-- 性能验收（CWV/Lighthouse/k6/客户端）: [references/performance.md](references/performance.md)
-- AI 自主验收编排: [references/ai-acceptance.md](references/ai-acceptance.md)
-- 诊断手册: [references/diagnose.md](references/diagnose.md)
-- MCP 配置: [references/mcp-setup.md](references/mcp-setup.md)
+按当前宿主实际可用的浏览器工具执行，不硬编码不存在的 browser_verify_* 能力。能用真实框架断言时优先；没有对应能力明确记录缺口。需要独立证据审计时用实际可用的独立执行者，不继承原结论；不可用则主线程复核并声明非独立。浏览器操作始终串行，证据审计只读原件。真实模型评估与静态/工具测试分开记账。

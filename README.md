@@ -10,14 +10,14 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 
 - **Exploration mode** — `exploring` keeps unsettled ideas open: read-only by default, with explicitly authorized throwaway spikes for questions that require running code. Optional background research traces material claims to primary sources. Decision lists remain one question at a time; notes can retain rejected options and their conditions. Handoff is proposed once the delivery question is precise, even when its answer is unknown.
 - **Requirement design** — `requirement-analysis`, an 8-phase design workflow: triage (light / standard / deep tiers), bounded internal/external exploration dispatched within actual capacity, one-question-at-a-time clarification, sequential-thinking adversarial validation + 2-3 option comparison, spec writing with double review (structured behavior requirements: Requirement + Scenario); a HARD-GATE guarantees zero implementation before the design is approved
-- **Visual preview** — `visual-preview`, a browser companion: JIT-proposed during design conversations, renders mockups, wireframes and layout comparisons, and collects click-through choices
+- **Interactive prototypes** — new pages and substantial layout or interaction changes automatically open an HTML preview once goals are clear. Shared clarification resolves decisions; approved versions and assets flow into specs, plans and acceptance. Small changes may skip preview; explicit opt-outs persist.
 - **Implementation plans** — `writing-plans` decomposes specs into bite-sized tasks executable by an engineer who can read the repo: exact file paths, change notes with key diff snippets, embedded 5-step TDD, consume/produce interface contracts, no placeholders allowed
 - **Plan execution** — main-thread implementation and commits, then independent final verification, 1/2/5 review routes, acceptance/reconciliation and delivery. Reuse verified originals; recheck gaps. High/medium candidates, large tier or explicit always trigger the critic.
 - **Unified execution** — `executing-plans`: parallel task-graph scheduling by default with continuous refill, exclusive progress and integration, and shared recovery/review/delivery.
 - **Engineering discipline** — `using-git-worktrees` (isolated workspaces, native tools first) and `test-driven-development` (valid red for behavior changes, green protection for refactors, and a single authorized exception policy) are standalone skills reusable from any workflow
-- **All-round acceptance** — `acceptance-qa` runs acceptance over the dimension × execution-nature matrix: unit/integration/API, Playwright E2E, visual regression, accessibility, performance (web CWV / k6 for APIs / client), AI autonomous acceptance (mandatory evidence + serial recheck + verify-assertions-first) and failure diagnosis
-- **Lightweight fix** — `quick-fix`, for decided fixes with no design space: evidence-backed diagnosis, one-question-at-a-time confirmation and TDD through the approved public seam. It offers escalation for contract scope, modules, dependencies, conflicting current specs or insufficient diagnostic evidence; comparable intermittent failures may stay in quick-fix. Closure checks reproduction rates, temporary instrumentation, the original symptom and root-cause evidence; acceptance-qa remains optional.
-- **Shared clarification** — `clarifying`, the grill-style questioning discipline (one question at a time down the decision tree, facts self-researched, each decision put to the user with a recommendation); referenced by requirement-analysis and quick-fix, and usable standalone with three exits (hand off to the main workflow / stop / write notes to md)
+- **Outcome acceptance** — pages use three steps: verify the approved prototype, running version and evidence; compare actual layout, interactions and states; fill gaps and report. Reuse valid engineering evidence; backend contracts and specialist checks retain their own scope.
+- **Lightweight fix** — `quick-fix`, for decided fixes with no design space: evidence-backed diagnosis, one-question-at-a-time confirmation and TDD through the approved public seam. It offers escalation for contract scope, modules, dependencies, conflicting current specs or insufficient diagnostic evidence; comparable intermittent failures may stay in quick-fix. Closure checks reproduction rates, temporary instrumentation, the original symptom and root-cause evidence; original-symptom verification is required and specialist acceptance is invoked as needed.
+- **Shared clarification** — exploring, requirement analysis, quick fixes and visual preview share general and UI clarification. Resolve one real decision at a time, preserve prior decisions and distinguish local choices from design approval. Standalone clarification retains its three exits.
 - **Contract-driven orchestration** — subagent output goes through JSON Schema contracts, deterministically validated by `validate-output.mjs`, with one retry on failure
 - **Zero MCP dependency** — structured reasoning ships as a vendored skill (`sequential-thinking`); browser automation MCPs (playwright / chrome-devtools) are opt-in per project, see `skills/acceptance-qa/references/mcp-setup.md`
 - **4 specialized agents** — code-explorer, external-resource-explorer and code-reviewer handle analysis and verification; implementer writes claimed code in an isolated worktree once plan execution is authorized.
@@ -27,26 +27,20 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 Skill `evals/evals.json` files contain intent cases. Structural checks do not prove real-model behavior; the new boundary cases remain manual-pending. See the [plan contracts](skills/writing-plans/references/plan-format.md) and [guard boundaries](guardrail/README.md).
 
 
-```
-exploring (unsettled idea → optional .spec-dev/explorations/<topic>.md)
-        ↓ crystallizes
-requirement-analysis (design → .spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md)
-        ↕ JIT
-  visual-preview
-        ↓
-writing-plans (plan → plan/ split-file layout: index.md + tasks/ + progress.yaml)
-        ↓
-executing-plans (isolated implementation → final → review → acceptance/reconciliation → delivery)
-   ├── using-git-worktrees (isolated workspace)
-   ├── test-driven-development (TDD discipline)
-   └── acceptance-qa (matrix-driven acceptance)
+```text
+request → current facts + necessary general clarifying
+   ├─ exploring → investigate / compare → clarify key decisions → decide to implement
+   ├─ quick-fix → diagnose + clarify repair → fix → replay actual symptom
+   └─ requirement-analysis → general clarification
+              ↕ visual-preview + UI clarification (qualifying UI changes)
+          approved design + versioned HTML → spec → writing-plans → execution authorization
+              ↓
+          executing-plans → early real user journey + prototype comparison
+              ↓
+          final verification → independent review → acceptance-qa → reconciliation → delivery
 
-quick-fix (already-decided small fix, no design space)  ── bypass fast path
-   root cause + spec back-lookup → one-question confirm → TDD fix → optional acceptance
-        ↑ offers escalation on scope / current-contract conflict / insufficient-evidence signals
-
-roadmap continuation (oversized goals)  ── decomposition registered at .spec-dev/roadmaps/<project>.md ── outer loop
-   requirement-analysis registers sub-projects → each runs the full pipeline independently → executing-plans marks delivery and offers the next one
+acceptance-qa: verify basis/evidence → compare actual page/behavior → fill gaps and report
+repairs: classify cause → rerun affected checks → reuse valid evidence → refresh conclusions
 ```
 
 The three entry points split by commitment and design space: **exploring** (undecided — should we even do this?), **quick-fix** (decided, no design space — a small bug or adjustment), **requirement-analysis** (decided, has design space — a feature or change). quick-fix reuses test-driven-development and acceptance-qa, and hands control back to requirement-analysis the moment a fix turns out to need real design.
@@ -180,7 +174,7 @@ Thinking-partner posture: read code, compare directions and keep discussion open
 /requirement-analysis design the user permission system
 ```
 
-The 8-phase design workflow: understanding & triage → parallel exploration (internal + external in one wave) → clarification (one question at a time, JIT visual preview) → adversarial validation + 2-3 options → full design presentation → write & commit the spec → self-review + adversarial validation → hand off to writing-plans.
+The 8-phase design workflow: understanding & triage → parallel exploration (internal + external in one wave) → general clarification plus automatic prototypes and UI clarification → adversarial validation + 2-3 options → full design presentation → write & commit the spec → self-review + adversarial validation → hand off to writing-plans.
 
 Phase 1 picks an execution tier and declares it to the user (overridable):
 
@@ -202,7 +196,7 @@ The spec lands in the feature directory `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/
 
 ## Using visual-preview
 
-When a genuinely visual question comes up in a design conversation (layout comparison, mockups, architecture diagrams), requirement-analysis proposes it JIT; it can also be triggered manually:
+Once essential goals are clear, qualifying page, layout and interaction changes automatically open a preview. Exploratory comparisons and diagrams can also be requested directly; see the [prototype contract](skills/visual-preview/references/ui-prototype-contract.md):
 
 ```bash
 /visual-preview show me two dashboard layout options side by side in the browser
@@ -235,7 +229,7 @@ For a bug or small adjustment you've already decided to make and that has no des
 
 > Use quick-fix to fix this small bug end-to-end.
 
-It follows one evidenced root-cause chain, obtains a real failure signal before confirming a non-obvious cause, and fixes through the approved public seam. Escalation remains a user decision; intermittent behavior alone is insufficient when reproduction conditions are comparable. Existing contract synchronization, TDD and authorization rules remain. Closure compares intermittent failure counts where relevant, accounts for temporary instrumentation, replays the original symptom, and explains the supported cause and verification limits. Independent side issues are recorded for follow-up; acceptance-qa remains optional.
+It follows one evidenced root-cause chain, obtains a real failure signal before confirming a non-obvious cause, and fixes through the approved public seam. Escalation remains a user decision; intermittent behavior alone is insufficient when reproduction conditions are comparable. Existing contract synchronization, TDD and authorization rules remain. Closure compares intermittent failure counts where relevant, accounts for temporary instrumentation, replays the original symptom, and explains the supported cause and verification limits. Independent side issues are recorded for follow-up; original-symptom verification is required and specialist acceptance is invoked as needed.
 
 ## No External MCP Service Required
 

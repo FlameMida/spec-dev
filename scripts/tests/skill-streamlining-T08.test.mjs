@@ -19,7 +19,7 @@ assert.doesNotMatch(s,/index\.md \+ tasks/);
 test("S03 S04 验收与日常测试边界仍明确",()=>{
 
 const s=raw('skills/acceptance-qa/SKILL.md').split('\n---')[0];
-assert.match(s,/矩阵驱动的验收/);assert.match(s,/日常跑测试/);
+assert.match(s,/定稿 HTML/);assert.match(s,/复用业务证据并补验缺口/);assert.match(s,/日常跑测试/);
 assert.match(s,/可访问性/);assert.doesNotMatch(s,/Shadow DOM\/iframe/);
 
 });

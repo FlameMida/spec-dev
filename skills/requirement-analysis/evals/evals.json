@@ -34,7 +34,7 @@
     {
       "id": "ra-visual-jit-offer",
       "prompt": "帮我重新设计我们后台的仪表盘页面布局，图表和过滤器的摆放我一直不满意",
-      "expected_output": "阶段 1 标记视觉候选但不在开场提议 visual-preview；澄清进行到出现\"看比说清楚\"的布局对比问题时，才单独发一条只含提议的消息（不夹带其他问题）；用户拒绝则继续纯文字且不再重复提议；概念性问题（如\"仪表盘核心受众是谁\"）仍走终端提问"
+      "expected_output": "先通用澄清，符合新增页面/主要布局或核心交互变化且必要信息足够时自动展示HTML；用户关闭则消费选择；概念/业务问题仍在对话澄清，已决事项不重问。"
     },
     {
       "id": "ra-adversarial-info-check",
@@ -225,6 +225,11 @@
       "id": "ra-reference-is-not-workflow-handoff",
       "prompt": "当前只需要 writing-plans/references/design-principles.md 的模块判据，调用方已给出该完整专题路径，用户没有要求编写计划。加载时该做什么？",
       "expected_output": "读取该适用专题并消费设计判据；不强制加载整个 writing-plans 流程，不生成计划、不引入额外批准门；专题中确有适用依赖时再按需取得。"
+    },
+    {
+      "id": "ra-prototype-handoff",
+      "prompt": "新增页面的业务目标已明确，用户已确认定稿HTML及其错误/无权限状态。",
+      "expected_output": "消费原型版本和确认来源，完整设计包含业务与界面；spec记录状态和模拟边界，计划前置真实闭环，不能只传一张截图。"
     }
   ]
 }

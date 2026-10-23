@@ -127,6 +127,10 @@ spec_dev:
 
 [异常路径、降级策略 / Failure paths and degradation]
 
+## 原型参照（涉及界面时）
+
+[按 visual-preview/references/ui-prototype-contract.md 引用已确认 HTML 路径、版本/manifest、角色/视口/状态、交互决定、模拟业务边界及确认来源。没有原型时记录小改动/用户关闭/不适用的实际依据，不把环境缺失记成用户关闭。原型与行为契约冲突先澄清受影响决定。]
+
 ## 测试与验收策略
 
 ### 测试落点声明
@@ -136,14 +140,14 @@ spec_dev:
 
 [以**验收矩阵**表达（结构定义见 acceptance-qa skill 的 references/acceptance-matrix.md）：每个 Scenario 至少一行；
 「任务内 TDD」行由 writing-plans 直接翻译为任务的失败测试（GIVEN→arrange、WHEN→act、THEN→assert）；
-「验收任务」行进入计划尾部的验收任务，由 executing-plans 收尾触发 acceptance-qa 执行。
-visual/a11y/perf 行仅在需求形态需要时出现；性能行必须带阈值数字——写不出数字回到澄清；每行可标注 Lane 归属（fast/final/manual，见 test-strategy skill），含 DB/LLM 的行按其处方写执行方式 / Acceptance matrix: one row per Scenario; TDD rows become failing tests, acceptance rows go to the acceptance task; perf rows need numeric thresholds; each row may carry a lane tag (fast/final/manual, per the test-strategy skill); DB/LLM rows follow its stack prescriptions]
+第一条真实闭环在最早可运行切片验证；「验收任务」行由收尾 acceptance-qa 核验当前证据、对照原型并补缺，已有效验证的业务行为不重复运行。
+visual/a11y/perf 行仅在需求形态需要时出现；性能行必须带阈值数字——写不出数字回到澄清；每行标注 required、Lane 归属（fast/final/manual，见 test-strategy skill），含 DB/LLM 的行按其处方写执行方式 / Acceptance matrix: one row per Scenario; TDD rows become failing tests, acceptance rows go to the acceptance task; perf rows need numeric thresholds; each row carries required and a lane tag (fast/final/manual, per the test-strategy skill); DB/LLM rows follow its stack prescriptions]
 
-| Scenario / 检查项 | 维度 | 执行方式 | 验收证据 |
-|-------------------|------|---------|---------|
-| [Scenario 名] | unit/integration | 任务内 TDD | 测试通过 |
-| [关键用户流程] | e2e | 验收任务 (D) | E2E 通过 |
-| [页面 LCP ≤ 2.5s（lab, 中位数）] | perf-web | 验收任务 (D) | trace 报告 |
+| Scenario / 检查项 | 维度 | 执行方式 | required | Lane | 验收证据 |
+|-------------------|------|---------|----------|------|----------|
+| [Scenario 名] | unit/integration | 任务内 TDD | true | fast | 测试原件 |
+| [关键用户流程] | e2e | 验收任务 (D) | true | final | 真实闭环原件 |
+| [页面 LCP ≤ 2.5s（lab, 中位数）] | perf-web | 验收任务 (D) | true | manual | trace 报告 |
 
 ## 风险与边缘情况
 

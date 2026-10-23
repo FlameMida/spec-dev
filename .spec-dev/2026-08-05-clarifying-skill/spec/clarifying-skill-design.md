@@ -108,7 +108,7 @@ clarifying 会话内执行者 SHALL NOT 编写生产代码、搭建脚手架或�
 
 ### Requirement: 被引用模式不触发出口
 
-clarifying 被 requirement-analysis 或 quick-fix 引用时，执行者 SHALL 仅遵循其提问纪律完成当前澄清环节，SHALL NOT 呈现三出口或共识摘要——流程由引用方的下一阶段接管。
+clarifying 被 exploring、requirement-analysis、quick-fix 或 visual-preview 引用时，执行者 SHALL 仅遵循其提问纪律完成当前澄清环节，SHALL NOT 呈现三出口或共识摘要——流程由引用方的下一阶段接管。
 
 #### Scenario: requirement-analysis 澄清完成后续走阶段 4
 
@@ -130,7 +130,7 @@ Codex 环境下执行者 SHALL 以对话消息逐题提问（保持一次一题�
 
 ### Requirement: requirement-analysis 阶段 3 引用 clarifying（改了什么：内嵌纪律条目替换为引用 + 锚定语，特有条款保留）
 
-requirement-analysis 阶段 3 SHALL 声明提问纪律遵循 clarifying skill 并保留锚定语"纪律定义以 clarifying 为准"，同时 SHALL 保留其阶段特有条款：优先覆盖清单（目的/约束/成功标准）、视觉问题 JIT 提议 visual-preview、回补探索、术语表落盘联动、"需求已清晰无需澄清"记录；其 codex-compat.md 提问规范节 SHALL 只保留三道门（方案选定/设计批准/spec review）的对话呈现要求，逐题纪律指向 clarifying。
+requirement-analysis 阶段 3 SHALL 声明提问纪律遵循 clarifying skill 并保留锚定语"纪律定义以 clarifying 为准"，同时 SHALL 保留其阶段特有条款：优先覆盖清单（目的/约束/成功标准）、符合新增页面/主要布局或核心交互变化时按原型契约自动展示 visual-preview，复用用户关闭选择和已有定稿、回补探索、术语表落盘联动、"需求已清晰无需澄清"记录；其 codex-compat.md 提问规范节 SHALL 只保留三道门（方案选定/设计批准/spec review）的对话呈现要求，逐题纪律指向 clarifying。
 
 #### Scenario: 改造后语义等价
 
@@ -227,3 +227,8 @@ quick-fix 步骤 3 SHALL 声明提问纪律遵循 clarifying skill，三类核�
 第 0 条的原有三类披露纳入首题最终消息的内部核对，检查实际表达含义，不能由编号/段落数量或假设、排序、推荐理由推定缺失信息的影响已经说明。原选项互斥和下游未决边界核对保持；不新增用户问题、工件、固定标题或每轮重复披露要求。
 
 依据为 final-r6/S09-ra 的实际缺项与 acceptance/reviews/rebuttal-final-r6-disclosure.json；同轮 S09-next、S09-storage 的两步真实回复续接已经独立通过，RA-next 仍因前置失败未解锁。原失败及通过面保留，新候选须重新完成统一矩阵。当前验证与交付状态见 exploring-clarifying 的 acceptance-report.md 和 plan/progress.yaml。
+
+
+## 2026-10-23 界面工作流与验收切面更新
+
+依据本轮用户审查后的实施指示同步上述现行条款。通用与界面澄清引用 `skills/clarifying/references/ui-clarification.md`；自动原型/定稿交接引用 `skills/visual-preview/references/ui-prototype-contract.md`；早期闭环与复验引用 `skills/test-strategy/references/verification-scope.md`；页面验收采用 acceptance-qa 三步路径。其他契约、历史执行与验收原件保持原记录，不倒推历史已覆盖新规则。

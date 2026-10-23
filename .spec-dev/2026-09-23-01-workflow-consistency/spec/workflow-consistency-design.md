@@ -334,7 +334,7 @@ final、审查、验收或目标合并检查引出的修复 SHALL 更新当前�
 
 审查与验收 SHALL 核验外部回执实际来源及版本，并按验收档位完成适用复核/审计后判定通过。
 
-外部回执至少可定位命令、cwd、退出码、检查版本与范围、原始 stdout/stderr 及哈希；仅字段非空不是有效证据。unit/integration 优先复用有效回执，否则补验并说明原因。所有档位的 Tier A pass 均需证据支持预期；light/standard 不强制 pass 审计并在 coverage_note 明示，deep 独立审计所有 pass 并按既有规则抽两项重执行（不足两项检查全部）。fail/warn 仍按原规则复核，四态不变。
+外部回执至少可定位命令、cwd、退出码、检查版本与范围、原始 stdout/stderr 及哈希；仅字段非空不是有效证据。unit/integration 优先复用有效回执，否则补验并说明原因。所有档位的 Tier A pass 均需证据支持预期；light/standard 聚焦关键结论、弱证据、矛盾与不稳定项做有界复核，deep 扩大适用状态和独立审计范围。先检查遗漏的关键状态，不机械重跑每个 fail/warn 或固定抽两项代表覆盖；四态保留，必需项缺证据时整体未完成。
 
 #### Scenario: S19 伪形状或过期外部回执
 - **GIVEN** 注入只有合格式哈希但无可核验原件、属于旧检查版本或另一命令的回执。
@@ -344,7 +344,7 @@ final、审查、验收或目标合并检查引出的修复 SHALL 更新当前�
 #### Scenario: S20 标准与深度验收
 - **GIVEN** standard 与 deep 各有证据充分的 pass 和 fail 项。
 - **WHEN** 收尾。
-- **THEN** 两者复核 fail；standard 不因未独立审计 pass 而拒绝通过，但记录该边界；deep 取得规定审计/抽查回执。
+- **THEN** 两者按风险核对关键/弱证据和失败原因并保留复核范围；deep 扩大适用状态及独立审计。有效工程证据复用，required 行缺失/未验证不能整体通过。
 
 ### Requirement: M08 本地证据转存先于清理
 
@@ -497,3 +497,8 @@ fast 中真实本地 Git/受控文件 IO 是公共 CLI 正确性的必要夹具�
 当前工作区及引用任务结论已复核；本次三份探索报告分别覆盖守卫、证据/交付、验证/审查，已通过 exploration-report 结构校验。报告是设计来源，非实施或模型验收证据。
 
 本稿已完成独立静态设计审查（Approved，见同目录 design-review.md）；用户确认定稿并授权编写计划，spec 已激活。没有新增 roadmap 子项目或批量修改旧 spec；后续 plan 与本 spec 共用本特性目录。原有 dirty 工作保持不动。
+
+
+## 2026-10-23 界面工作流与验收切面更新
+
+依据本轮用户审查后的实施指示同步上述现行条款。通用与界面澄清引用 `skills/clarifying/references/ui-clarification.md`；自动原型/定稿交接引用 `skills/visual-preview/references/ui-prototype-contract.md`；早期闭环与复验引用 `skills/test-strategy/references/verification-scope.md`；页面验收采用 acceptance-qa 三步路径。其他契约、历史执行与验收原件保持原记录，不倒推历史已覆盖新规则。

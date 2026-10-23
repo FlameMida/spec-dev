@@ -9,7 +9,7 @@
     {
       "id": "aq-ai-acceptance-evidence",
       "prompt": "验收一下购物车页面 http://localhost:5173/cart，重点看数量增减和小计联动",
-      "expected_output": "意图推断路由到 e2e(A)+visual(A)；无 spec 时现场生成迷你矩阵（定制项含\"数量修改后小计实时更新\"+ 适用通用项）；串行逐项执行；断言优先用 browser_verify_* 工具而非自由判读快照；每项结论附 evidence_ref，无证据的项标 unverified 而非通过；fail/warn 项做不信任视角重执行复核并产出第二份证据；pass 项交独立子代理证据审计；复核/审计结论回写 recheck；落盘 acceptance-check-items 契约 JSON 并用 validate-output.mjs 校验"
+      "expected_output": "页面默认三步：核对定稿/预期与有效原件，对照实际数量和小计交互，缺口补验。按真实工具断言并保存expected/observed/required及证据hash；校验原件不替代语义，风险复核聚焦关键或弱证据，不固定审计每个pass。"
     },
     {
       "id": "aq-perf-api-threshold",
@@ -24,7 +24,7 @@
     {
       "id": "aq-matrix-integration",
       "prompt": "（executing-plans 收尾触发）按特性目录 .spec-dev/2026-07-09-export-report/ 的 spec 验收本次变更，变更面：导出模块 + 报表页，证据目录 .spec-dev/2026-07-09-export-report/acceptance/",
-      "expected_output": "读 spec「测试与验收策略」矩阵并按变更面裁剪（未触及的矩阵行不执行，裁剪写入 coverage_note）；任务内 TDD 行核对测试存在并复跑；验收任务行按维度执行；报告与证据落盘指定 acceptance/ 目录并回传路径；报告含 Requirement 覆盖对照表逐行回填状态"
+      "expected_output": "读取现行spec和适用原型，按影响核对每个必需Scenario；有效TDD/F原件复用，失效/缺失才补验，裁剪写coverage_note；页面走三步路径，报告回传指定目录。"
     },
     {
       "id": "aq-intent-routing-diagnose",
@@ -44,7 +44,27 @@
     {
       "id": "workflow-S20-S26-evidence-tier",
       "prompt": "standard 验收有证据支持的 pass；另一个确定性 E2E 在相同命令下偶发超时。",
-      "expected_output": "standard/light 不强制 pass 独立审计并注明 coverage_note，所有 pass 仍需证据；deep 才审计全部 pass 并抽至多两项重执行。确定性指明确断言而非每次同结果；超时按实际证据记录，不冒充稳定或模型验收。"
+      "expected_output": "standard/light按风险复核关键/弱证据/矛盾结论；deep扩大状态与独立审计但不机械全量重跑。偶发超时按实际样本定位，不当稳定通过；有效原件复用。"
+    },
+    {
+      "id": "aq-r1-permission-state",
+      "prompt": "正常管理员页面对照通过，但定稿另有无权限/加载失败状态，没有这些状态的证据。",
+      "expected_output": "先发现清单覆盖缺口，对照相同角色和状态的实际页面；必需项未验证保持未完成，不以正常页面截图泛化。"
+    },
+    {
+      "id": "aq-real-save",
+      "prompt": "HTML原型与实际界面都显示保存成功，但没有实际后端保存后重读的证据。",
+      "expected_output": "复用已有适用真实业务原件；缺失则补保存刷新重读闭环，页面提示不能证明持久化，缺条件标未验证。"
+    },
+    {
+      "id": "aq-three-step",
+      "prompt": "页面有定稿HTML，单测/API/DB/最终回归和真实业务闭环原件均适用于当前版本。",
+      "expected_output": "核对依据与证据、对照页面交互状态、补缺并给结论；复用有效工程原件，不重复全量，不默认加性能或完整a11y。"
+    },
+    {
+      "id": "matrix-dax-meaning",
+      "prompt": "计划验收表写A=自动工具执行、D=需要用户确认的人工检查，与所引用的验收skill如何处理？",
+      "expected_output": "指出D/A/X的结论来源语义被重新解释，按D确定性、A实际界面AI判读、X诊断修正；执行条件与required/lane分别记录，不直接按错误解释派发或判通过。"
     }
   ]
 }

@@ -1,6 +1,6 @@
 interface:
   display_name: "Writing Plans"
-  short_description: "将获批 spec 写成默认并发编排的书面计划，明确共享契约、依赖、写集合与资源。"
+  short_description: "编写书面计划——将获批 spec 或明确需求拆成可独立验证的任务图，明确接口、真实依赖、精确写集合与并发条件，产出分文件计划和 TDD 步骤，交接 executing-plans。适用于多步骤开发尚未动代码时；也可修订现有计划。"
   default_prompt: "用 $writing-plans 把已批准的 spec 拆成详细实施计划。"
 
 policy:

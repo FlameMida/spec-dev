@@ -80,7 +80,7 @@ sequential-thinking skill 在 Codex 下经插件 skill 发现提供（openai.yam
 
 ---
 
-## 可视化预览（阶段 3 JIT 提议）
+## 可视化预览（按原型契约自动入口）
 
 visual-preview 的服务器脚本自动检测 `CODEX_CI` 并切换前台模式，正常运行即可、无需额外参数；细节见 visual-preview skill 自身的说明。
 

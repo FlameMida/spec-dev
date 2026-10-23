@@ -1,56 +1,35 @@
 # Acceptance Report: {{target-feature}}
 
-> **Language / 语言**: Fill report content in the conversation language; keep table headers and structural labels in English. / 报告内容以对话语言填写；表头与结构标签保持英文。
-> Time: {{time}} | Triggered by: {{executing-plans wrap-up / direct user request}} | Tier: {{light/standard/deep}}
-> Spec: {{spec path or "none (mini matrix)"}} | Evidence dir: {{acceptance/ path}}
-> Spec status: {{active / superseded → chain origin→…→actual / supersede-pending}}
+> 报告内容沿对话语言。小修可用对话中的同等简短结果，不强制生成本模板全部章节。
+> Time: {{time}} | Trigger: {{workflow / direct}} | Scope: {{实际验收范围}}
+> Spec: {{实际 active spec 或无 spec 的已确认依据；取代跳转链如适用}}
+> Prototype: {{定稿 HTML 路径、版本/manifest、确认来源；或不适用/用户关闭/小改动依据}}
+> Runtime: {{实际 URL/入口、候选源码或构建、账号角色、数据与视口条件}}
 
-## Overview
+## Result
 
-| Dimension | Execution | Pass | Fail | Warn | Unverified | Notes |
-|-----------|-----------|------|------|------|------------|-------|
-| unit | D | 42 | 0 | 0 | 0 | full run 3.2s |
-| integration | D | 11 | 1 | 0 | 0 | 1 failure → Diagnosis #1 |
-| e2e | D + A | 6 | 0 | 1 | 0 | warning → Finding #2 |
-| visual | D | 4 | 0 | 0 | 1 | 1 item without baseline (created) |
-| a11y | D | 1 | 0 | 0 | 0 | no WCAG A/AA violations |
-| perf-web | D | 2 | 0 | 0 | 0 | LCP median 1.8s ≤ 2.5s |
-| perf-api | D | — | — | — | 1 | k6 not installed (see coverage_note) |
+{{通过 / 未完成 / 失败；必需项 fail 阻塞，warn/unverified/manual-pending 或遗漏保持未完成。说明结论实际覆盖的范围。}}
 
-## Requirement Coverage (when a spec exists)
+## Prototype / Behavior Comparison
 
-| Matrix row (Scenario / check item) | Dimension | Status | Evidence |
-|------------------------------------|-----------|--------|----------|
-| {{reject-expired-token}} | integration | pass | {{tests/auth.spec.ts passed}} |
-| {{login-redirects-to-dashboard}} | e2e | pass | {{e2e passed + trace.zip}} |
+| Scenario / State | Required | Expected | Observed | Status | Evidence |
+|---|---|---|---|---|---|
+| {{场景与角色/状态}} | {{true/false}} | {{原型或行为预期}} | {{实际观察}} | {{pass/warn/fail/unverified}} | {{真实原件引用}} |
 
-## Requirement Reconciliation (delivery delta; filled by executing-plans wrap-up, remove when triggered standalone)
+## Business Evidence
 
-All {{N}} requirements DELIVERED — see Requirement Coverage above.
-<!-- Expand the delta table only when DEFERRED / DROPPED / SUPERSEDED / ADDED-IN-FLIGHT items exist: -->
+| Check | Reused / New | Candidate / Conditions | Evidence / Result |
+|---|---|---|---|
+| {{保存后重读等真实结果}} | {{复用/新增}} | {{版本与条件适用性}} | {{record/日志/断言原件及实际结果}} |
 
-| Requirement | Verdict | Evidence / Reason |
-|-------------|---------|-------------------|
-| {{req-title}} | DEFERRED | {{one-line reason; also marked in spec}} |
-| {{req-title}} | DROPPED | {{one-line reason; also marked in spec}} |
-| {{req-title}} | SUPERSEDED | {{contract handed over to <successor spec repo-root path> (superseded on YYYY-MM-DD)}} |
-| {{unplanned behavior}} | ADDED-IN-FLIGHT | {{user-confirmed; spec revised in task N}} |
+## Gaps / Findings
 
-## Key Findings (by severity)
+{{实际差异、未验证项、原因、需补验证；经验证的根因与仍为候选的解释分开。修复后说明哪些证据失效、补验范围及理由。}}
 
-1. **[P1] {{title}}** ({{dimension}}, Diagnosis #1) — {{one-line impact}}; root cause: {{file:line + verified root cause}}; suggestion: {{fix direction}}
-2. **[P3] {{title}}** ({{dimension}}) — {{impact and suggestion}}
+## Requirement Reconciliation
 
-## Diagnosis Details
+{{工作流主线程填写；独立触发可省略。逐条核对后写 DELIVERED/DEFERRED/DROPPED/SUPERSEDED/ADDED-IN-FLIGHT；延期/放弃附用户决定来源，不默认预填全部 DELIVERED。}}
 
-{{One section per failure, format per references/diagnose.md Step 4; write "all passed, diagnosis skipped" when nothing failed}}
+## Evidence Index / coverage_note
 
-## Evidence Index
-
-- Contract JSON: `{{acceptance/check-items.json}}` (validated by validate-output.mjs)
-- Test files: {{list of tests generated/run this round}}
-- Screenshots / traces / perf reports: {{file list}}
-
-## coverage_note
-
-{{Trimmed dimensions and reasons; unverified items and why; tier-down/sampling statements. Write "full matrix executed, no truncation" when nothing was cut}}
+{{检查 JSON、实际回执、截图/trace/归档 HTML 和适用版本。声明裁剪、复核范围、环境缺件、mock 边界及 manual-pending；校验器 ok 不替代语义和覆盖核对。}}

@@ -80,6 +80,16 @@
       "id": "cl-review-exception-not-global",
       "prompt": "独立 clarifying 有鉴权、缓存和部署三个可并列讨论的未决点；不是设计审查补问。",
       "expected_output": "仍只问一题；不能以问题独立或高效率为由套用 spec 审查的集中补问例外。"
+    },
+    {
+      "id": "ui-shared-clarification",
+      "prompt": "需求目标尚不清楚，但用户想先做页面原型。",
+      "expected_output": "先澄清必要目标/角色/业务规则；信息足够时展示原型并逐题处理界面；不机械重复两轮，已决事项直接复用。"
+    },
+    {
+      "id": "ui-local-confirm",
+      "prompt": "用户在布局A/B屏点击确认A。",
+      "expected_output": "仅记录该版本当前布局决定，回调用方继续；不宣称完整设计或实施获批，不出现独立三出口。"
     }
   ]
 }

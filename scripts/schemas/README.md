@@ -44,7 +44,9 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" <schema-name> <json-fil
 | `implementation-result` | 实现票结果（结构校验后仍须核对真实 Git） | implementer | executing-plans 主线程 |
 | `agent-plugin-1.0.0` | Agent Plugins 1.0.0 官方 manifest schema（上游 https://agent-plugins.org/schemas/1.0.0/plugin.schema.json 的 vendored 快照） | —（校验目标） | `node scripts/validate-output.mjs agent-plugin-1.0.0 plugin.json`（验收矩阵官方 schema 校验点） |
 
-每个契约的 `coverage_note` 一律必填且非空——这是「no silent caps」纪律的落点：截断/未覆盖范围必须显式声明，不允许静默缩水。`acceptance-check-items` 另以 `if/then` 强制：`result` 为 `pass`/`fail` 的检查项，`evidence_ref` 不允许空串——没有证据就标 `unverified`，而不是通过。
+每个契约的 `coverage_note` 一律必填且非空——这是「no silent caps」纪律的落点：截断/未覆盖范围必须显式声明，不允许静默缩水。`acceptance-check-items` 还要求非空 check/ops/expected/observed 与布尔 required。pass/fail/warn 必须引用实际非空 evidence_ref 文件及匹配的 evidence_sha256；路径相对 JSON 文件，也可为绝对路径。recheck 同样核验原件。unverified 可无证据，但 observed 说明缺口。历史原件不强制迁移，新记录遵循现行 schema。
+
+验收成功输出另含 `evidence_verified:true`、`reported_result: pass|fail|incomplete` 和 `semantic_review_required:true`。reported_result 只汇总 required 行的自报告状态；required fail 为 fail，warn/unverified 或没有 required 行为 incomplete。工具退出0、文件与哈希一致均不证明来源真实、预期成立、范围完整或版本适用；消费方仍须做语义与覆盖核对。
 
 ## 新增 schema 的步骤
 

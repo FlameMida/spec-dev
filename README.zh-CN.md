@@ -10,43 +10,37 @@
 
 - **探索模式** — `exploring` 保持未定想法的发散讨论：默认只读，授权受控 spike 回答必须运行的问题；可选后台调研追溯一手来源。关键分岔清单可见但每轮仍只问一题；可选笔记记录已排除选项及条件，交付问题明确后提议正式设计。
 - **需求设计** — `requirement-analysis` 8 阶段设计工作流：需求分诊（light / standard / deep 三档）、按主题与实际容量分批探索、逐题澄清、sequential-thinking 对抗验证 + 2-3 方案对比、spec 落盘与双重 review（行为规范结构化：Requirement + Scenario）；HARD-GATE 保证设计获批前零实施动作
-- **可视化预览** — `visual-preview` 浏览器伴侣：设计对话中 JIT 提议，展示 mockup、线框、布局对比并回收点击选择
+- **可视化原型** — 新增页面、重设计、主要布局或交互变化时自动展示 HTML；联动 clarifying 逐题确认，定稿连同资源和版本交给 spec、计划与验收。小改动可跳过，用户关闭时沿用选择。
 - **实施计划** — `writing-plans` 把 spec 拆成可独立验证的 bite-sized 任务：精确文件路径、改动要点与关键 diff 片段、TDD 五步内嵌、接口消费/产出契约、禁止占位符
 - **计划执行** — 主线程逐票实施与提交，独立 final 后按规模做 1/2/5 路审查，再验收、对账与交付；有效原件可复用，缺口补验。critic 由高/中候选、large 或显式 always 触发。
 - **统一执行入口** — `executing-plans`：默认按任务图并发补位，依赖或资源受限时顺序推进，遵从明确串行要求；独占进度与集成，共用恢复、审查和交付。
 - **工程纪律** — `using-git-worktrees`（原生工具优先的隔离工作区）与 `test-driven-development`（行为变化先有效红、纯重构保绿、例外沿唯一清单与既有授权）独立成 skill，可被任何工作流复用
-- **全能验收** — `acceptance-qa` 按「验收维度 × 执行性质」矩阵验收：单元/集成/API、Playwright E2E、视觉回归、可访问性、性能（前端 CWV / 后端 k6 / 客户端）、AI 自主验收（证据强制 + 串行复核 + verify 断言优先）与失败诊断
-- **轻量修复** — `quick-fix`，用于已决定、无设计空间的小修：按证据诊断、逐题校对，沿获批公共落点 TDD 修复。范围、依赖、现行契约冲突或诊断证据不足时提议升级；偶发但可比较可继续。收尾核对复现率、临时插桩、原症状和根因证据，acceptance-qa 保持可选。
-- **共享澄清** — `clarifying`，grill 式提问纪律（沿决策树一次一题、事实自查、每个决策带推荐交用户裁决）；被 requirement-analysis 与 quick-fix 引用，也可独立调用，以三出口收束（转主流程/就此结束/写入 md）
+- **效果验收** — 页面默认三步：核对定稿/版本/证据、对照实际布局交互及状态、补验缺口并给结论。有效工程证据复用；后端按行为契约，性能/a11y等专项按需执行。
+- **轻量修复** — `quick-fix`，用于已决定、无设计空间的小修：按证据诊断、逐题校对，沿获批公共落点 TDD 修复。范围、依赖、现行契约冲突或诊断证据不足时提议升级；偶发但可比较可继续。收尾核对复现率、临时插桩、原症状和根因证据，必要的原场景验证自动执行，专项 acceptance-qa 按需调用。
+- **共享澄清** — exploring、requirement-analysis、quick-fix 和 visual-preview 共享通用与界面澄清纪律；一次解决一个实质问题，复用已有决定，局部选择与完整设计批准分开。独立调用仍保留三出口。
 - **契约化编排** — 子代理输出走 JSON Schema 契约，`validate-output.mjs` 确定性校验，失败退回补全
 - **零 MCP 依赖** — 结构化推理以内嵌 skill 提供（`sequential-thinking`，vendored）；浏览器自动化 MCP（playwright / chrome-devtools）按项目自配，见 `skills/acceptance-qa/references/mcp-setup.md`
 - **4 个专门化 agents** — code-explorer、external-resource-explorer、code-reviewer 负责分析与复跑；implementer 在计划执行获准后于独立 worktree 写认领代码。
 
 ## Skill 管线
 
-意图案例位于各 skill 的 `evals/evals.json`；结构检查不代表真实模型评测，本次新增边界案例保持 manual-pending。流程字段见[计划格式](skills/writing-plans/references/plan-format.md)，守卫边界见[守卫说明](guardrail/README.zh-CN.md)。
+意图案例位于各 skill 的 `evals/evals.json`；结构检查不代表真实模型评测；实际评测结果以对应执行回执为准，未执行案例保持未验证。流程字段见[计划格式](skills/writing-plans/references/plan-format.md)，守卫边界见[守卫说明](guardrail/README.zh-CN.md)。
 
 
-```
-exploring（未定型想法 → 可选 .spec-dev/explorations/<topic>.md）
-        ↓ 结晶
-requirement-analysis（设计 → .spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md）
-        ↕ JIT
-  visual-preview
-        ↓
-writing-plans（计划 → 同特性目录 plan/ 分文件形态：index.md + tasks/ + progress.yaml）
-        ↓
-executing-plans（隔离实施 → final → 审查 → 验收/对账 → 交付）
-   ├── using-git-worktrees（隔离工作区）
-   ├── test-driven-development（TDD 纪律）
-   └── acceptance-qa（矩阵化验收）
+```text
+用户请求 → 现状查证 + 必要的通用 clarifying
+   ├─ exploring → 调查/比较 → 关键分岔澄清 → 决定实施
+   ├─ quick-fix → 诊断/修复澄清 → 修复 → 实际原场景回放
+   └─ requirement-analysis → 通用澄清
+              ↕ visual-preview + 界面澄清（适用界面变化自动展示）
+          完整设计确认 + 定稿 HTML → spec → writing-plans → 审查并授权实施
+              ↓
+          executing-plans → 最早真实闭环 + 原型对照 → 继续其余切片
+              ↓
+          final 完整验证 → 独立审查 → acceptance-qa → 对账 → 交付
 
-quick-fix（已决定、无设计空间的小修复）  ── 旁路快车道
-   根因 + spec 反查 → 逐题校对 → TDD 修复 → 可选验收
-        ↑ 命中范围 / 现行契约冲突 / 诊断证据不足信号时提议升级
-
-roadmap 续接（大目标）  ── 分解登记 .spec-dev/roadmaps/<project>.md ── 外环
-   requirement-analysis 分解登记子项目 → 每个子项目独立走完整管线 → executing-plans 交付后回写状态并提示续接下一个
+acceptance-qa：核对依据与证据 → 对照实际页面/行为 → 补验缺口并给结论
+修复复验：分类根因 → 验证受影响检查 → 复用有效原件 → 更新受影响结论
 ```
 
 三个入口按承诺状态与设计空间分工：**exploring**（还没决定要不要做）、**quick-fix**（已决定、无设计空间——小 bug 或小调整）、**requirement-analysis**（已决定、有设计空间——功能或变更）。quick-fix 复用 test-driven-development 与 acceptance-qa，一旦修复需要真正的设计就把控制权交还 requirement-analysis。
@@ -180,7 +174,7 @@ skill 的发现路径有四条，全部只指向 `skills/`：Claude Code 读 `.c
 /requirement-analysis 设计用户权限系统
 ```
 
-8 阶段设计工作流：需求理解与分诊 → 并行探索（独立内部与外部主题按实际容量尽早派发）→ 澄清问题（一次一个，JIT 可视化预览）→ 对抗验证 + 2-3 方案 → 展示完整设计 → 写 spec 并提交 → self-review + 对抗验证 → 交接 writing-plans。
+8 阶段设计工作流：需求理解与分诊 → 并行探索（独立内部与外部主题按实际容量尽早派发）→ 澄清问题（通用澄清 + 自动原型与界面澄清）→ 对抗验证 + 2-3 方案 → 展示完整设计 → 写 spec 并提交 → self-review + 对抗验证 → 交接 writing-plans。
 
 阶段 1 判定执行档位并向用户声明（允许覆盖）：
 
@@ -202,7 +196,7 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-des
 
 ## visual-preview 使用方法
 
-设计对话中出现"看比说清楚"的问题（布局对比、mockup、架构图）时由 requirement-analysis JIT 提议启用；也可手动触发：
+新增页面、重设计、主要布局或核心交互变化，在必要通用澄清完成后自动展示；探索中的真实界面比较或图示也可手动触发。入口/版本/归档规则见 [原型契约](skills/visual-preview/references/ui-prototype-contract.md)：
 
 ```bash
 /visual-preview 用浏览器给我看两种仪表盘布局的对比
@@ -235,7 +229,7 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-des
 
 > 用 quick-fix 直接把这个小 bug 修好。
 
-它沿同一证据支持的根因链修复，非显然根因确认前先取得真实失败信号，再沿获批公共落点修复。升级仍由用户裁决；偶发但复现条件可比较时，不仅因偶发而升级。契约同步、TDD 与既有授权规则保持。收尾按适用性比较偶发失败次数，核对临时插桩，回放原始症状，并说明根因证据与验证边界；独立旁支记录后续入口，acceptance-qa 保持可选。
+它沿同一证据支持的根因链修复，非显然根因确认前先取得真实失败信号，再沿获批公共落点修复。升级仍由用户裁决；偶发但复现条件可比较时，不仅因偶发而升级。契约同步、TDD 与既有授权规则保持。收尾按适用性比较偶发失败次数，核对临时插桩，回放原始症状，并说明根因证据与验证边界；独立旁支记录后续入口，必要的原场景验证自动执行，专项 acceptance-qa 按需调用。
 
 ## 无外部 MCP 服务依赖
 

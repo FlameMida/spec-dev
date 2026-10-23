@@ -13,6 +13,10 @@
 
   // Everything below is browser-only; bail out when loaded in Node (tests).
   if (typeof window === 'undefined') return;
+  let screenContext = {};
+  try {
+    screenContext = JSON.parse(document.getElementById('preview-context')?.textContent || '{}');
+  } catch (e) { /* Missing/invalid metadata remains explicitly unbound. */ }
 
   let ws = null;
   let eventQueue = [];
@@ -127,6 +131,10 @@
   }
 
   function sendEvent(event) {
+    if (screenContext.archived) return;
+    // Event producers cannot relabel feedback from an old tab as the newest screen.
+    event = {...event, screen_file: screenContext.screen_file,
+      screen_sha256: screenContext.screen_sha256, render_sha256: screenContext.render_sha256};
     event.timestamp = Date.now();
     if (!event.screen) event.screen = window.location.pathname;
     if (ws && ws.readyState === WebSocket.OPEN) {
@@ -197,5 +205,5 @@
     choice: (value, metadata = {}) => sendEvent({ type: 'choice', value, ...metadata })
   };
 
-  connect();
+  if (!screenContext.archived) connect();
 })();

@@ -1,6 +1,6 @@
 interface:
   display_name: "Test Strategy"
-  short_description: "划分 fast/final/manual；final 先于审查验收，变更后按影响补验，真实模型与静态证据分开记账。"
+  short_description: "测试策略纪律——按本地执行时点的三 Lane 调度（fast/final/manual）、治理顺序 flaky→时长→选择、AI Agent 模型边界测试骨架、验收矩阵对接。为 spec 设计测试与验收策略、把验收矩阵翻译为计划任务、或为项目搭测试分层时使用。"
   default_prompt: "用 $test-strategy 设计测试分层、把验收矩阵翻译为计划任务、或搭 AI Agent 测试骨架。"
 
 policy:

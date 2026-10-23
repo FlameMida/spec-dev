@@ -4,7 +4,8 @@
 //       node scripts/validate-output.mjs plan-index <plan目录>
 // schema 来源: scripts/schemas/<schema-name>.json（JSON Schema 子集，见 schemas/README.md）
 // plan-index 模式：校验分文件计划形态（index.md 导航表 ↔ tasks/ 文件一致、依赖存在、无环）、单任务文件 ≤ 200 行
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync, createReadStream } from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { parseParallelBlock } from "./lib/parallel-plan.mjs";
 import { validateIntegrationPlan, inspectPlanState } from "./lib/integration-plan.mjs";
@@ -49,12 +50,16 @@ try {
 
   const errors = [];
   validate(data, schema, "$", errors);
+  if (schemaName === "acceptance-check-items" && errors.length === 0) {
+    await verifyAcceptanceEvidence(data, path.dirname(path.resolve(jsonFile)), errors);
+  }
 
   if (errors.length > 0) {
     fail(schemaName, jsonFile, errors);
   }
 
-  console.log(JSON.stringify({ ok: true, schema: schemaName, file: jsonFile }, null, 2));
+  const acceptance = schemaName === "acceptance-check-items" ? acceptanceSummary(data) : {};
+  console.log(JSON.stringify({ ok: true, schema: schemaName, file: jsonFile, ...acceptance }, null, 2));
 } catch (error) {
   fail(schemaName, jsonFile, [
     { path: "(internal)", expected: "valid input", actual: error instanceof Error ? error.message : String(error) },
@@ -83,6 +88,42 @@ function parseJson(filePath, label) {
   } catch (error) {
     throw new Error(`${label} is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
   }
+}
+
+// Artifact integrity is mechanical. Whether these bytes support the claimed
+// behavior, cover the approved scope and apply to the running build is reviewed
+// by the caller; an exit code of zero never certifies that semantic judgment.
+async function verifyAcceptanceEvidence(data, directory, errors) {
+  const verified = new Map();
+  async function verify(entry, label, required) {
+    if (!entry.evidence_ref?.trim() && !required) return;
+    try {
+      const file = path.resolve(directory, entry.evidence_ref);
+      if (!verified.has(file)) {
+        const stat = statSync(file);
+        if (!stat.isFile()) throw new Error('not a regular file');
+        if (stat.size === 0) throw new Error('empty evidence');
+        const digest = createHash('sha256');
+        for await (const chunk of createReadStream(file)) digest.update(chunk);
+        verified.set(file, digest.digest('hex'));
+      }
+      const hash = verified.get(file);
+      if (hash !== entry.evidence_sha256) throw new Error('SHA-256 mismatch');
+    } catch (error) {
+      errors.push({path: label + '.evidence_ref', expected: 'existing nonempty artifact with matching SHA-256', actual: error.message});
+    }
+  }
+  for (const [index, item] of data.items.entries()) {
+    await verify(item, `$.items[${index}]`, item.result !== 'unverified');
+    if (item.recheck) await verify(item.recheck, `$.items[${index}].recheck`, true);
+  }
+}
+
+function acceptanceSummary(data) {
+  const required = data.items.filter(item => item.required);
+  const reported_result = required.some(item => item.result === 'fail') ? 'fail'
+    : required.length > 0 && required.every(item => item.result === 'pass') ? 'pass' : 'incomplete';
+  return {evidence_verified: true, reported_result, semantic_review_required: true};
 }
 
 function typeOf(value) {

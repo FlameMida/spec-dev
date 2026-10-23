@@ -551,6 +551,7 @@
     var onLatest = window.location.pathname === '/';
 
     function refreshNav() {
+      if (window.__PREVIEW_ARCHIVED__) return;
       fetch('/screens').then(function(r) { return r.json(); }).then(function(data) {
         screens = data.screens || [];
         var idx = onLatest ? screens.length - 1 : screens.indexOf(current);
@@ -589,6 +590,12 @@
 
     // Screens without clickable choices get a "发送备注" bar instead of "确认选择".
     if (!document.querySelector('[data-choice]')) confirmBtn.textContent = '发送备注';
+    if (window.__PREVIEW_ARCHIVED__) {
+      prevBtn.disabled = nextBtn.disabled = confirmBtn.disabled = annotateBtn.disabled = noteInput.disabled = true;
+      confirmBtn.textContent = '定稿快照';
+      var archivedStatus = document.querySelector('.status');
+      if (archivedStatus) archivedStatus.textContent = '离线原型';
+    }
 
     annotateBtn.addEventListener('click', function() {
       annotating = !annotating;
@@ -619,6 +626,7 @@
     }, true);
 
     function submit() {
+      if (window.__PREVIEW_ARCHIVED__) return;
       var choices = Array.prototype.map.call(
         document.querySelectorAll('[data-choice].selected'),
         function(el) { return el.dataset.choice; }

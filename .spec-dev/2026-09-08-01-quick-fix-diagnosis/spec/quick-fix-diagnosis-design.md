@@ -301,7 +301,7 @@ quick-fix 的 SKILL、openai.yaml、双语 README 和相关 eval SHALL 对新诊
 
 - **GIVEN** 本项候选产物
 - **WHEN** 核对公开说明及 qf-small-bug-triggers、现有 seam/TDD/清理/契约分支 eval
-- **THEN** 不再以旧三种升级信号作为穷尽列表；原流程 eval 表达条件式红前置，五条 glob 数量正确；openai.yaml 摘要同步，既有可选验收和授权复用未消失，不在 triage 命令新增清单副本。
+- **THEN** 不再以旧三种升级信号作为穷尽列表；原流程 eval 表达条件式红前置，五条 glob 数量正确；openai.yaml 摘要同步，必要原场景验证、按需专项验收和授权复用保持，不在 triage 命令新增清单副本。
 
 ## 方案设计
 
@@ -399,3 +399,8 @@ quick-fix 的 SKILL、openai.yaml、双语 README 和相关 eval SHALL 对新诊
 ## 与 status-overview 的分面共存
 
 .spec-dev/2026-09-10-01-status-overview/spec/status-overview-design.md 负责同一仓库多 worktree 的只读记录投影及独立 CLI。本文现行未取代条款、状态写入/恢复/验收/守卫/诊断行为保持，双方 covers 按各自切面声明；status 的完成仅表示记录，不替代本文要求的事实核验。本项不修改既有守卫执行入口。
+
+
+## 2026-10-23 界面工作流与验收切面更新
+
+依据本轮用户审查后的实施指示同步上述现行条款。通用与界面澄清引用 `skills/clarifying/references/ui-clarification.md`；自动原型/定稿交接引用 `skills/visual-preview/references/ui-prototype-contract.md`；早期闭环与复验引用 `skills/test-strategy/references/verification-scope.md`；页面验收采用 acceptance-qa 三步路径。其他契约、历史执行与验收原件保持原记录，不倒推历史已覆盖新规则。

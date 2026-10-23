@@ -91,7 +91,7 @@ S 负责判定实现偏差，critic 负责发现覆盖证据缺口。后者交�
 
 ## acceptance-qa 联动与处置
 
-计划有验收任务，或 spec 矩阵含「验收任务」行时，在维度审查之外触发 acceptance-qa；输入 spec、计划验收任务、完整变更文件清单与特性 acceptance 证据目录。裁剪记 coverage_note，Tier A 沿现行 GIVEN/WHEN/THEN，失败自动追加诊断；旧计划无矩阵时，涉及 UI 按其验收点触发。验收及 Requirement 覆盖结论并入报告。
+计划有验收任务，或 spec 矩阵含「验收任务」行时，在维度审查之外触发 acceptance-qa；输入 spec、计划验收任务、完整变更文件清单与特性 acceptance 证据目录。页面验收输入定稿 HTML、确认来源和适用状态，按三步路径对照；工程原件仍适用则复用，缺口才补验。裁剪记 coverage_note，Tier A 沿现行 GIVEN/WHEN/THEN，失败才追加诊断；旧计划无矩阵时，涉及 UI 按其验收点触发。验收及 Requirement 覆盖结论并入报告。
 
 报告按严重性列 confirmed，包含 file:line、描述、影响、建议，合并 critic 覆盖声明与验收结果。沿 executing-plans 既有授权和例外驱动处置门：行为缺陷先复现失败测试；纯重构按 TDD「收尾纯重构」保留前后绿，缺保护先刻画，不造红。修复后受影响维度复审一次。零 confirmed 但有未完成覆盖不等于全交付；final 先于本轮审查；后续修复先补验、再复审对应维度并更新验收/对账。
 

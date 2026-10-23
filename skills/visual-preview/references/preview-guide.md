@@ -106,7 +106,7 @@ flowchart LR
 
 ## events 格式
 
-用户交互被记录到 `$STATE_DIR/events`（每行一个 JSON 对象；推新屏时归档到 `$STATE_DIR/events-archive/<毫秒时间戳>.jsonl`，不会丢失）。时间戳为毫秒（`Date.now()`），`screen` 是产生事件的页面路径（`/` 为最新屏，`/screen/<文件名>` 为历史屏）：
+用户交互被记录到 `$STATE_DIR/events`（每行一个 JSON 对象；推新屏时归档到 `$STATE_DIR/events-archive/<毫秒时间戳>.jsonl`，不会丢失）。时间戳为毫秒（`Date.now()`），事件还携带实际 `screen_file`、`screen_sha256`、`render_sha256` 与服务端 `binding_verified`；`screen` 只是产生事件的页面路径（`/` 为最新屏，`/screen/<文件名>` 为历史屏）：
 
 ```jsonl
 {"type":"click","choice":"a","text":"Option A - Simple Layout","selected":true,"id":null,"timestamp":1706000101000,"screen":"/"}
@@ -115,10 +115,10 @@ flowchart LR
 {"type":"annotate","tag":"div","classes":"mock-sidebar","text":"导航 设置","timestamp":1706000112000,"screen":"/"}
 ```
 
-- **`confirm` 是最强信号**——用户点了确认按钮，`choices` 就是最终选择，`note` 是随附备注（可能为空串）
+- **`confirm` 是当前问题的确认**——核对实际文件/内容版本与 binding_verified，再解释 choices 和 note；局部确认不自动批准全设计，批准范围以该屏明确问题和用户表述为准
 - **`click` 的 `selected` 字段**区分选中（true）与取消选中（false），多选场景务必看它
 - **`note`**：用户只发备注没选选项时的独立事件；**`annotate`**：标注模式下用户点击的元素（标签、类名、文本片段）——表示"这个位置要改"
-- 没有 `confirm` 时退回旧启发式：完整点击流展示探索路径，最后一个选中的 `choice` 通常是意向，反复点击可能暴露犹豫，值得追问
+- 没有明确确认时，点击流只表示探索和意向，不据最后选项推进依赖决定；已有文字确认可直接消费。旧页反馈只属于旧版本，不能挪到最新屏
 - 文件不存在 = 用户没和浏览器交互，只看终端文字
 
 ## 设计要点

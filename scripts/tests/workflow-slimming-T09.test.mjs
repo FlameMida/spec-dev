@@ -5,9 +5,9 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const raw=f=>readFileSync(path.join(root,f),'utf8');
-test("S6.1 验收复用执行证据且 standard 不审计 pass",()=>{
+test("S6.1 验收复用执行证据且按风险复核",()=>{
   const s=raw('skills/acceptance-qa/SKILL.md');
-  assert.match(s,/不采信无回执的自报告/);assert.match(s,/facts\.json/);assert.match(s,/pass 项不派证据审计/);
+  assert.match(s,/不采信无回执的自报告/);assert.match(s,/facts\.json/);assert.match(s,/关键结论、弱证据、结果矛盾或不稳定项/);
   assert.doesNotMatch(s,/全套复核与审计/);
   assert.match(s,/不无条件追加全量/);assert.match(s,/局部独立验收.*final.*待执行/);
 });

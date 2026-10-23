@@ -6,7 +6,7 @@
 
 F 依赖全部实施和组验证出口，final 先于审查与验收；F 不依赖验收 A 或最大号交付 D。编号按导航顺延，禁止按“全部任务已完成”进入 F。
 
-1. 核对实施出口的实际完成记录与待验版本，保存 F in_progress 检查点。完整套件命令来自项目和获批计划，不受票内相关范围限制；manual 仍需当轮授权，否则记 manual-pending。
+1. 核对实施出口的实际完成记录与待验版本，保存 F in_progress 检查点。完整套件命令来自项目和获批计划，不受票内相关范围限制；manual 消费已有明确执行授权与所需条件，缺失记 manual-pending，必需程度沿矩阵。
 2. 在已提交业务版本上真实运行并保存回执：
 
 ```bash
@@ -31,7 +31,7 @@ rtk proxy node "${CLAUDE_PLUGIN_ROOT}/scripts/execution-evidence.mjs" record \
 |---|---|---|---|---|---|
 | 从现行 spec 逐行填实 | 对应维度 | D/A | 实际 URL/端点/文件 | 可判定预期 | 有效 F/局部回执及适用截图 |
 
-输入含 spec、A 任务、当前候选、F 的实际 record、完整变更文件和 acceptance 目录。light/standard 的 pass 仍需证据，deep 另做独立 pass 审计与抽查；manual-pending 不伪装成通过。
+输入含 spec、A 任务、当前候选、F 的实际 record、完整变更文件和 acceptance 目录。页面 A 采用“核对依据与证据→对照实际页面→补验缺口并给结论”；输入适用定稿 HTML/确认来源/关键状态。有效原件直接复用，复核聚焦关键结论与证据疑点，deep 扩大已有范围而不新增必需程度。manual-pending 不伪装成通过，required 行缺证据保持未完成。
 
 ## 最大号交付任务 D（每份计划固定生成）
 

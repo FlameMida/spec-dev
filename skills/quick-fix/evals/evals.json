@@ -174,7 +174,7 @@
     {
       "id": "qf-diagnosis-s24",
       "prompt": "同步摘要与既有边界\nGIVEN 本项候选产物\nWHEN 核对公开说明及 qf-small-bug-triggers、现有 seam/TDD/清理/契约分支 eval",
-      "expected_output": "不再以旧三种升级信号作为穷尽列表；原流程 eval 表达条件式红前置，五条 glob 数量正确；openai.yaml 摘要同步，既有可选验收和授权复用未消失，不在 triage 命令新增清单副本。"
+      "expected_output": "不再以旧三种升级信号作为穷尽列表；原流程 eval 表达条件式红前置，五条 glob 数量正确；openai.yaml 摘要同步，必要验证、按需专项验收与授权复用保持，不在 triage 命令新增清单副本。"
     },
     {
       "id": "ec-s32",
@@ -190,6 +190,16 @@
       "id": "workflow-S26-bound-quick-fix",
       "prompt": "契约不变的小修已有有效任务绑定且完全在writes内，强制读取guardrail-handling后准备提交；另两例绑定已过期、以及确无绑定但有明确例外授权。",
       "expected_output": "有效绑定例正常提交并保留Spec-Task，不混用off；过期例阻断并沿授权修订重绑，不clear或shell绕过；只有无关联且已授权例外才使用off环境变量和Spec-Guard trailer。"
+    },
+    {
+      "id": "qf-ui-small",
+      "prompt": "修复已确定的窄屏按钮遮挡，现有布局契约明确。",
+      "expected_output": "直接定位修复，必要时澄清原症状；可跳过原型，最终在实际窄屏操作验证，不固定询问是否验收，不启动全设计。"
+    },
+    {
+      "id": "qf-ui-redesign",
+      "prompt": "原称小修，调查后发现要重做导航和核心编辑流程。",
+      "expected_output": "沿升级/已有授权转RA，携带证据与决定；自动原型与界面澄清适用，不在小修中偷偷实施新设计。"
     }
   ]
 }

@@ -1,6 +1,6 @@
 interface:
   display_name: "Requirement Analysis"
-  short_description: "将已承诺且有设计空间的需求形成获批 spec；先按最终交付目标分诊，再交接计划，不直接实施。"
+  short_description: "将已承诺且有设计空间的开发需求转化为获批 spec，再交接计划编写。适用于新功能、API、数据及行为设计；未定想法用 exploring，无设计空间小修用 quick-fix，纯问答或日常测试不适用。"
   default_prompt: "用 $requirement-analysis 走 8 阶段工作流设计这个功能并产出 spec。"
 
 policy:
