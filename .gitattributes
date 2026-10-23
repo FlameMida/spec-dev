@@ -1,1 +1,2 @@
 skills/visual-preview/scripts/vendor/** -diff
+/.spec-dev export-ignore

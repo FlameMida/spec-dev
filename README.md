@@ -55,7 +55,7 @@ Each skill also works standalone: start from exploring while the idea is unsettl
 
 ```bash
 # Add as a marketplace
-/plugin marketplace add https://github.com/FlameMida/spec-dev
+/plugin marketplace add https://github.com/FlameMida/spec-dev.git#dist
 
 # Install the plugin
 /plugin install spec-dev@spec-agent-skills
@@ -65,13 +65,29 @@ Each skill also works standalone: start from exploring while the idea is unsettl
 
 ```bash
 # Add as a marketplace
-codex plugin marketplace add https://github.com/FlameMida/spec-dev
+codex plugin marketplace add https://github.com/FlameMida/spec-dev.git --ref dist
 
 # Install the plugin
 codex plugin add spec-dev@spec-agent-skills
 ```
 
 The Codex manifests (`.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`) also expose plugin UI metadata. After a new release, run `codex plugin marketplace upgrade spec-agent-skills`.
+
+### Pi, Grok Build, and portable plugin packages
+
+```bash
+# Pi
+pi install git:github.com/FlameMida/spec-dev@dist
+
+# Grok Build
+grok plugin install https://github.com/FlameMida/spec-dev.git@dist
+```
+
+Grok Build also honors `source.ref: "dist"` in a Claude marketplace plugin entry. Do not apply the direct-install `@dist` suffix to a `grok plugin marketplace add` source URL. Agent Plugins 1.0.0 is a package format and does not specify Git installation; portable hosts consume the distribution workflow's ZIP / tar.gz, while Git ref selection depends on the specific host. npm distribution uses the tgz produced by `npm pack`. These distribution artifacts exclude this repository's `.spec-dev/`; workflows still read and write the user's own project `.spec-dev/` normally.
+
+Git branch selection was tested on 2026-10-23 with Claude Code 2.1.309, Codex CLI 0.164.0, Grok Build 1.0.67, and Pi 1.4.0. With `main` as the fixture repository's default branch, installed caches contained the distinct `dist` marker and no `.spec-dev`. Claude/Codex tests covered both a pinned marketplace branch and a main catalog selecting dist through `source.ref`; Grok tests covered direct installation and catalog `source.ref`.
+
+`main` contains development sources; `dist` contains installable files generated from release tags. New installs should select `dist`. Existing main marketplace entries also redirect plugin installs to `dist`, but their old marketplace source caches are not automatically removed. Existing Pi Git installs must change their source to `@dist` as shown above. Cloning `main` still includes development records; updates do not guarantee removal of old versions retained by a host.
 
 ### Platform matrix
 
@@ -107,13 +123,22 @@ The repo root is the plugin root (flat layout): `skills/`, `agents/`, `commands/
 node scripts/check-plugin.mjs
 ```
 
+`package.json.files` is the shared distribution file list. `scripts/build-distribution.mjs` extracts a real npm package and changes its marketplace entries to local paths. The output retains the same plugin-root layout without a second maintained source tree. Output must be a new directory outside the source checkout:
+
+```bash
+node scripts/build-distribution.mjs --output /tmp/spec-dev-package
+node --test scripts/tests/distribution.test.mjs
+```
+
+`.github/workflows/distribution.yml` builds, validates, and updates `dist` after a `v*` tag push, with ZIP, tar.gz, and npm tgz workflow artifacts. It also accepts an existing `vX.Y.Z` tag through manual dispatch. The branch has independent history and ordinary fast-forward updates, excluding source-history `.spec-dev` files. Identical rebuilds are no-ops; older or changed same-version packages are rejected. `.gitattributes` additionally uses `export-ignore` to exclude `.spec-dev` from new Git/GitHub source archives while retaining it in source control. Initial rollout requires a new release tag containing this workflow and a successful first `dist` build.
+
 Validate the real install path with the official Codex CLI:
 
 ```bash
 node scripts/check-plugin.mjs --codex-validate
 ```
 
-`--codex-validate` creates a temporary `CODEX_HOME`, runs `codex plugin marketplace add <repo-root>` and `codex plugin add spec-dev@spec-agent-skills`, and does not touch the current user's Codex config or plugin cache.
+`--codex-validate` builds the filtered plugin, runs `codex plugin marketplace add <distribution-root>` and `codex plugin add spec-dev@spec-agent-skills` in a temporary `CODEX_HOME`, and checks that the installed cache excludes `.spec-dev` while retaining runtime skills. It does not touch the current user's Codex config or plugin cache. Building the validation package additionally requires npm and tar.
 
 Validate the bundled skills with `skill-creator`'s `quick_validate.py`:
 

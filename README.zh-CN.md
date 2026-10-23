@@ -55,7 +55,7 @@ acceptance-qa：核对依据与证据 → 对照实际页面/行为 → 补验�
 
 ```bash
 # 添加为 marketplace
-/plugin marketplace add https://github.com/FlameMida/spec-dev
+/plugin marketplace add https://github.com/FlameMida/spec-dev.git#dist
 
 # 安装插件
 /plugin install spec-dev@spec-agent-skills
@@ -65,13 +65,29 @@ acceptance-qa：核对依据与证据 → 对照实际页面/行为 → 补验�
 
 ```bash
 # 添加为 marketplace
-codex plugin marketplace add https://github.com/FlameMida/spec-dev
+codex plugin marketplace add https://github.com/FlameMida/spec-dev.git --ref dist
 
 # 安装插件
 codex plugin add spec-dev@spec-agent-skills
 ```
 
 Codex 清单（`.codex-plugin/plugin.json`、`.agents/plugins/marketplace.json`）另外提供插件 UI 元数据。新版本发布后执行 `codex plugin marketplace upgrade spec-agent-skills` 升级。
+
+### Pi、Grok Build 与通用插件包
+
+```bash
+# Pi
+pi install git:github.com/FlameMida/spec-dev@dist
+
+# Grok Build
+grok plugin install https://github.com/FlameMida/spec-dev.git@dist
+```
+
+Grok Build 也支持 Claude marketplace 插件条目的 `source.ref: "dist"`；不要把直接安装的 `@dist` 后缀套在 `grok plugin marketplace add` 的来源 URL 上。Agent Plugins 1.0.0 是包格式，不规定 Git 安装协议；通用宿主使用分发工作流生成的 ZIP / tar.gz，Git ref 的选择能力以具体宿主为准。npm 分发使用 `npm pack` 生成的 tgz。上述分发产物均排除本仓库 `.spec-dev/`；用户项目自己的 `.spec-dev/` 仍正常读写。
+
+2026-10-23 已在 Claude Code 2.1.309、Codex CLI 0.164.0、Grok Build 1.0.67、Pi 1.4.0 实测 Git 分支选择：测试仓库默认分支为 `main`，安装缓存均取得 `dist` 的独立标记且不含 `.spec-dev`。Claude/Codex 另验证了 marketplace 自身指定分支，以及从 main 清单通过 `source.ref` 安装 dist；Grok 同时验证了直接安装与清单 `source.ref`。
+
+`main` 是开发源码，`dist` 是由发布 tag 自动生成的安装内容。新安装应选择 `dist`；已有 main marketplace 的插件条目也会转向 `dist`，但旧 marketplace 源码缓存不会自动清理。已有 Pi Git 安装须把来源改为上述 `@dist`。直接克隆 `main` 仍会取得研发档案；更新本身不保证删除宿主保留的旧版本缓存。
 
 ### 平台矩阵
 
@@ -107,13 +123,22 @@ Codex 清单（`.codex-plugin/plugin.json`、`.agents/plugins/marketplace.json`�
 node scripts/check-plugin.mjs
 ```
 
+分发文件集由 `package.json.files` 统一定义。`scripts/build-distribution.mjs` 解包真实 npm 包并将产物内 marketplace 改为本地路径；产物保留相同的插件根布局，无需维护第二份源码。构建输出必须是源码仓库外尚不存在的目录：
+
+```bash
+node scripts/build-distribution.mjs --output /tmp/spec-dev-package
+node --test scripts/tests/distribution.test.mjs
+```
+
+`.github/workflows/distribution.yml` 在 `v*` tag 推送后构建、验证并更新 `dist` 分支，提供 ZIP、tar.gz、npm tgz 工作流附件；也可指定已有 `vX.Y.Z` tag 手动运行。`dist` 使用独立历史和普通快进推送，不包含源码历史中的 `.spec-dev`；相同产物重跑不产生提交，拒绝旧版本或同版本不同内容覆盖。`.gitattributes` 的 `export-ignore` 另外保证新 tag 的 Git/GitHub 源码归档排除 `.spec-dev`，不影响源码跟踪。首次启用须先发布含此工作流的新 tag，等待 `dist` 生成成功。
+
 使用官方 Codex CLI 做真实安装路径校验：
 
 ```bash
 node scripts/check-plugin.mjs --codex-validate
 ```
 
-`--codex-validate` 会创建临时 `CODEX_HOME`，执行 `codex plugin marketplace add <repo-root>` 和 `codex plugin add spec-dev@spec-agent-skills`，不会修改当前用户的 Codex 配置或插件缓存。
+`--codex-validate` 会构建过滤后的插件，在临时 `CODEX_HOME` 执行 `codex plugin marketplace add <distribution-root>` 和 `codex plugin add spec-dev@spec-agent-skills`，并检查安装缓存不含 `.spec-dev` 且保留运行时 skill。不会修改当前用户的 Codex 配置或插件缓存；构建校验额外需要 npm 与 tar。
 
 使用 `skill-creator` 的 `quick_validate.py` 校验插件包里的 skill：
 

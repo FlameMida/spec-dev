@@ -1,0 +1,91 @@
+name: Plugin distribution
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag (vX.Y.Z)
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: plugin-distribution
+  cancel-in-progress: false
+
+jobs:
+  distribute:
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+      PACKAGE_DIR: ${{ runner.temp }}/spec-dev-package
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Validate release and distribution rules
+        run: |
+          node --input-type=module -e '
+            import fs from "node:fs";
+            const version = JSON.parse(fs.readFileSync("package.json")).version;
+            if (!/^v\d+\.\d+\.\d+$/.test(process.env.RELEASE_TAG) || process.env.RELEASE_TAG !== `v${version}`) {
+              throw new Error("Release tag and package version must agree");
+            }
+          '
+          node scripts/check-plugin.mjs
+          node --test scripts/tests/distribution.test.mjs
+      - name: Build filtered plugin and archives
+        run: |
+          node scripts/build-distribution.mjs --output "$PACKAGE_DIR"
+          tar -czf "$RUNNER_TEMP/spec-dev-$RELEASE_TAG.tar.gz" -C "$PACKAGE_DIR" .
+          (cd "$PACKAGE_DIR" && zip -qr "$RUNNER_TEMP/spec-dev-$RELEASE_TAG.zip" .)
+          (cd "$PACKAGE_DIR" && npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP")
+      - name: Publish filtered Git branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha=$(git rev-parse HEAD)
+          git_dir=$(git rev-parse --absolute-git-dir)
+          set --
+          previous=""
+          if git ls-remote --exit-code --heads origin refs/heads/dist > "$RUNNER_TEMP/dist-ref"; then
+            git fetch --no-tags origin refs/heads/dist
+            previous=$(git rev-parse FETCH_HEAD)
+            set -- -p "$previous"
+          else
+            status=$?
+            if [ "$status" -ne 2 ]; then exit "$status"; fi
+          fi
+          export GIT_INDEX_FILE="$RUNNER_TEMP/spec-dev-dist.index"
+          trap 'rm -f "$GIT_INDEX_FILE"' EXIT
+          git read-tree --empty
+          git -C "$PACKAGE_DIR" --git-dir="$git_dir" --work-tree="$PACKAGE_DIR" add --all -- .
+          tree=$(git write-tree)
+          if [ -n "$previous" ]; then
+            if [ "$tree" = "$(git rev-parse "$previous^{tree}")" ]; then exit 0; fi
+            git show "$previous:package.json" > "$RUNNER_TEMP/previous-package.json"
+            node --input-type=module -e '
+              import fs from "node:fs";
+              const oldVersion = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/previous-package.json`)).version.split(".").map(Number);
+              const newVersion = JSON.parse(fs.readFileSync(`${process.env.PACKAGE_DIR}/package.json`)).version.split(".").map(Number);
+              const delta = newVersion.map((n, i) => n - oldVersion[i]).find(n => n !== 0) ?? 0;
+              if (!(delta > 0)) throw new Error("Refusing to replace dist with an older or changed same-version package");
+            '
+          fi
+          commit=$(printf 'build: distribute %s from %s\n' "$RELEASE_TAG" "$source_sha" | git -c user.name=github-actions -c user.email=github-actions@users.noreply.github.com commit-tree "$tree" "$@")
+          git push origin "$commit:refs/heads/dist"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: spec-dev-${{ env.RELEASE_TAG }}
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/spec-dev-${{ env.RELEASE_TAG }}.tar.gz
+            ${{ runner.temp }}/spec-dev-${{ env.RELEASE_TAG }}.zip
+            ${{ runner.temp }}/flamemida-spec-dev-*.tgz

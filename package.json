@@ -3,6 +3,22 @@
   "version": "9.0.3",
   "description": "pi 平台分发清单",
   "license": "MIT",
+  "files": [
+    ".agents/",
+    ".claude-plugin/",
+    ".codex-plugin/",
+    "agents/",
+    "commands/",
+    "guardrail/",
+    "hooks/",
+    "scripts/",
+    "skills/",
+    "plugin.json",
+    "README.md",
+    "README.zh-CN.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/FlameMida/spec-dev.git"

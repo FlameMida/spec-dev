@@ -4,6 +4,7 @@ import { existsSync, lstatSync, mkdtempSync, readdirSync, readFileSync, rmSync }
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildDistribution } from "./build-distribution.mjs";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
@@ -158,13 +159,26 @@ function runOfficialCodexInstallCheck() {
 
   const codexHome = mkdtempSync(path.join(os.tmpdir(), "spec-dev-codex-validate-"));
   try {
-    runCodex(["plugin", "marketplace", "add", repoRoot], codexHome);
+    const distribution = buildDistribution(path.join(codexHome, "distribution"));
+    runCodex(["plugin", "marketplace", "add", distribution], codexHome);
     runCodex(["plugin", "add", `${pluginName}@${marketplaceName}`], codexHome);
+    const cache = path.join(codexHome, "plugins", "cache", marketplaceName, pluginName);
+    if (!existsSync(cache)) throw new Error(`Installed plugin cache missing: ${cache}`);
+    const versions = readdirSync(cache);
+    if (versions.length === 0) throw new Error("Installed Codex plugin cache is empty");
+    for (const version of versions) {
+      if (existsSync(path.join(cache, version, ".spec-dev"))) {
+        throw new Error("Installed Codex plugin contains repository .spec-dev");
+      }
+      if (!existsSync(path.join(cache, version, "skills", "exploring", "SKILL.md"))) {
+        throw new Error("Installed Codex plugin is missing runtime skills");
+      }
+    }
     console.log(`Official Codex CLI install check passed: ${pluginName}@${marketplaceName}`);
   } catch (error) {
     // Codex 未安装（ENOENT）是常见的开发机情形，不应阻断提交——软跳过并提示。
     // 网络/安装失败等 codex 确实存在却出错的情况仍作为硬错误抛出。
-    if (error && error.code === "ENOENT") {
+    if (error && error.code === "ENOENT" && error.path === "codex") {
       console.warn(
         "! Codex CLI not found on PATH; skipping --codex-validate. Install codex to enable this check, or drop --codex-validate. / 未找到 Codex CLI，跳过 --codex-validate 校验。",
       );

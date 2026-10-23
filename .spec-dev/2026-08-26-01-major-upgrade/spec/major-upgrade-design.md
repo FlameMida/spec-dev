@@ -8,6 +8,8 @@ spec_dev:
   covers:
     - "plugin.json"
     - "package.json"
+    - ".gitattributes"
+    - ".github/workflows/distribution.yml"
     - ".claude-plugin/plugin.json"
     - ".claude-plugin/marketplace.json"
     - ".codex-plugin/plugin.json"
@@ -112,13 +114,29 @@ spec-dev 现为 Claude Code + Codex 双平台 skill 插件（v7.21.1）。本次
 
 ### Requirement: pi 平台分发清单
 
-插件 SHALL 提供根级 `package.json`，其 `pi.skills` 字段指向 `skills/` 目录，使 pi 用户可经 `pi install git:...` 发现全部 skill；agents/hooks 在 pi 上的限制 SHALL 记录于 README 平台矩阵。
+插件 SHALL 提供根级 `package.json`，其 `pi.skills` 字段指向 `skills/` 目录，使 pi 用户可经 `pi install git:...@dist` 发现全部 skill；agents/hooks 在 pi 上的限制 SHALL 记录于 README 平台矩阵。2026-10-23 按用户「所有分发渠道都忽略掉」的决定，Git 安装改用不含本仓库 `.spec-dev/` 的分发分支。
 
 #### Scenario: pi 装载发现 skills
 
 - **GIVEN** 具备 pi 环境（0.84+）
-- **WHEN** `pi install git:<本仓库>` 后列出可用 skill
+- **WHEN** `pi install git:<本仓库>@dist` 后列出可用 skill
 - **THEN** spec-dev 的 skill 出现在列表（无 pi 环境时以清单走查替代，见验收矩阵）
+
+### Requirement: 全渠道排除仓库研发产物（2026-10-23）
+
+Claude Code、Codex、Grok Build、Pi、Agent Plugins 1.0.0 的安装产物 SHALL 排除插件源码仓库的 `.spec-dev/`。源码继续跟踪该目录，用户项目的 `.spec-dev/` 读写契约不变。`package.json.files` SHALL 统一定义 npm 与独立分发目录的文件集，Git 安装使用发布 tag 生成的 `dist` 分支；Git 源码归档通过 `export-ignore` 排除该目录。Agent Plugins 1.0.0 仅定义包格式，不承诺所有兼容宿主具备统一的 Git ref 安装接口；通用宿主使用生成的独立归档。各 CLI 的分支指定写法 SHALL 按实测记录维护，不能把 Grok 直接安装的 `@dist` 后缀套用于其 marketplace 来源 URL。
+
+#### Scenario: 安装产物完整且不带研发档案
+
+- **GIVEN** 源码仓库含 `.spec-dev/` 以及插件运行所需的 skills、agents、commands、scripts、hooks、guardrail 和清单
+- **WHEN** 生成 npm 包、独立插件目录、ZIP / tar.gz 或 Git 分发分支并安装
+- **THEN** 安装内容不含源码 `.spec-dev/`，运行文件与 skill 发现保持完整；本地验证检查实际安装缓存
+
+#### Scenario: 发布分支持续更新
+
+- **GIVEN** 合法版本 tag 与清单版本一致，已有分发分支或尚未首发
+- **WHEN** 分发工作流构建并发布
+- **THEN** 首发不继承源码历史，后续普通快进更新；相同产物重跑为零动作，旧版本或同版本不同内容不得覆盖既有分发；源码 `.spec-dev/` 保留
 
 ### Requirement: doctor 诊断命令
 
