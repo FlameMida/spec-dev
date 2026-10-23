@@ -55,6 +55,19 @@ test("source marketplaces route Claude / Grok and Codex installs to the filtered
   }
 });
 
+test("distribution resolves runner paths inside a running step, not job-level env", (t) => {
+  const dir = temporary(t);
+  const workflow = readFileSync(path.join(root, '.github/workflows/distribution.yml'), 'utf8');
+  assert.doesNotMatch(workflow.split('    steps:')[0], /\$\{\{\s*runner\./);
+  const step = workflow.split('      - name: Set package directory\n')[1]?.split('      - name:')[0];
+  assert.ok(step, 'missing runtime directory initialization');
+  const command = step.split('        run: ')[1].trim();
+  const runnerTemp = path.join(dir, 'runner temp');
+  const environmentFile = path.join(dir, 'step.env');
+  run('bash', ['-eu', '-c', command], dir, { RUNNER_TEMP: runnerTemp, GITHUB_ENV: environmentFile });
+  assert.equal(readFileSync(environmentFile, 'utf8').trim(), `PACKAGE_DIR=${runnerTemp}/spec-dev-package`);
+});
+
 test("built plugin is self-contained; Git publication excludes specs, updates safely, and rejects rollback", (t) => {
   const dir = temporary(t);
   const distribution = path.join(dir, "plugin");

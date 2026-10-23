@@ -22,7 +22,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
-      PACKAGE_DIR: ${{ runner.temp }}/spec-dev-package
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,6 +29,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
+      - name: Set package directory
+        run: echo "PACKAGE_DIR=$RUNNER_TEMP/spec-dev-package" >> "$GITHUB_ENV"
       - name: Validate release and distribution rules
         run: |
           node --input-type=module -e '
