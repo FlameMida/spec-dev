@@ -8,6 +8,7 @@
 
 ## 特性
 
+- **看图理解** — `wtf` 用 10 岁小孩也能懂的大白话解释概念、代码和流程，以终端字符图表为主，少量文字点题；保留真实机制和必要限制。
 - **探索模式** — `exploring` 保持未定想法的发散讨论：默认只读，授权受控 spike 回答必须运行的问题；可选后台调研追溯一手来源。关键分岔清单可见但每轮仍只问一题；可选笔记记录已排除选项及条件，交付问题明确后提议正式设计。
 - **需求设计** — `requirement-analysis` 8 阶段设计工作流：需求分诊（light / standard / deep 三档）、按主题与实际容量分批探索、逐题澄清、对抗验证 + 2-3 方案对比、spec 落盘与双重 review（行为规范结构化：Requirement + Scenario）；HARD-GATE 保证设计获批前零实施动作
 - **可视化原型** — 新增页面、重设计、主要布局或交互变化时自动展示 HTML；联动 clarifying 逐题确认，定稿连同资源和版本交给 spec、计划与验收。小改动可跳过，用户关闭时沿用选择。
@@ -23,6 +24,10 @@
 - **4 个专门化 agents** — code-explorer、external-resource-explorer、code-reviewer 负责分析与复跑；implementer 在计划执行获准后于独立 worktree 写认领代码。
 
 ## Skill 管线
+
+只想听懂一个问题时，可独立调用 `wtf`：`$wtf 用终端图讲清楚缓存是什么`。它直接解释问题，不要求进入设计或实施流程。
+
+`wtf` 随插件分发到 Claude Code / Grok Build、Codex、Pi 和通用 Agent Plugins 包；前两者使用 Claude marketplace 的技能清单，Codex / Pi 按各自清单发现 `skills/`，通用包按标准布局发现同一目录。Git `dist`、ZIP、tar.gz 和 npm tgz 均包含该技能。
 
 意图案例位于各 skill 的 `evals/evals.json`；结构检查不代表真实模型评测；实际评测结果以对应执行回执为准，未执行案例保持未验证。流程字段见[计划格式](skills/writing-plans/references/plan-format.md)，守卫边界见[守卫说明](guardrail/README.zh-CN.md)。
 
@@ -302,6 +307,7 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 ├── commands/                        # /doctor、/triage 命令
 ├── guardrail/                       # spec 漂移守护（可装入目标仓库）
 ├── skills/
+│   ├── wtf/                         # 大白话解释，终端图表为主
 │   ├── ddd-lifecycle/               # DDD 全流程开发规范
 │   ├── exploring/                   # 探索模式（思考伙伴）
 │   ├── clarifying/                  # 共享澄清纪律（grill 式）

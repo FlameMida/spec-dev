@@ -8,6 +8,7 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 
 ## Features
 
+- **Visual explanations** — `wtf` explains concepts, code and processes so a 10-year-old can follow, using terminal character diagrams and very little prose while preserving the real mechanism and essential caveats.
 - **Exploration mode** — `exploring` keeps unsettled ideas open: read-only by default, with explicitly authorized throwaway spikes for questions that require running code. Optional background research traces material claims to primary sources. Decision lists remain one question at a time; notes can retain rejected options and their conditions. Handoff is proposed once the delivery question is precise, even when its answer is unknown.
 - **Requirement design** — `requirement-analysis`, an 8-phase design workflow: triage (light / standard / deep tiers), bounded internal/external exploration dispatched within actual capacity, one-question-at-a-time clarification, adversarial validation + 2-3 option comparison, spec writing with double review (structured behavior requirements: Requirement + Scenario); a HARD-GATE guarantees zero implementation before the design is approved
 - **Interactive prototypes** — new pages and substantial layout or interaction changes automatically open an HTML preview once goals are clear. Shared clarification resolves decisions; approved versions and assets flow into specs, plans and acceptance. Small changes may skip preview; explicit opt-outs persist.
@@ -23,6 +24,10 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 - **4 specialized agents** — code-explorer, external-resource-explorer and code-reviewer handle analysis and verification; implementer writes claimed code in an isolated worktree once plan execution is authorized.
 
 ## Skill Pipeline
+
+For an explanation on its own, invoke `wtf`: `$wtf Explain caching with terminal diagrams`. It explains the question directly without requiring a design or implementation workflow.
+
+`wtf` ships with the plugin for Claude Code / Grok Build, Codex, Pi and generic Agent Plugins packages. Claude Code / Grok Build use the Claude marketplace skill list; Codex / Pi discover `skills/` through their manifests, and generic packages use the same directory under the standard layout. Git `dist`, ZIP, tar.gz and npm tgz distributions all include the skill.
 
 Skill `evals/evals.json` files contain intent cases. Structural checks do not prove real-model behavior; the new boundary cases remain manual-pending. See the [plan contracts](skills/writing-plans/references/plan-format.md) and [guard boundaries](guardrail/README.md).
 
@@ -303,6 +308,7 @@ spec-dev/                            # repo root is the plugin root (flat layout
 ├── commands/                        # /doctor, /triage commands
 ├── guardrail/                       # spec drift guard (installable into target repos)
 ├── skills/
+│   ├── wtf/                         # plain explanations, mostly terminal diagrams
 │   ├── ddd-lifecycle/               # DDD lifecycle workflow
 │   ├── exploring/                   # exploration mode (thinking partner)
 │   ├── clarifying/                  # shared clarification discipline (grill-style)

@@ -1,0 +1,7 @@
+interface:
+  display_name: "WTF"
+  short_description: "用 10 岁小孩也能懂的大白话解释概念、代码和流程，多画终端字符图，少写文字。"
+  default_prompt: "用 $wtf 把这个问题讲到 10 岁小孩也能懂，以终端字符图表为主，只配少量必要文字。"
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,45 @@
+{
+  "skill_name": "wtf",
+  "evals": [
+    {
+      "id": "wtf-cache-explanation",
+      "prompt": "wtf，缓存是什么？用 10 岁小孩能懂的方式，少写文字，多用终端图。",
+      "expected_output": "一句大白话点题，用贴切的生活比喻连接真实对象，以字符流程图展示命中和未命中，提醒副本可能过期；图表承担主要解释，没有大段复述、浏览器或图片依赖。"
+    },
+    {
+      "id": "wtf-circular-wait",
+      "prompt": "用 wtf 解释死锁：小明拿着尺子等橡皮，小红拿着橡皮等尺子。",
+      "expected_output": "用循环等待图区分谁持有、谁等待哪件物品；让读者看出双方都不松手就无法继续。映射到程序里的资源与等待，不引入一串未解释的并发术语。"
+    },
+    {
+      "id": "wtf-source-grounding",
+      "prompt": "用 wtf 解释这段代码，不要改：function read(key) { if (cache.has(key)) return cache.get(key); return db.get(key); }",
+      "expected_output": "图中准确呈现缓存存在与不存在的两条返回路径，指出这段代码没有把数据库结果写回缓存。不能套用示例凭空补出写回步骤，不修改代码或执行写操作。"
+    },
+    {
+      "id": "wtf-comparison",
+      "prompt": "进程和线程到底有什么区别？像给 10 岁孩子讲一样，多画终端图，少写文字。",
+      "expected_output": "用一个生活比喻和包含关系或对照图解释两者，以相同维度对比资源共享与隔离；清楚标明通常情况下同一进程内的线程共享内存，避免把进程间通信说成不可能。"
+    },
+    {
+      "id": "wtf-no-invented-measurements",
+      "prompt": "wtf，加缓存能快多少？画个性能对比图。我还没有测量数据。",
+      "expected_output": "不伪造速度、百分比或条形长度代表真实性能；用访问路径对照图说明可能省下的工作，并用短句说明实际收益依赖命中情况和访问成本，需要测量。"
+    },
+    {
+      "id": "wtf-simple-question",
+      "prompt": "wtf，缓存命中就是在缓存里找到了吗？",
+      "expected_output": "直接简短确认，最多用一张小图帮助理解；不强行输出三四张图，不展开完整缓存架构。"
+    },
+    {
+      "id": "wtf-narrow-terminal",
+      "prompt": "用 wtf 讲清楚排队买票的过程，我的终端只有 40 列宽。",
+      "expected_output": "用纵向字符图呈现加入队尾、等前面的人、轮到自己、买票离开，每行显示宽度不超过 40 列；中文按通常双列计，不用宽表格、emoji 或依赖浏览器的图。"
+    },
+    {
+      "id": "wtf-followup-format",
+      "prompt": "前面用了 wtf 解释缓存。这次不要图，只用一句话解释缓存过期。",
+      "expected_output": "遵从本轮格式要求，只用一句通俗的话解释旧副本到期后不能继续按有效副本使用，不因技能默认要求强行画图。"
+    }
+  ]
+}

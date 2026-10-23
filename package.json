@@ -1,7 +1,7 @@
 {
   "name": "@flamemida/spec-dev",
   "version": "9.0.3",
-  "description": "pi 平台分发清单",
+  "description": "设计→计划→执行 skill 管线、全能验收与 wtf 大白话终端图解（Pi 分发）",
   "license": "MIT",
   "files": [
     ".agents/",
