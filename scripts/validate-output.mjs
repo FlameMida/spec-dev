@@ -1,0 +1,324 @@
+#!/usr/bin/env node
+// 子代理输出的确定性契约校验器：失败退回补全，而不是靠主进程模型目测。
+// 用法: node scripts/validate-output.mjs <schema-name> <json-file>
+//       node scripts/validate-output.mjs plan-index <plan目录>
+// schema 来源: scripts/schemas/<schema-name>.json（JSON Schema 子集，见 schemas/README.md）
+// plan-index 模式：校验分文件计划形态（index.md 导航表 ↔ tasks/ 文件一致、依赖存在、无环）、单任务文件 ≤ 200 行
+import { existsSync, readFileSync, readdirSync, statSync, createReadStream } from "node:fs";
+import { createHash } from "node:crypto";
+import path from "node:path";
+import { parseParallelBlock } from "./lib/parallel-plan.mjs";
+import { validateIntegrationPlan, inspectPlanState } from "./lib/integration-plan.mjs";
+import {execFileSync} from "node:child_process";
+import {readScopes,validateScopeOrder} from "../guardrail/lib/task-scopes.mjs";
+import {resolveWrite} from "../guardrail/lib/write-paths.mjs";
+import { fileURLToPath } from "node:url";
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const schemasDir = path.join(scriptDir, "schemas");
+
+const [schemaName, jsonFile] = process.argv.slice(2);
+
+if (!schemaName || !jsonFile) {
+  printUsage();
+  process.exit(2);
+}
+
+if (schemaName === "plan-state") {
+  const result = inspectPlanState(jsonFile);
+  (result.ok ? console.log : console.error)(JSON.stringify(result, null, 2));
+  process.exit(result.ok ? 0 : 1);
+}
+
+if (schemaName === "plan-index") {
+  validatePlanIndex(jsonFile); // jsonFile 参数位复用为 plan 目录
+}
+
+try {
+  const schemaPath = path.join(schemasDir, `${schemaName}.json`);
+  if (!existsSync(schemaPath)) {
+    fail(schemaName, jsonFile, [
+      { path: "(schema)", expected: `schema file ${path.relative(process.cwd(), schemaPath)}`, actual: "missing" },
+    ]);
+  }
+  if (!existsSync(jsonFile)) {
+    fail(schemaName, jsonFile, [{ path: "(file)", expected: "existing JSON file", actual: "missing" }]);
+  }
+
+  const schema = parseJson(schemaPath, "(schema)");
+  const data = parseJson(jsonFile, "(root)");
+
+  const errors = [];
+  validate(data, schema, "$", errors);
+  if (schemaName === "acceptance-check-items" && errors.length === 0) {
+    await verifyAcceptanceEvidence(data, path.dirname(path.resolve(jsonFile)), errors);
+  }
+
+  if (errors.length > 0) {
+    fail(schemaName, jsonFile, errors);
+  }
+
+  const acceptance = schemaName === "acceptance-check-items" ? acceptanceSummary(data) : {};
+  console.log(JSON.stringify({ ok: true, schema: schemaName, file: jsonFile, ...acceptance }, null, 2));
+} catch (error) {
+  fail(schemaName, jsonFile, [
+    { path: "(internal)", expected: "valid input", actual: error instanceof Error ? error.message : String(error) },
+  ]);
+}
+
+function printUsage() {
+  console.log(`Usage: node scripts/validate-output.mjs <schema-name> <json-file>
+       node scripts/validate-output.mjs plan-index <plan目录>
+       node scripts/validate-output.mjs plan-state <plan目录>
+
+Validates a JSON file against scripts/schemas/<schema-name>.json.
+Supported schema subset: type, required, properties, items, enum, const,
+minimum, maximum, minItems, maxItems, minLength, maxLength, pattern,
+additionalProperties, if/then/else.
+plan-index mode validates a split-file plan directory (index.md nav table
+vs tasks/ files, dangling deps, cycles).
+
+Output: {ok:true, schema, file} on success;
+        {ok:false, schema, file, errors:[{path, expected, actual}]} and exit 1 on failure.`);
+}
+
+function parseJson(filePath, label) {
+  try {
+    return JSON.parse(readFileSync(filePath, "utf8"));
+  } catch (error) {
+    throw new Error(`${label} is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+// Artifact integrity is mechanical. Whether these bytes support the claimed
+// behavior, cover the approved scope and apply to the running build is reviewed
+// by the caller; an exit code of zero never certifies that semantic judgment.
+async function verifyAcceptanceEvidence(data, directory, errors) {
+  const verified = new Map();
+  async function verify(entry, label, required) {
+    if (!entry.evidence_ref?.trim() && !required) return;
+    try {
+      const file = path.resolve(directory, entry.evidence_ref);
+      if (!verified.has(file)) {
+        const stat = statSync(file);
+        if (!stat.isFile()) throw new Error('not a regular file');
+        if (stat.size === 0) throw new Error('empty evidence');
+        const digest = createHash('sha256');
+        for await (const chunk of createReadStream(file)) digest.update(chunk);
+        verified.set(file, digest.digest('hex'));
+      }
+      const hash = verified.get(file);
+      if (hash !== entry.evidence_sha256) throw new Error('SHA-256 mismatch');
+    } catch (error) {
+      errors.push({path: label + '.evidence_ref', expected: 'existing nonempty artifact with matching SHA-256', actual: error.message});
+    }
+  }
+  for (const [index, item] of data.items.entries()) {
+    await verify(item, `$.items[${index}]`, item.result !== 'unverified');
+    if (item.recheck) await verify(item.recheck, `$.items[${index}].recheck`, true);
+  }
+}
+
+function acceptanceSummary(data) {
+  const required = data.items.filter(item => item.required);
+  const reported_result = required.some(item => item.result === 'fail') ? 'fail'
+    : required.length > 0 && required.every(item => item.result === 'pass') ? 'pass' : 'incomplete';
+  return {evidence_verified: true, reported_result, semantic_review_required: true};
+}
+
+function typeOf(value) {
+  if (value === null) return "null";
+  if (Array.isArray(value)) return "array";
+  return typeof value;
+}
+
+function validate(value, schema, pathLabel, errors) {
+  if (schema.type) {
+    const actual = typeOf(value);
+    if (actual !== schema.type) {
+      errors.push({ path: pathLabel, expected: `type ${schema.type}`, actual: `type ${actual}` });
+      return; // 类型错误后不再做内部校验，避免误报连锁
+    }
+  }
+
+  if (schema.enum) {
+    if (!schema.enum.includes(value)) {
+      errors.push({ path: pathLabel, expected: `one of [${schema.enum.join(", ")}]`, actual: JSON.stringify(value) });
+      return;
+    }
+  }
+
+  // const：字面量相等（官方 AP schema 用它锁 $schema 的规范标识）
+  if (schema.const !== undefined) {
+    if (JSON.stringify(value) !== JSON.stringify(schema.const)) {
+      errors.push({ path: pathLabel, expected: `const ${JSON.stringify(schema.const)}`, actual: JSON.stringify(value) });
+      return;
+    }
+  }
+
+  if (schema.type === "number") {
+    if (typeof schema.minimum === "number" && value < schema.minimum) {
+      errors.push({ path: pathLabel, expected: `>= ${schema.minimum}`, actual: String(value) });
+    }
+    if (typeof schema.maximum === "number" && value > schema.maximum) {
+      errors.push({ path: pathLabel, expected: `<= ${schema.maximum}`, actual: String(value) });
+    }
+  }
+
+  if (schema.type === "string") {
+    if (typeof schema.minLength === "number" && value.length < schema.minLength) {
+      errors.push({ path: pathLabel, expected: `length >= ${schema.minLength}`, actual: `length ${value.length}` });
+    }
+    if (typeof schema.maxLength === "number" && value.length > schema.maxLength) {
+      errors.push({ path: pathLabel, expected: `length <= ${schema.maxLength}`, actual: `length ${value.length}` });
+    }
+    if (typeof schema.pattern === "string" && !new RegExp(schema.pattern).test(value)) {
+      errors.push({ path: pathLabel, expected: `match ${schema.pattern}`, actual: JSON.stringify(value) });
+    }
+  }
+
+  if (schema.type === "array") {
+    if (typeof schema.minItems === "number" && value.length < schema.minItems) {
+      errors.push({ path: pathLabel, expected: `>= ${schema.minItems} items`, actual: `${value.length} items` });
+    }
+    if (typeof schema.maxItems === "number" && value.length > schema.maxItems) {
+      errors.push({ path: pathLabel, expected: `<= ${schema.maxItems} items`, actual: `${value.length} items` });
+    }
+    if (schema.items) {
+      value.forEach((item, index) => validate(item, schema.items, `${pathLabel}[${index}]`, errors));
+    }
+  }
+
+  if (schema.type === "object") {
+    for (const key of schema.required ?? []) {
+      if (!(key in value)) {
+        errors.push({ path: `${pathLabel}.${key}`, expected: "required field present", actual: "missing" });
+      }
+    }
+    if (schema.properties) {
+      for (const [key, childSchema] of Object.entries(schema.properties)) {
+        if (key in value) {
+          validate(value[key], childSchema, `${pathLabel}.${key}`, errors);
+        }
+      }
+    }
+    if (schema.additionalProperties !== undefined) {
+      const known = new Set(Object.keys(schema.properties ?? {}));
+      for (const key of Object.keys(value)) {
+        if (!known.has(key)) {
+          if (schema.additionalProperties === false) {
+            errors.push({ path: `${pathLabel}.${key}`, expected: "no extra properties (additionalProperties: false)", actual: "unexpected property" });
+          } else if (typeof schema.additionalProperties === "object") {
+            validate(value[key], schema.additionalProperties, `${pathLabel}.${key}`, errors);
+          }
+        }
+      }
+    }
+  }
+
+  // if/then/else：if 子 schema 通过则应用 then，否则应用 else（子 schema 需自带 type）
+  if (schema.if) {
+    const condErrors = [];
+    validate(value, schema.if, pathLabel, condErrors);
+    const branch = condErrors.length === 0 ? schema.then : schema.else;
+    if (branch) {
+      validate(value, branch, pathLabel, errors);
+    }
+  }
+}
+
+function fail(schema, file, errors) {
+  console.error(JSON.stringify({ ok: false, schema: schema ?? null, file: file ?? null, errors }, null, 2));
+  process.exit(1);
+}
+
+// 分文件计划形态的结构校验：文件↔导航表一致、依赖存在、无环。
+function validatePlanIndex(planDir) {
+  const errors = [];
+  const failAndExit = () => {
+    console.error(JSON.stringify({ ok: false, schema: "plan-index", file: planDir, errors }, null, 2));
+    process.exit(1);
+  };
+
+  const indexPath = path.join(planDir, "index.md");
+  const tasksDir = path.join(planDir, "tasks");
+  if (!existsSync(indexPath)) errors.push({ path: "index.md", expected: "present", actual: "missing" });
+  if (!existsSync(tasksDir)) errors.push({ path: "tasks/", expected: "present", actual: "missing" });
+  if (errors.length) failAndExit();
+
+  // 依赖列写法：单个 ID（T03）或闭区间（T01-T06 → T01…T06 全部）；倒序入 errors，区间内缺号由下方悬空检测报出
+  const expandDeps = (cell, taskId) => {
+    const deps = [];
+    // 变体写法（en/em dash、链式区间）不降级为端点——直接报错，避免静默丢依赖
+    const variant = cell.match(/T\d\d\s*[—–]\s*T\d\d|T\d\d\s*-\s*T\d\d\s*-\s*T\d\d/);
+    if (variant) errors.push({ path: `${taskId}.deps`, expected: "ASCII hyphen range TNN-TMM", actual: variant[0] });
+    const re = /T(\d\d)(?:\s*-\s*T(\d\d))?/g;
+    let m;
+    while ((m = re.exec(cell)) !== null) {
+      if (m[2] === undefined) { deps.push(`T${m[1]}`); continue; }
+      const lo = Number(m[1]);
+      const hi = Number(m[2]);
+      if (lo > hi) { errors.push({ path: `${taskId}.deps`, expected: "ascending range", actual: m[0] }); continue; }
+      for (let n = lo; n <= hi; n += 1) deps.push(`T${String(n).padStart(2, "0")}`);
+    }
+    return deps;
+  };
+  const rows = readFileSync(indexPath, "utf8")
+    .split("\n")
+    .map((l) => l.match(/^\|\s*(T\d\d)\b[^|]*\|\s*([^|]*)\|/))
+    .filter(Boolean)
+    .map((m) => ({ id: m[1], deps: expandDeps(m[2], m[1]) }));
+  const ids = rows.map((r) => r.id);
+  const taskFiles = readdirSync(tasksDir).filter((f) => /^T\d\d.*\.md$/.test(f));
+  const files = taskFiles.map((f) => f.match(/^T\d\d/)[0]);
+
+  // 单任务文件上限（writing-plans「计划体量」）：超限报错，逼迫拆任务或收敛片段
+  const TASK_LINE_CAP = 200;
+  for (const f of taskFiles) {
+    const count = readFileSync(path.join(tasksDir, f), "utf8").replace(/\n$/, "").split("\n").length;
+    if (count > TASK_LINE_CAP) errors.push({ path: `tasks/${f}`, expected: `<= ${TASK_LINE_CAP} lines`, actual: `${count} lines` });
+  }
+
+  if (new Set(ids).size !== ids.length) errors.push({ path: "index.md", expected: "unique task ids", actual: "duplicates" });
+  for (const id of ids) if (!files.includes(id)) errors.push({ path: `tasks/${id}.md`, expected: "file for table row", actual: "missing" });
+  for (const f of files) if (!ids.includes(f)) errors.push({ path: `index.md#${f}`, expected: "table row for file", actual: "missing" });
+  for (const r of rows) for (const d of r.deps) if (!ids.includes(d)) errors.push({ path: `${r.id}.deps`, expected: "existing task", actual: `dangling ${d}` });
+
+  // 环检测（DFS 三色）
+  const color = new Map(ids.map((id) => [id, 0]));
+  const adj = new Map(rows.map((r) => [r.id, r.deps.filter((d) => ids.includes(d))]));
+  const dfs = (u) => {
+    color.set(u, 1);
+    for (const v of adj.get(u) ?? []) {
+      if (color.get(v) === 1) {
+        errors.push({ path: u, expected: "acyclic deps", actual: `cycle via ${v}` });
+        return;
+      }
+      if (color.get(v) === 0) dfs(v);
+    }
+    color.set(u, 2);
+  };
+  for (const id of ids) if (color.get(id) === 0) dfs(id);
+
+  let scopes=null;
+  try {
+    scopes=readScopes(readFileSync(indexPath,"utf8"),ids);
+    if(scopes){
+      validateScopeOrder(scopes,rows);
+      let repo=null;
+      try{repo=execFileSync("git",["-C",planDir,"rev-parse","--show-toplevel"],{encoding:"utf8",stdio:["ignore","pipe","pipe"]}).trim();}catch{}
+      if(repo)for(const task of Object.values(scopes.tasks))for(const file of [...task.writes,...task.specs])resolveWrite(repo,file,{allowSpecDev:true});
+    }
+  } catch(error){errors.push({path:"index.md#scopes",expected:"valid task scope declaration",actual:error.message});}
+
+  try {
+    parseParallelBlock(readFileSync(indexPath, "utf8"), ids);
+  } catch (error) {
+    errors.push({ path: "index.md#parallel", expected: "valid optional parallel declaration", actual: error.message });
+  }
+
+  errors.push(...validateIntegrationPlan(planDir));
+  if (errors.length) failAndExit();
+  console.log(JSON.stringify({ ok: true, schema: "plan-index", file: planDir, ...(scopes?{scope_protocol_version:1}:{}) }, null, 2));
+  process.exit(0);
+}

@@ -1,0 +1,21 @@
+{
+  "skill_name": "clarifying",
+  "description_under_test": "见 SKILL.md frontmatter",
+  "should_trigger": [
+    { "id": "t1", "prompt": "把我这个重构方案逐题问清楚，别放过任何含糊的地方" },
+    { "id": "t2", "prompt": "grill me：我想把通知系统改成事件驱动" },
+    { "id": "t3", "prompt": "对着我的上线计划审我一轮，每个决定都问到底" },
+    { "id": "t4", "prompt": "帮我把'要不要自建对象存储'这个决定磨到能拍板" },
+    { "id": "t5", "prompt": "interview me relentlessly about this migration plan until we agree" },
+    { "id": "t6", "prompt": "我脑子里有个 API 网关的想法，你一个问题一个问题帮我理清楚" }
+  ],
+  "should_not_trigger": [
+    { "id": "n1", "prompt": "我在想要不要给产品加离线模式，帮我想想" },
+    { "id": "n2", "prompt": "GraphQL 和 REST 哪个更适合我们？陪我聊聊思路" },
+    { "id": "n3", "prompt": "给系统加一个用户权限管理功能" },
+    { "id": "n4", "prompt": "把这个 bug 修一下：分页翻到第二页会重复第一条" },
+    { "id": "n5", "prompt": "这个函数在哪里定义的？" },
+    { "id": "n6", "prompt": "help me think through whether a plugin system is worth building" }
+  ],
+  "notes": "t1-t6 的共同信号：用户主动要求被逐题审问/磨清楚（'逐题问清楚''grill''审我一轮''磨到能拍板''一个问题一个问题'），对象是一个已有雏形的想法/计划/决定。n1/n2/n6 是发散式思考陪伴（'帮我想想''聊聊思路'——exploring 领地，clarifying 是收敛不是发散）；n3 已承诺交付的功能开发（requirement-analysis 领地，其阶段 3 会以被引用模式使用本纪律）；n4 已决定的无设计空间小修（quick-fix 领地）；n5 单点事实问答。近失负例检验 description 中'收敛式逐题 vs 发散式陪伴'的双向互斥边界。"
+}

@@ -1,0 +1,65 @@
+# 输出契约 Schemas
+
+子代理（agent）输出的 JSON 契约定义。配合插件根 `scripts/validate-output.mjs` 做**确定性校验**——子代理输出落盘后由脚本校验，失败退回补全，而不是靠主进程模型目测。
+
+## 用法
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" <schema-name> <json-file>
+```
+
+- `<schema-name>`：本目录下的文件名（不含 `.json`），如 `review-findings`
+- `<json-file>`：子代理输出落盘的 JSON 文件路径
+- 成功：stdout 输出 `{ok:true, schema, file}`，退出码 0
+- 失败：stderr 输出 `{ok:false, schema, file, errors:[{path, expected, actual}]}`，退出码 1——校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「输出契约与校验」）
+
+> `${CLAUDE_PLUGIN_ROOT}` 指向插件安装根目录（插件根）；写法约定与未替换时的解析序列见 `skills/requirement-analysis/references/exploration-patterns.md`「插件根解析」节（唯一定义点）。
+
+## Schema 子集范围
+
+只实现 JSON Schema 的以下关键字（够用即可，不实现完整规范）：
+
+| 关键字 | 适用类型 | 说明 |
+|--------|----------|------|
+| `type` | 所有 | `object` / `array` / `string` / `number` / `boolean` |
+| `required` | object | 必填字段名数组 |
+| `properties` | object | 子字段 schema（递归） |
+| `items` | array | 数组元素 schema（递归） |
+| `enum` | 所有 | 枚举值数组 |
+| `const` | 所有 | 字面量相等（官方 AP schema 用它锁 `$schema` 规范标识） |
+| `minimum` / `maximum` | number | 数值范围 |
+| `minItems` / `maxItems` | array | 数组长度范围 |
+| `minLength` / `maxLength` | string | 字符串长度范围（`minLength: 1` 即禁止空串） |
+| `pattern` | string | 正则匹配（ECMAScript 方言） |
+| `additionalProperties` | object | `false` 禁止 properties 外的键；schema 对象则对未知键递归校验 |
+| `if` / `then` / `else` | 所有 | 条件校验：`if` 子 schema 通过则应用 `then`，否则应用 `else`；子 schema 需显式写 `type` |
+
+## 契约清单
+
+| Schema | 用途 | 生产方 | 消费方 |
+|--------|------|--------|--------|
+| `exploration-report` | 探索报告 | code-explorer | requirement-analysis 阶段 2（deep 档 multi-modal sweep） |
+| `review-findings` | 审查发现 | code-reviewer | executing-plans 收尾审查编排 |
+| `acceptance-check-items` | 验收检查项 | acceptance-qa（Tier A 为主，D/X 结论并入） | 验收编排与复核、executing-plans 收尾审查 |
+| `implementation-result` | 实现票结果（结构校验后仍须核对真实 Git） | implementer | executing-plans 主线程 |
+| `agent-plugin-1.0.0` | Agent Plugins 1.0.0 官方 manifest schema（上游 https://agent-plugins.org/schemas/1.0.0/plugin.schema.json 的 vendored 快照） | —（校验目标） | `node scripts/validate-output.mjs agent-plugin-1.0.0 plugin.json`（验收矩阵官方 schema 校验点） |
+
+每个契约的 `coverage_note` 一律必填且非空——这是「no silent caps」纪律的落点：截断/未覆盖范围必须显式声明，不允许静默缩水。`acceptance-check-items` 还要求非空 check/ops/expected/observed 与布尔 required。pass/fail/warn 必须引用实际非空 evidence_ref 文件及匹配的 evidence_sha256；路径相对 JSON 文件，也可为绝对路径。recheck 同样核验原件。unverified 可无证据，但 observed 说明缺口。历史原件不强制迁移，新记录遵循现行 schema。
+
+验收成功输出另含 `evidence_verified:true`、`reported_result: pass|fail|incomplete` 和 `semantic_review_required:true`。reported_result 只汇总 required 行的自报告状态；required fail 为 fail，warn/unverified 或没有 required 行为 incomplete。工具退出0、文件与哈希一致均不证明来源真实、预期成立、范围完整或版本适用；消费方仍须做语义与覆盖核对。
+
+## 新增 schema 的步骤
+
+1. 在本目录创建 `<name>.json`，只使用上表关键字；
+2. 顶层必须是 `{"type": "object", "required": [...], "properties": {...}}`；
+3. 若输出可能被截断或缩小范围，加入必填的 `coverage_note: {"type": "string"}`；
+4. 构造 1 个合法 + 若干非法样例，用 validate-output.mjs 跑通后再在 skill 文档中引用；
+5. 在上方契约清单表中登记用途与消费方。
+
+## 审查符合性类别
+
+review-findings 的 category 增加 `Spec符合性`，用于 S 原始发现；D 沿用质量/规范/建议。必填字段不变。契约原文/路径:行、实现证据与偏差写入 description；覆盖范围、Scenario、测试证据指针及缺口写入 coverage_note。机器校验只检查结构与类别，不保证引用真实或行为成立，语义由主线程复核和 completeness critic 核查。空 findings 搭配非空 coverage_note 是合法报告，不自动代表全部覆盖或交付。
+
+## 集成组校验
+
+`plan-index <plan-dir>` 校验可选 json spec-dev-integration 声明、角色、组出口与 v2 形状；无组旧路径不变。`plan-state <plan-dir>` 仅接收含组 v2（progress.yaml 内为 JSON 子集），核对已提交进度、Git 与证据，输出 protocol_version=1、active_group 和 ready_tasks。exit 0 是记录一致，业务 blocked 可以 ready_tasks=[]；未知版本、未提交检查点或证据不符 exit 1。CLI 只读，不取得锁、不执行测试、不代替模型/主线程判断日志语义。所有插件根命令沿现有解析定义。

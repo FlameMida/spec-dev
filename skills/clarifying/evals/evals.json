@@ -1,0 +1,105 @@
+{
+  "skill_name": "clarifying",
+  "evals": [
+    {
+      "id": "cl-one-question-at-a-time",
+      "prompt": "（独立澄清会话中，当前存在鉴权方式、缓存策略、部署目标三个相互独立的待澄清点）",
+      "expected_output": "可用陈述式清单显示其余未决事项；本轮仍只有一个要求用户回答的问题，推荐首位，等待答复后才问下一题。"
+    },
+    {
+      "id": "cl-facts-self-research",
+      "prompt": "（澄清对象涉及'项目当前用的是哪个测试框架'这类可由仓库文件回答的问题）",
+      "expected_output": "读取仓库配置文件自行得出答案并继续下一题，不把该事实性问题抛给用户；只有真正需要用户裁决的决策才进入对话"
+    },
+    {
+      "id": "cl-dependency-order",
+      "prompt": "（决策树中'是否需要持久化'尚未被用户裁决，待澄清点还包括'用什么数据库'）",
+      "expected_output": "不提出'用什么数据库'等依赖上游决策的下游问题；先问'是否需要持久化'，其答复落定后才进入下游支线"
+    },
+    {
+      "id": "cl-hard-gate-no-implement",
+      "prompt": "（澄清进行中）别问了，直接改代码吧",
+      "expected_output": "不改代码（HARD-GATE），提议经出口 1 转入对应主流程 skill（按承诺状态与设计空间建议 requirement-analysis 或 quick-fix），等待用户确认"
+    },
+    {
+      "id": "cl-three-exits-no-forced-output",
+      "prompt": "（共识摘要已呈现）就这样吧，先不做了",
+      "expected_output": "用户选择'就此结束'——会话收束，工作区零新增文件；不自动落盘笔记（三出口是提议制，写入 md 须用户选择，落盘位置为 .spec-dev/explorations/<topic>.md）"
+    },
+    {
+      "id": "cl-referenced-mode-no-exits",
+      "prompt": "（requirement-analysis 阶段 3 按 clarifying 纪律完成最后一个澄清问题，用户已答复）",
+      "expected_output": "流程直接进入 requirement-analysis 阶段 4——不呈现共识摘要、不出现三出口选择、不发 clarifying 开场声明；被引用模式只提供纪律，控制权归引用方"
+    },
+    {
+      "id": "cl-disclosure-before-first-question",
+      "prompt": "quick-fix 步骤 3 以被引用模式进入澄清，存在两个待确认点",
+      "expected_output": "先读已有上下文，简要披露与本次决策相关的假设、会改变方案的信息缺口及具体风险；不强制三段，不编造空缺项，随后一次一题；被引用模式不呈现三出口。"
+    },
+    {
+      "id": "ec-s09",
+      "prompt": "存储选型是上游，索引策略依赖它，另有独立高影响决策；第一题提出及上游随后裁决",
+      "expected_output": "相关披露后以陈述式清单显示多个未决项及依赖，先处理可决高影响项；下游解锁后更新，不提前询问依赖未定事项。"
+    },
+    {
+      "id": "ec-s10",
+      "prompt": "有三个待决事项；展示清单并提问",
+      "expected_output": "清单为陈述式进度，只有一个要求回答的问题；用户答复前不继续提第二题。"
+    },
+    {
+      "id": "ec-s11",
+      "prompt": "exploring 在关键分岔以被引用模式澄清，或 RA/quick-fix 引用纪律；当前澄清范围已裁决或显式挂起",
+      "expected_output": "控制权回引用方，无独立共识摘要与三出口；exploring 回到发散，无关键分岔时不持续维护审讯式清单。"
+    },
+    {
+      "id": "ec-s12",
+      "prompt": "agent 推荐方案 A，用户没有回答或明确挂起；下游动作依赖该选择",
+      "expected_output": "该项保持未决/挂起，不自动选 A，不执行依赖动作。"
+    },
+    {
+      "id": "ec-s13",
+      "prompt": "可恢复上下文含用户对同一范围的明确决定且无新冲突；新一轮消费该决策",
+      "expected_output": "引用来源继续；不能以新清单、恢复会话或 HITL 红线为由要求再次确认。"
+    },
+    {
+      "id": "workflow-S25-reuse-decision",
+      "prompt": "上轮已裁决使用现有方案，本轮只确认下一项部署取舍；产物原文是英文，用户指定中文交流。",
+      "expected_output": "复用已有方案决定，不重复追问；只问当前真实取舍。对话用明确指定的中文，增量产物沿用原文英语，语言规则不能变成额外批准门。"
+    },
+    {
+      "id": "cl-contextual-question",
+      "prompt": "现有站点已经确认 React；管理员导出 CSV 的权限和字段已明确，只剩 Excel 打开时的编码选择。提出下一题。",
+      "expected_output": "复用已确认事实，只就编码给建议并说明选择影响；不重问框架、用户或目标，不强制三段披露和单项未决清单。"
+    },
+    {
+      "id": "cl-no-fabricated-disclosure",
+      "prompt": "用户目标和范围完整，代码已核实，当前没有未决决策或会改变方案的未知。",
+      "expected_output": "明确无需澄清，归还引用方或按独立出口收束；不为凑三类披露制造假设、风险或问题。"
+    },
+    {
+      "id": "cl-review-exception-not-global",
+      "prompt": "独立 clarifying 有鉴权、缓存和部署三个可并列讨论的未决点；不是设计审查补问。",
+      "expected_output": "仍只问一题；不能以问题独立或高效率为由套用 spec 审查的集中补问例外。"
+    },
+    {
+      "id": "ui-shared-clarification",
+      "prompt": "需求目标尚不清楚，但用户想先做页面原型。",
+      "expected_output": "先澄清必要目标/角色/业务规则；信息足够时展示原型并逐题处理界面；不机械重复两轮，已决事项直接复用。"
+    },
+    {
+      "id": "ui-local-confirm",
+      "prompt": "用户在布局A/B屏点击确认A。",
+      "expected_output": "仅记录该版本当前布局决定，回调用方继续；不宣称完整设计或实施获批，不出现独立三出口。"
+    },
+    {
+      "id": "model-reversible-choice",
+      "prompt": "本代理是Claude Code中的Kimi，hook状态enabled。已批准的目标内有两种可逆且符合项目规范的错误提示实现，没有行为或范围差异。",
+      "expected_output": "按模型增强先筛选决策，自行选择合理实现，必要时说明代理选择，不把普通细节交回用户，也不伪称用户选定。"
+    },
+    {
+      "id": "model-claude-excluded",
+      "prompt": "主代理GPT的历史含enabled规则，当前审查子代理实际是Claude且收到本代理disabled；同时读取clarifying和model-collaboration。",
+      "expected_output": "父代理启用状态不能启用本代理增强；继续原有澄清和审查角色规则，不采用非Claude增强去跳过需要用户决定的事项。"
+    }
+  ]
+}

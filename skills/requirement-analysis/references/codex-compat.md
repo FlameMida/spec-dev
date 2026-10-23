@@ -1,0 +1,101 @@
+# Codex 兼容指南
+
+> **阅读时机**：仅当运行环境为 Codex 时阅读本文件；Claude Code 环境无需加载。
+> 本文件是全 skill 共用的 Codex 适配定义点：工具映射总表只在此完整陈述，各 skill 以 gist + 指针引用、不复述整表；其余各节是 Codex 下的详细规则（任务管理、并行子任务、外部探索、git 提交），skill 专属的 Codex 降级节可保留在各自文件；「提问规范」「spec 审查子代理」两节为 requirement-analysis 专属。pi / Grok Build 等其他平台的差异见 README「Platform matrix / 平台矩阵」。各 skill 定义"做什么"，本文件定义 Codex 下"用什么工具做"。
+
+---
+
+## 环境判定
+
+以下只判定工具宿主，不判定模型家族。[模型协作增强](model-collaboration.md) 独立按本代理当前 hook 状态启用；Claude Code 中的 Kimi/GLM 也可启用，不能因缺少 Claude 工具就推定模型不是 Claude。
+
+满足以下任一特征即视为运行在 Codex：
+
+- 会话内不存在 `AskUserQuestion`、`TaskCreate`/`TaskUpdate`、`Agent` 等 Claude Code 工具
+- 存在 `update_plan`、`spawn_agent`、`wait_agent` 等 Codex 工具
+- 系统提示或产品说明中标明 Codex / OpenAI 环境
+
+无法判定时按 Claude Code 规则执行，遇到工具缺失再按本文件映射降级。
+
+---
+
+## 工具映射总表
+
+| 用途 | Claude Code | Codex |
+|------|-------------|-------|
+| 用户澄清/确认 | `AskUserQuestion` 或对话，问题数量按当前环节纪律 | 当前可用提问工具或对话，按同一环节纪律等待回复 |
+| 技能加载/流程转交 | 有可用且允许调用的 `Skill` 工具时按其契约加载 | 使用宿主实际提供的加载能力；无原生工具时按技能目录读取真实定义，见下节 |
+| 进度跟踪 | `TaskCreate` / `TaskUpdate` | `update_plan` |
+| 并行子任务 | `Agent`（按实际容量尽早派发） | `spawn_agent`（上下文继承参数见下文"并行子任务"），需要结果时 `wait_agent` |
+| 项目规范文件 | 优先 `CLAUDE.md`，找不到再查 `AGENTS.md` | 优先 `AGENTS.md`，找不到再查 `CLAUDE.md` |
+| 网页搜索 | anysearch skill（内嵌）→ `WebSearch` 降级 | anysearch skill（内嵌）→ 内置 web 搜索降级（托管 `web_search` 工具，会话开启联网时可用） |
+
+---
+
+## 跨技能加载与调用
+
+首次跨技能读取或流程转交前，取得 [共享加载约定](exploration-entry.md#技能定义与流程调用)。工具映射只决定如何取得规则，不改变被引用模式、业务门槛或用户授权。
+
+不假设 Codex 一定有名为 `Skill` 的工具，也不把工具缺失等同于技能缺失。原生接口及其参数以当前实际能力为准；没有原生加载工具时，按会话目录给出的真实文件路径或资源提供方取得规则。读取范围、已有定义复用与调用限制均沿共享约定，不把读取报告成已执行流程。
+
+---
+
+## 任务管理（Checklist 各项通用）
+
+- 阶段开始：`update_plan` 将该项标记 `in_progress`；阶段完成：标记 `completed`
+- 被跳过的项：标记 `completed` 并在 explanation 中注明"已跳过"及原因
+- **断点恢复**：检查最近一次 `update_plan`，从最后一个 `in_progress` 或未完成项继续，已完成项不重做
+- 任务管理功能不可用时：降级为纯文本阶段进度说明，继续主流程并向用户说明
+
+---
+
+## 提问规范（阶段 4 方案选定、阶段 5 设计批准、阶段 7 spec review 三道门）
+
+阶段 3 的普通澄清遵循 [clarifying 核心纪律](../../clarifying/SKILL.md)，此处只映射提问工具，不重复定义问题数量或形式。
+
+三道门（方案选定 / 设计批准 / spec review）通过当前可用提问工具或普通对话呈现，等待用户明确回复后再继续；不要求用户切换模式。产物 review 的陈述式检查点与一次整体确认沿 [Spec 审查](spec-review.md)；进入阶段 7 的未决事项处置前实际读取其「审查结果分类与集中补问」，普通澄清、审查补问和整体批准各守原边界。本文件不另设批问或逐题规则，也不把读取、推荐或沉默当作批准。集成组 capability/JSON v2 与状态检查定义在 writing-plans 和 integration-groups，不在本表复制。
+
+---
+
+## 并行子任务（阶段 2 探索及回补探索）
+
+- 使用 `spawn_agent` 并按任务需要继承主会话上下文；输入齐全且独立的主题尽早派发，允许同波次多调用和容量分批，只在需要结果时等待，不丢失待启动主题。
+- 上下文继承参数分版本：新版多代理工具用 `fork_turns`（`"all"` 继承全部、`"none"` 不继承、正整数字符串继承最近 N 轮），旧版用 `fork_context: true/false`。新版已移除 `fork_context` 并会直接报错——参数被拒绝时换用另一套即可
+- 需要结果时使用 `wait_agent` 收集
+- 失败先缩小范围重试 1 次，再失败主线程接管（定义见 exploration-patterns「派发要求与失败隔离」）
+
+---
+
+## 外部探索（阶段 2 外部波次）
+
+- 工具优先级与 Claude Code 端一致：通用外部研究/时效信息/垂直领域/多主题批量检索优先 **AnySearch**（插件内嵌 skill 自带 CLI，无 MCP 依赖）优先；不可用再降级 Codex 内置 web 搜索（托管 `web_search` 工具）
+- **外部 agent 定义加载**：遵循 [exploration-patterns.md](exploration-patterns.md) 的定义加载要求；RA/exploring 派发均传入已解析的定义绝对路径并要求先读，不能假定 spawn_agent 自动加载；来源规则仍只有 agent 文件一个定义点。
+- **派发词必须显式携带 AnySearch 提醒**：Codex 的 `spawn_agent` 不加载 `agents/*.md` 定义文件，子代理对工具优先级零感知——主线程派发外部探索任务时，须在派发 prompt 中写明 AnySearch 第一优先、CLI 调用方式（`python3 "${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py" search "查询词" --max_results 5`；python 缺依赖换同目录零依赖 Node 版 `anysearch_cli.js`，同参数；Codex 下 `${CLAUDE_PLUGIN_ROOT}` 是占位符，按 [exploration-patterns.md](exploration-patterns.md)「插件根解析」序列代入绝对路径）与降级链（AnySearch → 内置 web 搜索），重试与降级纪律以 [exploration-patterns.md](exploration-patterns.md) 为准
+- 网页搜索兜底：沙箱默认禁网，全部搜索工具不可用时降级为 `rg` + 本地文件阅读并向用户说明
+- 库文档： AnySearch，不可用再降级为网页搜索 + `rg` + 文件阅读
+
+---
+
+## 可视化预览（按原型契约自动入口）
+
+visual-preview 的服务器脚本自动检测 `CODEX_CI` 并切换前台模式，正常运行即可、无需额外参数；细节见 visual-preview skill 自身的说明。
+
+---
+
+## spec 审查子代理（阶段 7 对抗验证）
+
+用 `spawn_agent` 以**不继承主会话上下文**的方式派发（审查者不应继承主会话立场；`fork_turns: "none"`，参数版本兼容见上文"并行子任务"），提示词按 [spec-reviewer-prompt.md](spec-reviewer-prompt.md) 模板构造，`wait_agent` 收集结果。
+
+---
+
+## git 提交（阶段 6）
+
+Codex 沙箱 workspace-write 模式下工作区与 `.git` 常规内容可写，`git commit` 一般可以直接执行；但 `.git/hooks/` 与 `.codex/` 被强制只读。若因沙箱策略（如 read-only 模式）导致 commit 失败，向用户说明并请其授权或自行提交，spec 文件本身照常落盘。
+
+## 并发 implementer（已授权计划的默认编排）
+
+executing-plans 的 [并发模式](../../executing-plans/references/parallel-execution.md) 可派发有界实施子任务；主线程先读 agents/implementer.md，在 prompt 中提供其绝对路径并要求子代理先读，不能假设 spawn_agent 自动加载 agent 定义。模型声明见同一并发 reference；参数选择仍服从当前工具与用户约束，不硬编码模型、强度或并发上限。
+
+工具没有 cwd/worktree 参数时，主线程先建立并验证独立 worktree，派发绝对路径、branch/base_commit/claim_key 与指针输入，要求每条命令显式指定工作目录。首次写前 implementer 核对实际绑定；父 cwd 不构成隔离证明。不能可靠隔离或工具不允许写码代理时串行降级，不虚构原生 isolation 参数，不自行扩大授权。
+
+按当前工具查询 agent 生命周期并处理返回 ID；回执缺失先查 claim 与平台可见性，空列表不能证明终止。恢复须区分旧编排 owner 与存活 implementer，规则以 [并发恢复协议](../../executing-plans/references/parallel-activation-recovery.md) 为准。通用映射、外部检索和失败隔离沿本文件原定义。

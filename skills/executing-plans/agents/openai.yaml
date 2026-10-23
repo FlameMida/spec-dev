@@ -1,0 +1,7 @@
+interface:
+  display_name: "Executing Plans"
+  short_description: "执行已批准的书面计划，默认按依赖图并发派发就绪任务，支持持续补位、中断恢复、审查与交付。遵从明确串行要求，依赖或资源受限时顺序推进，不用于无计划的即兴修改。"
+  default_prompt: "用 $executing-plans 执行获批计划，默认并发派发就绪任务，按依赖和资源限制顺序推进并恢复已有状态。"
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,96 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, rmSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const doctor = path.join(repoRoot, "scripts/doctor.mjs");
+const runIn = (cwd, env = {}) => {
+  try {
+    return { out: execFileSync("node", [doctor, "--json"], { cwd, encoding: "utf8", env: { ...process.env, ...env } }), code: 0 };
+  } catch (e) {
+    return { out: e.stdout ?? "", code: e.status ?? 1 };
+  }
+};
+
+test("Scenario: 未安装 guardrail 的项目——明确判定与安装指引", () => {
+  const dir = mkdtempSync(path.join(tmpdir(), "doctor-"));
+  try {
+    execFileSync("git", ["init", "-q"], { cwd: dir });
+    const { out, code } = runIn(dir);
+    const r = JSON.parse(out);
+    assert.deepEqual(Object.keys(r).sort(), ['anysearch', 'guardrail', 'hooks', 'markers', 'platform']);
+    assert.equal(r.guardrail.installed, false);
+    assert.match(r.guardrail.hint, /guardrail\/install\.mjs/);
+    assert.equal(code, 1, "存在需修复项时退出码应为 1");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("Scenario: anysearch 双副本歧义提示", () => {
+  const dir = mkdtempSync(path.join(tmpdir(), "doctor-dup-"));
+  try {
+    execFileSync("git", ["init", "-q"], { cwd: dir });
+    mkdirSync(path.join(dir, "fake-home/.claude/skills/anysearch-skill-main"), { recursive: true });
+    const { out } = runIn(dir, { DOCTOR_HOME: path.join(dir, "fake-home") });
+    const r = JSON.parse(out);
+    assert.ok(r.anysearch.duplicates.length >= 1, "应检出独立副本");
+    assert.match(r.anysearch.hint, /standalone|独立副本/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("Scenario: SessionStart hook 挂载域——声明式 hooks.json 与注入回放", () => {
+  const { out } = runIn(repoRoot);
+  const r = JSON.parse(out);
+  assert.ok(["ok", "declared-empty", "missing"].includes(r.hooks.declarative), "declarative 应为三态之一");
+  assert.equal(r.hooks.declarative, "ok", "本插件自带 hooks/hooks.json，SessionStart 声明应判 ok");
+  assert.ok(r.hooks.injectionReplay.length > 0, "注入决策回放不应为空");
+});
+
+test("Scenario: anysearch 版本滞后检测——三态且默认可判定", () => {
+  const { out } = runIn(repoRoot);
+  const r = JSON.parse(out);
+  assert.ok(
+    ["up-to-date", "lagging", "unknown"].includes(r.anysearch.lag),
+    "lag 应为三态之一（unknown=离线/检查失败不阻塞诊断）"
+  );
+  if (r.anysearch.lag === "lagging") {
+    assert.match(r.anysearch.hint, /滞后|lagging|update-vendored/);
+  }
+});
+
+test("标记字面量双源同步：doctor.mjs 与 install.mjs 的 START/END 一致", () => {
+  const doctorSrc = readFileSync(path.join(repoRoot, "scripts/doctor.mjs"), "utf8");
+  const installSrc = readFileSync(path.join(repoRoot, "guardrail/install.mjs"), "utf8");
+  const extract = (src, name) => src.match(new RegExp(`(?:const|let)\\s+${name}\\s*=\\s*"([^"]+)"`))?.[1];
+  for (const name of ["MARKER_START", "MARKER_END"]) {
+    const inDoctor = extract(doctorSrc, name);
+    assert.ok(inDoctor, `doctor.mjs 缺 ${name} 常量`);
+    const legacy = name === "MARKER_START" ? "START" : "END";
+    const inInstall = extract(installSrc, legacy);
+    assert.ok(inInstall, `install.mjs 缺 ${legacy} 常量`);
+    assert.equal(inDoctor, inInstall, `${name} 与 install.mjs 的 ${legacy} 漂移——标记字面量需两文件联动改`);
+  }
+});
+
+test("Scenario: 标记顺序颠倒（END 先于 START）判 broken 而非 ok——与 install.mjs 拒改写判定对齐", () => {
+  const dir = mkdtempSync(path.join(tmpdir(), "doctor-rev-"));
+  try {
+    execFileSync("git", ["init", "-q"], { cwd: dir });
+    writeFileSync(
+      path.join(dir, "CLAUDE.md"),
+      "spec-dev:guardrail:end -->\n\n中间内容\n\n<!-- spec-dev:guardrail:start —— 本段由 spec-dev 安装器维护，勿手改；重装会覆盖"
+    );
+    const { out } = runIn(dir);
+    const r = JSON.parse(out);
+    assert.equal(r.markers["CLAUDE.md"], "broken", "END 先于 START 应判 broken");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

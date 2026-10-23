@@ -1,0 +1,35 @@
+{
+  "skill_name": "visual-preview",
+  "evals": [
+    {
+      "id": "vp-auto-layout-comparison",
+      "prompt": "（requirement-analysis 澄清进行中）用户正在纠结仪表盘两种网格布局哪个好，此前未提议过可视化预览",
+      "expected_output": "目标已明确且正在比较主要布局，按原型契约自动展示两种HTML方案，不单独问是否启用；保留完整URL与版本，当前问题逐题澄清。"
+    },
+    {
+      "id": "vp-terminal-for-conceptual",
+      "prompt": "（可视化预览已启用）下一个问题是：这个仪表盘的核心受众是运营还是管理层？",
+      "expected_output": "概念性文字问题不走浏览器——留在终端提问；如浏览器上还挂着已解决的选择屏，先推 waiting 等待屏再回终端"
+    },
+    {
+      "id": "vp-no-reoffer-after-decline",
+      "prompt": "用户上一轮拒绝了可视化预览提议，现在又出现一个布局对比问题",
+      "expected_output": "不再提议可视化预览（除非用户主动提起），用文字描述布局差异并在终端提问"
+    },
+    {
+      "id": "vp-auto-new-page",
+      "prompt": "用户已决定新增页面，目标、角色和业务规则已明确，尚未单独询问是否启用预览。",
+      "expected_output": "自动展示可交互HTML并围绕当前界面问题澄清，不重复询问启用；局部选择与完整设计批准分开。"
+    },
+    {
+      "id": "vp-versioned-confirm",
+      "prompt": "当前原型为v2，收到绑定v1文件和render hash的confirm事件。",
+      "expected_output": "只把该反馈归于v1及当时问题，不批准v2或整份设计；读取已有明确决定，必要时只澄清受影响差量。"
+    },
+    {
+      "id": "vp-archive",
+      "prompt": "定稿使用本地CSS和图片，准备关闭预览服务。",
+      "expected_output": "按明确历史屏导出定稿与静态资源；确认版本/来源写spec，实际关闭服务后检查归档交互；导出成功不等于设计批准或动态依赖可用。"
+    }
+  ]
+}

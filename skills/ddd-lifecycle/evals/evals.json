@@ -1,0 +1,25 @@
+{
+  "skill_name": "ddd-lifecycle",
+  "evals": [
+    {
+      "id": "ddd-simple-crud",
+      "prompt": "内部机房标签表只有唯一 code、展示名称和归档标记，没有跨记录不变量、外部消费者或复杂状态机。已批准沿现有单体 CRUD 完成。评审是否必须补丰富实体、领域事件、CQRS、工厂或独立微服务才能符合 DDD。",
+      "expected_output": "认可简单 CRUD 的适用性，保留真实唯一性/权限/归档契约，不为模式完整度或分数制造抽象、事件或服务。"
+    },
+    {
+      "id": "ddd-independent-ids-atomic-create",
+      "prompt": "同一个 SQLite 数据库内创建样品批次和首条检测记录，两者有不同 ID。合同要求一起成功或一起失败；第二次写入出错时不能残留批次。方案因为不同 ID 把它们放入不同聚合，并建议先提交批次再用事件补检测记录。请评审并给最小修改方向。",
+      "expected_output": "指出违反原子性；独立 ID 不决定聚合或一致性窗口。重新核对聚合/用例边界，以实际单库事务协调两次写入与回滚，仓储加入同一事务；不把同库事务误称覆盖远程服务，也不添加不必要事件。"
+    },
+    {
+      "id": "ddd-approved-port-owner",
+      "prompt": "项目已批准 repository port 放 application/ports，唯一消费者是用例；domain 只提供纯业务规则。适配器依赖该 port，领域没有 IO/ORM 依赖。reviewer 根据通用 DDD 教材要求将接口全部移入 domain。是否需要改？",
+      "expected_output": "遵循批准架构与实际消费方向，现状无具体边界问题时不移动；domain-consumed abstraction 才讨论 domain 归属，不把目录模板作为缺陷证据。"
+    },
+    {
+      "id": "ddd-historical-reconstitution",
+      "prompt": "做行为保持重构：旧记录允许缺少 tag，新建记录现在必须含 tag。现有读取允许返回旧记录，并不产生创建事件。拟让 repository 复用新建工厂加载，补新 ID 和 tag、发 Created 事件。判断方案和正确边界。",
+      "expected_output": "拒绝改变历史读取行为、身份及加载副作用；创建与重建分开，保留 ID 和既有读契约，不假定历史数据永远有效，也不静默修复/套新创建规则；真实错误检测与迁移需要显式策略和授权。"
+    }
+  ]
+}

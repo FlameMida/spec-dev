@@ -1,0 +1,121 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const script = path.join(repoRoot, "scripts/validate-output.mjs");
+
+const makePlan = (rows, files) => {
+  const dir = mkdtempSync(path.join(tmpdir(), "plan-"));
+  mkdirSync(path.join(dir, "tasks"));
+  writeFileSync(path.join(dir, "index.md"),
+    `# demo\n\n| 任务 | 依赖 | 消费接口 | 产出接口 |\n|---|---|---|---|\n${rows.join("\n")}\n`);
+  for (const f of files) writeFileSync(path.join(dir, "tasks", f), "# task\n");
+  writeFileSync(path.join(dir, "progress.yaml"), "format_version: 1\ncurrent: null\ntasks: {}\nresources: []\nnotes: []\n");
+  return dir;
+};
+const runCapture = (dir) => {
+  try {
+    execFileSync("node", [script, "plan-index", dir], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+    return { status: 0, stderr: "" };
+  } catch (e) { return { status: e.status ?? 1, stderr: String(e.stderr ?? "") }; }
+};
+const run = (dir) => runCapture(dir).status;
+
+test("Scenario: 大计划分文件且校验通过", () => {
+  const dir = makePlan(["| T01 a | — | — | f() |", "| T02 b | T01 | f | g() |"], ["T01.md", "T02.md"]);
+  try { assert.equal(run(dir), 0); } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("Scenario: 悬空依赖被拦截", () => {
+  const dir = makePlan(["| T01 a | T99 | — | f() |"], ["T01.md"]);
+  try { assert.equal(run(dir), 1); } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("环被拦截", () => {
+  const dir = makePlan(["| T01 a | T02 | — | f() |", "| T02 b | T01 | — | g() |"], ["T01.md", "T02.md"]);
+  try { assert.equal(run(dir), 1); } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("导航表与 tasks/ 文件不一致被拦截", () => {
+  const dir = makePlan(["| T01 a | — | — | f() |"], ["T01.md", "T02.md"]);
+  try { assert.equal(run(dir), 1); } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("Scenario: 区间展开参与闭包", () => {
+  const rows = ["| T01 a | — | — | a() |", "| T02 b | T01 | a | b() |", "| T03 c | T02 | b | c() |", "| T04 d | T03 | c | d() |", "| T05 e | T01-T04 | d | e() |"];
+  const dir = makePlan(rows, ["T01.md", "T02.md", "T03.md", "T04.md", "T05.md"]);
+  try { assert.equal(run(dir), 0); } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("Scenario: 倒序区间被拦截", () => {
+  const dir = makePlan(["| T01 a | — | — | a() |", "| T02 b | — | — | b() |", "| T03 c | T02-T01 | — | c() |"], ["T01.md", "T02.md", "T03.md"]);
+  try {
+    const r = runCapture(dir);
+    assert.equal(r.status, 1);
+    assert.match(r.stderr, /"path": "T03\.deps"/);
+    assert.match(r.stderr, /ascending range/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("Scenario: 区间内缺号被拦截", () => {
+  const dir = makePlan(["| T01 a | — | — | a() |", "| T02 b | — | — | b() |", "| T04 d | — | — | d() |", "| T05 e | T01-T04 | — | e() |"], ["T01.md", "T02.md", "T04.md", "T05.md"]);
+  try {
+    const r = runCapture(dir);
+    assert.equal(r.status, 1);
+    assert.match(r.stderr, /dangling T03/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("Scenario: 存量计划仍通过", () => {
+  const dir=makePlan(["| T00 隔离 | — | — | base |","| T01 执行 | T00 | base | result |"],["T00.md","T01.md"]);
+  try {assert.equal(run(dir),0);} finally {rmSync(dir,{recursive:true,force:true});}
+});
+
+
+
+test("Scenario: 区间写法变体被拦截（en/em dash、链式）", () => {
+  for (const cell of ["T01–T03", "T01—T03", "T01-T02-T03"]) {
+    const dir = makePlan(["| T01 a | — | — | a() |", "| T02 b | — | — | b() |", "| T03 c | — | — | c() |", `| T04 d | ${cell} | — | d() |`], ["T01.md", "T02.md", "T03.md", "T04.md"]);
+    try {
+      const r = runCapture(dir);
+      assert.equal(r.status, 1, `${cell} 应被拦截`);
+      assert.match(r.stderr, /ASCII hyphen range/);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  }
+});
+
+test("S02 并发声明损坏不可交付：CLI", () => {
+  const dir=makePlan(["| T01 a | — | — | a() |", "| T02 b | — | — | b() |"],["T01.md","T02.md"]);
+  const file=path.join(dir,"index.md");
+  const original=readFileSync(file,"utf8");
+  const declaration=['```yaml spec-dev-parallel','parallel:','  tasks:','    T01:','      writes:','        - "src/a.mjs"','      resources: []','```'].join("\n");
+  try {
+    writeFileSync(file,original+"\n"+declaration);
+    assert.equal(run(dir),0);
+    writeFileSync(file,original+"\n"+declaration.replace("T01:","T99:"));
+    const result=runCapture(dir);
+    assert.equal(result.status,1);
+    assert.match(result.stderr,/index.md#parallel/);
+  } finally { rmSync(dir,{recursive:true,force:true}); }
+});
+
+const lines = (n) => Array.from({ length: n }, (_, i) => `line ${i + 1}`).join("\n") + "\n";
+test("S1.2 任务文件超过 200 行被拦截", () => {
+  const dir = makePlan(["| T01 a | — | — | f() |"], ["T01.md"]);
+  writeFileSync(path.join(dir, "tasks", "T01.md"), lines(201));
+  try {
+    const r = runCapture(dir);
+    assert.equal(r.status, 1);
+    assert.match(r.stderr, /tasks\/T01\.md/); assert.match(r.stderr, /<= 200 lines/); assert.match(r.stderr, /201 lines/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+test("S1.2 恰好 200 行通过", () => {
+  const dir = makePlan(["| T01 a | — | — | f() |"], ["T01.md"]);
+  writeFileSync(path.join(dir, "tasks", "T01.md"), lines(200));
+  try { assert.equal(run(dir), 0); } finally { rmSync(dir, { recursive: true, force: true }); }
+});

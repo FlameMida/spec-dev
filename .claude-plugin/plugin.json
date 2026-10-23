@@ -1,0 +1,34 @@
+{
+  "name": "spec-dev",
+  "version": "9.1.1",
+  "description": "开发工作流插件集：exploring 探索模式、requirement-analysis 设计工作流、writing-plans/executing-plans 计划与执行、visual-preview 可视化预览、using-git-worktrees/test-driven-development 工程纪律、acceptance-qa 全能验收、quick-fix 轻量修复、clarifying 共享澄清纪律、wtf 大白话终端图解、anysearch 内置实时搜索（上游 skill 内嵌）。",
+  "author": {
+    "name": "FlameMida",
+    "url": "https://github.com/FlameMida"
+  },
+  "homepage": "https://github.com/FlameMida/spec-dev",
+  "repository": "https://github.com/FlameMida/spec-dev",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "exploring",
+    "requirement-analysis",
+    "writing-plans",
+    "executing-plans",
+    "visual-preview",
+    "git-worktrees",
+    "tdd",
+    "acceptance-qa",
+    "playwright",
+    "k6",
+    "testing",
+    "performance",
+    "development",
+    "requirements",
+    "quick-fix",
+    "clarifying",
+    "wtf",
+    "anysearch",
+    "search"
+  ]
+}

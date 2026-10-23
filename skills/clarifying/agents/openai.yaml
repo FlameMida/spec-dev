@@ -1,0 +1,7 @@
+interface:
+  display_name: "Clarifying"
+  short_description: "共享澄清纪律（grill 式）——沿决策树一次一题逼近共识：事实自查、每个决策带推荐交用户裁决；独立会话以共识摘要 + 三出口收束（转主流程/就此结束/写入 md），不强制产出。被 exploring、requirement-analysis、quick-fix 与 visual-preview 引用作通用及界面澄清纪律。当用户想把一个想法/计划/决定逐题磨清楚时独立使用；发散式的思考陪伴用 exploring；已承诺交付的开发工作直接用 requirement-analysis / quick-fix。"
+  default_prompt: "用 $clarifying 逐题把这个想法、计划或决定磨到共识。"
+
+policy:
+  allow_implicit_invocation: true

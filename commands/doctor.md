@@ -1,0 +1,12 @@
+---
+description: 诊断 spec-dev 健康态：平台、guardrail 安装、注入标记、SessionStart hook 挂载（含注入决策回放）、anysearch（双副本歧义与版本滞后）
+---
+
+运行 `node "${CLAUDE_PLUGIN_ROOT}/scripts/doctor.mjs"`（`${CLAUDE_PLUGIN_ROOT}` 未替换时按插件根解析序列推导——定义见 requirement-analysis 的 references/exploration-patterns.md）并把输出原样呈现给用户，对每个 ✗/hint 项逐条解释修复指引；用户要求机器可读输出时加 `--json`。
+
+要点：
+
+- 退出码 1 表示存在需修复项——引导用户按各节 hint 修复后复跑本命令验证。
+- `hooks.declarative` 三态判定插件级 `hooks/hooks.json` 的 SessionStart 声明（ok / declared-empty / missing）：非 ok 说明装载平台不会自动注入会话上下文，重装插件恢复；`hooks.injectionReplay` 是对 `guardrail/session-context.mjs --explain` 的重放（同输入同决策），其中 `skip` 及其 reason 解释了"为什么会话没有注入上下文"（非 git 仓库、无已跟踪 spec 等）。
+- `anysearch.duplicates` 非空说明存在插件内嵌版之外的独立副本，会造成 skill 选择歧义——向用户说明取舍；`anysearch.lag` 三态判定内嵌版与上游的版本关系（up-to-date / lagging / unknown——unknown 通常是离线或检查超时，不算健康问题）：lagging 时按 hint 运行 `node scripts/update-vendored-skill.mjs --skill anysearch` 同步。
+- 浏览器自动化 MCP（playwright / chrome-devtools）为按项目 opt-in，配置指引见 `skills/acceptance-qa/references/mcp-setup.md`（本命令不检测 MCP）。

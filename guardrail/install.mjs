@@ -1,0 +1,318 @@
+#!/usr/bin/env node
+// spec-dev 漂移守卫安装器：把守卫全套装进目标仓库（默认当前仓库）。
+//
+//   node install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
+//
+// 装什么：
+//   scripts/spec-dev/check-spec-drift.mjs   核心校验器
+//   scripts/spec-dev/session-context.mjs    会话上下文注入脚本（含守卫健康自检）
+//   scripts/spec-dev/model-context.mjs      按实际模型启用协作增强（无 spec 也适用）
+//   scripts/spec-dev/model-collaboration.md 共享规则的安装副本
+//   scripts/spec-dev/migrate-to-spec-dev.mjs 历史产物迁移脚本（docs/ → .spec-dev/）
+//   .claude/settings.json                   合并漂移守卫与模型生命周期 hooks（Claude Code）
+//   .codex/hooks.json                       合并漂移守卫与模型生命周期 hooks（Codex）
+//   CLAUDE.md / AGENTS.md                    追加/更新守卫软提示段（标记块内幂等替换）
+//   .githooks/{pre-commit,pre-push}          版本化 git hooks + git config core.hooksPath（除非 --no-git-hook；
+//                                            已设 core.hooksPath 时写入既有目录，不改配置）
+//   package.json                             注入 prepare 脚本自动启用 hooksPath（仅当 .githooks 由本安装器启用）
+//   .github/workflows/spec-dev-drift-guard.yml  CI 兜底（除非 --no-ci）
+//
+// 安装保留历史产物原位；迁移须获授权后单独调用 migrate-to-spec-dev.mjs。
+//
+// 幂等：可重复运行；软提示段与 hook 条目按标记/键去重，不重复堆叠。
+
+import { execFileSync } from "node:child_process";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync, chmodSync, statSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const TPL = path.join(HERE, "templates");
+// 主流程在模块顶层立即执行，常量必须先于它声明（避免 TDZ）
+const PREPARE_CMD = "git config core.hooksPath .githooks";
+const args = process.argv.slice(2);
+const opt = (name) => args.includes(name);
+const val = (name) => {
+  const i = args.indexOf(name);
+  return i !== -1 ? args[i + 1] : null;
+};
+
+const repo = path.resolve(val("--repo") || detectRepo());
+log(`Target repo / 目标仓库：${repo}`);
+
+const done = [];
+// Reject unsupported message-hook interpreters before copying files.
+if (!opt("--no-git-hook")) preflightMessageHooks(repo);
+
+// 1) 脚本
+const scriptsDir = path.join(repo, "scripts", "spec-dev");
+mkdirSync(scriptsDir, { recursive: true });
+copyFileSync(path.join(HERE, "check-spec-drift.mjs"), path.join(scriptsDir, "check-spec-drift.mjs"));
+copyFileSync(path.join(HERE, "task-binding.mjs"), path.join(scriptsDir, "task-binding.mjs"));
+mkdirSync(path.join(scriptsDir,"lib"),{recursive:true});
+for(const name of ['record-data','write-paths','task-scopes','task-binding','git-view','spec-data'])copyFileSync(path.join(HERE,'lib',name+'.mjs'),path.join(scriptsDir,'lib',name+'.mjs'));
+copyFileSync(path.join(HERE, "session-context.mjs"), path.join(scriptsDir, "session-context.mjs"));
+copyFileSync(path.join(HERE, "model-context.mjs"), path.join(scriptsDir, "model-context.mjs"));
+copyFileSync(path.resolve(HERE, "../skills/requirement-analysis/references/model-collaboration.md"), path.join(scriptsDir, "model-collaboration.md"));
+copyFileSync(path.join(HERE, "migrate-to-spec-dev.mjs"), path.join(scriptsDir, "migrate-to-spec-dev.mjs"));
+done.push("scripts/spec-dev/{check-spec-drift,task-binding,session-context,model-context,migrate-to-spec-dev}.mjs + model-collaboration.md + lib/");
+
+// 2) Claude settings.json —— 深合并 hooks
+mergeJsonHooks(
+  path.join(repo, ".claude", "settings.json"),
+  readJson(path.join(TPL, "claude-settings.json")).hooks,
+);
+done.push(".claude/settings.json (hooks merged / hooks 已合并)");
+
+// 3) Codex hooks.json —— 深合并 hooks
+const codexTpl = readJson(path.join(TPL, "codex-hooks.json"));
+mergeJsonHooks(path.join(repo, ".codex", "hooks.json"), codexTpl.hooks, codexTpl.description);
+done.push(".codex/hooks.json (hooks merged / hooks 已合并)");
+
+// 4) 软提示段
+if (mergeSnippet(path.join(repo, "CLAUDE.md"), readFileSync(path.join(TPL, "CLAUDE.md.snippet"), "utf8")))
+  done.push("CLAUDE.md (guard section written / 守卫段已写入)");
+if (mergeSnippet(path.join(repo, "AGENTS.md"), readFileSync(path.join(TPL, "AGENTS.md.snippet"), "utf8")))
+  done.push("AGENTS.md (guard section written / 守卫段已写入)");
+
+// 5) git hooks（版本化 pre-commit + pre-push）
+if (!opt("--no-git-hook")) {
+  const res = installGitHooks(repo);
+  if (res) {
+    done.push(`${res.hooksDir}/{pre-commit,prepare-commit-msg,commit-msg,pre-push} (guard installed / 守卫已安装)`);
+    if (res.configured) done.push("git config core.hooksPath .githooks (set / 已设置)");
+    if (installPrepareScript(repo, res)) done.push("package.json prepare script (auto-enables hooksPath on install / install 时自动启用 hooksPath)");
+  }
+}
+
+// 6) CI
+if (!opt("--no-ci")) {
+  const wfDir = path.join(repo, ".github", "workflows");
+  mkdirSync(wfDir, { recursive: true });
+  copyFileSync(path.join(TPL, "github-workflow.yml"), path.join(wfDir, "spec-dev-drift-guard.yml"));
+  done.push(".github/workflows/spec-dev-drift-guard.yml");
+}
+
+log("\n✓ Install complete / 安装完成：");
+for (const d of done) log(`  · ${d}`);
+log("\nNote: the guard only activates when spec frontmatter has spec_dev.covers filled and status: active. / 提示：确保 spec 的 frontmatter 填了 spec_dev.covers 且 status: active，守卫才会生效。");
+
+// —— helpers ——
+
+function detectRepo() {
+  try {
+    return execFileSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8" }).trim();
+  } catch {
+    return process.cwd();
+  }
+}
+
+function readJson(p) {
+  return JSON.parse(readFileSync(p, "utf8"));
+}
+
+// 把模板 hooks 深合并进目标 settings：同事件下按 command 去重，避免重装堆叠。
+function mergeJsonHooks(file, newHooks, description) {
+  mkdirSync(path.dirname(file), { recursive: true });
+  const cur = existsSync(file) ? readJson(file) : {};
+  if (description && !cur.description) cur.description = description;
+  cur.hooks = cur.hooks || {};
+  for (const [event, groups] of Object.entries(newHooks)) {
+    cur.hooks[event] = cur.hooks[event] || [];
+    for (const group of groups) {
+      const cmds = new Set(
+        cur.hooks[event].flatMap((g) => (g.hooks || []).map((h) => h.command)),
+      );
+      const fresh = (group.hooks || []).filter((h) => !cmds.has(h.command));
+      if (fresh.length === 0) continue;
+      // 复用同 matcher 的已有 group，否则新建
+      const existing = cur.hooks[event].find((g) => g.matcher === group.matcher);
+      if (existing) existing.hooks.push(...fresh);
+      else cur.hooks[event].push({ ...group, hooks: fresh });
+    }
+  }
+  writeFileSync(file, JSON.stringify(cur, null, 2) + "\n");
+}
+
+// 在标记块之间幂等替换软提示段；无标记则追加到文件末尾。
+// 标记残缺（只剩单侧）或顺序颠倒时拒绝改写：盲目追加会让下次重装误切标记之间的用户内容。
+function mergeSnippet(file, snippet) {
+  const START = "<!-- spec-dev:guardrail:start";
+  const END = "spec-dev:guardrail:end -->";
+  const body = existsSync(file) ? readFileSync(file, "utf8") : "";
+  const s = body.indexOf(START);
+  const e = body.indexOf(END);
+  if ((s === -1) !== (e === -1) || (s !== -1 && e < s)) {
+    log(`  ! ${path.relative(repo, file)} : guard markers incomplete or out of order; file skipped — restore paired start/end markers and reinstall. / 守卫标记不完整或顺序异常，已跳过该文件；请手工恢复成对的 start/end 标记后重装`);
+    return false;
+  }
+  let next;
+  if (s !== -1 && e !== -1) {
+    next = body.slice(0, s) + snippet.trim() + body.slice(e + END.length);
+  } else {
+    next = (body.trimEnd() + "\n\n" + snippet.trim() + "\n").replace(/^\n+/, "");
+  }
+  writeFileSync(file, next.endsWith("\n") ? next : next + "\n");
+  return true;
+}
+
+// 版本化 git hooks：尊重既有 core.hooksPath（写入该目录，不动配置）；
+// 未设置时启用仓库内 .githooks/ 并写入本地 git config。模板 hook 会串联 .git/hooks 里的历史 hook。
+function preflightMessageHooks(repo) {
+  try {
+    execFileSync("git", ["-C", repo, "rev-parse", "--git-dir"], { stdio: "ignore" });
+  } catch { return; }
+  let hooksPath = ".githooks";
+  try {
+    hooksPath = execFileSync("git", ["-C", repo, "config", "--get", "core.hooksPath"], {
+      encoding: "utf8", stdio: ["ignore", "pipe", "pipe"],
+    }).trim() || hooksPath;
+  } catch { /* No custom hooks directory. */ }
+  const dir = path.resolve(repo, hooksPath);
+  for (const name of ["prepare-commit-msg", "commit-msg"]) {
+    const target = path.join(dir, name);
+    if (!existsSync(target)) continue;
+    const body = readFileSync(target, "utf8"), shebang = body.split("\n", 1)[0];
+    if (shebang.startsWith("#!") && !isShellShebang(shebang)) {
+      throw new Error(`cannot inject into a non-shell ${name} hook: ${target}; preserve it and configure a shell wrapper before installing`);
+    }
+  }
+}
+
+function isShellShebang(shebang) {
+  const words = shebang.slice(2).trim().split(/\s+/);
+  let interpreter = path.basename(words.shift() || "");
+  if (interpreter === "env") {
+    if (words[0] === "-S") words.shift();
+    interpreter = path.basename(words.shift() || "");
+  }
+  return ["sh", "bash", "dash", "zsh"].includes(interpreter);
+}
+
+function installGitHooks(repo) {
+  try {
+    execFileSync("git", ["-C", repo, "rev-parse", "--git-dir"], { encoding: "utf8" });
+  } catch {
+    log("  ! not a git repo, skipping git hooks / 非 git 仓库，跳过 git hooks");
+    return null;
+  }
+  let hooksPath = "";
+  try {
+    hooksPath = execFileSync("git", ["-C", repo, "config", "--get", "core.hooksPath"], {
+      encoding: "utf8",
+    }).trim();
+  } catch {
+    // 未设置 core.hooksPath
+  }
+  const own = !hooksPath;
+  if (own) hooksPath = ".githooks";
+  const dir = path.isAbsolute(hooksPath) ? hooksPath : path.join(repo, hooksPath);
+  mkdirSync(dir, { recursive: true });
+  for (const name of ["pre-commit", "prepare-commit-msg", "commit-msg", "pre-push"]) {
+    const target = path.join(dir, name);
+    const mode=existsSync(target)?statSync(target).mode&0o777:0o755;
+    if (existsSync(target)) {
+      const cur = readFileSync(target, "utf8");
+      const start='# spec-dev:guard:start',end='# spec-dev:guard:end';
+      const guard=start+'\n'+guardLine(name)+'\n'+end+'\n';
+      if(cur.includes(start)||cur.includes(end)){
+        const a=cur.indexOf(start),b=cur.indexOf(end);
+        if(a<0||b<a||cur.indexOf(start,a+start.length)!==-1||cur.indexOf(end,b+end.length)!==-1)throw new Error('invalid guard markers: '+target);
+        writeFileSync(target,cur.slice(0,a)+guard.trimEnd()+cur.slice(b+end.length));
+      }else if (!cur.includes(name==='commit-msg'||name==='prepare-commit-msg'?'task-binding.mjs':'check-spec-drift.mjs')) {
+        // 守卫行注入到 shebang 之后而非文件末尾：legacy hook 若以 exit 0 结尾，尾部追加的守卫永远执行不到
+        let next;
+        if(name==='commit-msg'){
+          const nl=cur.indexOf('\n'),shebang=cur.startsWith('#!')?cur.slice(0,nl<0?undefined:nl):'#!/bin/sh';
+          if(!isShellShebang(shebang))throw new Error('cannot inject into a non-shell commit-msg hook: '+target);
+          const body=cur.startsWith('#!')?(nl<0?'':cur.slice(nl+1)):cur;
+          // A subshell preserves legacy exit codes, then validates its final message.
+          next=shebang+'\n(\n'+body+'\n) || exit $?\n'+guard;
+        }else if (cur.startsWith("#!")) {
+          const nl = cur.indexOf("\n");
+          next = nl === -1 ? cur + guard : cur.slice(0, nl + 1) + guard + cur.slice(nl + 1);
+        } else {
+          next = "#!/bin/sh\n" + guard + "\n" + cur;
+        }
+        writeFileSync(target, next);
+      }
+    } else {
+      copyFileSync(path.join(TPL, name), target);
+    }
+    chmodSync(target, mode|0o111);
+  }
+  let configured = false;
+  if (own) {
+    try {
+      execFileSync("git", ["-C", repo, "config", "core.hooksPath", ".githooks"]);
+      configured = true;
+    } catch {
+      log("  ! cannot write git config (read-only sandbox?); run manually: git config core.hooksPath .githooks / 无法写 git config（沙箱只读？），请手工执行：git config core.hooksPath .githooks");
+    }
+  }
+  return { hooksDir: hooksPath.replace(/\/+$/, ""), own, configured };
+}
+
+// 注入进既有 hook 的守卫段：与模板 hook 同等健壮——node 缺失或守卫脚本缺失时静默跳过，
+// 不让守卫自身故障阻断宿主 hook。pre-push 先整段捕获 stdin 喂给守卫，再用 exec heredoc
+// 还原给宿主 hook 的后续内容，避免守卫吃掉 refs 导致宿主脚本读到空 stdin。
+function guardLine(name) {
+  if(name==='prepare-commit-msg'||name==='commit-msg')return [
+    'spec_dev_binding="$(git rev-parse --show-toplevel)/scripts/spec-dev/task-binding.mjs"',
+    `node "$spec_dev_binding" ${name==='prepare-commit-msg'?'prepare-message':'check-message'} --file "$1" || exit $?`,
+  ].join('\n');
+  const resolve = 'spec_dev_guard="$(git rev-parse --show-toplevel)/scripts/spec-dev/check-spec-drift.mjs"';
+  if (name === "pre-push") {
+    return [
+      'spec_dev_refs="$(cat)"',
+      "if command -v node >/dev/null 2>&1; then",
+      `  ${resolve}`,
+      '  if [ -f "$spec_dev_guard" ]; then',
+      "    printf '%s\\n' \"$spec_dev_refs\" | node \"$spec_dev_guard\" --push || exit 1",
+      "  fi",
+      "fi",
+      "exec <<SPEC_DEV_REFS_EOF",
+      "$spec_dev_refs",
+      "SPEC_DEV_REFS_EOF",
+    ].join("\n");
+  }
+  return [
+    "if command -v node >/dev/null 2>&1; then",
+    `  ${resolve}`,
+    '  if [ -f "$spec_dev_guard" ]; then',
+    '    node "$spec_dev_guard" --staged || exit 1',
+    "  fi",
+    "fi",
+  ].join("\n");
+}
+
+// package.json prepare —— 仅当 .githooks 由本安装器启用时注入，
+// 让 npm/pnpm/yarn install 自动设置 core.hooksPath，新 clone 即带闸门。
+function installPrepareScript(repo, res) {
+  if (!res.own) {
+    log("  · skip prepare injection: custom core.hooksPath already managed elsewhere (e.g. husky) / 跳过 prepare 注入：已有自定义 hooksPath，交由原机制管理");
+    return false;
+  }
+  const pkgPath = path.join(repo, "package.json");
+  if (!existsSync(pkgPath)) {
+    log("  · skip prepare injection: no package.json / 跳过 prepare 注入：无 package.json（新 clone 需手工 git config core.hooksPath .githooks）");
+    return false;
+  }
+  let pkg;
+  try {
+    pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
+  } catch {
+    log("  ! package.json 解析失败，跳过 prepare 注入");
+    return false;
+  }
+  pkg.scripts = pkg.scripts || {};
+  const cur = pkg.scripts.prepare;
+  if (typeof cur === "string" && cur.includes(PREPARE_CMD)) return false; // 已注入
+  pkg.scripts.prepare = cur ? `${cur} && ${PREPARE_CMD}` : PREPARE_CMD;
+  writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
+  return true;
+}
+
+function log(msg) {
+  process.stdout.write(msg + "\n");
+}

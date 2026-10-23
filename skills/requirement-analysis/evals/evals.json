@@ -1,0 +1,245 @@
+{
+  "skill_name": "requirement-analysis",
+  "evals": [
+    {
+      "id": "ra-light-add-field",
+      "prompt": "帮我给 src/models/user.ts 的 User 实体加一个 nickname 字段，可空，最长 30 字符，顺便把 src/api/user.ts 的更新接口带上这个字段",
+      "expected_output": "判定为 light 档并向用户声明（允许覆盖）；探索由主线程直查或 1 个子代理完成；方案可收敛为 1 个但说明为何无分歧；设计仍必须展示并获用户批准（HARD-GATE 不豁免）；spec 几句话级写入 .spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md 并提交；终态交接 writing-plans，不直接写实现代码"
+    },
+    {
+      "id": "ra-standard-notification",
+      "prompt": "我们的 Express 项目要加站内通知功能：用户被 @ 时收到通知，通知列表分页展示，未读数实时角标。帮我设计",
+      "expected_output": "判定为 standard 档；阶段 2 内部 3-5 个 code-explorer 与外部 external-resource-explorer 按实际容量尽早派发，允许同波次多调用和分批，不无故逐个启动后立即等待；阶段 3 一次一个问题澄清；阶段 4 主线程先对承重信息做对抗验证再给 2-3 方案（推荐项放首位）；用户选定后整篇展示完整设计；批准后写 spec（行为需求用 Requirement + Scenario/GIVEN-WHEN-THEN 结构，每条 Requirement 一个 SHALL 且可观察）并提交、self-review + 审查子代理、用户 review 通过后交接 writing-plans"
+    },
+    {
+      "id": "ra-delta-modify-existing",
+      "prompt": "我们已有的导出功能目前只支持 CSV，把它改成同时支持 CSV 和 JSON，并且移除历史遗留的 XML 导出",
+      "expected_output": "修改既有功能——spec 行为部分不重写全量规范，改用差量三节：JSON 支持进 ADDED Requirements；CSV 行为如有变化进 MODIFIED Requirements（给完整新版本并括注改了什么）；XML 导出进 REMOVED Requirements（附移除原因）；分类前先核对既有行为，避免把真实变更标成 ADDED"
+    },
+    {
+      "id": "ra-vague-clarify",
+      "prompt": "把我们的搜索做得好用一点",
+      "expected_output": "阶段 1-2 后识别出多处歧义（好用的定义/搜索范围/性能 vs 相关性取舍），阶段 3 逐题澄清且每个问题对应真实疑点（一次只问一个，不编造问题）；不带着关键未知项进入方案设计"
+    },
+    {
+      "id": "ra-clear-no-fake-questions",
+      "prompt": "在 README.md 的安装一节末尾加一行：要求 Node.js >= 20。就这一个改动",
+      "expected_output": "需求完全清晰时记录\"需求已清晰，无需澄清\"，不为走流程编造澄清问题；判 light 档；设计（几句话）仍展示并获批准后才落盘 spec——不跳过 HARD-GATE 直接改文件"
+    },
+    {
+      "id": "ra-hard-gate-no-early-code",
+      "prompt": "给我们的 CLI 工具加一个导出报告子命令，我很急，直接开写吧",
+      "expected_output": "即使用户催促，也不在设计获批准前写任何代码或调用实施类 skill（HARD-GATE）；可压缩为 light/standard 档快速走完澄清与设计展示，但方案选定、设计批准、spec review 三道门均不跳过；终态是调用 writing-plans 而非直接实施"
+    },
+    {
+      "id": "ra-visual-jit-offer",
+      "prompt": "帮我重新设计我们后台的仪表盘页面布局，图表和过滤器的摆放我一直不满意",
+      "expected_output": "先通用澄清，符合新增页面/主要布局或核心交互变化且必要信息足够时自动展示HTML；用户关闭则消费选择；概念/业务问题仍在对话澄清，已决事项不重问。"
+    },
+    {
+      "id": "ra-adversarial-info-check",
+      "prompt": "我看网上都说我们该用 XX 库做实时推送，帮我设计接入方案",
+      "expected_output": "阶段 4 对\"该用 XX 库\"这类承重结论做对抗验证：核对来源权威性与版本时效、与代码库现有推送/连接模式对照，冲突未消解不进入方案设计；方案对比中如实呈现 XX 库与现有模式方案的取舍而非直接采纳网上说法"
+    },
+    {
+      "id": "ra-non-dev-report-lane",
+      "prompt": "调研一下 Kafka 和 RabbitMQ 哪个更适合我们的场景，给我结论就行",
+      "expected_output": "阶段 1 任务类型检查命中非开发交付：建议走报告通道——不建特性目录、不写 spec/plan、不硬拉八阶段；需要时按 clarifying 纪律澄清关注点；产出结论后问一次是否落盘 .spec-dev/reports/YYYY-MM-DD-NN-<topic>.md，婉拒则零落盘；结论要落地成代码时回归正常分诊"
+    },
+    {
+      "id": "ra-roadmap-capsule-continuation",
+      "prompt": "用户说：继续 roadmap 里的第二个子项目。该 roadmap 含原始需求全文节与 #2 的上下文胶囊（关键裁决、探索指针、已扫范围）",
+      "expected_output": "不要求用户重新提供原始需求；读取胶囊指针指向的前置 spec 与验收报告作为输入；阶段 2 只对胶囊未登记的探索缺口派发子代理，已扫范围不重扫"
+    },
+    {
+      "id": "ra-same-day-numbering",
+      "prompt": ".spec-dev/ 下已存在 2026-08-26-01-foo，同日再创建一个特性目录；另一并行会话可能也在建目录",
+      "expected_output": "新目录命名 2026-08-26-02-<语义名>（扫描当日已有取最大加一）；落盘前重扫一次，发现 02 已被占则顺延 03 并同步修正自引路径；存量旧命名目录不改名"
+    },
+    {
+      "id": "tdd-seam-s01",
+      "prompt": "S01 复用一个公共接口覆盖多个行为：\nGIVEN 现有 `Cart.total()` 可观察优惠和空购物车两个 Scenario，内部有三个辅助函数\nWHEN 展示设计及写入 spec",
+      "expected_output": "声明 `Cart.total()`、两个 Scenario 和依赖替换边界；不因辅助函数数量另造三个落点，也不额外开独立 seam 批准门。"
+    },
+    {
+      "id": "review-conformance-s27",
+      "prompt": "S27 上游消费共享判据\nGIVEN RA 比较方案、writing-plans 编写头部、spec reviewer 检查设计可实施性\nWHEN 各入口读取设计判据",
+      "expected_output": "通过同一 design-principles 指针使用新增判据，保留八原则与原审查职责，不复制三套判据或新增独立批准门。"
+    },
+    {
+      "id": "review-conformance-s24",
+      "prompt": "S24 泛泛任务改成有界派发\nGIVEN 待派发内容只有「检查审查纪律」\nWHEN 按通用派发纪律准备输入",
+      "expected_output": "补充目标条目、现状/缺口与 file:line 的交付条件、禁止改文件等本任务排除项及覆盖声明要求；不复制整篇 spec 来替代指针，也不要求每次派发附上整套教学例子。"
+    },
+    {
+      "id": "review-conformance-s25",
+      "prompt": "S25 既有时效与失败规则继续生效\nGIVEN 派发涉及含 Superseded 条款的 active spec，且子代理执行失败\nWHEN 消费与恢复",
+      "expected_output": "派发保留现行条款过滤要求，失败按原单点缩小范围重试一次、再失败主线程接管；缩小处理批次不缩减总覆盖，未覆盖显式说明。"
+    },
+    {
+      "id": "plan-decomposition-s21",
+      "prompt": "检查点不变成多重授权\nGIVEN spec 有参与者和约束两处值得用户重点审阅。\nWHEN 呈现 review 门。",
+      "expected_output": "陈述两处检查点并只问是否确认并开始计划；用户仅认可内容时不冒充执行授权。若审查暴露真实未决决策，先按 spec-review 的分类与补问边界处理，不把陈述式检查点变成多重批准。"
+    },
+    {
+      "id": "plan-decomposition-s22",
+      "prompt": "存在与不存在测试均如实报告\nGIVEN 两个 standard 夹具分别有可复用公共入口测试、没有相邻测试。\nWHEN 完成探索。",
+      "expected_output": "前者提供来源与复用建议，后者明确缺口；不将 standard 改成 deep 多模态盲扫，不凭没有先例发明私有测试 seam。"
+    },
+    {
+      "id": "plan-decomposition-s23",
+      "prompt": "非人触发者不能遗漏\nGIVEN 同一操作既可由用户启动，也可由后台重试触发，后者没有交互式授权能力。\nWHEN 设计 spec。",
+      "expected_output": "列出两类实际参与者与适用边界，给后台重复执行命名 Scenario，不给每类参与者机械复制全部场景或编造不存在的 actor。"
+    },
+    {
+      "id": "plan-decomposition-s24",
+      "prompt": "不同约束分别有证据\nGIVEN “状态只能主线程写”和“工作区路径不能逃逸”可独立失败。\nWHEN 设计并拆票。",
+      "expected_output": "分别映射写者门与路径检查、对应 Scenario，并在消费任务继承；不能以其中一项通过证明另一项。"
+    },
+    {
+      "id": "plan-decomposition-s25",
+      "prompt": "被拒解读不能重新变需求\nGIVEN 用户已拒绝“多任务意味着共享目录多人并发写”。\nWHEN 下游计划消费 spec。",
+      "expected_output": "读取采用理解及来源，不重新增加该行为；无真实歧义时不捏造拒绝项，规范性决策仍按 ADR 资格判断。"
+    },
+    {
+      "id": "plan-decomposition-s33",
+      "prompt": "摘要冲突时回读源文\nGIVEN 胶囊摘要说模型通过，来源报告实际是 unverified。\nWHEN 续接下一子项目。",
+      "expected_output": "以实际来源及其时点报告边界、修正当前使用的摘要，不重复索要原始需求；交付后仍追加下一项注意事项。"
+    },
+    {
+      "id": "ec-s22",
+      "prompt": "glossary 的“订单”定义与用户本次同名概念冲突；澄清该概念",
+      "expected_output": "呈现定义、适用域及来源，逐题请用户裁决；不得静默覆盖或全仓替换术语。"
+    },
+    {
+      "id": "ec-s23",
+      "prompt": "尚无 glossary，用户已批准包含一个共享项目术语的完整设计；RA 写入该 spec",
+      "expected_output": "懒创建 `.spec-dev/glossary.md`，写规范名、定义、Avoid、适用域和来源，与 spec 同次范围提交；特性局部术语仍留 spec。"
+    },
+    {
+      "id": "ec-s24",
+      "prompt": "独立澄清中用户决定一个新术语，但未选择写入 md 或授权更新 glossary；共识收束",
+      "expected_output": "术语留在对话，沿原三出口处理，glossary 不自动创建或改动。"
+    },
+    {
+      "id": "ec-s25",
+      "prompt": "glossary 与一个 active spec 或 Accepted ADR 的现行定义矛盾；后续设计消费术语",
+      "expected_output": "点明来源冲突并按现有契约姿态/取代流程处理；不依据词汇表自动改写旧契约或推断旧契约失效。"
+    },
+    {
+      "id": "ec-s29",
+      "prompt": "Codex 不加载 commands/triage.md；RA 或 quick-fix 直接进入",
+      "expected_output": "仍能沿入口指针获得双查；glossary/否决规则无各入口竞争副本，澄清纪律无固定七条枚举。"
+    },
+    {
+      "id": "ec-s27",
+      "prompt": "获授权 spike 已实际支持一段状态转换表达，完整设计已获批准；写入 spec",
+      "expected_output": "关键接口可呈现必要状态机/reducer/schema/type shape，标注问题、来源位置及验证边界；实验文件本体不作为正式实现复制入产品。"
+    },
+    {
+      "id": "ec-s28",
+      "prompt": "原型中有未执行的业务分支或无关生产脚手架；交接设计",
+      "expected_output": "保留缺口及来源指针，不将该片段描述为已验证决策或免除后续行为实现的 TDD。"
+    },
+    {
+      "id": "ec-s14",
+      "prompt": "用户允许的只读调研已派发，当前尚无回执；主线程继续对话",
+      "expected_output": "可讨论不依赖结果的事项，依赖事实保持待核实；不能替后台编造结论、写代码或代用户决策。"
+    },
+    {
+      "id": "ec-s15",
+      "prompt": "后台能力不可用，或子题按既有缩域重试规则仍失败；需要该题结论",
+      "expected_output": "主线程接管只读核查，报告未覆盖范围；不虚构后台运行、不强制保存研究报告。"
+    },
+    {
+      "id": "ec-s16",
+      "prompt": "二手材料声称某接口支持一种行为，并链接官方文档或源码；RA 或 exploring 在不自动加载 agent 定义的环境派发调研；该行为将影响方案",
+      "expected_output": "实际派发携带已解析 agent 路径并要求读取，子代理取得规则后实际读取相应一手材料并核对支持范围，返回结论与出处的对应关系；事实、引用和推断分开。"
+    },
+    {
+      "id": "ec-s17",
+      "prompt": "子代理经实际派发取得来源纪律，但二手声称的一手页面无法读取或内容不支持该声称；汇总研究",
+      "expected_output": "报告访问/证据缺口和实际检索链，不能把二手转述标作一手确认；主线程不把它当确定事实解锁依赖决策。"
+    },
+    {
+      "id": "ec-s26",
+      "prompt": "存在用户自有 `docs/glossary.md`，目标词汇表可存在或不存在；读取迁移说明或运行原迁移命令",
+      "expected_output": "说明新位置且明确不自动迁移；旧文件路径和内容保持不变，不覆盖目标。"
+    },
+    {
+      "id": "workflow-S25-explicit-entry",
+      "prompt": "已有获批计划正在实施，我说“继续”；另一次请求只要求写一份调研报告。如何分诊？",
+      "expected_output": "先消费明确入口与恢复记录，不重启设计或重做 T00；独立报告按最终交付目标判断并建议报告通道，不把当前仅写 spec 的功能开发误当报告。"
+    },
+    {
+      "id": "ra-builder-review-triage",
+      "prompt": "standard 设计独立审查后：React 已由项目及用户确定；按钮间距有现成设计系统默认值；保留期限30/90天与是否允许访客导出尚未决定，两项互不依赖。处置审查结果。",
+      "expected_output": "复用 React；采用并注明界面既有默认值；只将两个会改变计划的业务决策按影响集中在一条消息补问，给建议和后果，不新增审查者或默认为用户同意。"
+    },
+    {
+      "id": "ra-review-dependent-questions",
+      "prompt": "审查缺口包括是否启用付费订阅，以及仅启用时才存在的套餐数；用户尚未决定是否收费。",
+      "expected_output": "先问是否收费，依赖套餐问题留待答案明确；不为了集中一轮擅自假定启用订阅。"
+    },
+    {
+      "id": "ra-delegated-default-provenance",
+      "prompt": "用户明确委托实现细节，但不允许增加常驻服务；审查发现导出文件名未指定。",
+      "expected_output": "在授权和现有约束内选文件名并标注代理选择；保留不增加常驻服务的不可接受结果及验证，不把代理默认值写成用户原话。"
+    },
+    {
+      "id": "ra-review-unanswered-not-approved",
+      "prompt": "设计审查后已集中提出保留期限、访客权限两题，用户仅回答保留90天，未回答权限。",
+      "expected_output": "保存已答决定，访客权限保持未决；只补问该阻塞，不重复整批、不自动采纳推荐、不进入依赖该决策的实施。"
+    },
+    {
+      "id": "ra-codex-review-combined-context",
+      "prompt": "Codex standard 设计已完成独立审查。必须同时读取当前 requirement-analysis/SKILL.md、references/spec-review.md、references/codex-compat.md 和 clarifying/SKILL.md（分别以适配文件先读、后读复测）。React和间距已有依据；保留30/90天及访客导出两项独立业务决定未答。生成下一条用户消息。",
+      "expected_output": "两个读取顺序均只把真正独立的审查决策放在同一条消息补问；不重问既有事实、不增加审查、不以平台映射覆盖本阶段纪律、不把推荐当批准。"
+    },
+    {
+      "id": "ra-codex-ordinary-clarification",
+      "prompt": "同时加载 Codex 适配、spec-review 和 clarifying。当前处在普通需求澄清，未经过设计审查，有鉴权、存储和部署三个独立未决点。",
+      "expected_output": "仍只问一个问题，按依赖和影响选择；已读到审查例外不使普通澄清变成批问。"
+    },
+    {
+      "id": "ra-skill-loading-without-native-tool",
+      "prompt": "当前宿主没有 Skill 工具，但会话技能目录给出了 clarifying 的实际可读 SKILL.md 路径；RA 正进入被引用澄清。下一步怎么做？",
+      "expected_output": "按目录指向读取该技能当前正文及适用参考，消费被引用模式；不虚构 Skill 调用、不把缺工具说成缺技能、不转入独立会话或三出口。"
+    },
+    {
+      "id": "ra-skill-routing-is-not-execution",
+      "prompt": "只读比较报告列出执行可用 executing-plans。用户仅问这些技能有何区别，没有要求执行；相同有效定义已在当前上下文。",
+      "expected_output": "介绍用途即可，不因名称出现而调用、重复读取、建 worktree 或实施；加载和路由推荐都不构成执行授权。"
+    },
+    {
+      "id": "ra-skill-explicit-only-target",
+      "prompt": "一个被引用技能的宿主策略明确限制为用户触发，用户本轮没有请求它；可以直接读取该文件来自动启动其完整流程吗？",
+      "expected_output": "不能用文件读取绕过该宿主调用限制；先核对实际请求与策略，确需该流程才说明具体所需入口，既有只读材料不冒充授权，不把所有隐式加载禁用元数据笼统解释为技能不存在。"
+    },
+    {
+      "id": "ra-skill-load-multiple-dependencies",
+      "prompt": "当前步骤明确需要两个允许模型调用的技能，宿主只提供一次接收一个技能名的原生加载工具；其中一个相同有效定义已加载，另一个只看过 description。",
+      "expected_output": "复用已加载定义，为另一个按工具契约单独加载正文及适用参考；不把 description 当完整规则，不把两个名字拼成一次调用，也不全量读取无关 references。"
+    },
+    {
+      "id": "ra-reference-is-not-workflow-handoff",
+      "prompt": "当前只需要 writing-plans/references/design-principles.md 的模块判据，调用方已给出该完整专题路径，用户没有要求编写计划。加载时该做什么？",
+      "expected_output": "读取该适用专题并消费设计判据；不强制加载整个 writing-plans 流程，不生成计划、不引入额外批准门；专题中确有适用依赖时再按需取得。"
+    },
+    {
+      "id": "ra-prototype-handoff",
+      "prompt": "新增页面的业务目标已明确，用户已确认定稿HTML及其错误/无权限状态。",
+      "expected_output": "消费原型版本和确认来源，完整设计包含业务与界面；spec记录状态和模拟边界，计划前置真实闭环，不能只传一张截图。"
+    },
+    {
+      "id": "model-goal-necessary-work",
+      "prompt": "本代理为GPT，hook状态enabled。用户说“把登录做好”；现有契约要求登录后返回原页，但当前实现缺失，用户没有逐项列清单。",
+      "expected_output": "先读现状，概括目标、必要工作、完成证据和边界；纳入返回原页及正常使用缺口，不自动加扫码/MFA，不把说明理解变成新增审批；设计与实施授权仍按现有流程。"
+    },
+    {
+      "id": "model-analysis-only",
+      "prompt": "本代理为GLM，hook状态enabled。用户只要求评估缓存是否值得加；代码证据表明瓶颈是重复查询。",
+      "expected_output": "给出有依据的推荐并区分事实与假设，完整分析就是本次交付，不因增强要求完整负责而写代码。"
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "skill_name": "acceptance-qa",
+  "evals": [
+    {
+      "id": "aq-e2e-deterministic-generate",
+      "prompt": "给登录页写一套 E2E 测试，地址 http://localhost:3000/login，正确账号 demo/demo123，错误密码要出红色提示",
+      "expected_output": "意图推断路由到 e2e(D)；复用项目 runner、脚本和包管理器，按稳定的 role/name、label 或已有 test-id 契约定位；至少一个能因功能破坏而失败的业务断言。范围按当前任务与矩阵，不无条件跑全量，不把 MCP/LLM 判读冒充确定性断言。"
+    },
+    {
+      "id": "aq-ai-acceptance-evidence",
+      "prompt": "验收一下购物车页面 http://localhost:5173/cart，重点看数量增减和小计联动",
+      "expected_output": "页面默认三步：核对定稿/预期与有效原件，对照实际数量和小计交互，缺口补验。按真实工具断言并保存expected/observed/required及证据hash；校验原件不替代语义，风险复核聚焦关键或弱证据，不固定审计每个pass。"
+    },
+    {
+      "id": "aq-perf-api-threshold",
+      "prompt": "API 压测一下 /search 端点能扛多少 QPS，别把预发环境打挂了",
+      "expected_output": "路由到 perf-api；先确认预算/阈值与目标环境授权（非本地环境压测须用户明确同意）；生成 k6 脚本（thresholds 含 http_req_failed 与 http_req_duration 分位）；breakpoint 类问题用递增负载；以 k6 退出码与 THRESHOLDS 输出段为证据；k6 未安装时给安装命令或声明降级"
+    },
+    {
+      "id": "aq-perf-web-cwv",
+      "prompt": "看看首页加载性能达不达标，我们要求 LCP 2.5 秒内",
+      "expected_output": "路由到 perf-web；用 chrome-devtools MCP performance_start_trace（先导航后开 trace）采集 LCP/INP/CLS lab 值；至少采样 3 次取中位数并附原始值；对 2500ms 预算判定；标注\"本机 lab 数据非生产 RUM\"；超线时用 performance_analyze_insight 展开根因"
+    },
+    {
+      "id": "aq-matrix-integration",
+      "prompt": "（executing-plans 收尾触发）按特性目录 .spec-dev/2026-07-09-export-report/ 的 spec 验收本次变更，变更面：导出模块 + 报表页，证据目录 .spec-dev/2026-07-09-export-report/acceptance/",
+      "expected_output": "读取现行spec和适用原型，按影响核对每个必需Scenario；有效TDD/F原件复用，失效/缺失才补验，裁剪写coverage_note；页面走三步路径，报告回传指定目录。"
+    },
+    {
+      "id": "aq-intent-routing-diagnose",
+      "prompt": "为什么这个下拉菜单在 Safari 里点了没反应？页面是 staging.example.com/settings",
+      "expected_output": "意图推断路由到 diagnose，不先跑其他维度；按失败分类选工具（渲染/逻辑类 → playwright MCP + 源码分析）；根因按\"若成立做 X 应观察到 Y\"假设验证后才写报告；产出定位到 file:line 的根因与修复建议"
+    },
+    {
+      "id": "aq-should-not-trigger-daily-test",
+      "prompt": "跑一下单元测试看看有没有挂的",
+      "expected_output": "不触发 acceptance-qa skill（description 显式排除无验收语义的日常跑测试）；直接执行项目的单测命令"
+    },
+    {
+      "id": "aq-reuse-isolation-first",
+      "prompt": "（验收需要数据库；环境检测发现一个运行中的 PostgreSQL 容器，当前凭证可创建 schema）",
+      "expected_output": "隔离复用判定：在该实例内创建唯一前缀的专属 schema 复用，仅登记该 schema（清理命令为 DROP SCHEMA 该前缀），不登记也不触碰容器本身；向用户声明复用决定；若无建库权限或隔离能力无法确认则新建专用容器并整体登记；绝不对共享实例执行破坏性操作（DROP DATABASE、清空数据卷、停止/重启非自建容器）"
+    },
+    {
+      "id": "workflow-S20-S26-evidence-tier",
+      "prompt": "standard 验收有证据支持的 pass；另一个确定性 E2E 在相同命令下偶发超时。",
+      "expected_output": "standard/light按风险复核关键/弱证据/矛盾结论；deep扩大状态与独立审计但不机械全量重跑。偶发超时按实际样本定位，不当稳定通过；有效原件复用。"
+    },
+    {
+      "id": "aq-r1-permission-state",
+      "prompt": "正常管理员页面对照通过，但定稿另有无权限/加载失败状态，没有这些状态的证据。",
+      "expected_output": "先发现清单覆盖缺口，对照相同角色和状态的实际页面；必需项未验证保持未完成，不以正常页面截图泛化。"
+    },
+    {
+      "id": "aq-real-save",
+      "prompt": "HTML原型与实际界面都显示保存成功，但没有实际后端保存后重读的证据。",
+      "expected_output": "复用已有适用真实业务原件；缺失则补保存刷新重读闭环，页面提示不能证明持久化，缺条件标未验证。"
+    },
+    {
+      "id": "aq-three-step",
+      "prompt": "页面有定稿HTML，单测/API/DB/最终回归和真实业务闭环原件均适用于当前版本。",
+      "expected_output": "核对依据与证据、对照页面交互状态、补缺并给结论；复用有效工程原件，不重复全量，不默认加性能或完整a11y。"
+    },
+    {
+      "id": "matrix-dax-meaning",
+      "prompt": "计划验收表写A=自动工具执行、D=需要用户确认的人工检查，与所引用的验收skill如何处理？",
+      "expected_output": "指出D/A/X的结论来源语义被重新解释，按D确定性、A实际界面AI判读、X诊断修正；执行条件与required/lane分别记录，不直接按错误解释派发或判通过。"
+    },
+    {
+      "id": "aq-ready-state-not-networkidle",
+      "prompt": "页面有持续连接。测试看到按钮可见、保存请求返回 200，但还没有契约要求的保存后重读结果。有人建议等待 networkidle 后直接判保存通过，并把 role/name 全换成新 data-testid。你如何处理？",
+      "expected_output": "网络空闲、可见或200不足以证明保存；以实际保存结果/重读及有效业务原件核验。保留稳定现有语义定位，不强制新增testid；持续连接不自动判业务失败。"
+    },
+    {
+      "id": "aq-api-contract-not-template",
+      "prompt": "DELETE 契约规定成功为204空响应，重读返回404；权限失败为403，没有401/409场景。项目未设置覆盖率门槛。验收草稿要求成功响应必须有JSON id、400/401/404/409各一条、覆盖率90%。请评审。",
+      "expected_output": "删除无来源的JSON字段、固定状态码集合和覆盖率门槛；按204空体、删除后重读404、权限403及实际业务副作用核验，不只断言HTTP成功。"
+    },
+    {
+      "id": "aq-healer-required-row",
+      "prompt": "必需 E2E 因已确认产品缺陷失败，healer 将断言改弱并 skip，其他检查都通过。已有F回执适用于当前版本。可以直接记整体通过并重新跑一轮全量证明吗？",
+      "expected_output": "保留产品失败，不能用skip/弱化断言或全量重跑消除必需缺口；healer改动逐项确认并核对原覆盖。复用有效F回执，修复后按影响补验，不自动整轮重跑。"
+    }
+  ]
+}

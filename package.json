@@ -1,0 +1,31 @@
+{
+  "name": "@flamemida/spec-dev",
+  "version": "9.1.1",
+  "description": "设计→计划→执行 skill 管线、全能验收与 wtf 大白话终端图解（Pi 分发）",
+  "license": "MIT",
+  "files": [
+    ".agents/",
+    ".claude-plugin/",
+    ".codex-plugin/",
+    "agents/",
+    "commands/",
+    "guardrail/",
+    "hooks/",
+    "scripts/",
+    "skills/",
+    "plugin.json",
+    "README.md",
+    "README.zh-CN.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FlameMida/spec-dev.git"
+  },
+  "pi": {
+    "skills": [
+      "./skills"
+    ]
+  }
+}

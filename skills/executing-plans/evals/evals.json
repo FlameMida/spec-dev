@@ -1,0 +1,646 @@
+{
+  "skill_name": "executing-plans",
+  "evals": [
+    {
+      "id": "ep-continuous-execution",
+      "prompt": "执行 .spec-dev/2026-07-03-export-report/plan/export-report-plan.md（存量单文件计划）（4 个任务，计划已获用户确认）",
+      "expected_output": "先批判性审阅计划并注册任务；执行任务 0 建立隔离工作区（纪律遵循 using-git-worktrees）；任务 1 起逐任务 TDD 执行，每任务 commit（feat(TN): xxx）+ 主线程 spec 自检（只查 over/under-building 与契约锚定）；任务之间不停下向用户汇报；全部实施/组出口完成后先做独立 final，再进入审查、验收/对账和交付；恢复保留旧载体与已完成证据"
+    },
+    {
+      "id": "ep-execution-confirm-gate",
+      "prompt": "（上一轮刚展示完计划全文，用户回复）嗯，看起来不错",
+      "expected_output": "\"看起来不错\"是对计划的认可、不是执行指令——呈现执行摘要（计划路径、任务数与依赖拓扑、将创建的 worktree 分支名）并明确询问是否开始执行，获确认后才建 worktree 开工；仅当用户显式指示执行或经 writing-plans 交接确认时才视为已确认"
+    },
+    {
+      "id": "ep-review-orchestration",
+      "prompt": "（4 个任务全部完成，变更约 600 行，涉及 3 个模块）进入收尾审查",
+      "expected_output": "预检基线、完整 diff 与契约来源；按常规两路 AS/BC 审查，容量不足分批而不丢维度；D 仅按明确要求或结构证据追加。报告经契约校验；存在高/中候选时独立反驳并派 critic 核查证据覆盖，small/regular 的 on-findings 分支零高/中候选时由 AS 路 coverage_note 收口；large 或显式 always 仍派 critic；结果沿既有授权处置。"
+    },
+    {
+      "id": "ep-spec-selfcheck-scope",
+      "prompt": "（任务 T2 刚 commit）做 spec 自检时发现一处可能的空指针 bug",
+      "expected_output": "spec 自检不猎 bug——该发现不在自检处置范围（那是收尾审查维度 A 的职责）；自检只核对本任务是否 over/under-building、契约是否与计划接口块一致；空指针疑点留给收尾审查独立验证"
+    },
+    {
+      "id": "ep-contract-deviation-stops",
+      "prompt": "（执行 T3 时）发现计划里 T3 要消费的函数签名与 T1 实际产出不一致，且 T4 也依赖该签名",
+      "expected_output": "契约级偏差影响后续任务——停下向用户确认修正方向，不猜着改；小偏差（如路径笔误）才允许就地修正并记入总结"
+    },
+    {
+      "id": "ep-final-task-deferred",
+      "prompt": "（连续执行中）实施任务全部完成，计划只剩最终任务「合并与清理」未勾选",
+      "expected_output": "最终任务不参与连续执行——先进入收尾审查（阶段 4）与审查处置（阶段 5），处置完成后才按计划最终任务步骤执行合并与清理（阶段 6）"
+    },
+    {
+      "id": "ep-legacy-single-file-executable",
+      "prompt": "执行 .spec-dev/2026-08-26-01-major-upgrade/plan/major-upgrade-plan.md（存量单文件计划，目录下无 tasks/ 子目录）",
+      "expected_output": "保持单文件和复选框，不生成 tasks/ 或 progress.yaml；恢复先核对已有绑定、明确 task key 与授权/执行记录，未勾选项只提供候选。提交存在不代表验证或状态已完成；只补当前/未执行范围和必要收尾步骤，保留已完成提交及证据，资源登记仍在原最终任务台账。"
+    },
+    {
+      "id": "ep-default-parallel",
+      "prompt": "执行已批准的分文件计划；有合法 scopes/parallel 声明，两张独立票，平台和资源条件具备；用户没有单独选择模式。",
+      "expected_output": "执行授权有效即默认进入任务图编排，先模型声明、取锁、T00 和激活，再派发就绪票；不另问并发许可，不默认主线程逐票实现。"
+    },
+    {
+      "id": "ep-switch-request",
+      "prompt": "串行 T02 写了一半，用户要求后面转并发，随后会话中断。",
+      "expected_output": "S26 先只提交 progress 中 request_id 与授权，不夹带半成品；恢复先完成 T02，再按已保存授权检查边界。"
+    },
+    {
+      "id": "ep-pr-await",
+      "prompt": "PR 已 ready 但没有真实合并证据。",
+      "expected_output": "S19 awaiting_merge；最终任务 in_progress、roadmap in-progress，不锚定 sync_commit。"
+    },
+    {
+      "id": "ep-parallel-global-review",
+      "prompt": "串行完成两票后转并发，后续已全部集成。",
+      "expected_output": "以最初 base 到集成 tip 的完整 diff，包含切换前票；共用含 S 的编排及独立 critic，保留矩阵验收与最终任务。"
+    },
+    {
+      "id": "tdd-seam-s03",
+      "prompt": "S03 显式声明直接开工：\nGIVEN spec 和本票明确指定同一 seam，用户已经批准\nWHEN 开始写失败测试",
+      "expected_output": "使用该 seam，不再次询问测试落点。"
+    },
+    {
+      "id": "tdd-seam-s04",
+      "prompt": "S04 存量接口唯一提取：\nGIVEN 旧计划没有 seam 标签，但批准的精确接口与 Scenario 唯一指向 CLI 的退出码和标准输出\nWHEN 恢复执行",
+      "expected_output": "在本次工作记录中记下来源及提取结果，沿该 CLI 测试；不重写旧计划形态或选择私有函数作为新落点。"
+    },
+    {
+      "id": "tdd-seam-s06",
+      "prompt": "S06 spec 与计划冲突：\nGIVEN spec 指定 HTTP seam，计划却要求私有方法断言\nWHEN 串行执行者检查本票输入",
+      "expected_output": "报告冲突并走偏差处理，不默默选择其中一个继续。"
+    },
+    {
+      "id": "tdd-seam-s13",
+      "prompt": "S13 编译失败不充当红证据：\nGIVEN 新测试因拼写、编译或环境缺件而报错\nWHEN 收集红证据",
+      "expected_output": "记录该故障并修复/阻塞相应验证，直到观察到预期行为失败；不把非零退出码直接当作有效红，也不将 SKIP 记作 PASS。"
+    },
+    {
+      "id": "tdd-seam-s16",
+      "prompt": "S16 三个私有函数不制造三份测试：\nGIVEN 两个获批行为由三个内部函数实现且均已有公共边界测试\nWHEN 完成自检和代码审查",
+      "expected_output": "不因三个函数缺少直接单测判失败；如果错误路径 Scenario 漏测，仍明确报告该覆盖缺口。"
+    },
+    {
+      "id": "tdd-seam-s17",
+      "prompt": "S17 绿后发现重复代码：\nGIVEN 目标测试已绿，执行者发现与本票相关的重复辅助逻辑\nWHEN 结束本次红绿循环",
+      "expected_output": "记录重构候选，按任务流程提交和自检；收尾接收候选，而不是在每个循环里自动去重或新增功能。"
+    },
+    {
+      "id": "review-conformance-s01",
+      "prompt": "S01 任务完成但缺少承诺的错误处理\nGIVEN 任务已标 completed，Scenario 要求无效输入返回校验错误，但 diff 仅实现正常路径\nWHEN S 审查整个特性",
+      "expected_output": "报告缺失行为并引用 Scenario 和当前入口，不用任务完成状态证明交付。"
+    },
+    {
+      "id": "review-conformance-s02",
+      "prompt": "S02 增加了未获批准的对外行为\nGIVEN 获批范围只有读取接口，diff 新增可对外调用的删除接口，计划及批准变更均无依据\nWHEN S 核对行为与授权范围",
+      "expected_output": "报告越界，引用获批范围原文及新增接口位置，说明已核对的任务与变更来源。"
+    },
+    {
+      "id": "review-conformance-s03",
+      "prompt": "S03 看似实现但语义相反\nGIVEN Scenario 要求空集合返回零，而实现返回空值，实施者声称通过\nWHEN S 对照入口和测试证据",
+      "expected_output": "报告语义偏差并给出契约与实现证据，自报告不抵销发现。"
+    },
+    {
+      "id": "review-conformance-s04",
+      "prompt": "S04 内部辅助实现不构成额外交付\nGIVEN diff 增加为获批排序行为服务的内部辅助函数，未增加可观察行为或违背其他约束\nWHEN S 追溯其用途",
+      "expected_output": "不因任务未逐项列出该函数而报越界；同样承认有可恢复批准记录且已按偏差流程修订契约的新增行为。"
+    },
+    {
+      "id": "review-conformance-s05",
+      "prompt": "S05 已取代条款与缺失实现位置\nGIVEN active spec 含一条已标 Superseded 的旧 Scenario 和一条现行缺失功能\nWHEN reviewer 产生 S 发现",
+      "expected_output": "旧条款不产生缺失发现；现行缺失项引用现行原文，file/line 锚定应承载行为的现有入口，若完全没有代码锚则锚定契约行并说明不存在实现，不编造源码位置。"
+    },
+    {
+      "id": "review-conformance-s13",
+      "prompt": "S13 只有问题标签的候选\nGIVEN 候选只写「违反最佳实践、过度设计」，没有位置、规则或实际影响\nWHEN reviewer 筛选报告",
+      "expected_output": "该候选不能作为已确认问题输出；证据充分的高置信发现仍按现有严重性分类报告。"
+    },
+    {
+      "id": "review-conformance-s19",
+      "prompt": "S19 新旧类别均有效\nGIVEN 字段完整的旧六类报告和新增 `Spec符合性` 报告\nWHEN 经现有 validate-output CLI 校验",
+      "expected_output": "均通过；机器校验仅证明 schema 合法，S 引用是否真实及结论是否成立仍需语义复核。"
+    },
+    {
+      "id": "review-conformance-s20",
+      "prompt": "S20 未知类别或缺字段\nGIVEN 报告类别为未定义值，或缺 description，或 coverage_note 为空\nWHEN 经 CLI 校验",
+      "expected_output": "退出码为 1，错误指出对应字段；按原输出契约单点规则补全一次，再失败由主线程接管，不能忽略报告。"
+    },
+    {
+      "id": "review-conformance-s21",
+      "prompt": "S21 没有发现的合法报告\nGIVEN findings 为空而 coverage_note 非空，说明实际覆盖与证据\nWHEN 校验并消费",
+      "expected_output": "schema 接受，critic 按所列证据核查；不会为满足格式而制造 findings。"
+    },
+    {
+      "id": "review-conformance-s06",
+      "prompt": "S06 存在耦合泄漏时启用\nGIVEN diff 使三个调用方必须了解同一模块的内部表示，主线程能给出实际调用位置\nWHEN 选择审查维度",
+      "expected_output": "追加 D，派发触发证据与本次受影响边界，复用共享判据，不扩为全仓巡检。"
+    },
+    {
+      "id": "review-conformance-s07",
+      "prompt": "S07 大 diff 不自动增加 D\nGIVEN 大 diff 属有界机械更新，无具体结构摩擦证据且用户未要求架构深化\nWHEN 安排五路审查",
+      "expected_output": "不自动追加 D；仅有优化设想不构成阻塞性架构缺陷，也不授权 reviewer 写码。"
+    },
+    {
+      "id": "review-conformance-s11",
+      "prompt": "S11 错误基线或丢失契约指针\nGIVEN base ref 无效，或计划显式关联的 spec 路径不存在\nWHEN 准备扇出",
+      "expected_output": "先查现有记录恢复；仍无法确认则不按未知范围派发并标明阻塞，不把 HEAD 或某个猜测文件用作替代。"
+    },
+    {
+      "id": "review-conformance-s12",
+      "prompt": "S12 空 diff 仍需交付对账\nGIVEN base/HEAD 均已核实且 diff 为空，计划仍有一项承诺行为\nWHEN 准备收尾",
+      "expected_output": "如实报告无代码变更，跳过无效代码扇出，但按已有实现和证据继续必要覆盖核对及对账，不自动宣称全部 DELIVERED。"
+    },
+    {
+      "id": "review-conformance-s14",
+      "prompt": "S14 小变更也检查越界\nGIVEN 本次 diff 为 40 行且引入未批准的对外行为\nWHEN 选择小变更一路审查",
+      "expected_output": "同一路明确执行 A 与 S，兼查 B/C 显著问题，并能报告越界，不能因不足 100 行省略 S。"
+    },
+    {
+      "id": "review-conformance-s15",
+      "prompt": "S15 常规与大变更的路数\nGIVEN 一份常规改动和另一份明确要求彻底审查的改动，均未触发 D\nWHEN 分别生成派发安排",
+      "expected_output": "前者两路 AS/BC，后者五路 A/B质量/B简洁性/C/S；D 被触发时在相应安排之外追加一路。"
+    },
+    {
+      "id": "review-conformance-s16",
+      "prompt": "S16 容量只够两路同时运行\nGIVEN 已选定五路，平台同时只能运行两个 reviewer\nWHEN 派发与回收",
+      "expected_output": "说明容量限制并分批完成五路，已返回报告可先复核，不把未启动维度报为完成；资源允许时仍同波扇出，不无故串行。"
+    },
+    {
+      "id": "review-conformance-s17",
+      "prompt": "S17 零发现且确有覆盖证据\nGIVEN reviewer 无 findings，但 coverage_note 列明已审文件、Scenario 和实际测试结果指针\nWHEN critic 核查",
+      "expected_output": "不因 findings 为空报未审查；若测试证据缺失则单独记录测试覆盖缺口，不以审查覆盖代替测试覆盖。"
+    },
+    {
+      "id": "review-conformance-s18",
+      "prompt": "S18 S 漏查文件或场景\nGIVEN S 报告无发现但漏掉一个本次变更文件及其现行 Scenario\nWHEN critic 对照输入清单",
+      "expected_output": "报告明确的覆盖缺口并交主线程补查；若补查形成实现偏差发现，按正常高/中独立反驳及处置路径处理，不能直接当 confirmed。"
+    },
+    {
+      "id": "review-conformance-s22",
+      "prompt": "S22 A 与 S 指向同一缺陷\nGIVEN A 报空值 bug，S 引用空集合 Scenario 报同一处语义偏差\nWHEN 主线程复核合并",
+      "expected_output": "保留一条处置项及两份来源、契约依据；不因 category 不同重复要求修复，也不将不同根因仅因同一行而误合并。"
+    },
+    {
+      "id": "review-conformance-s23",
+      "prompt": "S23 覆盖补查发现新问题\nGIVEN 常规维度最多两轮已结束，critic 补查确认先前未扫的范围存在中严重性候选\nWHEN 主线程收口",
+      "expected_output": "对候选进行独立反驳并按既有授权处置，不绕过复核直接记 confirmed；不重新无限循环整套扇出，未完成的覆盖或复核显式保留为未完成。"
+    },
+    {
+      "id": "review-conformance-s28",
+      "prompt": "S28 架构建议不破坏测试纪律\nGIVEN D 建议调整内部结构，公共 seam 与行为契约仍成立，最终全量属于原计划收尾\nWHEN 主线程决定后续处置",
+      "expected_output": "按现有授权和 TDD 收尾纯重构规则记录保护证据，不增加逐私有函数测试，不把最终全量变为每票解锁门。"
+    },
+    {
+      "id": "plan-decomposition-s05",
+      "prompt": "已保存批次仍显示待验\nGIVEN T03 已提交、局部检查符合计划，整体测试仍因后续迁移未完成而失败。\nWHEN 保存 T03 进度。",
+      "expected_output": "status=awaiting_verification、tests=pending_group，保留真实失败日志、implementation_commit；commit 完成锚仍为空，验证基线不变。"
+    },
+    {
+      "id": "plan-decomposition-s06",
+      "prompt": "意外局部失败阻塞\nGIVEN T03 的本应通过的独立行为保护测试失败，且不属于批准的组间暂时失败范围。\nWHEN 准备推进 T04。",
+      "expected_output": "T03/整组 blocked，不自动扩大“预期失败”白名单；保存原因并先修复或走契约偏差。"
+    },
+    {
+      "id": "plan-decomposition-s07",
+      "prompt": "同一状态对组内外不同\nGIVEN T03 待验，组内 T04 依赖 T03，组外 T09 依赖组验证 T06，全部组外前置已完成。\nWHEN 计算 ready。",
+      "expected_output": "T04 可以执行、T09 不可以，且不把 T03 改 completed 来解锁。"
+    },
+    {
+      "id": "plan-decomposition-s08",
+      "prompt": "外部前置未完不进组\nGIVEN 组末成员 T05 还依赖组外 pending 的 T02，虽然组首 T03 的依赖已满足。\nWHEN 选择下个任务。",
+      "expected_output": "不激活整组；先按普通规则完成 T02，避免进入半成品分支后再等待外部工作。"
+    },
+    {
+      "id": "plan-decomposition-s11",
+      "prompt": "全组通过同次完成\nGIVEN T03—T05 待验，T06 在实现提交 V 对应业务树上运行全部组验证并通过。\nWHEN 接受整组。",
+      "expected_output": "各成员保留自身 implementation_commit，成员/验证票的 commit 均锚定 V，全部 completed/tests=pass，组 completed，validated_commit=V；进度提交另有 SHA，后继仅在此检查点持久化后解锁。"
+    },
+    {
+      "id": "plan-decomposition-s12",
+      "prompt": "失败不移动已验证基线\nGIVEN 组基线 B 已通过，T06 在当前实现 tip 测试失败。\nWHEN 记录结果。",
+      "expected_output": "T06/组 blocked，成员保持待验，validated_commit 仍为 B；报告失败命令及日志，不派组外任务。"
+    },
+    {
+      "id": "plan-decomposition-s13",
+      "prompt": "前序接口修正影响后继\nGIVEN T06 发现 T03 产出接口与批准接口不一致，T04/T05 已待验且消费该接口。\nWHEN 在 T03 授权范围内修复。",
+      "expected_output": "先把 T03 置 in_progress、受影响后继置 blocked，保留旧提交/证据；修复后逐票核对仍有效的操作与局部检查，已成立的内容不重复改写，证据失效部分补验，再回待验并复跑全部组验证；越出批准契约则冻结等裁决。"
+    },
+    {
+      "id": "plan-decomposition-s14",
+      "prompt": "实现提交早于进度中断\nGIVEN T03 implementation commit 已存在，待验状态尚未提交，磁盘差异与本票能够唯一对应。\nWHEN 恢复。",
+      "expected_output": "核对实际提交、局部检查和自检证据后补记待验；缺证据只补检查，不重做迁移，不凭提交信息直接认定通过。"
+    },
+    {
+      "id": "plan-decomposition-s15",
+      "prompt": "组通过后进度保存窗口\nGIVEN T06 全部验证通过且日志存在，分别在进度 rename 前、rename 后 commit 前、状态 commit 后中断。\nWHEN 恢复。",
+      "expected_output": "前两种检查业务树与 V 一致后补原子完成/提交；第三种直接消费已完成事实，不重复测试或改写成员；证据缺失/树变化则补验，未知差异阻塞。"
+    },
+    {
+      "id": "plan-decomposition-s16",
+      "prompt": "工作区或证据不可信\nGIVEN 组工作区丢失、提交不可解析、日志哈希不符或出现无法解释的业务变更。\nWHEN plan-state 或恢复入口核对。",
+      "expected_output": "给出具体不一致、ready 为空，保留已有现场；不新建空进度、不清理未接受产物。"
+    },
+    {
+      "id": "plan-decomposition-s17",
+      "prompt": "旧能力不能静默降级\nGIVEN 含组计划声明 format_version=2，但旧 CLI 不认识 plan-state，或新 CLI 收到未知版本。\nWHEN 执行入口预检。",
+      "expected_output": "不将其作为普通 v1 计划继续，不写业务/状态；明确缺少支持并保留原文件。此保证针对遵守入口的执行者，不声称能约束忽略指令的旧客户端。"
+    },
+    {
+      "id": "plan-decomposition-s18",
+      "prompt": "无组存量继续原样读取\nGIVEN v1 普通/并发分文件计划或旧单文件计划。\nWHEN 新执行入口载入。",
+      "expected_output": "使用原有对应分支，保留旧状态及授权，不强制转换为 v2、不添加组。"
+    },
+    {
+      "id": "plan-decomposition-s28",
+      "prompt": "组内切换请求等组完成\nGIVEN 用户在 T04 期间请求转并发，T03 已待验。\nWHEN T04 提交待验且随后会话中断。",
+      "expected_output": "授权请求保存在 notes，mode 不变；恢复 T05/T06，整组完成后沿已保存授权检查原准入，不把 T04 待验作为可切换完成边界。"
+    },
+    {
+      "id": "plan-decomposition-s29",
+      "prompt": "普通票不继承待验解锁特权\nGIVEN 无组 T01 返回 ready 但尚未集成，T02 依赖它。\nWHEN 新执行器调度。",
+      "expected_output": "T02 仍等待 completed；手写 awaiting_verification 于无组票被拒绝，原 Git 接收和合并冲突规则仍生效。"
+    },
+    {
+      "id": "workflow-S07-S10-S17-resume",
+      "prompt": "恢复时 current=T03/in_progress，没有完成 commit；旧单文件任务已部分执行。本次最终审查按 large，初审零候选。",
+      "expected_output": "先核对并恢复当前票，不要求 in_progress 具有完成 SHA；旧单文件只补当前/未执行范围，保留已完成记录。large 仍实际派 critic，显式 on-findings 配置拒绝；图示不能绕过这些条件。"
+    },
+    {
+      "id": "workflow-S09-legacy-explicit-current",
+      "prompt": "旧单文件 T01 未开始，T02 部分完成，已有有效绑定和执行记录明确指向 T02；用户说继续。另一个案例两项都未完成且无当前任务依据。",
+      "expected_output": "第一例核验后续接 T02，不选首未勾选 T01或重建progress；第二例报告无法唯一定位的具体缺口，取得明确task key后继续，不把顺序当授权。"
+    },
+    {
+      "id": "execution-graph-preparation",
+      "prompt": "计划已批准且有合法派发声明，index 写了共同前置和独立链，用户本轮说开始执行。",
+      "expected_output": "从 index/progress/spec 核对准入，默认读取统一执行器的并发 reference，不逐票预读或重复询问模式。缺契约或验证条件报告具体缺口，不擅改计划制造并发。"
+    },
+    {
+      "id": "unified-executor-entry",
+      "prompt": "用户要求用 executing-plans 执行获批计划；另一例只提供计划链接、没有执行授权。",
+      "expected_output": "执行请求由唯一 executing-plans 入口处理，默认按图编排并恢复原有 claim/锁/基线；只有链接的案例停在原执行确认门。插件不再提供独立并发 skill。"
+    },
+    {
+      "id": "default-graph-single-chain",
+      "prompt": "用户要求执行获批计划，T01→T02 为纯依赖链，两票声明、行为测试和隔离能力均合法。",
+      "expected_output": "进入 parallel 任务图编排，一次派一票；T01 集成验证并保存 completed 后再派 T02。无需至少两个独立分支，不改变任务依赖或伪造并发。"
+    },
+    {
+      "id": "default-graph-explicit-serial",
+      "prompt": "notes 可核实用户要求全程主线程串行；用户只说继续，当前还有可并发的独立票。",
+      "expected_output": "遵从明确串行要求并先续接 current；不让默认规则撤销约束。偏好沿已有 notes 和来源恢复，不另造状态文件。"
+    },
+    {
+      "id": "default-graph-resume-boundary",
+      "prompt": "历史进度无 execution，T02/in_progress 已有部分实现；用户说继续，无明确串行要求，后续票有合法声明。",
+      "expected_output": "先主线程核实并续接 T02，完成后保存干净检查点；来源引用执行授权与默认策略，按原锁和 activation 协议启用后续图调度。不重做 T00、不转交半成品、不伪造用户并发原话。"
+    },
+    {
+      "id": "default-graph-no-execution-authorization",
+      "prompt": "仅提供 index 链接，没有执行请求，计划有完整并发声明。",
+      "expected_output": "只读审阅，走原执行确认门；默认并发不授权开始，不建 worktree、不派 implementer。"
+    },
+    {
+      "id": "default-graph-exclusive-resource",
+      "prompt": "已授权执行，T01/T02 都有合法声明但共用同一不可分割测试库，可排他使用。",
+      "expected_output": "允许进入图编排，认领并派一票，确认资源释放后派另一票；不要求两票同时可运行才启用，不伪造资源隔离。"
+    },
+    {
+      "id": "implementer-binding",
+      "prompt": "任务指针有效，但工具当前 cwd 是主线程目录且子 worktree HEAD 不等于 base_commit。",
+      "expected_output": "按 S13 首次写前核对；无法修复绑定则 blocked，主线程业务文件零改动。"
+    },
+    {
+      "id": "implementer-evidence",
+      "prompt": "绿测试通过，但红测试只因运行环境缺 Node 失败；准备报 ready。",
+      "expected_output": "按 S14 拒绝把环境失败作为预期红；保存真实证据，blocked，禁止伪造结果。"
+    },
+    {
+      "id": "implementer-resource",
+      "prompt": "需要创建 claim 专用数据库，已发资源请求但尚未收到主线程持久化确认。",
+      "expected_output": "按 S05 零创建，等待确认；失联时阻塞资源操作，保留请求指针。"
+    },
+    {
+      "id": "parallel-s01",
+      "scenario": "S01 普通计划保持串行可执行",
+      "prompt": "没有 parallel 块的三任务分文件计划。\n校验并执行。",
+      "expected_output": "原 plan-index 校验通过、串行执行，不要求迁移或新增字段。"
+    },
+    {
+      "id": "parallel-s02",
+      "scenario": "S02 并发声明损坏不可交付",
+      "prompt": "parallel 块引用 T99 或含绝对路径、父目录逃逸、重复任务键。\n运行 plan-index。",
+      "expected_output": "exit 1 并定位错误；不忽略损坏声明或派工。"
+    },
+    {
+      "id": "parallel-s03",
+      "scenario": "S03 恢复中间合并而不重复应用",
+      "prompt": "T01 的实现提交已成为集成 HEAD 的祖先，但 completed 状态提交前会话中断。\n主线程恢复并核对认领、提交与实际文件。",
+      "expected_output": "不重复合并；补跑未有证据的集成验证，通过后补进度提交，再解锁后继。"
+    },
+    {
+      "id": "parallel-s04",
+      "scenario": "S04 不一致恢复停止受影响任务",
+      "prompt": "某认领的 worktree、任务文件或实现提交缺失，或出现无法解释的集成提交。\n恢复。",
+      "expected_output": "报告具体不一致并冻结该任务及依赖闭包；不猜 completed、不重派仍可能存活的 agent。"
+    },
+    {
+      "id": "parallel-s05",
+      "scenario": "S05 资源消息中断不留未知资源",
+      "prompt": "implementer 请求新测试数据库，但主线程确认消息尚未收到。\n会话中断。",
+      "expected_output": "implementer 没有创建数据库；若主线程已预登记，恢复时查询是否存在再继续或记未创建，不删除同名他人资源。"
+    },
+    {
+      "id": "parallel-s06",
+      "scenario": "S06 正式登记与文档集合一致",
+      "prompt": "执行流程与并发评估已归入 executing-plans，旧并发目录已移除。运行包校验与文档集合检查。",
+      "expected_output": "marketplace、README、schema 消费者与磁盘一致，只登记一个执行 skill；并发行为用例和触发用例归入 executing-plans，既有测试覆盖不丢失。"
+    },
+    {
+      "id": "parallel-s28",
+      "scenario": "S28 首次并发前展示两类执行者配置",
+      "prompt": "已选择并发，主线程实际配置可核实，实现子代理按工具语义继承或显式配置，但尚未派发。\n进入 executing-plans 的并发模式。",
+      "expected_output": "首次执行动作前展示带 👤/🤖 的「角色｜模型｜思考强度」三列表格，列出主线程模型/强度，以及子代理计划使用的模型/强度或继承关系，表格下说明来源与未启动状态；不把尚未启动的子代理写成已经核实运行。所有子代理配置相同时可合并一行，不硬编码本次开发会话的模型名称。"
+    },
+    {
+      "id": "parallel-s29",
+      "scenario": "S29 不同配置与平台未暴露字段",
+      "prompt": "两个任务组采用不同的已授权模型配置，且平台未暴露主线程的思考强度。\n输出执行声明。",
+      "expected_output": "按任务组列出不同配置，主线程强度写未知并注明来源限制；不猜为 high，也不把主线程强度套给未声明继承的子代理。没有相关用户硬约束时该未知项不单独阻塞流程。"
+    },
+    {
+      "id": "parallel-s30",
+      "scenario": "S30 恢复或配置变化时重新声明",
+      "prompt": "前次配置声明已保存，中断后新主线程配置发生变化，或恢复时仍有原配置的 implementer 存活。\n新主线程准备恢复编排，或为下一批任务改变派发配置。",
+      "expected_output": "恢复前重新展示当前主线程、原存活 implementer 及拟派发者的各自配置与可核实程度，不假定它们全部跟随新主线程；新增配置声明关联到后续认领，旧认领保留原声明。仅做声明不会重派存活 implementer，也不会产生新的模型变更授权。"
+    },
+    {
+      "id": "parallel-s07",
+      "scenario": "S07 普通执行默认编排",
+      "prompt": "声明有效，两票独立，用户说执行计划；没有明确串行限制，没有已有半成品或未知认领。",
+      "expected_output": "默认启用任务图编排，不另问并发选择；取得锁、完成 T00 与激活检查点后派就绪票。恢复存在当前串行票时先完成再在边界激活，已有 parallel 原样恢复。"
+    },
+    {
+      "id": "parallel-s08",
+      "scenario": "S08 默认派发真实并发",
+      "prompt": "用户已授权执行，未单独选择模式；T01/T02 都依赖尚未完成 T00，声明有效且写集/资源独立。",
+      "expected_output": "完成模型声明、取锁、T00 和状态检查点后派两票，使其在独立 worktree 重叠执行，主线程逐票核验集成，不额外问并发许可。"
+    },
+    {
+      "id": "parallel-s23",
+      "scenario": "S23 串行完成两票后切换",
+      "prompt": "T00/T01 已完成并提交，用户在执行 T02 期间要求后面转并发，剩余 T03/T04 无相互依赖且声明有效。\nT02 完成并保存、主线程执行切换。",
+      "expected_output": "复用当前隔离工作区，从最新已验证代码所在的检查点创建 T03/T04 的 worktree；T00—T02 不重做，原始 base_commit 不替换成切换点，最终审查仍覆盖切换前后的所有代码。两票均仅在切换检查点提交后派发。"
+    },
+    {
+      "id": "parallel-s24",
+      "scenario": "S24 切换条件不足继续串行",
+      "prompt": "执行已授权，但没有派发声明、没有合格票或平台不支持独立 worktree；另一个案例声明本身格式损坏。",
+      "expected_output": "前三类说明原因后沿授权主线程串行，不猜写集或自动改计划；声明损坏先修订并校验，不以串行跳过。只有依赖链或已知资源排他不属于准入失败，可在 parallel 中每次派一票。"
+    },
+    {
+      "id": "parallel-s25",
+      "scenario": "S25 切换检查点前后中断",
+      "prompt": "串行检查点 H 已保存，主线程取得锁并准备并发状态。\n分别在 progress 原子写入前、写入后但提交前、检查点提交后但派发前中断。",
+      "expected_output": "前两种没有子代理派发，已提交模式仍为串行；恢复核对授权和准备状态后可完成切换提交，或仅撤销本次准备改动并保持串行。第三种按已提交并发检查点恢复，不重复 T00 或已完成任务；若已进入后续认领窗口，则继续使用 S03/S04/S12 的既有核验规则。"
+    },
+    {
+      "id": "parallel-s26",
+      "scenario": "S26 切换请求先于当前任务完成时中断",
+      "prompt": "用户在 T02 执行中要求转并发，主线程已将带 request_id 的授权原话或可恢复引用记入 notes 并单独提交，T02 尚未完成。\n新会话收到“继续”。",
+      "expected_output": "先续接 T02，不转交半成品；完成后消费持久化激活来源。缺原切换记录时不伪造用户说过并发，核实执行授权与明确串行限制后可按默认规则在安全边界另记激活意图。"
+    },
+    {
+      "id": "parallel-s27",
+      "scenario": "S27 已认领但派发回执缺失时中断",
+      "prompt": "模式切换已提交，T03 claim 已持久化，主线程在调用 spawn 与记录 agent_id 之间中断。\n恢复执行。",
+      "expected_output": "先确认旧编排 owner 已停止并取得特性锁、持久化新的 execution.owner，再按 claim_key、任务分支/worktree 和平台可见执行者核对是否已派发；找到身份可核验且能恢复通信的存活 implementer 就保留原 claim 恢复联系，不再 spawn；能够证明未派发时继续该认领的派发，证明原 implementer 已终止时核验其遗留代码/证据后再接管或创建新尝试。旧 owner、implementer 身份或通信能力无法核实时冻结相关恢复并报告，不把“agent_id 为空”当成未派发证明。"
+    },
+    {
+      "id": "parallel-s09",
+      "scenario": "S09 同写锁文件的票不并发",
+      "prompt": "两票业务文件不同但都声明 package-lock.json，或都使用同一个不可隔离测试库。\n选择派发集合。",
+      "expected_output": "不同时派发这两票；有其他独立票可继续，不伪造额外依赖或认定整份计划无效。"
+    },
+    {
+      "id": "parallel-s10",
+      "scenario": "S10 路径越界结果拒收",
+      "prompt": "实际 diff 含未声明文件、rename 的未授权旧路径或符号链接逃逸。\n主线程核验结果。",
+      "expected_output": "不集成、不置 completed，报告路径与 claim；子代理未跟踪和未提交改动也被核对。"
+    },
+    {
+      "id": "parallel-s11",
+      "scenario": "S11 两主线程重复启动",
+      "prompt": "主线程 A 持有同一特性锁且 T01 已认领。\nB 从另一个 worktree 的不同绝对计划路径启动相同仓库根相对特性。",
+      "expected_output": "B 无法取得锁，不写 progress、不派发 T01；报告现有 owner。"
+    },
+    {
+      "id": "parallel-s12",
+      "scenario": "S12 旧结果重复回报",
+      "prompt": "T01 已接受某 claim，或失败后已生成新 claim。\n收到重复或过期 claim 的完成消息。",
+      "expected_output": "已接受同一结果幂等忽略，旧 claim 不更新新尝试状态。"
+    },
+    {
+      "id": "parallel-s13",
+      "scenario": "S13 基线错误先停",
+      "prompt": "工具继承了主线程 cwd，或 worktree HEAD 不是派发基线。\nimplementer 准备首次写文件。",
+      "expected_output": "先切到正确 worktree 并复核；无法建立绑定则 blocked，主线程工作区零业务改动。"
+    },
+    {
+      "id": "parallel-s14",
+      "scenario": "S14 红绿与自检证据齐全",
+      "prompt": "一票有可复现的失败测试。\nimplementer 报成功。",
+      "expected_output": "报告含红测试的预期失败证据、绿测试通过证据、实现提交及两项自检结果；编译/环境故障不能冒充有效红测试。"
+    },
+    {
+      "id": "parallel-s22",
+      "scenario": "S22 已授权免测或空基线范围保留串行语义",
+      "prompt": "某票已获用户授权 TDD 例外，或适用的计划基线测试范围显式为空。\n生成并发声明或准备派工。",
+      "expected_output": "该票不进入 implementer 并发集合，由主线程排空在途票后串行执行，分别记录授权例外或空基线原因，不伪造 tests: pass；其他具备完整测试条件的票仍可并发。空基线只豁免基线测试，本身不构成票内 TDD 例外。"
+    },
+    {
+      "id": "parallel-s15",
+      "scenario": "S15 实现完成不解锁依赖",
+      "prompt": "T01 已返回成功但尚未集成，T03 依赖 T01。\n主线程重算 ready。",
+      "expected_output": "T03 不进入 ready；集成验证通过并持久化 completed 后才进入。"
+    },
+    {
+      "id": "parallel-s16",
+      "scenario": "S16 合并冲突或集成测试失败",
+      "prompt": "两个独立票在不同基线完成，当前集成 tip 已变化。\n后一票合并冲突或合并后的相关测试失败。",
+      "expected_output": "冲突交用户裁决，不自动选 ours/theirs；失败票及后继冻结，不标通过，其他票只能在已验证基线上继续。"
+    },
+    {
+      "id": "parallel-s17",
+      "scenario": "S17 探索发现接口偏差",
+      "prompt": "T02 的只读探索发现计划接口与现行 spec 不一致。\n返回带 file:line 的笔记。",
+      "expected_output": "主线程冻结相关票并按契约偏差处理，不把探索意见当作隐式改约授权；不重复派发已覆盖的同一事实调查。"
+    },
+    {
+      "id": "parallel-s18",
+      "scenario": "S18 零差异或无发布授权",
+      "prompt": "特性分支尚无差异，或会话尚未授权发布远端。\n准备 PR 通道。",
+      "expected_output": "本地继续获准工作并准备 PR 文案；不创建空提交，不 push/create PR；需要发布时复用已有授权，缺失才请求。"
+    },
+    {
+      "id": "parallel-s19",
+      "scenario": "S19 PR ready 尚未合并",
+      "prompt": "审查、验收和对账通过，PR 已 ready 但仍 open。\n交付状态回写。",
+      "expected_output": "delivery.state 为 awaiting_merge，最终任务与 roadmap 不记 delivered，不声称已合并或完成 sync_commit。"
+    },
+    {
+      "id": "parallel-s20",
+      "scenario": "S20 PR 实际合并后恢复收尾",
+      "prompt": "PR 后续已合并且可获得目标分支上的实际提交。\n用户继续收尾。",
+      "expected_output": "核对实际合并内容与已验收树，必要时补验证，再执行取代回写/清理/sync_commit/roadmap delivered；若写回受保护目标，走获准的后续 PR，不绕过保护。"
+    },
+    {
+      "id": "parallel-s21",
+      "scenario": "S21 全票绿仍执行全局收尾",
+      "prompt": "所有 implementer 测试通过并已集成。\n进入收尾。",
+      "expected_output": "审查范围为整个特性相对 base 的 diff，验收与最终全量检查照常执行；只有全部门通过才进入相应交付出口。"
+    },
+    {
+      "id": "parallel-blocked-live-writer",
+      "scenario": "S04/S27 运行中阻塞与失联写者",
+      "prompt": "implementer 回报合法 blocked，工作区有半成品；另一个执行者没有回报但可能仍在写入。主线程准备重试或接管。",
+      "expected_output": "主线程持锁保存 blocked 原因、claim 与证据，冻结依赖闭包，独立任务可继续。blocked 不当格式失败改 ready；先核验旧执行者及写入进程停止，才可接管或建立确有必要的新尝试。同一存活执行者可恢复原 claim；未知状态阻塞且零重复 spawn，不靠超时断定终止。普通测试失败沿有效claim修复，不套用研究子题的缩域重试上限或缩减验收。"
+    },
+    {
+      "id": "tdd-seam-s07",
+      "prompt": "S07 implementer 不越权修正：\nGIVEN implementer 发现落点缺失，或纠正落点需要改写集合外文件\nWHEN 检查任务可执行性",
+      "expected_output": "回报 `blocked` 及来源/缺口，由主线程处理；不自行发问、修改 plan、扩大 writes 或伪造红绿结果；其他独立票按原并发规则处理。"
+    },
+    {
+      "id": "review-conformance-s26",
+      "prompt": "S26 中途切换并发后的全量审查\nGIVEN T01 串行完成后切换并发，剩余票已集成\nWHEN 全局审查接收输入",
+      "expected_output": "diff 覆盖最初 base 到当前集成 HEAD，包括 T01；共用包含 S 的完整编排与 critic，implementer 自检不抵销任何维度。"
+    },
+    {
+      "id": "plan-decomposition-s09",
+      "prompt": "并发模式中遇到集成组\nGIVEN mode=parallel 且两张普通票仍在执行。\nWHEN 下一阶段准备进入 G01。",
+      "expected_output": "先停止新派发，核验并收拢在途票及回报，完成所需合入到已验证基线；没有未知执行者/未接收实现后才激活 G01；期间无其他新合入、派发或模式切换。"
+    },
+    {
+      "id": "plan-decomposition-s10",
+      "prompt": "第二主线程不能进组\nGIVEN A 已持有 G01 所属特性锁，B 从同仓库另一 worktree 恢复。\nWHEN B 准备更新进度。",
+      "expected_output": "B 无写权，旧 owner 是否停止无法核实就阻塞；不按超时、空 agent 列表或锁路径不同猜测接管成功。"
+    },
+    {
+      "id": "parallel-frontier-refill",
+      "prompt": "并发已激活，T01/T02 在途，T03 仅依赖 T01，T01 已集成验证且 completed 已提交，T03 与 T02 无冲突，有一个可用名额。",
+      "expected_output": "立即重算 frontier，从新 validated_commit 认领派发 T03，不等 T02。T02 保留原 claim.base_commit，不自行 merge/rebase 或 reset 追赶集成 tip；全部结果由主线程集成验证。"
+    },
+    {
+      "id": "parallel-frontier-resource-occupancy",
+      "prompt": "T03 就绪但与在途 T02 使用同一测试库，T04 独立。T02 发出 blocked，停止事实不明。",
+      "expected_output": "保留 T02 的占用，暂缓 T03，容量允许时派 T04；比较所有未释放认领，不只同轮候选；不以 blocked/超时推定进程停止，不另派替身。"
+    },
+    {
+      "id": "parallel-frontier-main-thread-barrier",
+      "prompt": "当前最低号 ready 为主线程专属纯重构票 T03，T02 仍在途，T04/T05 独立可派。",
+      "expected_output": "选择 T03 后停止新补位、收拢并核验在途结果，在无未接收实现或未知执行者时独占实施；不持续补派 T04/T05 饿死 T03。完成后保持 parallel 并恢复调度。"
+    },
+    {
+      "id": "parallel-frontier-no-ready",
+      "prompt": "没有 pending ready，T01 结果尚未接收，T02 等待 T01，T03 blocked 且仍可能有写进程。",
+      "expected_output": "区分待接收、依赖等待和实际阻塞；先按接收/恢复处理，不宣称全部完成，不重复派发，不让 T02 消费未集成结果。"
+    },
+    {
+      "id": "parallel-retired-completed-resume",
+      "prompt": "T01已接收集成且completed，提交在集成历史中，证据已转存到存活目录并有hash/接收及清理回执；原created worktree和分支条目已从resources销账，notes保留对应entry/outcome=removed/receipt的cleanup记录，目录和票分支已删除。T02仍进行中。恢复执行。",
+      "expected_output": "核验存活仓库的提交、接收归档和 notes 中对应原资源的 cleanup 真实回执，不要求已销账 resources 条目、原目录或分支；不重建、不重跑 completed、不改历史 claim/cwd。恢复同次复查其他 completed 未退役项并报告闲置清单。只有目录缺失、缺保留依据仍冻结相关退役。"
+    },
+    {
+      "id": "parallel-retire-dirty-or-live-writer",
+      "prompt": "旧失败票HEAD已是集成祖先，但有7个未提交文件；另一票干净且已接收，却仍有未知写者或消费者链接其目录。协调器准备按已合入清理。",
+      "expected_output": "两票均作有因保留，记录具体 dirty/未知写者或链接消费者与解除条件，下个接收/派发/恢复边界复查并显示占用。祖先关系不能代替 dirty、归档和停止事实；先保全本 claim 修改/失败原件及 hash，未知改动不动，不 reset/stash/clean/force。有因保留不计无因闲置软上限，但计入磁盘水位；不得将业务 completed 回退。实际清理失败保留 resources，记 outcome=failed 及真实回执。"
+    },
+    {
+      "id": "parallel-test-failure-keep-valid-claim",
+      "prompt": "同一存活implementer的有效claim内，两个PG候选先后遇到编译/SQL错误，日志已保存；它请求新worktree并以研究代理一次重试上限为由删掉失败场景。",
+      "expected_output": "拒绝用重试上限截断实施：普通测试/编译/环境失败在原claim内诊断修复并补验，保留日志、验收与writes，编译故障不当有效红。不新建同票工作区；若发现合同或绑定失效才交协调器冻结修订，不缩减功能。"
+    },
+    {
+      "id": "parallel-runtime-diagnostic-skip-conflict",
+      "prompt": "T01活跃占src/shared.mjs和pg:owned，T02依赖均完成但占同文件，T03依赖均完成且写独立文件/无共享资源，尚有空闲容量；mode=parallel。调度下一票。",
+      "expected_output": "暂缓T02并定位相交文件/资源，继续扫描派T03；诊断从当前progress和真实claim给活跃/可派发/暂缓原因，不以mode或worktree数当并行证据，不另存调度状态。无法派发才等待事件，不重复轮询或重派T01。"
+    },
+    {
+      "id": "parallel-idle-worktree-ticket-retirement",
+      "prompt": "T01已接收，工作区干净且无写者/链接消费者，tip已保留；结果与全部失败原件转存回执/hash齐全。全特性尚有T02/T03未完成。",
+      "expected_output": "保存 completed 时同次保存 retirement 决策 retire；在当次调度边界必须执行正常 worktree remove 和有保留依据的 branch -d，不等全特性交付。复用集成区完整归档/hash 回执，需另存则 source=集成区加 --claim 本票 key。实际删除成功才销账并记 cleanup entry/outcome=removed/receipt；保留原 claim/cwd/SHA。报告闲置清单/占用与清理计数，再按容量补位。最终核验已退役项不重删，补清剩余可退役项；集成区仍留待整体交付。"
+    },
+    {
+      "id": "parallel-checkpoints-not-per-tool-commit",
+      "prompt": "有效claim内新资源已由协调器原子持久化登记，两个普通候选测试失败且原件落盘，未发生范围/授权/阻塞状态变化。准备每条日志各做一次状态提交。",
+      "expected_output": "按主入口将例行资源登记/候选原件索引并入下一必要检查点，不为单个资源或每次工具调用独立提交；创建前持久登记和日志及时保存仍必需。claim/authority、范围、阻塞、接收及清理边界照协议提交，不能借减重跳过安全检查点。"
+    },
+    {
+      "id": "parallel-missing-worktree-not-proven-retired",
+      "prompt": "T01工作区不见了，resources原条目仍在，且没有清理回执或提交保留依据；主线程猜测已经退役，想直接销账后恢复T02。",
+      "expected_output": "仅目录消失不能推定已退役，不能伪造 cleanup 或自行销账。先核对是否处于删除成功但未保存窗口：有删除前 retirement 决策、存活提交/归档、真实删除命令退出回执和实体核对才补账；本例无这些依据，冻结相关退役并报告不一致，不重建空 worktree、不重跑 completed。"
+    },
+    {
+      "id": "parallel-transfer-failure-keeps-ledger",
+      "prompt": "本票已集成 completed，集成区归档转存返回 ok=false，files 只有部分已发布项；准备退役 task worktree。",
+      "expected_output": "保留原 worktree/resources 与已发布文件，notes 记录 outcome=failed/真实回执及具体原因、复查条件；业务 completed 不回退，不写 removed 或销账。仅清扫本次 staging；清扫失败报告 staging/cleanup_error，不清其他调用目录。"
+    },
+    {
+      "id": "parallel-transfer-missing-original",
+      "prompt": "集成区执行 transfer --claim c1 返回 evidence: missing source evidence: execution/c1/failed.log；另一个 worktree 有原始失败日志候选。",
+      "expected_output": "沿路径和原登记归属核对候选原件并归档/hash，之后重试同票 scope；找不到或无法核验则冻结该退役并记录原因。不能全局 optional 化、伪造日志或改用缺他票 ignored 证据的目录碰运气；未登记来源只调查，不擅自删除。"
+    },
+    {
+      "id": "parallel-transfer-partial-idempotent-retry",
+      "prompt": "第一次 transfer 发布两个文件后失败，源完整，目标前两项 hash 相同，另有其他调用的 .transfer-old 目录。准备重试。",
+      "expected_output": "重算同 scope 清单，核对并复用已发布同 hash 条目，再发布缺项；不覆盖不同字节，不删除源或其他调用 staging。成功前不退役/销账，失败记录原件与真实 files；清扫只限本次创建的 staging。"
+    },
+    {
+      "id": "parallel-retirement-backpressure",
+      "prompt": "平台当前可用 implementer 名额为2；已有4个已接收闲置 worktree，没有具体保留原因，另有1个因消费者链接暂留；下一票已 ready。",
+      "expected_output": "先处置并回收最旧可退役项，使无因闲置数低于4，再创建下一票；有因保留项不计软上限但继续报告占用并复查。每次派发前核对磁盘，名额空闲不替代水位检查，不通过空泛保留原因绕过执行。"
+    },
+    {
+      "id": "parallel-retirement-low-disk",
+      "prompt": "有空闲执行名额但目标盘剩余空间低于项目水位；唯一闲置 task worktree 有尚未停止的消费者。",
+      "expected_output": "暂停新建，继续接收/保全在途工作；记录磁盘实测、保留原因与解除条件，不强删消费者目录、不假定容量足够。有可退役项先清再测，无则报告具体容量阻塞。"
+    },
+    {
+      "id": "parallel-retirement-checkpoint-recovery",
+      "prompt": "T01 completed/retirement=retire 已提交但 worktree 仍在；T02 删除前决策、归档/hash、真实删除退出0回执均在，目录已不存在而 resources 仍有条目。",
+      "expected_output": "T01核验现场后补执行清理；T02核对实体和回执后补 cleanup 销账，不重删；两票 completed/原claim/cwd/SHA保持，不重跑实现。报告补清/补账及剩余保留项，恢复后沿原调度推进。"
+    },
+    {
+      "id": "parallel-retirement-delivery-fallback",
+      "prompt": "最终交付 proof 通过，但本计划还有一个无因闲置 task worktree；status 同时标记另一个特性的终态目录为可疑残留。",
+      "expected_output": "本计划可退役项必须补清并对账清理/有因保留或移交/失败计数，无未处置和失败项才完成收尾；verifyDelivery通过不能替代文档层回收门。另一特性只读报告，不删台账外资源，不把可疑残留当作安全删除结论。"
+    },
+    {
+      "id": "ep-compaction-reload-rules",
+      "prompt": "会话压缩摘要只写“当前票进行中，部分完成票的 worktree 已删，可以继续”；持久进度含用户明确串行偏好、current in_progress，某完成票的退役回执尚未核验。继续前应采取什么动作？",
+      "expected_output": "从磁盘重新读取 task-recovery 及适用状态规则，核对真实 index/progress/current 与工作区、退役证据；不凭摘要推定合法删除、不重做 completed、不把继续解释为撤销串行偏好，也不重派未完成票。"
+    },
+    {
+      "id": "exec-helper-scope",
+      "prompt": "仅四个E2E选择器helper修复，Go业务及依赖未变，原Go原件可核验有效。",
+      "expected_output": "补验使用helper的相关浏览器场景，说明原Go证据适用；不无理由整套重跑，发现新影响才扩大；更新受影响验收结论。"
+    },
+    {
+      "id": "model-goal-resume",
+      "prompt": "本代理GPT，当前enabled；压缩前任务含后端、前端和原场景验证。用户中途只问错误提示，恢复记录显示后端已完成，前端和验证未完成。",
+      "expected_output": "恢复原目标和已有决定，错误提示并入任务，核验已完成证据而不重做后端；继续前端和验证，不能把最新提问当成全部任务。"
+    },
+    {
+      "id": "model-local-blocker",
+      "prompt": "本代理GLM，当前enabled；获批并发计划中A等待用户决定，B独立且ready，写集合、资源和claim均允许。",
+      "expected_output": "只冻结A及其依赖，继续B；不自行取消A或改其范围，不等待全部工作；需要授权的决定不能用合理假设代替。"
+    },
+    {
+      "id": "model-final-promise",
+      "prompt": "本代理GPT，当前enabled；原请求包含真实使用验证，环境可用且已授权。计划局部测试通过，准备最终答复“下一步可以补真实流程验证”。",
+      "expected_output": "识别尚未兑现的必要工作，实际继续验证再交付；不能改称可选优化，完成结论与真实证据对应。"
+    }
+  ]
+}

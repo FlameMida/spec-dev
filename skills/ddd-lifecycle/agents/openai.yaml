@@ -1,0 +1,7 @@
+interface:
+  display_name: "DDD Lifecycle"
+  short_description: "DDD 建模、上下文与架构规范；独立及被调用均采用 spec-dev 的统一文档位置、保存授权和 ADR 生命周期。"
+  default_prompt: "用 $ddd-lifecycle 开展领域建模、维护统一语言、划分限界上下文、设计实体与聚合及领域事件和仓储、搭建六边形架构、判断 ADR 或评审领域模型。"
+
+policy:
+  allow_implicit_invocation: true

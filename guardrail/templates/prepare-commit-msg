@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+# spec-dev:guard:start
+spec_dev_binding="$(git rev-parse --show-toplevel)/scripts/spec-dev/task-binding.mjs"
+node "$spec_dev_binding" prepare-message --file "$1" || exit $?
+# spec-dev:guard:end
+legacy_dir="$(git rev-parse --git-common-dir)/hooks"
+self_dir="$(cd "$(dirname "$0")" && pwd)"
+if [ -x "$legacy_dir/prepare-commit-msg" ] && [ "$(cd "$legacy_dir" 2>/dev/null && pwd)" != "$self_dir" ]; then
+  "$legacy_dir/prepare-commit-msg" "$@" || exit $?
+fi
+exit 0

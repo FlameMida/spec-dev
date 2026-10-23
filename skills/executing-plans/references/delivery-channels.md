@@ -1,0 +1,15 @@
+# 特性级交付通道（串行与并发共用）
+
+仅本代理当前 `spec-dev collaboration: enabled` 时，最终答复前执行 [交付前遗漏检查](../../requirement-analysis/references/model-collaboration.md#交付前遗漏检查)；原请求内已授权且可完成的必要工作继续完成，不放入“后续建议”。Claude、未知模型及仅继承父代理状态者不启用此补充。
+
+默认 channel=local。用户已授权 PR 工作流或仓库明确要求 PR 时采用 channel=pr；这不自动授权 push/create/ready/merge，各动作复用已有会话授权。缺发布授权时先准备完整变更与 PR 文案，再请求该发布动作。
+
+受保护来源分支仍使用隔离特性分支，不能因此原地实施；远端策略查不到记未知。一个特性复用一个 PR，首个实际差异可来自已批准 spec/plan；零差异不造空提交。标题/正文围绕最终行为，附 spec、progress、验收对账指针；只有真实对应且应关闭的 issue 才写 closing 关键词。
+
+progress 的 delivery 由 writing-plans 定义，主线程独占写入。implementing、awaiting_merge、merged、completed 只记录事实，不构成证据。独立 final、全局审查、矩阵验收与对账通过后才可按授权标 ready；PR 仍 open 时 state=awaiting_merge，最终任务仍 in_progress，roadmap 仍 in-progress，sync_commit 不锚定。可以结束当前会话，保留恢复所需分支、状态与证据。
+
+本地通道按计划最终任务验证来源工作区、合并、取代回写、台账清理与 sync_commit。PR 通道取得真实目标分支合并提交后，核对已验收树与实际合并树；平台最终 squash 允许，不能套用 implementer 票级 ancestry 判据。树有差异则补验证，再完成取代回写、台账清理、sync_commit 与 roadmap delivered。回写受保护目标需要后续 PR 时记录链接，仍 awaiting_merge，直到代码与文档闭环都有证据。
+
+sync_commit 指向实际目标上核验过的代码提交；文档锚定提交不自引用。implementer 闲置 worktree 沿 [票级退役](parallel-result-integration.md#票级-worktree-退役) 在任务边界清理；最终交付必须从本计划 created 台账、历史 claim 与 cleanup 回执对账全部票级工作区：已退役核验不重删，可退役残留补清，有因保留/移交列具体依据及复查点；报告已清理/保留/失败计数，未处置或失败项不能宣称收尾完成。此为流程门，不扩展 verifyDelivery。集成工作区及最终交付证据仍满足下段的整体 proof 后才清理。未取得实际合并证据不宣称交付完成。PR CLI 不可用时使用平台可用工具执行等效操作并记录证据；受控回放不证明真实远端权限或托管平台验证。
+
+完成前按 writing-plans 的 delivery 字段与实际命令保存 source_tip/source_tree、保留 history_ref、原始交付回执和必要补验，再调用 verifyDelivery。普通 merge 验证来源 ancestry；最终 squash 验证保留来源历史与目标映射，票级集成不放宽。最终证据 transfer 使用集成特性 source 和另一存活 target，不传 --task/--claim，覆盖全特性登记原件；逐字节核对后才清理。失败保留原件与实际已发布条目，按结构化 error 定位缺口，不改历史 cwd；仅本次 staging 自动清扫，清扫失败报告 cleanup_error，不销账。

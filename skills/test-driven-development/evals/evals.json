@@ -1,0 +1,85 @@
+{
+  "skill_name": "test-driven-development",
+  "evals": [
+    {
+      "id": "tdd-red-first",
+      "prompt": "实现一个 retryOperation 函数：失败自动重试，最多 3 次",
+      "expected_output": "沿获批 seam 先写失败测试，确认目标行为失败后最小实现转绿；重构候选交收尾，不插入循环，不先写实现。"
+    },
+    {
+      "id": "tdd-existing-implementation-recovery",
+      "prompt": "一个普通 implementer 收到已有 200 行实现的票，尚未写测试；同目录还有用户的无关改动。主线程让它继续完成验证，当前 implementation-result 只有普通 red/green 相位。如何处理代码、比较证据和最终状态？",
+      "expected_output": "保留实现和无关改动，记录来源及偏差；在授权隔离副本用修复前版本或可控撤销目标差异验证同一测试，再验证当前实现。回溯结果只证明回归检测能力，不标先行 phase:red、不自动 ready；普通 implementer blocked 交主线程沿既有偏差/例外授权处理。 已有同范围验证指令允许非破坏性补测，不另开授权门；普通票接受例外仍由主线程处置。"
+    },
+    {
+      "id": "tdd-bugfix-with-test",
+      "prompt": "修复：空邮箱也能提交表单的 bug",
+      "expected_output": "先写复现该 bug 的失败测试（如 rejects empty email），确认失败后再修实现，测试转绿即证明修复并防回归；不允许不带测试直接修"
+    },
+    {
+      "id": "tdd-seam-s18",
+      "prompt": "S18 各入口与图示一致：\nGIVEN TDD 正文、description/openai、反模式 5、串行和 quick-fix 引用及已有 eval\nWHEN 沿任一入口执行红绿",
+      "expected_output": "都没有循环内重构步骤，串并行每票仍保持五步；纯壳引用指向同一定义，元数据仍为中文。"
+    },
+    {
+      "id": "tdd-seam-s19",
+      "prompt": "S19 纯重构复用已有保护：\nGIVEN 已授权的结构整理不改变公共接口且已有相关行为测试\nWHEN 实施整理",
+      "expected_output": "记录前后通过证据，不伪造失败或强行添加同义测试；一旦可观察行为回归就修复回归，不把它当作允许的重构差异。"
+    },
+    {
+      "id": "tdd-seam-s20",
+      "prompt": "S20 缺少保护先刻画：\nGIVEN 待整理路径缺乏公共行为保护测试\nWHEN 准备纯重构",
+      "expected_output": "先依据现行契约补行为刻画并观察当前实现通过，记录其为刻画而非红证据，再进行结构调整；若需求期望与当前行为不同则转行为缺陷修复。"
+    },
+    {
+      "id": "tdd-seam-s21",
+      "prompt": "S21 并发红绿协议不被豁免：\nGIVEN implementer 被派发的票实际只需纯重构保护，无法提供新增行为的有效红证据\nWHEN 执行准入检查",
+      "expected_output": "不伪造红结果，回主线程按现有例外/阻塞串行路径处理；不改变 implementation-result phase 或接收器对普通实施票的红绿要求。"
+    },
+    {
+      "id": "tdd-seam-s08",
+      "prompt": "S08 拒绝同构自证：\nGIVEN 被测函数用 reduce 求和，测试又用同一 reduce 算出期望值\nWHEN 检查断言",
+      "expected_output": "指出同义反复，改用有来源的已知样例结果，如 `[2, 5, 8]` 的手算值 `15`，而非换个函数名继续复制算法。"
+    },
+    {
+      "id": "tdd-seam-s09",
+      "prompt": "S09 重构后脆弱测试失败：\nGIVEN 私有协作者改名导致 mock 断言失败，而获批公共行为保持不变\nWHEN 诊断失败测试",
+      "expected_output": "把测试移回公共边界，不为保留脆弱断言恢复旧内部结构；若公共行为实际改变，则按行为回归处理。"
+    },
+    {
+      "id": "tdd-seam-s10",
+      "prompt": "S10 数据库测试边界对照：\nGIVEN 一个测试声称验证 HTTP 响应却只查内部表，另一个明确验证获批数据库适配器契约\nWHEN 审查测试落点",
+      "expected_output": "前者补回 HTTP 可观察行为断言，后者可在自身契约边界验证真实数据库；不一概禁止 DB 测试。测试夹具准备和清理不等于旁路行为断言。"
+    },
+    {
+      "id": "plan-decomposition-s30",
+      "prompt": "组身份不豁免有效红\nGIVEN 一张组员票实际改变错误处理行为，现有失败仅是导入编译错误。\nWHEN 执行者准备写实现。",
+      "expected_output": "不将编译错误当红，不因有组就跳过有效行为复现；取得有效红或冻结回设计，不能静默把该票改称纯重构。"
+    },
+    {
+      "id": "plan-decomposition-s31",
+      "prompt": "前置纯重构缺保护先刻画\nGIVEN T01 有批准范围但当前路径没有行为保护。\nWHEN 准备结构调整。",
+      "expected_output": "先补契约行为刻画并在当前实现观察通过，再调整并记录通过；不伪造一次失败、不拖到功能实现之后才做前置重构。"
+    },
+    {
+      "id": "workflow-S25-authorized-exception",
+      "prompt": "一票改变公共行为，一票是获批纯重构，另有已授权纯文案例外。",
+      "expected_output": "行为变化先确认有效红再最小实现转绿；纯重构按保护测试保绿；文案例外引用唯一清单和既有授权，不重复确认、不把它扩展为行为变更免测。"
+    },
+    {
+      "id": "tdd-consumer-contract-and-interaction",
+      "prompt": "获批 MailGateway 契约要求 send 在本用例只调用一次，并返回 {status, receipt:{id}}；消费者读取 status 和 receipt.id。SDK 另有 25 个可选 telemetry 字段，本用例及校验器均不读取。替身 A 只返回 status；替身 B 返回 status 和 receipt.id。测试同时断言业务结果和 send 调用一次。评审两种替身和次数断言。",
+      "expected_output": "A 缺消费字段不可用；B 不必复制无关可选字段。调用一次是批准的边界协议，可断言且不因 spy/mock 身份判错；真实服务集成需独立证据。"
+    },
+    {
+      "id": "tdd-existing-warning-and-scope",
+      "prompt": "本票目标及全部规定相关检查已通过；项目未将 warning 视为失败。基线已有依赖弃用 warning 和无关模块失败。计划的最终全量 F 尚未到期。是否必须先清零所有 warning、修完所有模块或立即跑 F 才能继续？",
+      "expected_output": "记录并区分既有失败、环境与本次回归，不扩大修复范围或每轮提前 F；本次引入问题须修；当前完成条件与最终 F 的必需验证仍按原约定，不将待执行 F 记为通过。"
+    },
+    {
+      "id": "tdd-invalid-red-remains-blocking",
+      "prompt": "准备新增导出行为，目标测试因为模块导入失败未运行到断言，另一个测试被 SKIP。能把这些非零退出当 red 并开始实现吗？",
+      "expected_output": "不能；先让测试可运行并观察目标行为断言失败或明确阻塞，不能以导入错误、零测试或 SKIP 冒充 red/PASS。补测恢复规则不豁免尚未开始的新行为。"
+    }
+  ]
+}

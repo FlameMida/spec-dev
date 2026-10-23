@@ -1,0 +1,209 @@
+(function() {
+  const MIN_RECONNECT_MS = 500;
+  const MAX_RECONNECT_MS = 30000;
+  const TOMBSTONE_AFTER_MS = 15000; // show the "paused" overlay after this long disconnected
+
+  // Pure: next backoff delay (doubles, capped). Exported for unit tests.
+  function nextReconnectDelay(current, max) {
+    return Math.min(current * 2, max);
+  }
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { nextReconnectDelay, MIN_RECONNECT_MS, MAX_RECONNECT_MS, TOMBSTONE_AFTER_MS };
+  }
+
+  // Everything below is browser-only; bail out when loaded in Node (tests).
+  if (typeof window === 'undefined') return;
+  let screenContext = {};
+  try {
+    screenContext = JSON.parse(document.getElementById('preview-context')?.textContent || '{}');
+  } catch (e) { /* Missing/invalid metadata remains explicitly unbound. */ }
+
+  let ws = null;
+  let eventQueue = [];
+  let reconnectDelay = MIN_RECONNECT_MS;
+  let reconnectTimer = null;
+  let disconnectedSince = null;
+  let everConnected = false;
+  let tombstoneShown = false;
+
+  function sessionKey() {
+    try {
+      return window.sessionStorage && window.sessionStorage.getItem('brainstorm-session-key');
+    } catch (e) {}
+    return null;
+  }
+
+  function websocketUrl() {
+    const key = sessionKey();
+    const proto = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    return proto + window.location.host + (key ? '/?key=' + encodeURIComponent(key) : '');
+  }
+
+  function reloadAfterRecovery() {
+    const key = sessionKey();
+    if (key) {
+      window.location.replace('/?key=' + encodeURIComponent(key));
+    } else {
+      window.location.reload();
+    }
+  }
+
+  // Reflect connection state in the frame's status pill (absent on full-doc screens).
+  function setStatus(state) {
+    const el = document.querySelector('.status');
+    if (!el) return;
+    const map = {
+      connecting:   ['连接中…',   'var(--text-tertiary)'],
+      connected:    ['已连接',    'var(--success)'],
+      reconnecting: ['重连中…',   'var(--warning)'],
+      disconnected: ['已断开',    'var(--error)']
+    };
+    const [text, color] = map[state] || map.disconnected;
+    el.textContent = text;
+    el.style.setProperty('--status-color', color);
+  }
+
+  // Self-styled so it works on framed and full-document screens alike.
+  function showTombstone() {
+    if (tombstoneShown) return;
+    tombstoneShown = true;
+    const el = document.createElement('div');
+    el.id = 'bs-tombstone';
+    el.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;' +
+      'align-items:center;justify-content:center;padding:2rem;text-align:center;' +
+      'background:rgba(20,20,22,0.92);color:#f5f5f7;font-family:system-ui,sans-serif';
+    el.innerHTML = '<div style="max-width:480px">' +
+      '<h2 style="margin:0 0 .5rem;font-weight:600">预览已暂停</h2>' +
+      '<p style="margin:0;opacity:.85">可视化预览服务已停止。' +
+      '让你的 coding agent 重新启动它——本页面会自动重连。</p></div>';
+    if (document.body) document.body.appendChild(el);
+  }
+
+  function connect() {
+    if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+    setStatus(everConnected ? 'reconnecting' : 'connecting');
+    ws = new WebSocket(websocketUrl());
+
+    ws.onopen = () => {
+      const recovered = tombstoneShown;
+      everConnected = true;
+      disconnectedSince = null;
+      reconnectDelay = MIN_RECONNECT_MS;
+      tombstoneShown = false;
+      setStatus('connected');
+      eventQueue.forEach(e => ws.send(JSON.stringify(e)));
+      eventQueue = [];
+      // Recovered from a tombstoned outage (e.g. the server restarted on the same
+      // port) — reload through the keyed bootstrap when possible so the cookie is
+      // refreshed before the visible URL returns to bare /.
+      if (recovered) reloadAfterRecovery();
+    };
+
+    ws.onmessage = (msg) => {
+      let data;
+      try { data = JSON.parse(msg.data); } catch (e) { return; }
+      if (data.type === 'reload') {
+        // On a history page the user is deliberately looking at an old screen —
+        // notify the frame UI instead of yanking them to the latest one.
+        if (window.location.pathname.indexOf('/screen/') === 0) {
+          window.dispatchEvent(new CustomEvent('bs-new-screen'));
+        } else {
+          window.location.reload();
+        }
+      }
+    };
+
+    ws.onclose = () => {
+      ws = null;
+      if (disconnectedSince === null) disconnectedSince = Date.now();
+      if (Date.now() - disconnectedSince >= TOMBSTONE_AFTER_MS) {
+        setStatus('disconnected');
+        showTombstone();
+      } else {
+        setStatus('reconnecting');
+      }
+      reconnectTimer = setTimeout(connect, reconnectDelay);
+      reconnectDelay = nextReconnectDelay(reconnectDelay, MAX_RECONNECT_MS);
+    };
+
+    // Let onclose own reconnection so we don't schedule it twice.
+    ws.onerror = () => { try { ws.close(); } catch (e) {} };
+  }
+
+  function sendEvent(event) {
+    if (screenContext.archived) return;
+    // Event producers cannot relabel feedback from an old tab as the newest screen.
+    event = {...event, screen_file: screenContext.screen_file,
+      screen_sha256: screenContext.screen_sha256, render_sha256: screenContext.render_sha256};
+    event.timestamp = Date.now();
+    if (!event.screen) event.screen = window.location.pathname;
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify(event));
+    } else {
+      eventQueue.push(event);
+    }
+  }
+
+  // Capture clicks on choice elements. This listener runs in the bubble phase,
+  // after inline toggleSelect handlers, so `selected` reflects the post-toggle
+  // state — distinguishing "selected A" from "deselected A" in multiselect.
+  document.addEventListener('click', (e) => {
+    const target = e.target.closest('[data-choice]');
+    if (!target) return;
+
+    sendEvent({
+      type: 'click',
+      text: target.textContent.trim(),
+      choice: target.dataset.choice,
+      selected: target.classList.contains('selected'),
+      id: target.id || null
+    });
+
+  });
+
+  // Keyboard accessibility: choice elements are plain divs — make them
+  // focusable and let Enter/Space activate them like buttons.
+  function initChoiceA11y() {
+    document.querySelectorAll('[data-choice]').forEach((el) => {
+      if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
+      if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+    });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const target = e.target.closest && e.target.closest('[data-choice]');
+    if (!target) return;
+    e.preventDefault();
+    target.click();
+  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initChoiceA11y);
+  } else {
+    initChoiceA11y();
+  }
+
+  // Frame UI: selection tracking
+  window.selectedChoice = null;
+
+  window.toggleSelect = function(el) {
+    const container = el.closest('.options') || el.closest('.cards');
+    const multi = container && container.dataset.multiselect !== undefined;
+    if (container && !multi) {
+      container.querySelectorAll('.option, .card').forEach(o => o.classList.remove('selected'));
+    }
+    if (multi) {
+      el.classList.toggle('selected');
+    } else {
+      el.classList.add('selected');
+    }
+    window.selectedChoice = el.dataset.choice;
+  };
+
+  // Expose API for explicit use
+  window.brainstorm = {
+    send: sendEvent,
+    choice: (value, metadata = {}) => sendEvent({ type: 'choice', value, ...metadata })
+  };
+
+  if (!screenContext.archived) connect();
+})();

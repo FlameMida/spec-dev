@@ -1,0 +1,7 @@
+interface:
+  display_name: "Visual Preview"
+  short_description: "浏览器可交互 HTML 原型与定稿交接。新增页面、重设计、主要布局或核心交互变化时自动启用，联动 clarifying 逐题确认界面；局部小改动可跳过，用户关闭时沿用选择。也用于探索中的真实界面比较或用户请求的图示；普通文字澄清仍在对话中完成。"
+  default_prompt: "用 $visual-preview 在设计讨论中于浏览器展示 mockup 与可视化选项。"
+
+policy:
+  allow_implicit_invocation: true
