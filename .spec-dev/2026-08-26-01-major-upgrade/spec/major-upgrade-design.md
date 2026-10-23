@@ -128,7 +128,7 @@ spec-dev 现为 Claude Code + Codex 双平台 skill 插件（v7.21.1）。本次
 
 ### Requirement: 根级 Agent plugins 1.0.0 manifest
 
-插件 SHALL 提供符合 Agent plugins 1.0.0 开放标准的根级 `plugin.json`（`$schema` 与 `name` 必填，字段以官方 schema 为准），与既有 `.claude-plugin/`、`.codex-plugin/` manifest 并存。
+源码及通用 ZIP/tar.gz/npm 包 SHALL 提供符合 Agent plugins 1.0.0 开放标准的根级 `plugin.json`（`$schema` 与 `name` 必填，字段以官方 schema 为准），与既有 `.claude-plugin/`、`.codex-plugin/` manifest 并存。Git `dist` 安装包 SHALL 省略根级 `plugin.json`，保留宿主清单和全部运行文件，避免 Codex 0.164.0 对 Agent Plugins 格式跳过 hooks；通用宿主继续使用保留标准清单的归档。
 
 #### Scenario: 官方 schema 校验通过
 
@@ -138,9 +138,9 @@ spec-dev 现为 Claude Code + Codex 双平台 skill 插件（v7.21.1）。本次
 
 #### Scenario: 既有平台装载不回归
 
-- **GIVEN** 三 manifest 并存
+- **GIVEN** 源码/通用归档保留三 manifest，Git 安装包保留宿主 manifest
 - **WHEN** Claude Code 与 Codex 分别安装/升级本插件
-- **THEN** 两平台 skill 发现数量与升级前一致
+- **THEN** 两平台 skill 发现数量与升级前一致；Codex 的 hooks/list 与 plugin/read 均返回声明的四个 hooks，未信任状态不得被校验器自动信任
 
 ### Requirement: pi 平台分发清单
 
@@ -167,6 +167,14 @@ Claude Code、Codex、Grok Build、Pi、Agent Plugins 1.0.0 的安装产物 SHAL
 - **GIVEN** 合法版本 tag 与清单版本一致，已有分发分支或尚未首发
 - **WHEN** 分发工作流构建并发布
 - **THEN** 首发不继承源码历史，后续普通快进更新；相同产物重跑为零动作，旧版本或同版本不同内容不得覆盖既有分发；源码 `.spec-dev/` 保留
+
+#### Scenario: Codex hook 实际发现与格式隔离
+
+- **GIVEN** 同一源码分别构建 portable 与 git 产物
+- **WHEN** 用真实 Codex CLI 在独立配置目录安装 git 产物，读取 hooks/list 与 plugin/read
+- **THEN** 两列表均包含声明的四个 hooks 且无解析告警；校验不发起模型任务、不授予 hook 信任、不重启用户守护进程；git 与 portable 运行内容仅差根级 plugin.json，portable 保持 Agent Plugins 合规
+
+2026-10-23 回归落点：`scripts/tests/distribution.test.mjs` 覆盖格式与真实 Git 发布树，`scripts/tests/codex-hook-check.test.mjs` 覆盖空发现/页面缺项/解析告警拒绝；`scripts/check-plugin.mjs --codex-validate` 使用当前 Codex 实际安装和 app-server 只读接口验证，CI 固定 0.164.0。Hook 文件顶层只使用受支持的 description/hooks，不把 JSON 可解析当作宿主可加载。
 
 ### Requirement: doctor 诊断命令
 

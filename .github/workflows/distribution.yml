@@ -29,6 +29,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
+      - name: Install Codex for hook discovery validation
+        run: npm install --global @openai/codex@0.164.0
       - name: Set package directory
         run: echo "PACKAGE_DIR=$RUNNER_TEMP/spec-dev-package" >> "$GITHUB_ENV"
       - name: Validate release and distribution rules
@@ -40,16 +42,19 @@ jobs:
               throw new Error("Release tag and package version must agree");
             }
           '
-          node scripts/check-plugin.mjs
-          node --test scripts/tests/distribution.test.mjs
+          node scripts/check-plugin.mjs --codex-validate
+          node --test scripts/tests/distribution.test.mjs scripts/tests/codex-hook-check.test.mjs
       - name: Build filtered plugin and archives
         run: |
           node scripts/build-distribution.mjs --output "$PACKAGE_DIR"
+          node scripts/build-distribution.mjs --output "$RUNNER_TEMP/spec-dev-git-package" --format git
           tar -czf "$RUNNER_TEMP/spec-dev-$RELEASE_TAG.tar.gz" -C "$PACKAGE_DIR" .
           (cd "$PACKAGE_DIR" && zip -qr "$RUNNER_TEMP/spec-dev-$RELEASE_TAG.zip" .)
           (cd "$PACKAGE_DIR" && npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP")
       - name: Publish filtered Git branch
         shell: bash
+        env:
+          PACKAGE_DIR: ${{ runner.temp }}/spec-dev-git-package
         run: |
           set -euo pipefail
           source_sha=$(git rev-parse HEAD)

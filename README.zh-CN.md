@@ -78,6 +78,8 @@ codex plugin add spec-dev@spec-agent-skills
 
 Codex 清单（`.codex-plugin/plugin.json`、`.agents/plugins/marketplace.json`）另外提供插件 UI 元数据。新版本发布后执行 `codex plugin marketplace upgrade spec-agent-skills` 升级。
 
+Codex 请使用上述 Git `dist` 入口：该包省略根级 `plugin.json`，使 Codex 0.164.0 按兼容格式加载 hooks。升级后插件页应列出 4 个 hooks；首次使用须在 Codex 中审阅并信任，插件不会自动授予信任。通用 ZIP/tar.gz/npm 包保留 Agent Plugins 根清单，不用于验证此版本 Codex 的 hook 加载。
+
 ### Pi、Grok Build 与通用插件包
 
 ```bash
@@ -132,10 +134,11 @@ GPT/Codex、Kimi、GLM 可启用目标保持、必要工作补全、决策筛选
 node scripts/check-plugin.mjs
 ```
 
-分发文件集由 `package.json.files` 统一定义。`scripts/build-distribution.mjs` 解包真实 npm 包并将产物内 marketplace 改为本地路径；产物保留相同的插件根布局，无需维护第二份源码。构建输出必须是源码仓库外尚不存在的目录：
+分发文件集由 `package.json.files` 统一定义。`scripts/build-distribution.mjs` 解包真实 npm 包并将产物内 marketplace 改为本地路径；默认 portable 格式保留根级 Agent Plugins 清单，git 格式仅省略该文件，其余运行内容一致，无需维护第二份源码。构建输出必须是源码仓库外尚不存在的目录：
 
 ```bash
 node scripts/build-distribution.mjs --output /tmp/spec-dev-package
+node scripts/build-distribution.mjs --output /tmp/spec-dev-git-package --format git
 node --test scripts/tests/distribution.test.mjs
 ```
 
@@ -147,7 +150,7 @@ node --test scripts/tests/distribution.test.mjs
 node scripts/check-plugin.mjs --codex-validate
 ```
 
-`--codex-validate` 会构建过滤后的插件，在临时 `CODEX_HOME` 执行 `codex plugin marketplace add <distribution-root>` 和 `codex plugin add spec-dev@spec-agent-skills`，并检查安装缓存不含 `.spec-dev` 且保留运行时 skill。不会修改当前用户的 Codex 配置或插件缓存；构建校验额外需要 npm 与 tar。
+`--codex-validate` 会构建 git 格式，在独立配置目录执行真实 Codex 安装，检查安装缓存、`hooks/list` 与 `plugin/read`：运行时和插件页须列出相同的 hooks，解析告警或零发现会失败。校验不发起模型任务、不授予 hook 信任，不修改当前用户配置或插件缓存，不重启现有守护进程；额外需要 npm 与 tar，CI 固定 Codex 0.164.0。
 
 使用 `skill-creator` 的 `quick_validate.py` 校验插件包里的 skill：
 

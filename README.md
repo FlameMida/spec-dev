@@ -78,6 +78,8 @@ codex plugin add spec-dev@spec-agent-skills
 
 The Codex manifests (`.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`) also expose plugin UI metadata. After a new release, run `codex plugin marketplace upgrade spec-agent-skills`.
 
+Use the Git `dist` entry above for Codex. It omits root `plugin.json` so Codex 0.164.0 loads hooks through its compatibility format. After upgrading, the plugin page should list four hooks; review and trust them in Codex before use. The plugin never grants trust automatically. Portable ZIP/tar.gz/npm packages retain the Agent Plugins root manifest and are not the Codex hook-installation target for this version.
+
 ### Pi, Grok Build, and portable plugin packages
 
 ```bash
@@ -132,10 +134,11 @@ The repo root is the plugin root (flat layout): `skills/`, `agents/`, `commands/
 node scripts/check-plugin.mjs
 ```
 
-`package.json.files` is the shared distribution file list. `scripts/build-distribution.mjs` extracts a real npm package and changes its marketplace entries to local paths. The output retains the same plugin-root layout without a second maintained source tree. Output must be a new directory outside the source checkout:
+`package.json.files` is the shared distribution file list. `scripts/build-distribution.mjs` extracts a real npm package and changes its marketplace entries to local paths. The default portable format retains the Agent Plugins root manifest; the git format omits only that file. All other runtime content is identical, with no second maintained source tree. Output must be a new directory outside the source checkout:
 
 ```bash
 node scripts/build-distribution.mjs --output /tmp/spec-dev-package
+node scripts/build-distribution.mjs --output /tmp/spec-dev-git-package --format git
 node --test scripts/tests/distribution.test.mjs
 ```
 
@@ -147,7 +150,7 @@ Validate the real install path with the official Codex CLI:
 node scripts/check-plugin.mjs --codex-validate
 ```
 
-`--codex-validate` builds the filtered plugin, runs `codex plugin marketplace add <distribution-root>` and `codex plugin add spec-dev@spec-agent-skills` in a temporary `CODEX_HOME`, and checks that the installed cache excludes `.spec-dev` while retaining runtime skills. It does not touch the current user's Codex config or plugin cache. Building the validation package additionally requires npm and tar.
+`--codex-validate` builds the git format and uses isolated Codex installation state. It checks installed files, `hooks/list` and `plugin/read`: runtime discovery and plugin details must expose the same hooks; parsing warnings or an empty inventory fail. It starts no model turn, grants no hook trust, and leaves the current user's config, cache and daemon unchanged. npm and tar are required; CI pins Codex 0.164.0.
 
 Validate the bundled skills with `skill-creator`'s `quick_validate.py`:
 

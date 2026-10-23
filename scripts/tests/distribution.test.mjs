@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -78,6 +78,17 @@ test("built plugin is self-contained; Git publication excludes specs, updates sa
   assert.equal(claude.plugins[0].source, "./");
   assert.deepEqual(codex.plugins[0].source, { source: "local", path: "./" });
   assert.match(run(process.execPath, ["scripts/check-plugin.mjs"], distribution), /Plugin package checks passed/);
+  const gitDistribution = path.join(dir, 'git-plugin');
+  run(process.execPath, ['scripts/build-distribution.mjs', '--output', gitDistribution, '--format', 'git']);
+  assert.ok(existsSync(path.join(distribution, 'plugin.json')), 'portable archives retain their standard manifest');
+  assert.ok(!existsSync(path.join(gitDistribution, 'plugin.json')), 'Git installs must use the host manifests for Codex hooks');
+  const inventory = (base, directory = '') => readdirSync(path.join(base, directory), { withFileTypes: true })
+    .flatMap(entry => entry.isDirectory() ? inventory(base, path.join(directory, entry.name)) : [path.join(directory, entry.name)]).sort();
+  const portableFiles = inventory(distribution).filter(name => name !== 'plugin.json');
+  assert.deepEqual(inventory(gitDistribution), portableFiles, 'only the portable root manifest differs');
+  for (const name of portableFiles) {
+    assert.deepEqual(readFileSync(path.join(gitDistribution, name)), readFileSync(path.join(distribution, name)), name);
+  }
   const context = spawnSync(process.execPath, [path.join(distribution, 'guardrail/model-context.mjs'), '--host', 'codex'], {
     cwd: dir, encoding: 'utf8',
     env: { PATH: process.env.PATH, SPEC_DEV_COLLABORATION_STATE_DIR: path.join(dir, 'model-state') },
@@ -95,6 +106,7 @@ test("built plugin is self-contained; Git publication excludes specs, updates sa
   const workflow = readFileSync(path.join(root, ".github/workflows/distribution.yml"), "utf8");
   const step = workflow.split("      - name: Publish filtered Git branch\n")[1].split("      - uses:")[0];
   const publish = step.split("        run: |\n")[1].split("\n").map((line) => line.replace(/^ {10}/, "")).join("\n");
+  assert.match(step, /PACKAGE_DIR: \$\{\{ runner\.temp \}\}\/spec-dev-git-package/, 'publish the Git format, not the portable archive directory');
   const source = path.join(dir, "source");
   const remote = path.join(dir, "remote.git");
   mkdirSync(path.join(source, ".spec-dev"), { recursive: true });
@@ -106,7 +118,7 @@ test("built plugin is self-contained; Git publication excludes specs, updates sa
   run("git", ["remote", "add", "origin", remote], source);
   run("git", ["push", "origin", "main"], source);
   const metadata = JSON.parse(readFileSync(path.join(distribution, "package.json")));
-  const publishEnv = { RUNNER_TEMP: dir, PACKAGE_DIR: distribution, RELEASE_TAG: `v${metadata.version}` };
+  const publishEnv = { RUNNER_TEMP: dir, PACKAGE_DIR: gitDistribution, RELEASE_TAG: `v${metadata.version}` };
   run("bash", ["-c", publish], source, publishEnv);
   const ref = () => run("git", ["ls-remote", "origin", "refs/heads/dist"], source).split(/\s/)[0];
   const first = ref();
@@ -116,23 +128,35 @@ test("built plugin is self-contained; Git publication excludes specs, updates sa
   const installed = path.join(dir, "installed");
   run("git", ["clone", "--quiet", "--single-branch", "--branch", "dist", remote, installed], dir);
   assert.ok(!existsSync(path.join(installed, ".spec-dev")));
+  assert.ok(!existsSync(path.join(installed, 'plugin.json')));
+  assert.ok(existsSync(path.join(installed, '.codex-plugin/plugin.json')));
+  assert.ok(existsSync(path.join(installed, '.claude-plugin/plugin.json')));
   assert.equal(run("git", ["log", "--oneline", "--all", "--", ".spec-dev"], installed), "", "dist must not inherit source history");
   assert.ok(existsSync(path.join(installed, "guardrail/install.mjs")));
 
-  writeFileSync(path.join(distribution, "README.md"), "Changed same version\n");
+  writeFileSync(path.join(gitDistribution, "README.md"), "Changed same version\n");
   const rejected = () => spawnSync("bash", ["-c", publish], { cwd: source, env: { ...env, ...publishEnv }, encoding: "utf8" });
   assert.notEqual(rejected().status, 0, "changed same-version package must be rejected");
   assert.equal(ref(), first);
   const next = metadata.version.split(".").map(Number);
   next[2]++;
-  writeFileSync(path.join(distribution, "package.json"), JSON.stringify({ ...metadata, version: next.join(".") }));
+  writeFileSync(path.join(gitDistribution, "package.json"), JSON.stringify({ ...metadata, version: next.join(".") }));
   run("bash", ["-c", publish], source, { ...publishEnv, RELEASE_TAG: `v${next.join(".")}` });
   const second = ref();
   assert.notEqual(second, first);
   run("git", ["fetch", "origin", "dist"], source);
   assert.equal(run("git", ["rev-parse", `${second}^`], source).trim(), first, "updates must preserve dist history without force push");
-  writeFileSync(path.join(distribution, "package.json"), JSON.stringify(metadata));
+  writeFileSync(path.join(gitDistribution, "package.json"), JSON.stringify(metadata));
   assert.notEqual(rejected().status, 0, "older release must not overwrite dist");
   assert.equal(ref(), second);
   assert.ok(existsSync(path.join(source, ".spec-dev/private.md")), "source specs must remain untouched");
+});
+
+test('unknown distribution formats fail before creating output', t => {
+  const dir = temporary(t);
+  const output = path.join(dir, 'invalid');
+  const result = spawnSync(process.execPath, [path.join(root, 'scripts/build-distribution.mjs'), '--output', output, '--format', 'typo'], { env, encoding: 'utf8' });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Unsupported distribution format/);
+  assert.ok(!existsSync(output));
 });
