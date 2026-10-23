@@ -39,6 +39,8 @@ test("S14 红绿与自检证据齐全：schema", () => {
   const run=value=>{const file=path.join(dir,"result.json");writeFileSync(file,JSON.stringify(value));return spawnSync(process.execPath,[validator,"implementation-result",file]).status;};
   try {
     assert.equal(run(data),0);
+    assert.equal(run({...data,tests:[data.tests[1]]}),1,'green alone cannot replace a required red');
+    assert.equal(run({...data,status:'blocked',tests:[data.tests[1]],deviations:['implementation preceded tests; comparison evidence archived separately'],blockers:['coordinator must resolve test-first deviation']}),0);
     assert.equal(run({...data,commits:[]}),1);
     assert.equal(run({...data,self_check:{over_under_building:"pass",contract_alignment:"unverified"}}),1);
     assert.equal(run({...data,status:"blocked",commits:[],tests:[],blockers:["baseline unavailable"]}),0);

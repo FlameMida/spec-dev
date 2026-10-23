@@ -169,7 +169,7 @@ function detectProject(projectRoot) {
         result.suggestions.push(`已声明 @playwright/test 但未安装：运行 ${result.package_manager} install`);
       }
       if (!result.playwright_config && result.e2e_framework !== "cypress") {
-        result.suggestions.push("缺少 playwright.config.*：基于 references/e2e-patterns.md 的最小并行配置创建");
+        result.suggestions.push("缺少 playwright.config.*：先核对选中检查是否需要 E2E 及现有脚本/夹具，再沿已有授权按目标项目配置；见 references/e2e-patterns.md");
       }
       if (!result.a11y_installed) {
         result.suggestions.push("a11y 维度需要时安装 @axe-core/playwright");

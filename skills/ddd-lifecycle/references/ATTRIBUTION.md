@@ -5,10 +5,10 @@
 | 组件 | 来源仓库 | 原始路径 | 本地位置 |
 |---|---|---|---|
 | 领域建模纪律(统一语言 / 上下文映射 / ADR) | https://github.com/mattpocock/skills | `skills/engineering/domain-modeling/` | `references/modeling/` |
-| DDD 方法论框架 + 10 分制评分 | https://github.com/wondelai/skills | `domain-driven-design/` | `references/methodology/` |
+| DDD 方法论框架（本地改为证据与适用性审查） | https://github.com/wondelai/skills | `domain-driven-design/` | `references/methodology/` |
 | 六边形架构(Ports & Adapters) | https://github.com/affaan-m/ECC | `skills/hexagonal-architecture/` | `references/architecture/` |
 
-**修改声明**：本地整合保留原领域方法与 MIT 许可；methodology 已适配内部相对链接，并删除部分作者介绍、推广与重复命名/行业举例，保留概念定义和行为规则；modeling 指令及 CONTEXT/ADR 格式已适配统一 spec-dev 文档位置、保存授权和生命周期；ubiquitous-language 增加相同权限边界指针。编排层为本地整合创作。不得再将已适配文件描述为全部逐字收录。
+**修改声明**：本地编排与 references 已按 spec-dev 的文档位置、授权和 ADR 生命周期适配。methodology 与 architecture 进一步收敛为决策路由及失败边界，删除通用概念铺陈、目录树、语言映射和仓储/工厂样板；统一端口归属、聚合/事务约束和历史数据加载规则，补充并发、重试及事件副作用的证据要求。下列原始 MIT 许可全文保留。已适配内容不代表上游逐字原文。
 
 ---
 

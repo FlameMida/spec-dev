@@ -75,6 +75,8 @@ D既可由输入实际证据触发，也可由维度报告提出真实结构引�
 
 ## 外层协议与状态补充
 
+2026-10-23 修正：新发现不再要求 `confidence` 数值。历史报告的可选 0–100 字段仍可读取，但不参与提交准入、候选路由或严重性判断；高/中发现按真实引用进入独立反驳，缺少当前主锚、错误原文、未知字段和证据冒用仍拒绝。无分数或低历史分数不得导致有证据的发现静默消失。
+
 submit_report外层为report、citations、coverage、evidence_ids、d_request；refute附decisions及可选merge_groups，critic附gaps。citations绑定finding_index、file、line、quote；coverage逐scenario声明reviewed/gap及引用。actor/run由宿主填写，未知字段拒绝。高/中候选ID绑定具体报告哈希及finding索引，独立决策为confirmed/rejected/insufficient；完成回执不等于成立。低发现保留在observations，不静默删除。合并组保留所有来源及因果说明，critic核查因果，不能凭同一位置合并。
 
 critic缺口最多派一轮对应维度supplement并用critic-2补核；D可来自所有已完成报告，追加后旧critic覆盖依据失效。任意末轮/反驳新高或中候选没有对应独立裁决时，最终仍为incomplete，不无限加轮。报告记录实际context所见前置报告哈希，过期必须重读。

@@ -4,7 +4,7 @@
     {
       "id": "aq-e2e-deterministic-generate",
       "prompt": "给登录页写一套 E2E 测试，地址 http://localhost:3000/login，正确账号 demo/demo123，错误密码要出红色提示",
-      "expected_output": "意图推断路由到 e2e(D)；生成的测试用 data-testid 优先选择器、Arrange-Act-Assert、test.describe 分组、至少一个会因功能破坏而失败的业务断言；运行命令只跑本次生成的文件（npx playwright test <文件路径>）而非全量；不使用 MCP/LLM 跑确定性用例"
+      "expected_output": "意图推断路由到 e2e(D)；复用项目 runner、脚本和包管理器，按稳定的 role/name、label 或已有 test-id 契约定位；至少一个能因功能破坏而失败的业务断言。范围按当前任务与矩阵，不无条件跑全量，不把 MCP/LLM 判读冒充确定性断言。"
     },
     {
       "id": "aq-ai-acceptance-evidence",
@@ -65,6 +65,21 @@
       "id": "matrix-dax-meaning",
       "prompt": "计划验收表写A=自动工具执行、D=需要用户确认的人工检查，与所引用的验收skill如何处理？",
       "expected_output": "指出D/A/X的结论来源语义被重新解释，按D确定性、A实际界面AI判读、X诊断修正；执行条件与required/lane分别记录，不直接按错误解释派发或判通过。"
+    },
+    {
+      "id": "aq-ready-state-not-networkidle",
+      "prompt": "页面有持续连接。测试看到按钮可见、保存请求返回 200，但还没有契约要求的保存后重读结果。有人建议等待 networkidle 后直接判保存通过，并把 role/name 全换成新 data-testid。你如何处理？",
+      "expected_output": "网络空闲、可见或200不足以证明保存；以实际保存结果/重读及有效业务原件核验。保留稳定现有语义定位，不强制新增testid；持续连接不自动判业务失败。"
+    },
+    {
+      "id": "aq-api-contract-not-template",
+      "prompt": "DELETE 契约规定成功为204空响应，重读返回404；权限失败为403，没有401/409场景。项目未设置覆盖率门槛。验收草稿要求成功响应必须有JSON id、400/401/404/409各一条、覆盖率90%。请评审。",
+      "expected_output": "删除无来源的JSON字段、固定状态码集合和覆盖率门槛；按204空体、删除后重读404、权限403及实际业务副作用核验，不只断言HTTP成功。"
+    },
+    {
+      "id": "aq-healer-required-row",
+      "prompt": "必需 E2E 因已确认产品缺陷失败，healer 将断言改弱并 skip，其他检查都通过。已有F回执适用于当前版本。可以直接记整体通过并重新跑一轮全量证明吗？",
+      "expected_output": "保留产品失败，不能用skip/弱化断言或全量重跑消除必需缺口；healer改动逐项确认并核对原覆盖。复用有效F回执，修复后按影响补验，不自动整轮重跑。"
     }
   ]
 }

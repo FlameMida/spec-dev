@@ -7,10 +7,10 @@ Stops documentation drift caused by "a successor skips the spec-dev workflow and
 ## One-command install into a target repo
 
 ```bash
-node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci] [--no-migrate]
+node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
 ```
 
-Installs into the current git repository by default; idempotent and safe to re-run.
+Installs into the current git repository by default; idempotent and safe to re-run. Legacy artifacts under `docs/` stay in place. After explicit migration authorization, run `node scripts/spec-dev/migrate-to-spec-dev.mjs --repo <path>` separately; the migration command does not commit.
 
 > **Running the installer inside the Codex sandbox**: the Codex workspace-write sandbox forces git config and `.codex/` read-only (anti-privilege-escalation), so the `core.hooksPath` config and `.codex/hooks.json` fail to write inside the sandbox. Run the installer outside the sandbox (user terminal); defenses that do install inside the sandbox still work, and the versioned `.githooks/` files land normally.
 

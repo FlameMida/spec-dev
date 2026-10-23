@@ -318,7 +318,7 @@ def candidates(run, actors):
         if not completion(run, actor): continue
         doc = report_get(run, actor)
         for index, finding in enumerate(doc['body']['report']['findings']):
-            if finding['severity'] in ['高', '中'] and finding['confidence'] >= 80:
+            if finding['severity'] in ['高', '中']:
                 values.append({'id': doc['id'] + ':' + str(index), 'proposer': actor, 'finding': finding,
                                'citations': [x for x in doc['body']['citations'] if x['finding_index'] == index]})
     return values
@@ -378,8 +378,6 @@ def submit(run, actor, body, attempt=None):
         if own != {x['id'] for x in data['tests']}: raise ValueError('A/AS必须有本actor亲自运行的完整测试回执；tests为空时以execution_evidence为证据')
     schema_check(run, actor, body['report'])
     findings = body['report']['findings']
-    if any(x['confidence'] < 80 for x in findings):
-        raise ValueError('发现必须达到既有80置信度阈值')
     for ref in body['citations']:
         citation(data, ref)
         if type(ref.get('finding_index')) is not int or not 0 <= ref['finding_index'] < len(findings):

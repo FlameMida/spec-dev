@@ -17,7 +17,6 @@ const decide = (decision, reason) => {
 
 let root = "";
 let specs = [];
-let legacySpecs = [];
 try {
   root = execFileSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8" }).trim();
   const lsSpecs = (patterns) =>
@@ -32,7 +31,6 @@ try {
     "docs/**/*-design.md",
     ".specs/**/*.md",
   ]);
-  legacySpecs = lsSpecs(["docs/**/spec/*-design.md", "docs/**/*-design.md"]);
 } catch {
   // 非 git 环境静默退出，不污染会话（--explain 下给出原因）
   decide("skip", "not a git repo / 非 git 仓库");
@@ -110,14 +108,7 @@ try {
       "guard script scripts/spec-dev/check-spec-drift.mjs missing: drift guard incomplete; re-run the installer (node guardrail/install.mjs). / 守卫脚本 scripts/spec-dev/check-spec-drift.mjs 缺失：漂移守卫不完整，请重新运行安装器（node guardrail/install.mjs）。",
     );
   }
-  if (legacySpecs.length > 0) {
-    const migrator = path.join(root, "scripts", "spec-dev", "migrate-to-spec-dev.mjs");
-    issues.push(
-      existsSync(migrator)
-        ? `legacy spec-dev artifacts under docs/ (${legacySpecs.length} spec(s)): run \`node scripts/spec-dev/migrate-to-spec-dev.mjs\` now to auto-migrate them to .spec-dev/, then commit the move, then continue. / 检测到 docs/ 历史位置的 spec-dev 产物（${legacySpecs.length} 份 spec）：请立即运行 \`node scripts/spec-dev/migrate-to-spec-dev.mjs\` 自动迁移到 .spec-dev/ 并提交迁移，再继续其他工作。`
-        : `legacy spec-dev artifacts under docs/ (${legacySpecs.length} spec(s)): migrate them to .spec-dev/ now (git mv the feature dirs plus docs/adr/, docs/explorations/, and rewrite in-file docs/ path references), commit, then continue. / 检测到 docs/ 历史位置的 spec-dev 产物（${legacySpecs.length} 份 spec）：请立即迁移到 .spec-dev/（git mv 特性目录及 docs/adr/、docs/explorations/，并重写文件内 docs/ 路径引用）并提交，再继续其他工作。`,
-    );
-  }
+
 } catch {
   // 自检失败不阻塞上下文注入
 }
@@ -137,7 +128,7 @@ if (EXPLAIN) {
 }
 
 console.log(`[spec-dev workflow notice / spec-dev 流程提示] This repository uses spec-driven development / 本仓库采用 spec 驱动开发（spec-dev 工作流）:
-- Existing spec/plan artifacts live under .spec-dev/ (${specs.length} spec(s): ${statusCount.active} active, ${statusCount.superseded} superseded); legacy ones under docs/ are auto-migrated there. / 现有 spec/plan 产物位于 .spec-dev/<日期-特性>/ 目录（共 ${specs.length} 份 spec：${statusCount.active} active, ${statusCount.superseded} superseded）；docs/ 历史位置的产物会被自动迁移过去。
+- Existing spec/plan artifacts live under .spec-dev/ (${specs.length} spec(s): ${statusCount.active} active, ${statusCount.superseded} superseded); legacy ones under docs/ remain readable in place; migrate only under explicit authorization. / 现有 spec/plan 产物位于 .spec-dev/<日期-特性>/ 目录（共 ${specs.length} 份 spec：${statusCount.active} active, ${statusCount.superseded} superseded）；docs/ 历史位置的产物按原位读取；迁移须有明确授权。
 - Before changing code, check the owning feature's spec; behavior changes must update the spec (requirements + acceptance matrix) in the same commit. / 修改代码前，先查看其所属特性的 spec；行为变更必须同步更新 spec 的行为规范与验收矩阵，并与代码同一提交。
 - The drift guard (PreToolUse/Stop hooks / pre-commit / pre-push / CI) blocks code changes that skip spec sync; update the spec first, then the code. / 漂移守卫（PreToolUse/Stop hook / pre-commit / pre-push / CI）会拦截"改代码不同步 spec"的操作；先改 spec 再改代码即放行。
 - With the spec-dev plugin installed, use requirement-analysis / writing-plans / executing-plans; otherwise honor the sync obligations above. / 若安装了 spec-dev 插件，请用 requirement-analysis / writing-plans / executing-plans 工作流开展开发；未安装时，至少遵守上述同步义务。${health}`);

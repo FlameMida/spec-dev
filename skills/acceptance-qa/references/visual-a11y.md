@@ -10,15 +10,6 @@
 
 ## visual（Tier D）：截图回归
 
-### 基本形态
-
-```typescript
-// 页面级
-await expect(page).toHaveScreenshot('login-page.png', { maxDiffPixelRatio: 0.01 });
-// 组件级（更稳，推荐优先）
-await expect(page.getByTestId('login-form')).toHaveScreenshot('login-form.png');
-```
-
 ### 纪律
 
 1. **环境一致性是第一前提**（官方警告：渲染随 OS/版本/headless/硬件而变）——基线在哪个环境生成就在哪个环境比对；快照名自带 `browser-platform` 后缀（如 `-chromium-darwin`），跨环境比对没有意义。团队要跨机器共享基线时用容器统一渲染环境，否则基线按环境各自维护
@@ -50,19 +41,7 @@ await expect(page.getByTestId('login-form')).toHaveScreenshot('login-form.png');
 
 ## a11y（Tier D）：axe 扫描
 
-### 标准形态（@axe-core/playwright）
-
-```typescript
-import AxeBuilder from '@axe-core/playwright';
-
-test('登录页无 WCAG A/AA 自动可检violations', async ({ page }) => {
-  await page.goto('/login');
-  const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-    .analyze();
-  expect(results.violations).toEqual([]);
-});
-```
+使用项目已有的 axe 扫描入口及所选规则，记录实际扫描的页面状态；不为每次验收复制登录与 fixture 样板。
 
 - 断言 `violations` 为空即通过；每条 violation 摘录 id/impact/节点定位进证据
 - **已知问题排除**：确认为误报或暂不修复的用 `.exclude(selector)` 或 `.disableRules([ruleId])`，且每条排除必须在报告注明理由——静默排除等于造假

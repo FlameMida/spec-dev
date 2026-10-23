@@ -25,6 +25,8 @@ function fixture(fn) {
 test("S14 红绿与自检证据齐全：真实提交和持久证据",()=>fixture(({put,commit,claim,report})=>{
   put("allowed.mjs","export const value=1;\n");commit();
   assert.deepEqual(verifyResult(report(),claim,["allowed.mjs"]),[]);
+  const retrospective=report();retrospective.tests[0].phase='baseline';
+  assert.match(verifyResult(retrospective,claim,["allowed.mjs"]).join('\n'),/missing red evidence/,'comparison evidence cannot replace a test-first red');
   const missing=report();missing.tests[1].evidence_path+=".missing";
   assert.match(verifyResult(missing,claim,["allowed.mjs"]).join("\n"),/durable/);
 }));

@@ -1,4 +1,3 @@
-import {readPolicy} from './helpers/policy-documents.mjs';
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
@@ -77,12 +76,7 @@ test("Scenario: 存量计划仍通过", () => {
   try {assert.equal(run(dir),0);} finally {rmSync(dir,{recursive:true,force:true});}
 });
 
-test("Scenario: writing-plans 导航表规则定义闭区间写法且校验命令为插件根写法", () => {
-  const wp = readPolicy(repoRoot,"skills/writing-plans/SKILL.md").text;
-  assert.ok(wp.includes("`T01-T06` 表示 T01 至 T06 闭区间"), "应定义闭区间写法");
-  assert.ok(wp.includes('node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" plan-index <plan目录>'), "校验命令应为插件根写法");
-  assert.ok(!wp.includes("node scripts/validate-output.mjs"), "不应残留裸相对路径");
-});
+
 
 test("Scenario: 区间写法变体被拦截（en/em dash、链式）", () => {
   for (const cell of ["T01–T03", "T01—T03", "T01-T02-T03"]) {

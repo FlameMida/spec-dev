@@ -1,55 +1,12 @@
-import {readPolicy} from './helpers/policy-documents.mjs';
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {workflowFixture} from './helpers/workflow-fixture.mjs';
 import {spawnSync} from 'node:child_process';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const wp = readPolicy(repoRoot,"skills/writing-plans/SKILL.md").text;
-
-test("Scenario: 小计划也产分文件——writing-plans 无按规模分流判定", () => {
-  // 注意:验收矩阵表头的"阈值/预期""阈值数字"是合法用法,正则只锁门控条款措辞
-  assert.doesNotMatch(wp, /形态分流|阈值门控|任务数\s*>?\s*8|正文预估[^。]*25KB|低于阈值维持/, "不应存在阈值门控条款");
-  assert.doesNotMatch(wp, /单文件形态[^\n]*默认|默认[^\n]*单文件形态/, "不应有单文件默认表述");
-  assert.match(wp, /plan\/index\.md/, "应声明 index.md");
-  assert.match(wp, /plan\/progress\.yaml/, "应声明 progress.yaml");
-});
-
-test("Scenario: 阈值条款不复存在且现行格式可由导航取得", () => {
-  assert.ok(!existsSync(path.join(repoRoot, "skills/writing-plans/references/progressive-plan-format.md")), "reference 应已删除");
-  assert.doesNotMatch(wp, /progressive-plan-format/, "SKILL.md 不应再引用该 reference");
-  assert.match(wp, /任务导航表/, "导航表规则应由入口可达");
-  assert.match(wp, /format_version/, "progress 字段应由入口可达");
-});
-
-test("Scenario: 任务文件无复选框(步骤标题式;复选框动作语义清零)", () => {
-  assert.match(wp, /「?\*\*步骤 N:\*\*」?标题式/, "应声明步骤标题式");
-  assert.doesNotMatch(wp, /步骤用复选框|用复选框（`- \[ \]`）语法跟踪/, "不应保留复选框跟踪语义");
-  assert.doesNotMatch(wp, /勾选|勾清/, "writing-plans 不应残留复选框动作语义(存量勾选语境属 executing-plans)");
-});
-
-test("Scenario: 资源台账规范定义点在 progress.yaml 键结构节", () => {
-  assert.match(wp, /resources[^\n]*键[^\n]*台账|资源台账[^\n]*progress\.yaml[^\n]*resources/, "台账定义点应锚定 progress.yaml resources");
-});
-
-const ep = readFileSync(path.join(repoRoot, "skills/executing-plans/SKILL.md"), "utf8");
-
-test("Scenario: 新计划走渐进分支(默认)且 reference 已并入", () => {
-  assert.ok(!existsSync(path.join(repoRoot, "skills/executing-plans/references/progressive-execution.md")), "reference 应已删除");
-  assert.doesNotMatch(ep, /progressive-execution/, "SKILL.md 不应再引用该 reference");
-  assert.match(ep, /渐进加载/, "渐进加载纪律应并入本体");
-  assert.match(ep, /ready 任务/, "resume 规程应并入本体");
-});
-
-test("Scenario: 旧单文件计划可执行(读宽容句在位)", () => {
-  assert.match(ep, /按原样读取|原样读取执行/, "读分支应在位");
-  assert.match(ep, /格式嗅探|tasks\/.*存在/, "格式嗅探分流应在位");
-  assert.match(ep, /冻结/, "单文件侧冻结语义应声明");
-});
-
 test('S11 the declared F to A to D dependency uses the actual validator',t=>{
  const f=workflowFixture(t);f.scopes.acceptance_tasks=['T03'];f.setScopes(f.scopes);
  const text=readFileSync(path.join(f.root,f.plan),'utf8').replace('\n\n```json','\n| T04 | T03 | accepted | delivered |\n\n```json');

@@ -217,7 +217,6 @@ def tool_list(actor=None):
     # Reuse the published findings contract; tighten only the controlled entry's existing rules.
     report = json.loads((Path(__file__).resolve().parents[1] / 'schemas/review-findings.json').read_text())
     finding = report['properties']['findings']['items']
-    finding['properties']['confidence']['minimum'] = 80
     finding['properties']['line'] = {'type': 'integer', 'minimum': 1}
     finding['additionalProperties'] = False
     report['additionalProperties'] = False

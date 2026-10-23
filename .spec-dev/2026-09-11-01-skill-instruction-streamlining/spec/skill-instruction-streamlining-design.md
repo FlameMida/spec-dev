@@ -562,3 +562,13 @@ nightly 完整模型评测沿现行非阻塞约定，未执行时明确记录未
 - [验收入口](../../../skills/acceptance-qa/SKILL.md)、[验收矩阵](../../../skills/acceptance-qa/references/acceptance-matrix.md)、[MCP 配置说明](../../../skills/acceptance-qa/references/mcp-setup.md)。
 - [DDD 入口](../../../skills/ddd-lifecycle/SKILL.md)、[建模规则](../../../skills/ddd-lifecycle/references/modeling/SKILL.md)、[来源与许可](../../../skills/ddd-lifecycle/references/ATTRIBUTION.md)。
 - [探索角色](../../../agents/code-explorer.md)、[输出契约](../../../scripts/schemas/exploration-report.json)、[当前格式测试](../../../scripts/tests/plan-single-format.test.mjs)、[包维护说明](../../../README.md)。
+
+## 2026-10-23 后续修正
+
+- 历史位置读取不授权迁移。守卫安装只安装守卫，保留 `docs/` 中的 spec、ADR 和探索材料；会话注入与 quick-fix 不要求迁移或提交后才能继续。独立迁移命令仅在明确迁移授权下执行，仍不自动提交。
+- 文档规则的自然语言表述不作为自动测试接口。纯措辞正则用例退役；S01–S43 行为素材保留，未运行的模型行为核查不得因链接或 schema 检查通过而记为通过。字段、状态、路径、模板步骤结构及实际运行协议继续验证。
+- DDD/TDD 教程曾暂缓；2026-10-23 后续讨论后用户已授权继续：压缩通用概念、目录/语言模板及教学代码，保留项目决策与执行证据纪律。DDD 端口归属以批准架构和实际消费者为准，聚合/事务先由业务不变量决定；既有实现补测不得冒充先行红，真实依赖集成信心不由替身绿替代。
+
+## 2026-10-23 验收参考收敛
+
+acceptance-qa 的通用导航/填表/fixture/配置及跨语言命令、接口样板收敛为契约和证据规则。实际入口从目标项目取得，定位沿稳定用户语义或明确 test-id 契约，网络空闲不作为业务完成证明。接口按实际状态、响应形态和副作用验收，不凭模板增加错误码、JSON 字段或覆盖率门槛。资源隔离、真实集成边界、healer 人工确认、必需项阻塞、截图基线与 a11y 自动化限界保持。

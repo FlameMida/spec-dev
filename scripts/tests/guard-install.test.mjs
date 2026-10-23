@@ -4,7 +4,27 @@ import {readFileSync,writeFileSync,existsSync,chmodSync,readdirSync,symlinkSync,
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {workflowFixture} from './helpers/workflow-fixture.mjs';
-const install=f=>f.run('guardrail/install.mjs',['--repo',f.root,'--no-ci','--no-migrate']);
+const install=f=>f.run('guardrail/install.mjs',['--repo',f.root,'--no-ci']);
+test('installation preserves legacy artifacts; migration remains a separate explicit command',t=>{
+ const f=workflowFixture(t);
+ const files={
+  'docs/2026-01-01-legacy/spec/legacy-design.md':'---\nspec_dev:\n  version: 1\n  status: active\n  covers: []\n---\n# Legacy\n',
+  'docs/adr/0001-original.md':'# Original decision\n',
+  'docs/explorations/notes.md':'# Original exploration\n'
+ };
+ for(const [file,body] of Object.entries(files))f.put(file,body);
+ f.commit('legacy artifacts');const head=f.git('rev-parse','HEAD');
+ const result=f.run('guardrail/install.mjs',['--repo',f.root,'--no-ci','--no-git-hook']);assert.equal(result.status,0,result.stderr);
+ for(const [file,body] of Object.entries(files)){
+  assert.ok(existsSync(path.join(f.root,file)),'installer moved legacy artifact: '+file);
+  assert.equal(readFileSync(path.join(f.root,file),'utf8'),body);
+ }
+ assert.equal(f.git('rev-parse','HEAD'),head,'installation must not commit');
+ const migrated=f.run('guardrail/migrate-to-spec-dev.mjs',['--repo',f.root]);assert.equal(migrated.status,0,migrated.stderr);
+ assert.ok(!existsSync(path.join(f.root,'docs/2026-01-01-legacy')));
+ assert.equal(readFileSync(path.join(f.root,'.spec-dev/2026-01-01-legacy/spec/legacy-design.md'),'utf8'),files['docs/2026-01-01-legacy/spec/legacy-design.md']);
+ assert.equal(f.git('rev-parse','HEAD'),head,'explicit migration must not auto-commit');
+});
 for(const name of ['prepare-commit-msg','commit-msg'])for(const runtime of ['python3','node'])test('S06 non-shell '+runtime+' '+name+' is refused without changing the repository',t=>{
   const f=workflowFixture(t);f.git('config','core.hooksPath','.custom-hooks');
   const file=path.join(f.root,'.custom-hooks',name),body=runtime==='python3'?'import sys\nsys.exit(0)\n':'process.exit(0);\n';

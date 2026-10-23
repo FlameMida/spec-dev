@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // spec-dev 漂移守卫安装器：把守卫全套装进目标仓库（默认当前仓库）。
 //
-//   node install.mjs [--repo <path>] [--no-git-hook] [--no-ci] [--no-migrate]
+//   node install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
 //
 // 装什么：
 //   scripts/spec-dev/check-spec-drift.mjs   核心校验器
@@ -15,7 +15,7 @@
 //   package.json                             注入 prepare 脚本自动启用 hooksPath（仅当 .githooks 由本安装器启用）
 //   .github/workflows/spec-dev-drift-guard.yml  CI 兜底（除非 --no-ci）
 //
-// 安装时默认自动迁移历史产物（docs/ 下的特性目录、adr/、explorations/ → .spec-dev/），--no-migrate 跳过。
+// 安装保留历史产物原位；迁移须获授权后单独调用 migrate-to-spec-dev.mjs。
 //
 // 幂等：可重复运行；软提示段与 hook 条目按标记/键去重，不重复堆叠。
 
@@ -39,7 +39,7 @@ const repo = path.resolve(val("--repo") || detectRepo());
 log(`Target repo / 目标仓库：${repo}`);
 
 const done = [];
-// Reject unsupported message-hook interpreters before copying files or migrating artifacts.
+// Reject unsupported message-hook interpreters before copying files.
 if (!opt("--no-git-hook")) preflightMessageHooks(repo);
 
 // 1) 脚本
@@ -52,21 +52,6 @@ for(const name of ['record-data','write-paths','task-scopes','task-binding','git
 copyFileSync(path.join(HERE, "session-context.mjs"), path.join(scriptsDir, "session-context.mjs"));
 copyFileSync(path.join(HERE, "migrate-to-spec-dev.mjs"), path.join(scriptsDir, "migrate-to-spec-dev.mjs"));
 done.push("scripts/spec-dev/{check-spec-drift,task-binding,session-context,migrate-to-spec-dev}.mjs + lib/");
-
-// 1.5) 历史产物自动迁移（docs/ → .spec-dev/），默认执行
-if (!opt("--no-migrate")) {
-  try {
-    const out = execFileSync("node", [path.join(HERE, "migrate-to-spec-dev.mjs"), "--repo", repo], {
-      encoding: "utf8",
-    });
-    if (out.trim()) {
-      process.stdout.write(out);
-      done.push(".spec-dev/ (legacy artifacts migrated — review & commit / 历史产物已迁移，请检查后提交)");
-    }
-  } catch (e) {
-    log(`  ! migration failed, artifacts left in place / 历史产物迁移失败，保持原位（守卫仍识别旧位置）：${e.message}`);
-  }
-}
 
 // 2) Claude settings.json —— 深合并 hooks
 mergeJsonHooks(

@@ -1,68 +1,29 @@
-# 单元 / 集成 / API 验收（Tier D）
+# 单元 / 集成 / 接口验收（Tier D）
 
-> **阅读时机**：矩阵含 unit/integration 行、或意图路由到这两个维度时。
->
-> **与 test-driven-development 的边界**：TDD skill 管"开发中怎么写测试"（红绿循环），本文件管"交付后怎么验收测试面"。验收发现缺失测试需要补写时，补写过程遵循 TDD skill。
+> 矩阵含相应检查时读取。TDD 负责开发与补测纪律，本页负责交付时核验测试证据及覆盖缺口。
 
-## 多栈命令表（检测结果 → 执行命令）
+## 取得真实执行入口
 
-| 栈 | 测试命令 | 覆盖率 |
-|----|---------|--------|
-| node (vitest) | `npx vitest run [pattern]` | `npx vitest run --coverage` |
-| node (jest) | `npx jest [pattern]` | `npx jest --coverage` |
-| python (pytest) | `pytest [path] -v` | `pytest --cov=<pkg> --cov-report=term` |
-| go | `go test ./... -run <pattern>` | `go test ./... -cover` |
-| rust | `cargo test [pattern]`（有 nextest 用 `cargo nextest run`） | `cargo llvm-cov`（已安装时） |
-| java | `mvn test` / `gradle test` | jacoco（项目已配置时） |
+从目标项目配置、已批准计划或现有回执取得实际命令、工作目录和测试范围。使用该项目的包管理器与 runner；monorepo 先定位实际 package。不要从通用技术栈命令表猜入口、安装额外工具或在仓库根盲跑。
 
-包管理器以 detect-env.mjs 输出为准（pnpm/yarn/npm 对应替换）。monorepo 先定位目标 package 再执行，不在根上盲跑。
+## 证据与执行范围
 
-## 执行范围规则
+1. 先用 execution-evidence verify 核对现有 record、原始输出、命令、候选版本和矩阵范围；仍适用的真实通过结果直接复用，缺失、失效或失败部分才补验。
+2. 检查实际测试是否执行到目标断言。保存命令、退出码与关键原件；零测试、SKIP、工具保存成功或环境错误不代表业务通过。
+3. 核对必需 Scenario 是否有对应测试及断言来源，不按文件存在或覆盖率数字推断行为已完成。
+4. 首次 final 在计划指定的独立 F 执行；本阶段不无条件追加全量。执行时机、失败归属和影响范围沿 [verification-scope.md](../../test-strategy/references/verification-scope.md)。
+5. 既有 warning、范围外失败与本次引入的回归分别记录；是否影响本项结论按项目和矩阵判据，不将验收扩大为清理所有历史告警。必需检查未通过或未执行仍保留缺口。
 
-1. **先核验现有真实回执**：用 execution-evidence verify 检查 record 与原始输出、命令、候选版本和矩阵范围；适用且 exit_code=0 则复用。缺失、失败或输入条件改变时运行涉及的测试并解释补验范围，不只按日期或 changed_files 采信。
-2. **按规定时机运行全量**：仅用户明确要求或计划注明时执行；本子阶段不无条件追加全量。独立审查必要复跑、获批最终全量和变更后补验照常执行；final 先在独立 F 完成，计划验收消费有效回执，报告区分本次新增失败与既有失败。
-3. 全量套件耗时过长时说明实际限制，沿已批准矩阵或计划裁剪；未经相应决定不静默抽样替代必需全量，未执行部分明确记账。
+## 接口契约与副作用
 
-## 断言什么
+按接口实际契约验证状态、适用的响应字段/类型、错误语义，以及应发生或不应发生的业务效果。仅收到成功状态码不足以证明有副作用的操作已完成；需要的持久化、权限或重复请求行为沿获批 seam 验证。
 
-- **退出码**是主判定；输出中的 fail/error 摘录进证据
-- **测试真的存在**：矩阵中标注「任务内 TDD」的行，验收时核对对应测试文件确实存在且包含该 Scenario 的断言（防"计划里有、实施时漏写"）——只核对存在性与断言指向，不重复审查测试质量（那是收尾代码审查维度 A 的活）
-- **输出干净**：通过但刷屏 warning/deprecation 的记 warn
+无响应体的契约不强求 JSON 字段；错误路径只覆盖本接口实际存在及矩阵要求的状态与语义，不机械补齐 400/401/404/409。边界、权限、失败后状态及重试/幂等要求有契约时不能遗漏。
 
-## 覆盖率门槛
+认证和测试数据使用已有配置及授权边界，不把凭据写入源码或报告。替身结果只证明本地消费者；真实数据库、服务或组合行为需相应真实证据。
 
-- **只在两种情况下断言覆盖率**：项目已配置门槛（vitest `coverage.thresholds`、jest `coverageThreshold`、`--cov-fail-under` 等）→ 按项目配置执行；或矩阵行明确写了覆盖率要求 → 按矩阵执行
-- 两者都没有 → 报告覆盖率数字**仅作参考**，不作 pass/fail 判定——验收时单方面发明全局覆盖率线是反模式（数字好看≠测得对，逼出来的是断言空洞的凑数测试）
-- Vitest 阈值语法备忘：正数=最低百分比（`functions: 90`），负数=最多未覆盖数（`lines: -10`）
+## 覆盖率与专项工具
 
-## API 集成验收
+覆盖率门槛只来自项目现有配置或批准矩阵；没有门槛时数字仅供参考，不自行发明百分比或用高覆盖率替代行为断言。
 
-### Playwright request（项目已用 Playwright 时零新增依赖）
-
-```typescript
-import { test, expect } from '@playwright/test';
-
-test('POST /api/orders 创建订单', async ({ request }) => {
-  const res = await request.post('/api/orders', { data: { sku: 'A1', qty: 2 } });
-  expect(res.status()).toBe(201);                       // 1. 状态码
-  const body = await res.json();
-  expect(body).toMatchObject({ sku: 'A1', qty: 2 });    // 2. 业务字段
-  expect(typeof body.id).toBe('string');                // 3. 契约形态
-});
-```
-
-**三层断言缺一不可**：状态码、业务字段值、契约形态（字段存在与类型）。只断言 200 的接口测试形同虚设。错误路径（400/401/404/409）至少各一条——错误体的 message/code 也要断言。
-
-### 其他形态
-
-- node 服务内测试：supertest（项目已有则沿用其模式）
-- python：pytest + httpx/requests，模式同三层断言
-- **认证接口**：token 经环境变量注入，测试代码不落明文凭据
-
-## 深档选配（不默认执行，deep 档或用户点名时提议）
-
-| 工具 | 定位 | 成本警告 |
-|------|------|---------|
-| StrykerJS / mutmut | 变异测试——检验"测试真的能抓 bug"，对关键算法/金额计算类模块最值 | 运行时间随代码量爆炸，只对矩阵点名的核心模块跑，全仓跑是浪费 |
-| Schemathesis | 基于 OpenAPI 规格的模糊测试——项目有 openapi.json 时低成本高收益 | 需要规格文件与可承受随机流量的测试环境 |
-| Pact | 消费者驱动契约测试——多团队/多服务边界 | 引入是团队级决策，验收只在项目已有 Pact 时复跑验证 |
+变异、模糊或消费者契约测试只在目标风险、已有能力与执行授权适合时使用。记录环境条件、成本和未覆盖范围，不为验收默认引入一套新测试平台。

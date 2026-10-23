@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -56,6 +56,20 @@ test("默认模式行为不变（非 git 静默退出 0 且零输出）", () => 
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test('tracked legacy specs remain readable and are not treated as migration failures',()=>{
+ const dir=mkdtempSync(path.join(tmpdir(),'legacy-context-'));
+ try {
+  execFileSync('git',['init','-q'],{cwd:dir});
+  const rel='docs/2026-01-01-demo/spec/demo-design.md';
+  const body='---\nspec_dev:\n  status: active\n---\n# Legacy contract\n';
+  mkdirSync(path.dirname(path.join(dir,rel)),{recursive:true});writeFileSync(path.join(dir,rel),body);
+  execFileSync('git',['add','--',rel],{cwd:dir});
+  const out=execFileSync('node',[script,'--explain'],{cwd:dir,encoding:'utf8'});
+  assert.match(out,/decision: inject/);assert.match(out,/1 active/);assert.doesNotMatch(out,/health issue/);
+  assert.equal(readFileSync(path.join(dir,rel),'utf8'),body);assert.equal(existsSync(path.join(dir,'.spec-dev')),false);
+ } finally {rmSync(dir,{recursive:true,force:true});}
 });
 
 const trackedRepo = (dir) => {

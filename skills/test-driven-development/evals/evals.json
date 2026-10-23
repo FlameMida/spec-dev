@@ -7,9 +7,9 @@
       "expected_output": "沿获批 seam 先写失败测试，确认目标行为失败后最小实现转绿；重构候选交收尾，不插入循环，不先写实现。"
     },
     {
-      "id": "tdd-delete-untested-code",
-      "prompt": "（已经先写了 200 行实现代码，还没有测试）继续完成这个功能",
-      "expected_output": "指出违反铁律：删除未经测试先行的实现（不留作参考、不边写测试边改造），从失败测试重新开始"
+      "id": "tdd-existing-implementation-recovery",
+      "prompt": "一个普通 implementer 收到已有 200 行实现的票，尚未写测试；同目录还有用户的无关改动。主线程让它继续完成验证，当前 implementation-result 只有普通 red/green 相位。如何处理代码、比较证据和最终状态？",
+      "expected_output": "保留实现和无关改动，记录来源及偏差；在授权隔离副本用修复前版本或可控撤销目标差异验证同一测试，再验证当前实现。回溯结果只证明回归检测能力，不标先行 phase:red、不自动 ready；普通 implementer blocked 交主线程沿既有偏差/例外授权处理。 已有同范围验证指令允许非破坏性补测，不另开授权门；普通票接受例外仍由主线程处置。"
     },
     {
       "id": "tdd-bugfix-with-test",
@@ -18,7 +18,7 @@
     },
     {
       "id": "tdd-seam-s18",
-      "prompt": "S18 各入口与图示一致：\nGIVEN TDD 正文、DOT、description/openai、反模式 5、串行和 quick-fix 引用及已有 eval\nWHEN 沿任一入口执行红绿",
+      "prompt": "S18 各入口与图示一致：\nGIVEN TDD 正文、description/openai、反模式 5、串行和 quick-fix 引用及已有 eval\nWHEN 沿任一入口执行红绿",
       "expected_output": "都没有循环内重构步骤，串并行每票仍保持五步；纯壳引用指向同一定义，元数据仍为中文。"
     },
     {
@@ -65,6 +65,21 @@
       "id": "workflow-S25-authorized-exception",
       "prompt": "一票改变公共行为，一票是获批纯重构，另有已授权纯文案例外。",
       "expected_output": "行为变化先确认有效红再最小实现转绿；纯重构按保护测试保绿；文案例外引用唯一清单和既有授权，不重复确认、不把它扩展为行为变更免测。"
+    },
+    {
+      "id": "tdd-consumer-contract-and-interaction",
+      "prompt": "获批 MailGateway 契约要求 send 在本用例只调用一次，并返回 {status, receipt:{id}}；消费者读取 status 和 receipt.id。SDK 另有 25 个可选 telemetry 字段，本用例及校验器均不读取。替身 A 只返回 status；替身 B 返回 status 和 receipt.id。测试同时断言业务结果和 send 调用一次。评审两种替身和次数断言。",
+      "expected_output": "A 缺消费字段不可用；B 不必复制无关可选字段。调用一次是批准的边界协议，可断言且不因 spy/mock 身份判错；真实服务集成需独立证据。"
+    },
+    {
+      "id": "tdd-existing-warning-and-scope",
+      "prompt": "本票目标及全部规定相关检查已通过；项目未将 warning 视为失败。基线已有依赖弃用 warning 和无关模块失败。计划的最终全量 F 尚未到期。是否必须先清零所有 warning、修完所有模块或立即跑 F 才能继续？",
+      "expected_output": "记录并区分既有失败、环境与本次回归，不扩大修复范围或每轮提前 F；本次引入问题须修；当前完成条件与最终 F 的必需验证仍按原约定，不将待执行 F 记为通过。"
+    },
+    {
+      "id": "tdd-invalid-red-remains-blocking",
+      "prompt": "准备新增导出行为，目标测试因为模块导入失败未运行到断言，另一个测试被 SKIP。能把这些非零退出当 red 并开始实现吗？",
+      "expected_output": "不能；先让测试可运行并观察目标行为断言失败或明确阻塞，不能以导入错误、零测试或 SKIP 冒充 red/PASS。补测恢复规则不豁免尚未开始的新行为。"
     }
   ]
 }

@@ -39,3 +39,10 @@ test("S21 没有发现的合法报告", () => {
   assert.equal(run({ findings: [], coverage_note: "已审 cart.js，零发现；测试证据 cart-test.log。" }).code, 0);
   assert.equal(run({ findings: [], coverage_note: "" }).code, 1);
 });
+test('evidence-bearing findings require no confidence score; legacy scores remain readable',()=>{
+ const current=report();delete current.findings[0].confidence;
+ assert.equal(run(current).code,0);
+ const legacy=report();legacy.findings[0].confidence=20;
+ assert.equal(run(legacy).code,0);
+ delete current.findings[0].description;assert.equal(run(current).code,1);
+});

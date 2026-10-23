@@ -141,7 +141,7 @@ Codex 沙箱下 `SPEC_DEV_GUARD=off git commit` 与守卫交互同 Claude；沙�
 
 - "这个新功能顺手在 quick-fix 里做了吧" → 有设计空间就升级 requirement-analysis，quick-fix 不是免设计后门
 - "契约变了但我 trailer 放行更快" → 契约变更强制走 5a 同步 spec，trailer 只给契约不变的修复
-- "先改代码再补测试" → 强制 TDD，先写复现失败测试
+- 实现已先于测试存在 → 沿 test-driven-development「既有实现的补测恢复」保留改动并如实记录；后续新增行为仍先测试
 - "编辑被守卫拦了就偷偷 spec 改一行糊弄过去" → 核对已有绑定与授权；需宽例外时先退出任务关联，不伪造 spec 同步
 - "跨了三个模块但应该算小修吧" → 跨模块命中升级门，交用户裁决
 - "反查 glob 少写一条无所谓" → 必须与守卫五条逐字对齐，否则分流与守卫拦截面错位

@@ -1,243 +1,35 @@
-# Domain Events
+# Domain Events and Delivery Boundaries
 
-A domain event represents something that happened in the domain that domain experts care about. Events are named in past tense, are immutable facts, and serve as the primary mechanism for decoupling bounded contexts and achieving eventual consistency across aggregate boundaries.
+Introduce an event for an actual business occurrence and consumer need. Use a specific past-tense name, immutable occurrence identity and the data required by the published contract. Do not publish every storage mutation or serialize the entire internal object graph by default.
 
-## What Domain Events Are
+## Internal and Integration Events
 
-A domain event captures a meaningful occurrence in the business domain. "Meaningful" means that a domain expert would recognize it as significant -- not just a technical state change.
+Internal events use the context's domain language. At a context boundary, translate to the agreed integration contract; do not export internal models merely because their shape is convenient. Persisted or externally consumed events need an explicit schema-evolution policy, even if they began as “internal”.
 
-### Domain Events vs. Technical Events
+Choose payload size from consumer needs, privacy and ownership. If consumers must query the producer, define the availability/consistency implications; if the payload carries facts directly, define their meaning at the occurrence time.
 
-| Domain Event | Technical Event | Why It Matters |
-|-------------|----------------|----------------|
-| `OrderPlaced` | `RowInserted` | The domain expert cares about orders being placed; they do not care about database rows |
-| `PaymentReceived` | `WebhookProcessed` | The business reacts to payments; the webhook is an implementation detail |
-| `ClaimDenied` | `StatusUpdated` | Denial triggers business processes (appeals, notifications); a status update triggers nothing meaningful |
-| `InventoryDepleted` | `CountReachedZero` | The business has specific procedures for depleted inventory; zero is just a number |
+## Publication Failure
 
-### The Litmus Test
+When an operation requires durable eventual publication, write the business state and publication intent in the same local transaction, then publish with retry. A database commit followed by a best-effort send leaves a loss window; a send before commit can expose an event for rolled-back state.
 
-Ask a domain expert: "Would you care if this happened?" If yes, it is a domain event. If they shrug, it is a technical event that belongs in infrastructure, not in the domain model.
+An outbox is one mechanism for this guarantee, not a mandatory dependency for all events. Verify the required durability, retry/retention policy and recovery path rather than treating the pattern name as proof of delivery.
 
-## Naming Domain Events
+## Duplicates and Idempotency
 
-### The Past-Tense Rule
+A publisher can crash after delivery but before recording acknowledgement; consumers can receive duplicates. A local in-memory set is not durable deduplication.
 
-Domain events are always named in past tense because they represent facts that have already occurred. By the time anyone processes the event, the thing has already happened.
+For a database consumer, claim the event identity and apply the local effect in the same transaction. A crash between recording “seen” and applying the effect must not permanently skip it. Concurrent deliveries need an atomic uniqueness/claim mechanism, not a check-then-insert race.
 
+For operation-ID retries, bind the ID to the logical payload and recorded result. Same ID plus same payload may replay the result; same ID plus a different payload follows an explicit conflict contract. Normalization must preserve key/value association.
 
-### Naming Specificity
+External side effects cannot be made atomic merely by wrapping local writes in a transaction. Use the provider's actual idempotency/reconciliation capabilities or the approved recovery/compensation design, and state the remaining limits.
 
-Be specific about what happened. Vague event names create the same problems as vague method names -- consumers cannot understand what occurred without reading the payload.
+## Event Sourcing and CQRS
 
+Use event sourcing only when retaining/replaying domain history as the source of truth is a real requirement. Resolve event evolution, replay side effects, ordering, snapshots and historical validity before adoption. An audit log or outbox does not by itself make the system event-sourced.
 
-### Event Naming Conventions
+Use separate read/write models where their different needs justify the synchronization and operational cost. Simple CRUD does not require CQRS, event sourcing or a broker.
 
-Adopt a consistent naming pattern across the codebase:
+## Validation
 
-```
-{AggregateType}{DomainAction}
-```
-
-
-## Event Structure
-
-A well-designed domain event contains:
-
-| Field | Purpose | Example |
-|-------|---------|---------|
-| `eventId` | Unique identifier for this specific event occurrence | `uuid("a1b2c3d4...")` |
-| `eventType` | The name of the event | `"OrderPlaced"` |
-| `occurredAt` | When the event happened | `"2024-03-15T14:30:00Z"` |
-| `aggregateId` | The ID of the aggregate that produced the event | `orderId: "ORD-12345"` |
-| `aggregateType` | The type of aggregate | `"Order"` |
-| `payload` | The domain-relevant data | `{ customerId, items, total, shippingAddress }` |
-| `metadata` | Technical metadata (correlation ID, causation ID, user ID) | `{ correlationId, userId }` |
-
-### What Goes in the Payload
-
-Include enough data for consumers to react without calling back to the producer:
-
-**Too little:**
-```json
-{ "orderId": "ORD-12345" }
-```
-Every consumer must call back to the Order service to get details. This creates coupling and latency.
-
-**Too much:**
-```json
-{ "order": { /* entire order aggregate serialized */ } }
-```
-This bloats messages, exposes internal model details, and creates tight coupling to the aggregate structure.
-
-**Just right:**
-```json
-{
-  "orderId": "ORD-12345",
-  "customerId": "CUST-789",
-  "items": [
-    { "productId": "PROD-1", "quantity": 2, "unitPrice": 29.99 }
-  ],
-  "totalAmount": 59.98,
-  "currency": "USD",
-  "shippingAddress": { "city": "Springfield", "state": "IL" }
-}
-```
-Enough for most consumers to react; detailed enough to avoid callbacks for common cases.
-
-## Publishing Domain Events
-
-### Where Events Are Raised
-
-Domain events are raised within the aggregate, as part of the domain operation that caused them:
-
-```
-class Order:
-    def place(self):
-        self._validate_can_be_placed()
-        self.status = OrderStatus.PLACED
-        self._raise_event(OrderPlaced(
-            order_id=self.id,
-            customer_id=self.customer_id,
-            items=self.items,
-            total=self.total
-        ))
-```
-
-The aggregate records the event internally. An infrastructure mechanism (event dispatcher, outbox pattern) publishes it after the aggregate is persisted.
-
-### The Outbox Pattern
-
-The most reliable way to publish domain events is the transactional outbox:
-
-1. Within the same database transaction that persists the aggregate, insert the event into an `outbox` table
-2. A separate process (poller or CDC -- Change Data Capture) reads from the outbox and publishes to the message broker
-3. After successful publication, mark the outbox entry as published
-
-**Why this matters:** If you publish the event and then save the aggregate, the save might fail -- you published a lie. If you save the aggregate and then publish, the publish might fail -- the event is lost. The outbox pattern ties both operations to the same database transaction.
-
-### Delivery Guarantees
-
-| Guarantee | Meaning | Implementation |
-|-----------|---------|----------------|
-| At-most-once | Events may be lost but never duplicated | Fire-and-forget; no outbox; acceptable for non-critical events |
-| At-least-once | Events are never lost but may be duplicated | Outbox pattern with retry; consumers must be idempotent |
-| Exactly-once | Events are delivered exactly once | Practically impossible in distributed systems; achieve via at-least-once + idempotent consumers |
-
-**At-least-once with idempotent consumers** is the standard approach. Design every event handler to be safe to run multiple times with the same event.
-
-## Domain Events for Cross-Context Integration
-
-### Internal vs. Integration Events
-
-| Aspect | Domain Event (Internal) | Integration Event (External) |
-|--------|------------------------|------------------------------|
-| Scope | Within a bounded context | Across bounded contexts |
-| Audience | Event handlers in the same context | Other teams' services |
-| Schema | Can change freely with the model | Must be versioned and backward-compatible |
-| Naming | Uses internal ubiquitous language | Uses published language (shared schema) |
-| Transport | In-process event bus or same database | Message broker (Kafka, RabbitMQ, SNS) |
-
-### Translation at the Boundary
-
-When a domain event crosses a bounded context boundary, it should be translated into an integration event that uses the published language:
-
-1. **Order context** raises `OrderPlaced` (domain event, internal language)
-2. **Anti-corruption layer** translates to `PurchaseCompleted` (integration event, published language)
-3. **Shipping context** receives `PurchaseCompleted` and translates to `ShipmentRequested` (domain event, shipping language)
-
-This translation prevents internal model changes from breaking external consumers.
-
-### Event-Driven Architecture Patterns
-
-#### Event Notification
-
-The event carries minimal data ("something happened") and consumers call back for details. Simplest pattern but creates temporal coupling.
-
-#### Event-Carried State Transfer
-
-The event carries all the data consumers need. Consumers maintain their own local copy of relevant data, reducing coupling but increasing event size and requiring consumers to maintain projections.
-
-#### Event Sourcing
-
-Events are the source of truth. Current state is derived by replaying events. This is the most powerful and most complex pattern.
-
-## Event Sourcing
-
-Event sourcing stores the complete history of state changes as an ordered sequence of events. Instead of storing only the current state ("account balance is $1,000"), the system stores every event that led to that state ("deposited $500, deposited $800, withdrew $300").
-
-### When to Use Event Sourcing
-
-| Good Fit | Poor Fit |
-|----------|----------|
-| Audit requirements (financial, medical, legal) | Simple CRUD with no audit needs |
-| Complex domain with many state transitions | Domains with few state changes |
-| Need to answer "how did we get here?" | Only need current state |
-| Need to rebuild state at any point in time | No temporal query requirements |
-| High-value domain events that are worth preserving | High-volume, low-value data (telemetry) |
-
-### Event Sourcing Mechanics
-
-**Storing events:**
-```
-Stream: Order-12345
-  1: OrderCreated { customerId, items }
-  2: PaymentAuthorized { paymentId, amount }
-  3: OrderConfirmed { confirmedAt }
-  4: ItemShipped { trackingNumber, items }
-  5: OrderDelivered { deliveredAt, signedBy }
-```
-
-**Rebuilding state:**
-```
-currentState = OrderCreated.apply(emptyOrder)
-currentState = PaymentAuthorized.apply(currentState)
-currentState = OrderConfirmed.apply(currentState)
-currentState = ItemShipped.apply(currentState)
-currentState = OrderDelivered.apply(currentState)
-```
-
-**Snapshots** optimize performance: periodically save the current state so you do not need to replay from the beginning every time.
-
-### Event Sourcing Challenges
-
-| Challenge | Solution |
-|-----------|----------|
-| Event schema evolution | Use upcasters to transform old events into the current schema; never delete old events |
-| Performance with long event streams | Snapshots at regular intervals; read models for queries |
-| Complexity | Only use event sourcing for aggregates where it provides clear value; not everything needs to be event-sourced |
-| Debugging | Event logs provide excellent debugging and auditing; invest in tooling to browse and replay events |
-
-## Patterns for Event Handling
-
-### Idempotent Handlers
-
-Every event handler must be safe to execute multiple times with the same event. Strategies:
-
-- **Idempotency key:** Store processed event IDs; skip duplicates
-- **Idempotent operations:** Design the operation itself to be naturally idempotent (e.g., "set balance to X" instead of "add Y to balance")
-- **Conditional writes:** Use optimistic concurrency (version checks) to prevent double-application
-
-### Ordering Guarantees
-
-Events from the same aggregate should be processed in order. Events from different aggregates have no ordering guarantees. Design consumers accordingly:
-
-- Partition by aggregate ID in the message broker (Kafka partition key = aggregate ID)
-- Handle out-of-order events gracefully (check event version, buffer and reorder if needed)
-
-### Dead Letter Handling
-
-Events that repeatedly fail to process should be routed to a dead letter queue for investigation. Never silently drop failed events. Monitor dead letter queues actively.
-
-### Sagas and Process Managers
-
-Long-running business processes that span multiple aggregates or bounded contexts can be coordinated using sagas:
-
-1. `OrderPlaced` triggers the saga
-2. Saga sends `ReserveInventory` command
-3. `InventoryReserved` event continues the saga
-4. Saga sends `AuthorizePayment` command
-5. `PaymentAuthorized` event continues the saga
-6. If any step fails, the saga sends compensating commands (`ReleaseInventory`, `RefundPayment`)
-
-Sagas maintain their own state and react to events. They do not hold locks -- they coordinate through events and compensating actions.
+Exercise the relevant failures: rollback before commit, publish failure after commit, duplicate/concurrent delivery, consumer crash during processing and replay with changed schemas. Distinguish local transaction success, recorded publication intent and observed remote delivery in the result.

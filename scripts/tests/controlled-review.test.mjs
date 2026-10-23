@@ -124,9 +124,11 @@ c=call('context');e=[]
 if mode=='page-resume' and actor=='critic-1' and not marker.exists(): marker.write_text('context delivered');time.sleep(30)
 if actor in ['A','AS'] or actor.startswith('supplement-A'): e=[call('run_test',{'test_id':'related'})['id']]
 body={'report':{'findings':[],'coverage_note':'Protocol fixture, not model acceptance'},'citations':[],'coverage':[{'scenario':'empty','status':'reviewed','citations':[{'file':'spec.md','line':3,'quote':'empty returns zero'}]}],'evidence_ids':e,'d_request':[]}
-if (mode in ['candidate','low'] and actor=='BC') or (mode in ['late','last-candidate','late-d'] and actor=='critic-1') or (mode=='last-candidate' and actor=='critic-2') or (mode in ['merge','cross-merge'] and actor in ['AS','BC']):
+if (mode in ['candidate','unscored','legacy-score','low'] and actor=='BC') or (mode in ['late','last-candidate','late-d'] and actor=='critic-1') or (mode=='last-candidate' and actor=='critic-2') or (mode in ['merge','cross-merge'] and actor in ['AS','BC']):
  body['report']['findings']=[{'file':'cart.py','line':2,'severity':'中','category':'Bug','confidence':95,'description':'total adds one','fix_suggestion':'remove plus one'}]
  body['citations']=[{'finding_index':0,'file':'cart.py','line':2,'quote':'    return sum(values) + 1'}]
+if mode=='unscored' and actor=='BC': del body['report']['findings'][0]['confidence']
+if mode=='legacy-score' and actor=='BC': body['report']['findings'][0]['confidence']=20
 if mode=='low' and actor=='BC': body['report']['findings'][0]['severity']='低'
 if mode=='coverage-gap' and actor=='AS': body['coverage'][0]['status']='gap'
 if mode=='late-d' and actor=='critic-1': body['d_request']=[{'file':'cart.py','line':2,'quote':'    return sum(values) + 1'}]
@@ -162,6 +164,14 @@ test('R05 真实进程调度按容量完成且否决回执不进入confirmed',as
  const reportsBefore=readdirSync(path.join(f.run,'objects')).sort();
  assert.equal(invoke(['run','--run',f.run,'--budget-seconds','20']).data.status,'completed');
  assert.deepEqual(readdirSync(path.join(f.run,'objects')).sort(),reportsBefore);
+});
+for(const mode of ['unscored','legacy-score'])test('findings enter independent rebuttal without a numeric confidence gate: '+mode,t=>{
+ const folder=mkdtempSync(path.join(tmpdir(),'review-score-'));t.after(()=>rmSync(folder,{recursive:true,force:true}));
+ const f=fixture(t,{client:fakeClient(folder,mode)});
+ const result=invoke(['run','--run',f.run,'--budget-seconds','20']);
+ assert.equal(result.data.status,'completed',JSON.stringify(result));
+ assert.equal(result.data.rejected.length,1,'the finding must reach rebuttal, not disappear behind a score filter');
+ assert.equal(result.data.confirmed.length,0);
 });
 
 test('R06 超时保留同run，三片段上限不能用重复启动绕过',async t=>{
@@ -337,7 +347,7 @@ test('R03 MCP声明完整嵌套契约，调用者无需猜测引用和发现字�
  assert.equal(ref.properties.line.type,'integer');
  const finding=s.properties.report.properties.findings.items;
  assert.ok(finding.required.includes('fix_suggestion'));assert.ok(finding.properties.category.enum.includes('Spec符合性'));
- assert.equal(finding.properties.confidence.minimum,80);
+ assert.ok(!finding.required.includes('confidence'));
  assert.equal(s.properties.coverage.items.properties.citations.minItems,1);
  assert.deepEqual(s.properties.decisions.items.properties.verdict.enum,['confirmed','rejected','insufficient']);
  assert.match('a'.repeat(64),new RegExp(s.properties.evidence_ids.items.pattern));

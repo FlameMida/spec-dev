@@ -7,10 +7,10 @@
 ## 一键安装到目标仓库
 
 ```bash
-node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci] [--no-migrate]
+node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
 ```
 
-默认装进当前 git 仓库，幂等可重复运行。
+默认装进当前 git 仓库，幂等可重复运行。安装保留 `docs/` 历史产物原位；明确授权迁移后再单独运行 `node scripts/spec-dev/migrate-to-spec-dev.mjs --repo <path>`，迁移命令不自动提交。
 
 > **在 Codex 沙箱内运行安装器的注意事项**：Codex workspace-write 沙箱强制 git config 与 `.codex/` 只读（防提权），`core.hooksPath` 配置与 `.codex/hooks.json` 在沙箱内会写入失败。请在沙箱外（用户终端）运行安装器；沙箱内只装成功的防线照常生效，版本化的 `.githooks/` 文件本身可正常落盘。
 

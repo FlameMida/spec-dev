@@ -1,8 +1,9 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,mkdirSync,writeFileSync,rmSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,writeFileSync,rmSync,readdirSync,existsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {readPolicy} from './helpers/policy-documents.mjs';
 function fixture(body,run) {
  const root=mkdtempSync(path.join(tmpdir(),'policy-documents-'));
@@ -24,3 +25,13 @@ test('S43 代码示例和其他技能不扩成实际读取',()=>fixture('`[inlin
  assert.equal(readPolicy(root,'skills/demo/SKILL.md').documents.length,1);
  assert.throws(()=>readPolicy(root,'skills/anysearch/SKILL.md'),/excluded/);
 }));
+test('all maintained skill entries resolve their owned Markdown references',()=>{
+ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
+ for(const entry of readdirSync(path.join(root,'skills'),{withFileTypes:true})){
+  if(!entry.isDirectory()||entry.name==='anysearch')continue;
+  const file=`skills/${entry.name}/SKILL.md`;
+  if(!existsSync(path.join(root,file)))continue;
+  const policy=readPolicy(root,file);
+  assert.equal(policy.documents[0].file,file);
+ }
+});

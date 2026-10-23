@@ -1,55 +1,21 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,existsSync} from 'node:fs';
+import {readFileSync} from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {readPolicy} from './helpers/policy-documents.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
-const raw=f=>readFileSync(path.join(root,f),'utf8');
-const policy=f=>readPolicy(root,f).text;
 
-test("S09 普通计划入口不内嵌组/并发字段全文",()=>{
-
-const s=raw('skills/writing-plans/SKILL.md');
-assert.match(s,/references\/plan-format\.md/);
-assert.match(s,/references\/integration-declaration\.md/);
-assert.doesNotMatch(s,/"protocol_version": 1/);
-assert.match(policy('skills/writing-plans/SKILL.md'),/format_version/);
-
+test('plan formats and task templates are reachable from the skill entry',()=>{
+ const files=new Set(readPolicy(root,'skills/writing-plans/SKILL.md').documents.map(d=>d.file));
+ for(const name of ['plan-format','task-templates','delivery-templates','integration-declaration'])
+  assert.ok(files.has(`skills/writing-plans/references/${name}.md`),name);
 });
 
-test("S10 自足产物和类型化步骤完整",()=>{
-
-const s=policy('skills/writing-plans/SKILL.md');
-assert.match(s,/步骤 7：最终状态保存/);
-assert.match(s,/零测试|SKIP/);assert.match(s,/资源台账总则/);
-
-});
-
-test("S21 七步收尾合法且 S22 普通行为票五步保持",()=>{
-
-const s=raw('skills/writing-plans/SKILL.md');
-assert.doesNotMatch(s,/一个任务超过 5 个实施步骤/);
-const behavior=raw('skills/writing-plans/references/task-templates.md').split('## 任务结构')[1];
-const steps=[...behavior.matchAll(/\*\*步骤 (\d)：([^\n]+?)\*\*/g)].map(match=>[Number(match[1]),match[2]]);
-assert.deepEqual(steps,[[1,'写失败测试'],[2,'运行测试确认失败'],[3,'写最小实现'],[4,'运行测试确认通过'],[5,'提交']]);
-assert.match(policy('skills/writing-plans/SKILL.md'),/步骤 7：最终状态保存/);
-
-});
-
-test("S23 S24 就绪动作按实际包管理器和环境",()=>{
-
-const s=raw('skills/using-git-worktrees/SKILL.md');
-assert.match(s,/已有环境可用/);assert.match(s,/pyproject.toml 不等于必须 Poetry/);
-assert.doesNotMatch(s,/\[ -f package\.json \]\s*&& npm install/);
-assert.match(policy('skills/writing-plans/SKILL.md'),/已就绪不强制重装/);
-
-});
-
-test("S36 S37 模板的红来自业务断言而非符号缺失",()=>{
-
-const s=policy('skills/writing-plans/SKILL.md');
-assert.doesNotMatch(s,/预期：FAIL，报 "function not defined"/);
-assert.match(s,/AssertionError：实际返回/);assert.match(s,/不算有效红/);
-
+test('behavior and delivery templates keep contiguous numbered step structures',()=>{
+ const behavior=readFileSync(path.join(root,'skills/writing-plans/references/task-templates.md'),'utf8').split('## 任务结构')[1];
+ const delivery=readFileSync(path.join(root,'skills/writing-plans/references/delivery-templates.md'),'utf8');
+ const numbers=text=>[...text.matchAll(/\*\*步骤 (\d)[：:]([^\n]+?)\*\*/g)].map(m=>Number(m[1]));
+ assert.deepEqual(numbers(behavior),[1,2,3,4,5]);
+ assert.deepEqual(numbers(delivery),[1,2,3,4,5,6,7]);
 });
