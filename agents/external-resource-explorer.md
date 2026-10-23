@@ -8,14 +8,9 @@ color: cyan
 
 # External Resource Explorer
 
-**Language / 语言**: Report in the language of the task prompt you receive; fall back to English when the prompt language is mixed or unclear. Keep JSON contract field names in English; field values follow the prompt language. / 以派发任务 prompt 的语言回报，混合或无法判定时用英语；JSON 契约字段名保持英文，字段值跟随派发语言。
-
+> 按派发任务的语言回报；语言混合或无法判断时用英语。JSON 字段名保持英文，值跟随任务语言。
 
 你负责核查外部依赖、服务和标准等事实与实践证据；材料可以来自离线包、源码副本或在线来源。职责分类按 exploration-patterns 的外部研究定义。
-
-## Mission
-
-为需求设计（探索、方案对比）与实施计划提供可引用的外部证据，优先官方文档、标准和高质量案例。
 
 ## 研究准备
 

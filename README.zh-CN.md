@@ -9,9 +9,9 @@
 ## 特性
 
 - **探索模式** — `exploring` 保持未定想法的发散讨论：默认只读，授权受控 spike 回答必须运行的问题；可选后台调研追溯一手来源。关键分岔清单可见但每轮仍只问一题；可选笔记记录已排除选项及条件，交付问题明确后提议正式设计。
-- **需求设计** — `requirement-analysis` 8 阶段设计工作流：需求分诊（light / standard / deep 三档）、按主题与实际容量分批探索、逐题澄清、sequential-thinking 对抗验证 + 2-3 方案对比、spec 落盘与双重 review（行为规范结构化：Requirement + Scenario）；HARD-GATE 保证设计获批前零实施动作
+- **需求设计** — `requirement-analysis` 8 阶段设计工作流：需求分诊（light / standard / deep 三档）、按主题与实际容量分批探索、逐题澄清、对抗验证 + 2-3 方案对比、spec 落盘与双重 review（行为规范结构化：Requirement + Scenario）；HARD-GATE 保证设计获批前零实施动作
 - **可视化原型** — 新增页面、重设计、主要布局或交互变化时自动展示 HTML；联动 clarifying 逐题确认，定稿连同资源和版本交给 spec、计划与验收。小改动可跳过，用户关闭时沿用选择。
-- **实施计划** — `writing-plans` 把 spec 拆成可独立验证的 bite-sized 任务：精确文件路径、改动要点与关键 diff 片段、TDD 五步内嵌、接口消费/产出契约、禁止占位符
+- **实施计划** — `writing-plans` 把 spec 拆成可独立验证的任务：精确文件路径、改动要点、具体断言与运行命令、TDD 五步、接口消费/产出契约；代码片段按需提供
 - **计划执行** — 主线程逐票实施与提交，独立 final 后按规模做 1/2/5 路审查，再验收、对账与交付；有效原件可复用，缺口补验。critic 由高/中候选、large 或显式 always 触发。
 - **统一执行入口** — `executing-plans`：默认按任务图并发补位，依赖或资源受限时顺序推进，遵从明确串行要求；独占进度与集成，共用恢复、审查和交付。
 - **工程纪律** — `using-git-worktrees`（原生工具优先的隔离工作区）与 `test-driven-development`（行为变化先有效红、纯重构保绿、例外沿唯一清单与既有授权）独立成 skill，可被任何工作流复用
@@ -19,7 +19,7 @@
 - **轻量修复** — `quick-fix`，用于已决定、无设计空间的小修：按证据诊断、逐题校对，沿获批公共落点 TDD 修复。范围、依赖、现行契约冲突或诊断证据不足时提议升级；偶发但可比较可继续。收尾核对复现率、临时插桩、原症状和根因证据，必要的原场景验证自动执行，专项 acceptance-qa 按需调用。
 - **共享澄清** — exploring、requirement-analysis、quick-fix 和 visual-preview 共享通用与界面澄清纪律；一次解决一个实质问题，复用已有决定，局部选择与完整设计批准分开。独立调用仍保留三出口。
 - **契约化编排** — 子代理输出走 JSON Schema 契约，`validate-output.mjs` 确定性校验，失败退回补全
-- **零 MCP 依赖** — 结构化推理以内嵌 skill 提供（`sequential-thinking`，vendored）；浏览器自动化 MCP（playwright / chrome-devtools）按项目自配，见 `skills/acceptance-qa/references/mcp-setup.md`
+- **零 MCP 依赖** — 浏览器自动化 MCP（playwright / chrome-devtools）按项目自配，见 `skills/acceptance-qa/references/mcp-setup.md`
 - **4 个专门化 agents** — code-explorer、external-resource-explorer、code-reviewer 负责分析与复跑；implementer 在计划执行获准后于独立 worktree 写认领代码。
 
 ## Skill 管线
@@ -90,8 +90,7 @@ Codex 清单（`.codex-plugin/plugin.json`、`.agents/plugins/marketplace.json`�
 | 分级 | 依赖 | 用途 | 缺失时 |
 |---|---|---|---|
 | hard | `git` | 漂移守卫、worktree、每任务提交、`sync_commit` 锚定 | 主流程不可用 |
-| hard | Node.js ≥ 18 | `validate-output.mjs`、guardrail 脚本、`doctor.mjs`、`think.mjs`、visual-preview 服务器、`node --test` | 契约校验、守卫、doctor 与可视化预览不可用 |
-| soft | `bun` / `tsx` | sequential-thinking 的 `think.ts` | 降级 `think.mjs`（Node），再降级回复内分点推演 |
+| hard | Node.js ≥ 18 | `validate-output.mjs`、guardrail 脚本、`doctor.mjs`、visual-preview 服务器、`node --test` | 契约校验、守卫、doctor 与可视化预览不可用 |
 | soft | `python3` | anysearch CLI（`anysearch_cli.py`） | 降级零依赖 Node 版 `anysearch_cli.js`，再降级 WebSearch / WebFetch |
 | soft | Playwright / k6 / Lighthouse / 浏览器 MCP | acceptance-qa Tier A 与性能行 | Tier D 工具链，或该行标记 `unverified` |
 | soft | `codex` CLI、`skill-creator` | 仅仓库开发期（pre-commit 校验） | 软跳过 |
@@ -191,7 +190,7 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-des
 /executing-plans 执行 .spec-dev/2026-07-04-auth/plan/index.md
 ```
 
-- **writing-plans**：固定 T00、实施票、独立 final F 和最大号交付 D；需要验收时 A 依赖 F，D 消费审查与 A/对账。计划给精确范围、接口、片段、验证与资源归属，写完跑五查（spec 覆盖/占位符/类型一致/导航表与任务文件一致/依赖最小性）。
+- **writing-plans**：固定 T00、实施票、独立 final F 和最大号交付 D；需要验收时 A 依赖 F，D 消费审查与 A/对账。计划给精确范围、接口、改动要点、验证与资源归属，写完按[计划自检](skills/writing-plans/references/plan-review.md)核对。
 - **executing-plans**：复用执行授权与持久模式，先恢复 current；按已提交范围核验写入。实施结束先 final，再独立审查与验收/对账；修复后补验和复审。最终核验 merge/squash 映射、转存原件、按台账清理并锚定 sync_commit。
 
 ## visual-preview 使用方法
@@ -233,9 +232,9 @@ spec 落盘至特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-des
 
 ## 无外部 MCP 服务依赖
 
-插件不依赖外部 MCP 服务。受控审查入口通过运行时生成的本地 stdio MCP 配置提供受限工具，不注册全局 MCP。结构化深度思考由内嵌的 `sequential-thinking` skill 提供（无可用运行时时降级为回复中显式分点推演）。Tier A 浏览器自动化验收所需的 playwright / chrome-devtools MCP 改为按项目自配——见 `skills/acceptance-qa/references/mcp-setup.md`；未配置时 acceptance-qa 自动降级到 Tier D 工具链（原生 Playwright 测试、trace、控制台日志）。
+插件不依赖外部 MCP 服务。受控审查入口通过运行时生成的本地 stdio MCP 配置提供受限工具，不注册全局 MCP。Tier A 浏览器自动化验收所需的 playwright / chrome-devtools MCP 改为按项目自配——见 `skills/acceptance-qa/references/mcp-setup.md`；未配置时 acceptance-qa 自动降级到 Tier D 工具链（原生 Playwright 测试、trace、控制台日志）。
 
-检查插件健康状态（平台 / guardrail / 标记块 / 注入回放 / anysearch / 推理运行时六域）：`/doctor`
+检查插件健康状态（平台 / guardrail / 标记块 / 注入回放 / anysearch）：`/doctor`
 
 把一个需求分诊到正确通道：`/triage <需求>`
 
@@ -290,15 +289,14 @@ spec-dev/                            # 仓库根即插件根（扁平结构）
 │   ├── test-strategy/               # 测试策略纪律（Lane / 治理 / 验收矩阵对接）
 │   ├── acceptance-qa/               # 全能验收工作流
 │   ├── quick-fix/                   # 轻量 bug 修复工作流
-│   ├── anysearch/                   # vendored 实时搜索 CLI（上游快照）
-│   └── sequential-thinking/         # vendored 结构化推理（上游快照 + Node 移植版）
+│   └── anysearch/                   # vendored 实时搜索 CLI（上游快照）
 ├── scripts/
 │   ├── check-plugin.mjs             # 清单版本一致性 + 符号链接 + Codex CLI 安装校验
 │   ├── validate-output.mjs          # 子代理输出契约校验器 + plan-index 结构校验
 │   ├── schemas/                     # 4 类输出契约 schema + 1 个 vendored manifest schema + 使用说明
 │   ├── validate-skills.mjs          # 复用 skill-creator 校验 skills
 │   ├── check-openai-sync.mjs        # openai.yaml 结构与 SKILL 同步 tripwire
-│   ├── doctor.mjs                   # /doctor 健康检查（平台 / 守卫 / 标记 / 注入 / anysearch / 推理运行时）
+│   ├── doctor.mjs                   # /doctor 健康检查（平台 / 守卫 / 标记 / 注入 / anysearch）
 │   ├── update-vendored-skill.mjs    # 从上游同步 vendored skill（tag / SHA 锁定）
 │   ├── release.mjs                  # 发布脚本（手动发布 / post-commit 自动发版）
 │   └── install-git-hooks.mjs        # 启用版本化 Git hooks
@@ -328,8 +326,8 @@ FlameMida
 技能入口保留用途、触发及持续生效的边界；详细流程、声明、模板、恢复和审查按动作条件取得完整专题。
 跨技能动作按 [共享加载约定](skills/requirement-analysis/references/exploration-entry.md#技能定义与流程调用) 区分介绍、引用纪律和完整流程转交；宿主工具缺失不等于技能缺失，读取定义也不等于获得实施授权。
 现有 exploration-patterns.md 为有效导航；插件根、派发与恢复、输出契约分别保留一个完整权威。
-writing-plans 的字段和资源台账位于 references/plan-format.md，专项声明与任务/交付模板按需读取；生成计划包含关键片段、命令和接口，单任务文件不超过 200 行。
+writing-plans 的字段和资源台账位于 references/plan-format.md，专项声明与任务/交付模板按需读取；生成计划包含改动要点、具体断言、命令和接口，片段按需提供，单任务文件不超过 200 行。
 DDD 独立使用及被主流程调用均采用 .spec-dev/glossary.md、对应 spec 局部术语节和 .spec-dev/adr/。
 完整设计或保存范围获批后写入，同范围授权复用；已有旧位置文档不自动迁移。
-本轮未改变 AnySearch、sequential-thinking 及其上游更新逻辑，也没有取消其当前调用规则。
+AnySearch 文件、上游更新行为及当前调用规则保持不变。
 结构测试、文档契约和模型行为评测分别报告；仅文件变短或静态校验通过不证明模型效果。

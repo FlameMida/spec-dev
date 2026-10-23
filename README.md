@@ -9,9 +9,9 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 ## Features
 
 - **Exploration mode** — `exploring` keeps unsettled ideas open: read-only by default, with explicitly authorized throwaway spikes for questions that require running code. Optional background research traces material claims to primary sources. Decision lists remain one question at a time; notes can retain rejected options and their conditions. Handoff is proposed once the delivery question is precise, even when its answer is unknown.
-- **Requirement design** — `requirement-analysis`, an 8-phase design workflow: triage (light / standard / deep tiers), bounded internal/external exploration dispatched within actual capacity, one-question-at-a-time clarification, sequential-thinking adversarial validation + 2-3 option comparison, spec writing with double review (structured behavior requirements: Requirement + Scenario); a HARD-GATE guarantees zero implementation before the design is approved
+- **Requirement design** — `requirement-analysis`, an 8-phase design workflow: triage (light / standard / deep tiers), bounded internal/external exploration dispatched within actual capacity, one-question-at-a-time clarification, adversarial validation + 2-3 option comparison, spec writing with double review (structured behavior requirements: Requirement + Scenario); a HARD-GATE guarantees zero implementation before the design is approved
 - **Interactive prototypes** — new pages and substantial layout or interaction changes automatically open an HTML preview once goals are clear. Shared clarification resolves decisions; approved versions and assets flow into specs, plans and acceptance. Small changes may skip preview; explicit opt-outs persist.
-- **Implementation plans** — `writing-plans` decomposes specs into bite-sized tasks executable by an engineer who can read the repo: exact file paths, change notes with key diff snippets, embedded 5-step TDD, consume/produce interface contracts, no placeholders allowed
+- **Implementation plans** — `writing-plans` decomposes specs into independently verifiable tasks: exact file paths, change notes, concrete assertions and commands, embedded 5-step TDD, and consume/produce interface contracts; code snippets are included when needed
 - **Plan execution** — main-thread implementation and commits, then independent final verification, 1/2/5 review routes, acceptance/reconciliation and delivery. Reuse verified originals; recheck gaps. High/medium candidates, large tier or explicit always trigger the critic.
 - **Unified execution** — `executing-plans`: parallel task-graph scheduling by default with continuous refill, exclusive progress and integration, and shared recovery/review/delivery.
 - **Engineering discipline** — `using-git-worktrees` (isolated workspaces, native tools first) and `test-driven-development` (valid red for behavior changes, green protection for refactors, and a single authorized exception policy) are standalone skills reusable from any workflow
@@ -19,7 +19,7 @@ Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All
 - **Lightweight fix** — `quick-fix`, for decided fixes with no design space: evidence-backed diagnosis, one-question-at-a-time confirmation and TDD through the approved public seam. It offers escalation for contract scope, modules, dependencies, conflicting current specs or insufficient diagnostic evidence; comparable intermittent failures may stay in quick-fix. Closure checks reproduction rates, temporary instrumentation, the original symptom and root-cause evidence; original-symptom verification is required and specialist acceptance is invoked as needed.
 - **Shared clarification** — exploring, requirement analysis, quick fixes and visual preview share general and UI clarification. Resolve one real decision at a time, preserve prior decisions and distinguish local choices from design approval. Standalone clarification retains its three exits.
 - **Contract-driven orchestration** — subagent output goes through JSON Schema contracts, deterministically validated by `validate-output.mjs`, with one retry on failure
-- **Zero MCP dependency** — structured reasoning ships as a vendored skill (`sequential-thinking`); browser automation MCPs (playwright / chrome-devtools) are opt-in per project, see `skills/acceptance-qa/references/mcp-setup.md`
+- **Zero MCP dependency** — browser automation MCPs (playwright / chrome-devtools) are opt-in per project, see `skills/acceptance-qa/references/mcp-setup.md`
 - **4 specialized agents** — code-explorer, external-resource-explorer and code-reviewer handle analysis and verification; implementer writes claimed code in an isolated worktree once plan execution is authorized.
 
 ## Skill Pipeline
@@ -90,8 +90,7 @@ Plugin-level `hooks/hooks.json` auto-registers the SessionStart context injectio
 | Tier | Dependency | Used by | When missing |
 |---|---|---|---|
 | hard | `git` | drift guard, worktrees, per-task commits, `sync_commit` anchoring | main workflows unavailable |
-| hard | Node.js ≥ 18 | `validate-output.mjs`, guardrail scripts, `doctor.mjs`, `think.mjs`, the visual-preview server, `node --test` | contract validation, guard, doctor and visual preview unavailable |
-| soft | `bun` / `tsx` | sequential-thinking `think.ts` | falls back to `think.mjs` (Node), then to point-by-point reasoning in replies |
+| hard | Node.js ≥ 18 | `validate-output.mjs`, guardrail scripts, `doctor.mjs`, the visual-preview server, `node --test` | contract validation, guard, doctor and visual preview unavailable |
 | soft | `python3` | anysearch CLI (`anysearch_cli.py`) | falls back to the zero-dependency Node CLI (`anysearch_cli.js`), then to WebSearch / WebFetch |
 | soft | Playwright / k6 / Lighthouse / browser MCPs | acceptance-qa Tier A and performance rows | Tier D toolchain, or the row is marked `unverified` |
 | soft | `codex` CLI, `skill-creator` | repository development only (pre-commit checks) | skipped softly |
@@ -191,7 +190,7 @@ The spec lands in the feature directory `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/
 /executing-plans execute .spec-dev/2026-07-04-auth/plan/index.md
 ```
 
-- **writing-plans**: generates T00, implementation tasks, independent final task F and maximum-numbered delivery task D; acceptance A depends on F when needed. Exact scopes, interfaces, snippets, validation and ownership precede a five-way self-review (spec coverage / placeholders / type consistency / navigation table ↔ task files / dependency minimality).
+- **writing-plans**: generates T00, implementation tasks, independent final task F and maximum-numbered delivery task D; acceptance A depends on F when needed. Plans specify scopes, interfaces, changes, validation and ownership, then follow the [plan review checklist](skills/writing-plans/references/plan-review.md).
 - **executing-plans**: reuses execution authorization and persisted mode, resumes current work first and verifies writes against committed scopes. Implementation is followed by final, independent review, acceptance and reconciliation. Fixes require affected verification and review. Delivery verifies the merge/squash mapping, transfers originals, cleans owned resources and anchors sync_commit.
 
 ## Using visual-preview
@@ -233,10 +232,10 @@ It follows one evidenced root-cause chain, obtains a real failure signal before 
 
 ## No External MCP Service Required
 
-The plugin needs no external MCP service. The controlled review entry point generates a local stdio MCP configuration for restricted tools without registering a global server. Structured deep thinking is provided by the vendored `sequential-thinking` skill (falls back to explicit point-by-point reasoning in replies when no runtime is available). Browser automation for Tier A acceptance (playwright / chrome-devtools MCPs) is opt-in per project — see `skills/acceptance-qa/references/mcp-setup.md`; without them acceptance-qa degrades gracefully to the Tier D toolchain (native Playwright tests, traces, console logs).
+The plugin needs no external MCP service. The controlled review entry point generates a local stdio MCP configuration for restricted tools without registering a global server. Browser automation for Tier A acceptance (playwright / chrome-devtools MCPs) is opt-in per project — see `skills/acceptance-qa/references/mcp-setup.md`; without them acceptance-qa degrades gracefully to the Tier D toolchain (native Playwright tests, traces, console logs).
 
 
-Check plugin health across six domains (platform / guardrail / markers / injection replay / anysearch / reasoning runtime): `/doctor`
+Check plugin health (platform / guardrail / markers / injection replay / anysearch): `/doctor`
 
 Triage a request to the right lane: `/triage <request>`
 
@@ -291,15 +290,14 @@ spec-dev/                            # repo root is the plugin root (flat layout
 │   ├── test-strategy/               # test strategy discipline (lanes / governance / acceptance-matrix link)
 │   ├── acceptance-qa/               # all-round acceptance workflow
 │   ├── quick-fix/                   # lightweight bug-fix workflow
-│   ├── anysearch/                   # vendored real-time search CLI (upstream snapshot)
-│   └── sequential-thinking/         # vendored structured reasoning (upstream snapshot + Node port)
+│   └── anysearch/                   # vendored real-time search CLI (upstream snapshot)
 ├── scripts/
 │   ├── check-plugin.mjs             # manifest version sync + symlink + Codex CLI install checks
 │   ├── validate-output.mjs          # subagent output contract validator + plan-index structure check
 │   ├── schemas/                     # 4 output contract schemas + 1 vendored manifest schema + usage notes
 │   ├── validate-skills.mjs          # validates skills via skill-creator
 │   ├── check-openai-sync.mjs        # openai.yaml structure & SKILL sync tripwire
-│   ├── doctor.mjs                   # /doctor health checks (platform / guardrail / markers / injection / anysearch / reasoning runtime)
+│   ├── doctor.mjs                   # /doctor health checks (platform / guardrail / markers / injection / anysearch)
 │   ├── update-vendored-skill.mjs    # syncs vendored skills from upstream (tag / SHA pinned)
 │   ├── release.mjs                  # release script (manual release / post-commit auto-release)
 │   └── install-git-hooks.mjs        # enables the versioned Git hooks
@@ -329,8 +327,8 @@ Issues and pull requests are welcome!
 Skill entry files retain purpose, trigger boundaries and persistent constraints; detailed workflows, declarations, templates and recovery protocols load before the applicable action.
 The [shared loading convention](skills/requirement-analysis/references/exploration-entry.md#技能定义与流程调用) distinguishes mentioning a skill, consuming its rules and handing off a workflow. A missing native loader does not imply a missing skill, and reading instructions does not authorize implementation.
 The existing exploration-patterns.md remains a valid navigation entry. Plugin-root resolution, dispatch/recovery and output contracts each retain one complete authoritative definition.
-The planning fields and resource ledger live in writing-plans/references/plan-format.md; generated plans carry key snippets, commands and interfaces, with each task file capped at 200 lines.
+The planning fields and resource ledger live in writing-plans/references/plan-format.md; generated plans carry change notes, concrete assertions, commands and interfaces, with snippets included when needed and each task file capped at 200 lines.
 DDD uses .spec-dev/glossary.md, feature-local spec terms and .spec-dev/adr/ in both standalone and delegated use.
 Write only after design or document-saving authorization; reuse same-scope decisions and do not migrate existing documents automatically.
-AnySearch, sequential-thinking and their upstream update logic remain unchanged, including their existing invocation rules.
+AnySearch and its upstream update behavior remain unchanged, including its existing invocation rules.
 Structure, document contracts and actual model behavior are separate verification results; shorter text is not evidence of improved model behavior.

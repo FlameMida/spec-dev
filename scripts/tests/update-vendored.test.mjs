@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { readFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -26,13 +26,18 @@ test("normalize 注入 anysearch 中文 description（含触发与降级说明�
   assert.match(fm, /WebSearch\/WebFetch/, "缺降级说明");
 });
 
-test("sequential-thinking 走 SHA 快照配置且 normalize 幂等", () => {
-  run(["--skill", "sequential-thinking", "--normalize"]);
-  const first = readFileSync(path.join(repoRoot, "skills/sequential-thinking/SKILL.md"), "utf8");
-  run(["--skill", "sequential-thinking", "--normalize"]);
-  assert.equal(first, readFileSync(path.join(repoRoot, "skills/sequential-thinking/SKILL.md"), "utf8"));
-  assert.match(first, /description: >-\n  通过结构化的逐步思考/, "应保留中文描述");
-  assert.match(first, /upstream-tag: [0-9a-f]{7,40}/, "SHA pin 应记录在 metadata.upstream-tag");
+test("退役 skill 不再进入同步流程", () => {
+  const result = spawnSync('node', [script, '--skill', 'sequential-thinking', '--check'], {cwd: repoRoot, encoding: 'utf8'});
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /取值限于: anysearch（/);
+});
+
+test("SHA 快照选项不再支持，tag 检查仍可离线执行", () => {
+  const removed = spawnSync('node', [script, '--skill', 'anysearch', '--sha', 'abcdef0'], {cwd: repoRoot, encoding: 'utf8'});
+  assert.equal(removed.status, 2);
+  assert.match(removed.stderr, /Unknown option: --sha/);
+  const pinned = readFileSync(path.join(repoRoot, 'skills/anysearch/SKILL.md'), 'utf8').match(/upstream-tag:\s*(\S+)/)[1];
+  assert.match(run(['--skill', 'anysearch', '--tag', pinned, '--check']), /已是最新/);
 });
 
 test("未知 --skill 退出码 2 并列出可选项", () => {
@@ -41,7 +46,7 @@ test("未知 --skill 退出码 2 并列出可选项", () => {
     assert.fail("应当报错退出");
   } catch (e) {
     assert.equal(e.status, 2);
-    assert.match(String(e.stderr), /anysearch|sequential-thinking/);
+    assert.match(String(e.stderr), /取值限于: anysearch（/);
   }
 });
 

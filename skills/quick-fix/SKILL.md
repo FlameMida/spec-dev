@@ -12,8 +12,6 @@ description: >-
 
 处理"已决定要修、无设计空间"的小 bug 修复与小调整，走"定位根因 → 逐题校对 → TDD 修复 → 必要验证与按需验收"的最短路径；以 spec 反查与契约分流保证修复不制造文档漂移；非显然根因先取得真实诊断红信号，证据不足时交用户裁决。
 
-**开始时声明**：「我正在使用 quick-fix skill 修复这个问题。」
-
 **这是最短路径，不是免设计的后门。** 命中步骤 2.5 的影响范围、现行契约冲突或证据不足信号时，就把控制权交还用户、建议升级 requirement-analysis——放松的是流程重量，不是漂移防护。
 
 ## 定位：分诊三角里的位置
@@ -132,7 +130,7 @@ quick-fix 消费 spec 的 covers/status 和已有任务关联。契约变化同�
 |------|-------------|-------|
 | 根因探索子代理 | `Agent`（subagent_type: code-explorer） | `spawn_agent`（`fork_turns: "none"`）+ `wait_agent` |
 
-sequential-thinking skill（插件内嵌）不可用时降级为回复中分点推演并注明工具降级原因。Codex 沙箱下 `SPEC_DEV_GUARD=off git commit` 与守卫交互同 Claude；沙箱禁止 commit 时请用户在沙箱外执行。
+Codex 沙箱下 `SPEC_DEV_GUARD=off git commit` 与守卫交互同 Claude；沙箱禁止 commit 时请用户在沙箱外执行。
 
 ## Red Flags
 

@@ -5,7 +5,7 @@ export function readPolicy(root,entry) {
   const initial=path.resolve(base,entry);
   const rel=path.relative(base,initial).split(path.sep);
   if(rel[0]!=='skills'||rel.length<3) throw new Error('policy entry must be inside skills/<name>');
-  if(['anysearch','sequential-thinking'].includes(rel[1])) throw new Error('excluded policy');
+  if(rel[1]==='anysearch') throw new Error('excluded policy');
   const owner=path.join(base,'skills',rel[1]);
   const seen=new Set(), documents=[];
   function visit(file) {

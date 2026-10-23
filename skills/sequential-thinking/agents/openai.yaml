@@ -1,7 +1,0 @@
-interface:
-  display_name: "Sequential Thinking"
-  short_description: "结构化推理：分支、修订、持久状态，无需 MCP。"
-  default_prompt: "用 $sequential-thinking 做可修订、可分支的结构化多步推理。"
-
-policy:
-  allow_implicit_invocation: true

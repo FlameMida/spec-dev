@@ -39,7 +39,7 @@
 
 ## 任务结构
 
-修改既有文件时步骤 3 给「旧片段 → 新片段」对照，不给整文件；新增文件给完整内容。规则见 SKILL.md「计划体量」。
+按文件/符号定位改动，写清接口、行为与验证；新增文件也不必预写全文。以下短代码仅演示有效业务红，实际任务可用具体输入、动作与断言描述；片段是否需要见 SKILL.md「计划体量」。
 
 ````markdown
 ### 任务 N：[可独立验证的交付行为或重构目标]
@@ -74,12 +74,7 @@ def test_rejects_nonpositive_page():
 
 **步骤 3：写最小实现**
 
-```python
-def parse_page(value):
-    if value <= 0:
-        return {"error": "invalid-page"}
-    return {"page": value}
-```
+修改 `app.pagination.parse_page(value)`：在现有返回之前拒绝 `value <= 0`，返回 `{"error": "invalid-page"}`；有效页码保持 `{"page": value}`。无需在计划中展开完整函数体。
 
 **步骤 4：运行测试确认通过**
 

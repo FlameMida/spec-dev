@@ -12,14 +12,8 @@ A ubiquitous language eliminates this class of failure by establishing a single,
 
 ### The Cost of Translation
 
-Without a ubiquitous language, every conversation requires mental translation:
+Without a ubiquitous language, every conversation requires mental translation.
 
-| Developer Says | Domain Expert Hears | Actual Meaning | Risk |
-|---------------|--------------------|-|------|
-| `UserEntity` | "User? We don't have users, we have policyholders" | The system models a concept the business does not recognize | Code does not reflect reality; edge cases are missed |
-| `processData()` | "Process what data? Which business operation?" | A generic method hiding domain-specific logic | Business rules buried in implementation; impossible to validate |
-| `status = 3` | "What does 3 mean?" | An opaque encoding of a domain concept | Magic numbers replace meaningful domain states |
-| `ServiceManager` | "Manager of what?" | A catch-all class with no domain analog | God class accumulates unrelated responsibilities |
 
 ### The Payoff of Alignment
 
@@ -64,49 +58,18 @@ This cycle repeats continuously throughout the project, not just at the beginnin
 
 ### Naming Classes After Domain Concepts
 
-Every class in the domain layer should be named after a concept the business recognizes:
+Every class in the domain layer should be named after a concept the business recognizes.
 
-**Good names (domain language):**
-- `LoanApplication` -- the business knows what this is
-- `CreditDecision` -- an explicit outcome of an underwriting process
-- `PaymentSchedule` -- a concrete domain concept
-- `PolicyRenewalNotice` -- named exactly as the business document is named
-
-**Bad names (technical language):**
-- `ApplicationDTO` -- DTO is a technical pattern, not a domain concept
-- `PaymentService` -- "service" is a technical role, not a domain concept; what does this service do?
-- `DataProcessor` -- meaningless in domain terms
-- `BaseEntityAbstractFactory` -- pure technical jargon
 
 ### Naming Methods After Domain Operations
 
-Methods should read like sentences a domain expert would say:
+Methods should read like sentences a domain expert would say.
 
-**Good:**
-```
-policy.renew(effectiveDate)
-claim.submitForAdjudication()
-account.applyInterest(rate, period)
-order.fulfillWith(shipment)
-```
-
-**Bad:**
-```
-policy.update(data)
-claim.process()
-account.calculate()
-order.setStatus(STATUS_SHIPPED)
-```
-
-The difference is not cosmetic. `claim.submitForAdjudication()` tells you what the business operation is. `claim.process()` tells you nothing -- you must read the implementation to understand what it does, which means the domain knowledge is hidden.
 
 ### Naming Events After Domain Facts
 
-Domain events should be named as past-tense facts that a domain expert would recognize as significant business occurrences:
+Domain events should be named as past-tense facts that a domain expert would recognize as significant business occurrences.
 
-**Good:** `PolicyIssued`, `ClaimDenied`, `PaymentOverdue`, `MembershipExpired`
-
-**Bad:** `PolicyUpdated`, `ClaimProcessed`, `DataChanged`, `RecordModified`
 
 "Updated," "processed," and "changed" are technical descriptions of what happened to data. "Issued," "denied," "overdue," and "expired" are domain descriptions of what happened in the business.
 

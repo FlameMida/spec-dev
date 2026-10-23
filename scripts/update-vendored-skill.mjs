@@ -1,25 +1,20 @@
 #!/usr/bin/env node
-// 统一同步 vendored skills 到上游：配置驱动，支持两种模式。
-//   subtree  — tag-pinned git subtree（anysearch：上游有稳定 tag）
-//   snapshot — SHA-pinned 子目录快照（sequential-thinking：上游无 tag，取子目录）
+// 通过 tag-pinned git subtree 同步 vendored skill 到上游。
 //
 // 本地对上游的持久适配（更新时均无需人工干预）：
 //   1. SKILL.md frontmatter 规范化（非白名单键折进 metadata）——幂等重建；
 //      配置声明 enhancedDescription 的 skill 在此步注入增强 description，
 //      因此上游同步覆盖后重跑 normalize 即恢复增强（增强永不丢失）；
-//   2. 本地适配文件（agents/openai.yaml、scripts/think.mjs、NOTICE 等，上游无此路径）；
+//   2. 本地适配文件（agents/openai.yaml 等，上游无此路径）；
 //   3. LICENSE / NOTICE。
 //
 // 用法:
 //   node scripts/update-vendored-skill.mjs --skill anysearch                # 同步到最新稳定 tag
 //   node scripts/update-vendored-skill.mjs --skill anysearch --check       # 仅检查，有新版退出码 1
 //   node scripts/update-vendored-skill.mjs --skill anysearch --tag v3.1.0  # 同步到指定 tag
-//   node scripts/update-vendored-skill.mjs --skill sequential-thinking --check
-//   node scripts/update-vendored-skill.mjs --skill sequential-thinking --sha <sha>
 //   node scripts/update-vendored-skill.mjs --skill <name> --normalize      # 仅重跑规范化（幂等）
 import { spawnSync } from "node:child_process";
-import { readFileSync, writeFileSync, existsSync, mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -38,18 +33,6 @@ const CONFIGS = {
     enhancedDescription:
       "实时网页搜索、垂直领域检索、并行批量检索与 URL 正文抽取（内嵌 CLI、无需 MCP）。当需要联网搜索、查库/框架文档与最新实践、核实时效信息、多主题批量调研或抽取网页正文时使用；搜索首选入口，不可用时才降级 WebSearch/WebFetch。",
   },
-  "sequential-thinking": {
-    mode: "snapshot",
-    upstream: "https://github.com/thedotmack/sequential-thinking-skill.git",
-    upstreamSubdir: "sequential-thinking",
-    prefix: "skills/sequential-thinking",
-    licenseDefault: "MIT",
-    refRe: /^[0-9a-f]{7,40}$/,
-    refHint: "commit SHA（7-40 位十六进制）",
-    localFiles: ["agents/openai.yaml", "scripts/think.mjs", "NOTICE", "evals/evals.json"],
-    enhancedDescription:
-      "通过结构化的逐步思考解决复杂问题，支持分支探索、修订和自适应深度。适用于复杂问题拆解、需要调整的规划与设计、可能修正方向的分析、初始范围不明的任务、需要保持上下文的多步骤工作，以及需要筛选无关信息、提出假设并反复验证的问题。当用户要求逐步分析、拆解问题、推敲思路、仔细思考，或问题明显需要结构化多步推理时使用。",
-  },
 };
 
 // quick_validate.py 的 frontmatter 顶层键白名单（metadata 单独处理）
@@ -63,10 +46,9 @@ const valueOf = (flag) => {
 };
 const skillArg = valueOf("--skill");
 const explicitTag = valueOf("--tag");
-const explicitSha = valueOf("--sha");
 
 for (const flag of flags) {
-  if (!["--check", "--tag", "--sha", "--normalize", "--help", "--skill"].includes(flag)) {
+  if (!["--check", "--tag", "--normalize", "--help", "--skill"].includes(flag)) {
     console.error(`Unknown option: ${flag}`);
     printUsage();
     process.exit(2);
@@ -85,15 +67,6 @@ if (!skillArg || !CONFIGS[skillArg]) {
 const cfg = CONFIGS[skillArg];
 const SKILL_MD = path.join(repoRoot, cfg.prefix, "SKILL.md");
 
-if (explicitTag && cfg.mode !== "subtree") {
-  console.error(`--tag 仅 subtree 模式（anysearch）可用；${skillArg} 请用 --sha。`);
-  process.exit(2);
-}
-if (explicitSha && cfg.mode !== "snapshot") {
-  console.error(`--sha 仅 snapshot 模式（sequential-thinking）可用；${skillArg} 请用 --tag。`);
-  process.exit(2);
-}
-
 try {
   main();
 } catch (error) {
@@ -103,14 +76,14 @@ try {
 
 function main() {
   if (flags.has("--normalize")) {
-    const changed = normalizeFrontmatter(explicitTag ?? explicitSha);
+    const changed = normalizeFrontmatter(explicitTag);
     console.log(changed ? "frontmatter 已规范化（有改动，待提交）。" : "frontmatter 已是规范形态，无改动。");
     return;
   }
 
   const current = readPinnedRef();
-  const target = explicitTag ?? explicitSha ?? latestTarget();
-  const explicitRef = explicitTag ?? explicitSha;
+  const target = explicitTag ?? latestTarget();
+  const explicitRef = explicitTag;
   if (explicitRef && !cfg.refRe.test(explicitRef)) {
     throw new Error(`期望${cfg.refHint}，得到:${explicitRef}`);
   }
@@ -135,22 +108,6 @@ function main() {
   }
 
   const descBefore = readDescriptionBlock();
-
-  if (cfg.mode === "snapshot") {
-    console.log(`snapshot sync ${target} ...`);
-    snapshotSync(target);
-    run("git", ["add", cfg.prefix]);
-    const commit = spawnSync(
-      "git",
-      ["commit", "-m", `chore(${skillArg}): sync upstream ${target.slice(0, 7)}`],
-      { cwd: repoRoot, encoding: "utf8", stdio: ["ignore", "inherit", "inherit"], env: { ...process.env, SKIP_OPENAI_SYNC_CHECK: "1" } },
-    );
-    if (commit.status !== 0) {
-      throw new Error("快照同步提交失败（多半是 pre-commit 校验未过），请根据上方输出处理。");
-    }
-    finish(descBefore, target, true);
-    return;
-  }
 
   console.log(`subtree pull ${target} ...`);
   const pull = spawnSync(
@@ -216,27 +173,6 @@ function main() {
   finish(descBefore, target, true);
 }
 
-// SHA 快照同步：下载 tarball、覆盖上游文件、保留本地适配文件、重跑规范化
-function snapshotSync(targetSha) {
-  const tmp = mkdtempSync(path.join(tmpdir(), "vendored-"));
-  try {
-    run("bash", [
-      "-c",
-      `curl -sL ${cfg.upstream.replace(/\.git$/, "")}/archive/${targetSha}.tar.gz | tar xz -C ${tmp} --strip-components=1`,
-    ]);
-    run("bash", ["-c", `cp -R ${tmp}/${cfg.upstreamSubdir}/. ${path.join(repoRoot, cfg.prefix)}/`]);
-    run("bash", ["-c", `cp ${tmp}/LICENSE ${path.join(repoRoot, cfg.prefix)}/LICENSE`]);
-    for (const f of cfg.localFiles) {
-      if (!existsSync(path.join(repoRoot, cfg.prefix, f))) {
-        throw new Error(`本地适配文件丢失：${cfg.prefix}/${f}`);
-      }
-    }
-  } finally {
-    rmSync(tmp, { recursive: true, force: true });
-  }
-  normalizeFrontmatter(targetSha);
-}
-
 function finish(descBefore, target, committed) {
   console.log(`\n同步完成:${cfg.prefix} → ${target}`);
   console.log(run("git", ["log", "--oneline", "-3"]));
@@ -253,7 +189,7 @@ function readPinnedRef() {
   const fm = frontmatterOf(readFileSync(SKILL_MD, "utf8"));
   const match = fm.match(/^\s+upstream-tag:\s*(\S+)\s*$/m);
   if (!match) {
-    throw new Error(`无法从 ${cfg.prefix}/SKILL.md 读取 metadata.upstream-tag，请先运行 --normalize 并指定 --tag/--sha。`);
+    throw new Error(`无法从 ${cfg.prefix}/SKILL.md 读取 metadata.upstream-tag，请先运行 --normalize 并指定 --tag。`);
   }
   return match[1];
 }
@@ -263,16 +199,8 @@ function readDescriptionBlock() {
   return (blocks.find((b) => b.key === "description")?.lines ?? []).join("\n");
 }
 
-// 上游目标：subtree 模式取最新稳定 tag；snapshot 模式取远端 HEAD SHA
+// 上游目标：最新稳定 tag
 function latestTarget() {
-  if (cfg.mode === "snapshot") {
-    const out = run("git", ["ls-remote", cfg.upstream, "HEAD"]);
-    const sha = out.split("\t")[0]?.trim();
-    if (!sha || !cfg.refRe.test(sha)) {
-      throw new Error("无法从上游读取 HEAD SHA。");
-    }
-    return sha;
-  }
   const out = run("git", ["ls-remote", "--tags", "--refs", cfg.upstream]);
   const tags = out
     .split("\n")
@@ -308,7 +236,7 @@ function normalizeFrontmatter(ref) {
   if (!effectiveRef) {
     throw new Error(
       "frontmatter 中没有 metadata.upstream-tag，无法确定当前上游版本；" +
-        "请用 --normalize 搭配 --tag vX.Y.Z（subtree）或 --sha <sha>（snapshot）指定。",
+        "请用 --normalize 搭配 --tag vX.Y.Z 指定。",
     );
   }
   const blocks = splitTopBlocks(fm);
@@ -391,13 +319,12 @@ function run(command, cmdArgs) {
 }
 
 function printUsage() {
-  console.log(`Usage: node scripts/update-vendored-skill.mjs --skill <name> [--check] [--tag vX.Y.Z] [--sha <sha>] [--normalize]
+  console.log(`Usage: node scripts/update-vendored-skill.mjs --skill <name> [--check] [--tag vX.Y.Z] [--normalize]
 
 统一同步 vendored skills 到上游。--skill 取值: ${Object.keys(CONFIGS).join(" | ")}
 
-  (无其它参数)  有新版本则同步（subtree pull / snapshot 覆盖）+ frontmatter 规范化 + 提交
+  (无其它参数)  有新版本则同步（subtree pull）+ frontmatter 规范化 + 提交
   --check       仅检查是否有新版本；有则退出码 1（可接 CI/定时任务）
   --tag vX.Y.Z  subtree 模式同步到指定稳定 tag
-  --sha <sha>   snapshot 模式同步到指定 commit
   --normalize   仅重跑 frontmatter 规范化（幂等，含增强 description 重放），不拉取上游`);
 }

@@ -118,7 +118,7 @@ clarifying 被 exploring、requirement-analysis、quick-fix 或 visual-preview �
 
 ### Requirement: Codex 环境降级可用
 
-Codex 环境下执行者 SHALL 以对话消息逐题提问（保持一次一题、选项带推荐），并在 sequential-thinking 不可用时降级为回复内分点推演、沙箱禁网时以 `rg` + 文件阅读完成澄清前探索。
+Codex 环境下执行者 SHALL 以对话消息逐题提问（保持一次一题、选项带推荐）；沙箱禁网时以 `rg` + 文件阅读完成澄清前探索。
 
 #### Scenario: 无结构化提问工具
 
@@ -162,7 +162,6 @@ quick-fix 步骤 3 SHALL 声明提问纪律遵循 clarifying skill，三类核�
 
 ### 错误处理
 
-- sequential-thinking 不可用 → 回复内分点推演；
 - Codex 沙箱禁网 → 探索降级 `rg` + 文件阅读；沙箱 read-only 落盘失败 → 向用户说明并请其自行保存；
 - 用户在独立会话中途流失（不再答复）→ 无超时机制，会话自然停在当前题，不自动落盘。
 

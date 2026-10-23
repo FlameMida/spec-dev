@@ -68,7 +68,7 @@ spec_dev:
 
 ## 已确认的关键决策
 
-- 计划代码形态：改动要点 + 关键 diff 片段 + 验收断言；整文件内嵌以"与现行文件逐字重合超过 30 行"判定；单任务文件 200 行硬上限由 plan-index 校验拦截 —— 可执行、可拦截，优于口头劝诫。
+- 计划代码形态（2026-10-23 按用户授权精简）：文件/符号、接口、改动要点、具体输入与断言、运行命令为必需内容，代码片段按需；不预写完整实现、不设每步固定分钟数或计划/代码行数比例。避免整文件复制，单任务文件 200 行硬上限仍由 plan-index 校验拦截。
 - light 档合并阶段 5 与阶段 7 为一次批准、不派 spec-reviewer；standard 保留两门；deep 必派 reviewer —— light 省文书不省批准。
 - 收尾路数 1 / 2 / 5（AS；AS + BC；五路），critic 仅在存在高/中候选、large 档或用户要求彻底时派发；审查以 execution/ 回执为证据 —— 归档的 9 份 review JSON 累计 findings 为 0，无条件扇出没有产出。
 - 本地三 lane：fast（每任务）/ final（最终任务一次全量）/ manual（已有明确执行授权及特殊条件）；删除 PR / nightly 语义 —— 无 CI 的仓库不该背 CI 的词表。
@@ -87,19 +87,24 @@ spec_dev:
 
 ## MODIFIED Requirements
 
-### Requirement: R1 计划体量与代码形态（改了什么：完整代码改为片段，新增 200 行上限与校验）
+### Requirement: R1 计划体量与代码形态（改了什么：按验证依据写计划、片段按需，保留 200 行上限）
 
-writing-plans SHALL 以「改动要点 + 关键 diff 片段 + 验收断言」表达改代码的步骤，禁止整文件内嵌；`tasks/TNN.md` 超过 200 行时 `validate-output.mjs plan-index` SHALL 报错。
+writing-plans SHALL 明确文件/符号、公共接口与来源、改动要点、测试的前置输入/动作/预期结果和运行命令；只在说明关键约束需要时提供最小代码片段，避免整文件复制。SHALL NOT 强制预写完整测试、函数体或新文件全文，或以固定分钟数、预计代码行数比例决定任务边界。`tasks/TNN.md` 超过 200 行时 `validate-output.mjs plan-index` SHALL 报错；超限先压缩，只有真实独立交付边界才拆票。
 
 #### Scenario: S1.2 任务文件超过 200 行被拦截
 - **GIVEN** 计划目录 tasks/T01.md 有 201 行
 - **WHEN** 运行 plan-index 校验
 - **THEN** 退出码 1，errors 含 `tasks/T01.md` 与 `<= 200 lines`；恰好 200 行通过
 
-#### Scenario: S1.3 skill 文本不再要求完整代码
-- **GIVEN** 读取 writing-plans 的策略全文（SKILL.md 及其引用）与 README、openai.yaml
-- **WHEN** 检索关键词
-- **THEN** 含「计划体量」「关键 diff 片段」「单任务文件上限 200 行」「禁止整文件内嵌」；不含「每步给完整代码」；SKILL.md 正文不含「零上下文」；README 不含「完整代码」/「complete code」
+#### Scenario: S1.3 具体行为计划无需预写代码
+- **GIVEN** 一张行为票已明确文件/符号、公共接口来源、测试输入/动作/断言、运行命令及适用红绿与提交步骤，但未内嵌测试或实现函数体
+- **WHEN** 审阅计划
+- **THEN** 不因缺少代码片段判为占位符；检查实际可执行性与验证依据，而非匹配固定文案
+
+#### Scenario: S1.4 精简不省略验证依据
+- **GIVEN** 任务只写“添加校验并测试”，没有公共入口、输入、预期结果与运行命令
+- **WHEN** 审阅计划
+- **THEN** 补真实落点与可运行验证；尚未决定的产品规则沿原澄清处理，不以预写整份实现代码代替契约
 
 ### Requirement: R2 spec 档位裁剪（改了什么：档位从"只调篇幅"变为裁剪小节集合与批准门）
 

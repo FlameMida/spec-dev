@@ -17,16 +17,6 @@ The Core Domain is the part of the system that provides competitive advantage. I
 - Cannot be outsourced without losing differentiation
 - Requires the deepest domain expertise
 
-**Examples:**
-
-| Business | Core Domain | Why It Is Core |
-|----------|-------------|----------------|
-| Amazon | Recommendation engine, marketplace matching, logistics optimization | These are the algorithms that make Amazon uniquely effective |
-| Stripe | Payment processing, fraud detection, developer experience | These are what make Stripe better than alternatives |
-| Netflix | Content recommendation, streaming optimization | These keep subscribers engaged and differentiators from competitors |
-| Insurance company | Risk assessment, claims adjudication, actuarial modeling | These determine profitability and pricing accuracy |
-| Trading firm | Signal generation, execution algorithms, risk management | These are the source of alpha |
-
 **Investment rule:** Put your best developers here. Apply the deepest modeling techniques. This is where DDD patterns earn their complexity cost.
 
 ### Supporting Subdomain
@@ -39,15 +29,6 @@ A Supporting Subdomain is necessary for the business to function but does not pr
 - Moderately complex; business-specific but not competitively critical
 - Can be built by competent developers without deep domain modeling
 
-**Examples:**
-
-| Business | Supporting Subdomain | Why It Is Supporting |
-|----------|---------------------|---------------------|
-| E-commerce platform | Order management, inventory tracking | Necessary for operations but not what makes this e-commerce site unique |
-| Insurance company | Policy administration, document generation | Must work correctly but is not a competitive differentiator |
-| Trading firm | Position reporting, compliance reporting | Regulatory requirement, not a source of trading advantage |
-| SaaS product | Tenant management, billing integration | Needed but not what customers buy the product for |
-
 **Investment rule:** Build it, but keep it simple. Use straightforward designs. Do not apply deep DDD modeling patterns unless the complexity warrants it.
 
 ### Generic Subdomain
@@ -59,18 +40,6 @@ A Generic Subdomain is functionality that is common across many businesses and h
 - Well-solved problems with mature solutions available
 - Building it yourself is a waste of your best developers' time
 - Off-the-shelf solutions are often better than what you would build
-
-**Examples:**
-
-| Generic Subdomain | Buy/Use Instead |
-|-------------------|----------------|
-| Authentication and authorization | Auth0, Okta, Keycloak, Clerk |
-| Email sending | SendGrid, Amazon SES, Postmark |
-| Payment processing (if not your core) | Stripe, Braintree, Adyen |
-| File storage | Amazon S3, Google Cloud Storage |
-| Search indexing | Elasticsearch, Algolia, Typesense |
-| Monitoring and alerting | Datadog, Grafana, PagerDuty |
-| CMS / Content management | WordPress, Contentful, Sanity |
 
 **Investment rule:** Do not build this. Buy it, use open-source, or outsource it. Every hour your best developer spends building a custom email sender is an hour stolen from the Core Domain.
 

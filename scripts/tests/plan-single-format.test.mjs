@@ -50,11 +50,6 @@ test("Scenario: 旧单文件计划可执行(读宽容句在位)", () => {
   assert.match(ep, /冻结/, "单文件侧冻结语义应声明");
 });
 
-test("openai.yaml 保留执行语义且格式细节由正文承载", () => {
-  const yaml = readFileSync(path.join(repoRoot, "skills/executing-plans/agents/openai.yaml"), "utf8");
-  assert.match(yaml,/书面计划/,"摘要保留计划入口");
-  assert.match(ep,/progress\.yaml/,"具体格式仍能从技能正文取得");
-});
 test('S11 the declared F to A to D dependency uses the actual validator',t=>{
  const f=workflowFixture(t);f.scopes.acceptance_tasks=['T03'];f.setScopes(f.scopes);
  const text=readFileSync(path.join(f.root,f.plan),'utf8').replace('\n\n```json','\n| T04 | T03 | accepted | delivered |\n\n```json');

@@ -72,7 +72,7 @@ spec_dev:
 | executing-plans / parallel / implementer / quick-fix | 引用上述定义；处理落点缺失、冲突、授权例外与重构候选，不复制规则全文 |
 | code-reviewer / review-orchestration | 按公共行为而非新增函数数量审查覆盖；承接重构候选及修复后复审，不增加审查维度 |
 
-修改触及的 description 与语言协议保持中文；所有 SKILL/openai 元数据按当前同步规则核对。`scripts/tests/plugin-root.test.mjs` 中要求 quick-fix 保留自有纯文案例外的存量断言随契约取代更新。其余现有自动测试复跑，不为镜像措辞新增大量正则断言；不改只管理 anysearch/sequential-thinking 的 vendored 同步器。
+修改触及的 description 与语言协议保持中文；所有 SKILL/openai 元数据按当前同步规则核对。`scripts/tests/plugin-root.test.mjs` 中要求 quick-fix 保留自有纯文案例外的存量断言随契约取代更新。其余现有自动测试复跑，不为镜像措辞新增大量正则断言；不改 anysearch 的 vendored 同步行为。
 
 ## 已确认的关键决策
 

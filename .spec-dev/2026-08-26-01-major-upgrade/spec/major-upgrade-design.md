@@ -122,7 +122,7 @@ spec-dev 现为 Claude Code + Codex 双平台 skill 插件（v7.21.1）。本次
 
 ### Requirement: doctor 诊断命令
 
-插件 SHALL 提供 `doctor` 命令（`commands/doctor.md` + `scripts/doctor.mjs`），报告六类状态并给修复指引：运行平台、guardrail 安装状态、CLAUDE.md/AGENTS.md 标记块完整性、SessionStart hook 挂载、anysearch 可用性（含双副本歧义与版本滞后）、sequential-thinking 运行时链（bun/tsx→node 端口→纯推演）。
+插件 SHALL 提供 `doctor` 命令（`commands/doctor.md` + `scripts/doctor.mjs`），报告五类状态并给修复指引：运行平台、guardrail 安装状态、CLAUDE.md/AGENTS.md 标记块完整性、SessionStart hook 挂载、anysearch 可用性（含双副本歧义与版本滞后）。2026-10-23 移除已退役的推理运行时诊断。
 
 #### Scenario: 未安装 guardrail 的项目
 
@@ -148,6 +148,8 @@ session-context 注入链 SHALL 在每个跳过分支留下可事后查询的一
 
 ### Requirement: sequential-thinking vendored skill
 
+> Retired (2026-10-23)：用户授权直接移除该 skill、注册、运行时链及专属同步/测试。以下正文与场景仅保留为历史；信息校验与方案比较继续由主线程完成。
+
 插件 SHALL 内嵌 `skills/sequential-thinking/`（vendored 自 thedotmack/sequential-thinking-skill，MIT，SHA-pinned 快照），提供带分支/修订/持久状态的结构化推理；执行链 SHALL 为 bun/tsx 直跑上游 `think.ts` → 本地零依赖 Node 端口 `think.mjs` → 降级为回复内显式分点推演，任何一级缺失不得中断工作流。
 
 #### Scenario: 无 TS 运行时环境
@@ -164,7 +166,7 @@ session-context 注入链 SHALL 在每个跳过分支留下可事后查询的一
 
 ### Requirement: vendored skill 统一同步脚本
 
-`scripts/update-vendored-skill.mjs` SHALL 以配置驱动支持两种同步模式——anysearch（tag-pinned git subtree）与 sequential-thinking（SHA-pinned 子目录快照）——并复用三类持久适配：frontmatter normalize（幂等重建，含 description 增强注入）、openai.yaml 本地适配、LICENSE/NOTICE。
+`scripts/update-vendored-skill.mjs` SHALL 保留 anysearch 的 tag-pinned git subtree 更新、frontmatter normalize（幂等重建，含 description 增强注入）与本地适配。2026-10-23 移除 sequential-thinking 的配置、SHA 快照路径及 `--sha` 入口；未知 skill 与退役参数在执行更新前拒绝。
 
 #### Scenario: normalize 幂等
 
@@ -371,7 +373,7 @@ executing-plans 执行任务期间创建计划未预登记的持久资源时，�
 
 ### Requirement: 结构化推理消费点改写
 
-requirement-analysis（阶段 1/阶段 4/Checklist）、exploring、quick-fix、clarifying、codex-compat 与相关 evals 中对 `mcp__sequential-thinking__sequentialthinking` 的引用 SHALL 全部改写为指向内嵌 sequential-thinking skill；"不可用降级为回复内分点推演"的降级语义 SHALL 保持不变。
+requirement-analysis（阶段 1/阶段 4/Checklist）、exploring、quick-fix、clarifying、codex-compat 与相关 evals SHALL 移除 sequential-thinking 调用及其运行时降级条款（2026-10-23 用户裁决）。主线程的信息校验、方案比较与实际验证继续保留；不另设推理记录工具或强制输出内部推理过程。
 
 #### Scenario: 无 MCP 环境的对抗验证
 

@@ -4,7 +4,7 @@
     {
       "id": "wp-bite-sized-tdd",
       "prompt": "基于已批准的 spec（.spec-dev/2026-07-03-export-report/spec/export-report-design.md，CLI 导出报告子命令）编写实施计划",
-      "expected_output": "计划保存至 .spec-dev/2026-07-03-export-report/plan/（index.md + tasks/ + progress.yaml 分文件三件套，与 spec 同一特性目录）；index.md 含头部（执行方式指向 executing-plans、目标、spec 路径、全局约束）；固定生成任务 0（建立隔离工作区：已隔离检测→worktree 建立→基线验证，含 git 降级命令）；先给文件结构映射；每任务含精确文件路径、接口消费/产出块、TDD 五步（失败测试代码→确认失败命令与预期输出→最小实现代码→确认通过→提交命令）；失败测试由 spec 的 Scenario 直译（GIVEN→arrange、WHEN→act、THEN→assert，测试名沿用 Scenario 名）；任务文件步骤用「**步骤 N:**」标题式（progress.yaml 唯一状态源）；以最终任务（合并与清理，台账在 progress.yaml resources）收尾；无任何 TBD/占位符"
+      "expected_output": "计划保存至 .spec-dev/2026-07-03-export-report/plan/（index.md + tasks/ + progress.yaml 分文件三件套，与 spec 同一特性目录）；index.md 含头部（执行方式指向 executing-plans、目标、spec 路径、全局约束）；固定生成任务 0（建立隔离工作区：已隔离检测→worktree 建立→基线验证，含 git 降级命令）；先给文件结构映射；每任务含精确文件路径、接口消费/产出块、TDD 五步（失败测试的公共入口、输入与断言→确认有效失败的命令与预期→最小实现改动要点→确认通过→提交命令；代码片段按需，不强制完整测试或函数体）；失败测试由 spec 的 Scenario 直译（GIVEN→arrange、WHEN→act、THEN→assert，测试名沿用 Scenario 名）；任务文件步骤用「**步骤 N:**」标题式（progress.yaml 唯一状态源）；以最终任务（合并与清理，台账在 progress.yaml resources）收尾；无任何 TBD/占位符"
     },
     {
       "id": "wp-self-review-catches-gap",
@@ -170,6 +170,16 @@
       "id": "matrix-dax-meaning",
       "prompt": "计划验收表写A=自动工具执行、D=需要用户确认的人工检查，与所引用的验收skill如何处理？",
       "expected_output": "指出D/A/X的结论来源语义被重新解释，按D确定性、A实际界面AI判读、X诊断修正；执行条件与required/lane分别记录，不直接按错误解释派发或判通过。"
+    },
+    {
+      "id": "wp-concrete-plan-without-code-bodies",
+      "prompt": "已批准计划中的一个行为任务：修改 app.pagination.parse_page(value)，输入 0 时返回 {\"error\":\"invalid-page\"}，正页码仍返回 {\"page\":value}；在 tests/test_pagination.py 通过公共入口验证，运行 pytest tests/test_pagination.py -v。文件、接口来源、红绿预期和提交步骤均齐全，但没有完整测试或实现函数体。审阅该任务。",
+      "expected_output": "不因缺少代码片段判为占位符，不要求预写完整函数、新文件全文或完整测试代码；核对实际公共入口、断言和命令能否验证该行为。任务按独立交付与验证边界划分，不按固定分钟数或预计代码行数拆分。"
+    },
+    {
+      "id": "wp-reject-vague-test-despite-short-plan",
+      "prompt": "计划任务只有“修改分页模块，添加适当校验，写测试，确认通过”，没有路径、公共入口、具体输入、错误结果或运行命令。是否足够精简可执行？",
+      "expected_output": "指出缺少执行与验证依据，补齐真实文件/符号、接口来源、输入、动作、预期结果与可运行命令；涉及未决产品规则时沿原澄清处理，不自行编造，也不以补写整份实现代码代替这些信息。"
     }
   ]
 }

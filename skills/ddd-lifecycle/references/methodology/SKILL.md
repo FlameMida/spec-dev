@@ -182,13 +182,3 @@ See: [references/strategic-design.md](./strategic-design.md) when deciding where
 | Are domain events used for cross-aggregate communication? | Tight coupling, synchronous chains | Introduce events; let aggregates react asynchronously |
 | Is there an Anti-Corruption Layer at every external integration? | Foreign models pollute your domain | Add a translation layer at each boundary |
 | Have you identified which subdomain is core? | Best talent spread thin | Classify subdomains; focus deep modeling on the Core Domain |
-
-## Further Reading
-
-For the complete methodology, patterns, and deeper insights:
-
-- [*"Domain-Driven Design: Tackling Complexity in the Heart of Software"*](https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software/dp/0321125215?tag=wondelai00-20) by Eric Evans
-
-## About the Author
-
-**Eric Evans** is a software design consultant and the originator of Domain-Driven Design, developed through work on large-scale systems in finance, insurance, and logistics. His 2003 book *Domain-Driven Design: Tackling Complexity in the Heart of Software* is one of the most influential software architecture books ever written, and he continues to evolve DDD through his consultancy, Domain Language.

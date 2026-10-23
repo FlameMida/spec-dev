@@ -18,8 +18,6 @@ description: >-
 
 **默认并发编排**：用户授权执行计划后，主线程按依赖图将可派发票交给独立 worktree 中的 implementer，不再另问是否启用并发。主线程独占进度与集成，并负责生命周期票、主线程专属票及必要的串行降级；探索和审查子代理保持只读。实际并行数量由 ready 任务、写集合、资源和平台容量决定，单条依赖链逐票推进。
 
-**开始时声明**：「我正在使用 executing-plans skill 执行实施计划。」
-
 ## Checklist
 
 必须为以下每一项创建任务（Claude Code 用 `TaskCreate`，Codex 用 `update_plan`）：

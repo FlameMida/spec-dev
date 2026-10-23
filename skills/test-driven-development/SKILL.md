@@ -43,25 +43,6 @@ spec/plan 已批准的落点直接使用，不重复确认。存量无 seam 标�
 
 ## 红绿循环
 
-```dot
-digraph tdd_cycle {
-    rankdir=LR;
-    red [label="红\n写失败测试", shape=box, style=filled, fillcolor="#ffcccc"];
-    verify_red [label="确认失败\n原因正确", shape=diamond];
-    green [label="绿\n最小实现", shape=box, style=filled, fillcolor="#ccffcc"];
-    verify_green [label="确认通过\n全绿", shape=diamond];
-    next [label="下一个", shape=ellipse];
-
-    red -> verify_red;
-    verify_red -> green [label="是"];
-    verify_red -> red [label="失败原因\n不对"];
-    green -> verify_green;
-    verify_green -> green [label="否"];
-    verify_green -> next [label="是"];
-    next -> red;
-}
-```
-
 ### 红——写失败测试
 
 在获批 seam 写一个最小测试：一个公共行为、清晰命名、独立真值。mock 准入遵循 references/testing-anti-patterns.md，不用自己的算法重算期望值。
@@ -143,12 +124,6 @@ async function retryOperation<T>(fn: () => Promise<T>): Promise<T> {
 
 计划中的前置纯重构与组迁移按已批准时机执行，额外候选由现有收尾审查接收，收尾修复后复审受影响维度；quick-fix 使用自身收尾，不强制开启可选 acceptance-qa。处置沿已有授权边界。implementer 无法提供有效红证据的纯重构票回报 blocked，由主线程按现有串行分流处理，不改结果 schema 或普通实施票的红绿条件。
 
-## 路径与证据核对
-
-行为变化采用有效红→最小实现→绿；纯重构采用前后公共行为保护；例外只按单点清单和可追溯授权。
-未经测试先行的行为实现仍按本文铁律处理；不删除无关既有工作。
-证据及完整完成条件见下节，不以重复劝诫替代实际执行。
-
 ## 完成前检查清单
 
 - [ ] 获批 seam 的公共行为、相关 Scenario、边缘与错误路径已有覆盖，不按新增函数数量要求直测
@@ -162,20 +137,6 @@ async function retryOperation<T>(fn: () => Promise<T>): Promise<T> {
 
 按适用路径核对，不把其他路径的证据冒充自己的完成依据；例外有授权来源，重构候选已交收尾。
 
-## 调试集成
-
-发现 bug？先写复现它的失败测试，再走 TDD 循环。测试既证明修复又防止回归。例外仅沿本文唯一清单与可追溯授权，不因“简单”自行豁免。
-
 ## Mock 与测试反模式
 
 添加 mock、测试工具方法、或想给生产类加测试专用方法时，先读 [testing-anti-patterns.md](references/testing-anti-patterns.md)：不测 mock 的行为、不给生产类加测试专用方法、不在不理解依赖链时 mock、mock 必须镜像真实结构的完整字段。
-
-## 最终规则
-
-```
-新增或改变行为 → 有效红 → 最小实现 → 绿
-纯重构 → 行为保护 → 结构调整 → 保持绿
-例外 → 唯一清单及可追溯授权；普通实施票的红绿条件不变
-```
-
-未经用户允许，没有例外。

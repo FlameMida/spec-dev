@@ -1,7 +1,7 @@
 # Codex 兼容指南
 
 > **阅读时机**：仅当运行环境为 Codex 时阅读本文件；Claude Code 环境无需加载。
-> 本文件是全 skill 共用的 Codex 适配定义点：工具映射总表只在此完整陈述，各 skill 以 gist + 指针引用、不复述整表；其余各节是 Codex 下的详细规则（任务管理、并行子任务、外部探索、深度思考、git 提交），skill 专属的 Codex 降级节可保留在各自文件；「提问规范」「spec 审查子代理」两节为 requirement-analysis 专属。pi / Grok Build 等其他平台的差异见 README「Platform matrix / 平台矩阵」。各 skill 定义"做什么"，本文件定义 Codex 下"用什么工具做"。
+> 本文件是全 skill 共用的 Codex 适配定义点：工具映射总表只在此完整陈述，各 skill 以 gist + 指针引用、不复述整表；其余各节是 Codex 下的详细规则（任务管理、并行子任务、外部探索、git 提交），skill 专属的 Codex 降级节可保留在各自文件；「提问规范」「spec 审查子代理」两节为 requirement-analysis 专属。pi / Grok Build 等其他平台的差异见 README「Platform matrix / 平台矩阵」。各 skill 定义"做什么"，本文件定义 Codex 下"用什么工具做"。
 
 ---
 
@@ -71,12 +71,6 @@
 - **派发词必须显式携带 AnySearch 提醒**：Codex 的 `spawn_agent` 不加载 `agents/*.md` 定义文件，子代理对工具优先级零感知——主线程派发外部探索任务时，须在派发 prompt 中写明 AnySearch 第一优先、CLI 调用方式（`python3 "${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py" search "查询词" --max_results 5`；python 缺依赖换同目录零依赖 Node 版 `anysearch_cli.js`，同参数；Codex 下 `${CLAUDE_PLUGIN_ROOT}` 是占位符，按 [exploration-patterns.md](exploration-patterns.md)「插件根解析」序列代入绝对路径）与降级链（AnySearch → 内置 web 搜索），重试与降级纪律以 [exploration-patterns.md](exploration-patterns.md) 为准
 - 网页搜索兜底：沙箱默认禁网，全部搜索工具不可用时降级为 `rg` + 本地文件阅读并向用户说明
 - 库文档： AnySearch，不可用再降级为网页搜索 + `rg` + 文件阅读
-
----
-
-## 深度思考（阶段 1 分诊、阶段 4 对抗验证与方案设计）
-
-sequential-thinking skill 在 Codex 下经插件 skill 发现提供（openai.yaml 已启用隐式调用）；skill 与运行时均不可用时降级为在回复中显式分点推演（信息质询 → 冲突消解 → 方案对比）并注明工具降级原因，不得因工具缺失跳过分析。
 
 ---
 

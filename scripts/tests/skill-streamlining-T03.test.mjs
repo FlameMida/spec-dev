@@ -21,7 +21,7 @@ assert.match(policy('skills/writing-plans/SKILL.md'),/format_version/);
 test("S10 自足产物和类型化步骤完整",()=>{
 
 const s=policy('skills/writing-plans/SKILL.md');
-assert.match(s,/每步给关键片段/);assert.match(s,/步骤 7：最终状态保存/);
+assert.match(s,/步骤 7：最终状态保存/);
 assert.match(s,/零测试|SKIP/);assert.match(s,/资源台账总则/);
 
 });
@@ -30,7 +30,9 @@ test("S21 七步收尾合法且 S22 普通行为票五步保持",()=>{
 
 const s=raw('skills/writing-plans/SKILL.md');
 assert.doesNotMatch(s,/一个任务超过 5 个实施步骤/);
-assert.match(s,/普通行为票使用 TDD 五步/);
+const behavior=raw('skills/writing-plans/references/task-templates.md').split('## 任务结构')[1];
+const steps=[...behavior.matchAll(/\*\*步骤 (\d)：([^\n]+?)\*\*/g)].map(match=>[Number(match[1]),match[2]]);
+assert.deepEqual(steps,[[1,'写失败测试'],[2,'运行测试确认失败'],[3,'写最小实现'],[4,'运行测试确认通过'],[5,'提交']]);
 assert.match(policy('skills/writing-plans/SKILL.md'),/步骤 7：最终状态保存/);
 
 });

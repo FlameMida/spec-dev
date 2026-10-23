@@ -22,6 +22,7 @@ test("Scenario: 未安装 guardrail 的项目——明确判定与安装指引",
     execFileSync("git", ["init", "-q"], { cwd: dir });
     const { out, code } = runIn(dir);
     const r = JSON.parse(out);
+    assert.deepEqual(Object.keys(r).sort(), ['anysearch', 'guardrail', 'hooks', 'markers', 'platform']);
     assert.equal(r.guardrail.installed, false);
     assert.match(r.guardrail.hint, /guardrail\/install\.mjs/);
     assert.equal(code, 1, "存在需修复项时退出码应为 1");
@@ -42,12 +43,6 @@ test("Scenario: anysearch 双副本歧义提示", () => {
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
-});
-
-test("sequential-thinking 运行时链探测有三态", () => {
-  const { out } = runIn(repoRoot);
-  const r = JSON.parse(out);
-  assert.ok(["ts-runtime", "node-port", "prose-fallback"].includes(r.sequentialThinking.chain));
 });
 
 test("Scenario: SessionStart hook 挂载域——声明式 hooks.json 与注入回放", () => {

@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const read = (rel) => readFileSync(path.join(repoRoot, rel), "utf8");
 const count = (text, needle) => text.split(needle).length - 1;
-const VENDORED = ["skills/anysearch", "skills/sequential-thinking"];
+const VENDORED = ["skills/anysearch"];
 const walk = (rel, out = []) => {
   for (const name of readdirSync(path.join(repoRoot, rel))) {
     const r = `${rel}/${name}`;
@@ -223,8 +223,11 @@ test("Scenario: 计数与磁盘一致", () => {
   const contractTable=read("scripts/schemas/README.md").split("## 契约清单")[1].split("## 新增 schema")[0];
   const documented=[...contractTable.matchAll(/^\| `([^`]+)` \|/gm)].map(m=>m[1]).sort();
   assert.deepEqual(documented,schemaFiles.map(f=>f.slice(0,-5)).sort());
-  assert.match(en, /five-way self-review \(spec coverage \/ placeholders \/ type consistency \/ navigation table[^\n]*dependency minimality/);
-  assert.match(zh, /五查（spec 覆盖\/占位符\/类型一致\/导航表与任务文件一致\/依赖最小性）/);
+  for (const text of [en, zh]) {
+    const targets = [...text.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)].map(m => m[1]);
+    assert.ok(targets.includes('skills/writing-plans/references/plan-review.md'));
+  }
+  assert.ok(existsSync(path.join(repoRoot, 'skills/writing-plans/references/plan-review.md')));
 });
 
 test("Scenario: 变量未替换时按序列推导——skill base directory 上两级即插件根（布局不变量）", () => {

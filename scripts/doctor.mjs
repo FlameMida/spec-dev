@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// spec-dev doctor：平台 / guardrail / 注入标记 / SessionStart hook 挂载（含注入决策回放）/ anysearch（含双副本歧义与版本滞后）/ sequential-thinking 六域健康诊断。
+// spec-dev doctor：平台 / guardrail / 注入标记 / SessionStart hook 挂载（含注入决策回放）/ anysearch（含双副本歧义与版本滞后）健康诊断。
 // 用法：node scripts/doctor.mjs [--json]   退出码：0 健康或仅提示；1 存在需修复项。
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -122,15 +122,6 @@ report.anysearch = {
   duplicates,
   lag,
   hint: [dupHint, lagHint].filter(Boolean).join(" "),
-};
-
-// 6. sequential-thinking 运行时链：bun/tsx → node 端口 → 纯推演
-const hasBun = spawnSync("bun", ["--version"], { encoding: "utf8" }).status === 0;
-const hasTsx = spawnSync("tsx", ["--version"], { encoding: "utf8" }).status === 0;
-const nodePort = existsSync(path.join(pluginRoot, "skills/sequential-thinking/scripts/think.mjs"));
-report.sequentialThinking = {
-  chain: hasBun || hasTsx ? "ts-runtime" : nodePort ? "node-port" : "prose-fallback",
-  hint: hasBun || hasTsx || nodePort ? "" : "无可用运行时：工作流将降级为回复内分点推演（不中断）。/ No runtime; falls back to in-reply reasoning.",
 };
 
 if (json) {

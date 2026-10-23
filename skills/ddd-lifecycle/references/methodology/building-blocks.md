@@ -73,16 +73,6 @@ Value Objects are the unsung heroes of domain models. Most developers default to
 4. **Side-effect-free methods.** `money.add(other)` returns a new `Money`; it does not mutate the original.
 5. **Replace, don't modify.** To change an address, create a new `Address` and assign it. `customer.changeAddress(newAddress)`.
 
-### Common Value Objects
-
-| Value Object | Replaces | Why It Is Better |
-|-------------|---------|------------------|
-| `Money(amount, currency)` | `BigDecimal` | Prevents currency mismatch errors; encapsulates rounding rules |
-| `EmailAddress(value)` | `String` | Validates format on construction; impossible to have invalid email in the system |
-| `DateRange(start, end)` | Two `Date` fields | Enforces `start <= end`; contains overlap/contains logic |
-| `Address(street, city, state, zip)` | Multiple String fields | Groups related data; validates as a unit |
-| `Quantity(value, unit)` | `int` or `double` | Prevents unit mismatch (adding kilograms to liters) |
-| `PhoneNumber(countryCode, number)` | `String` | Validates format; normalizes representation |
 
 ### When to Use Value Objects vs. Entities
 

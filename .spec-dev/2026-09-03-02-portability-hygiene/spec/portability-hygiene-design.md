@@ -144,7 +144,7 @@ requirement-analysis、writing-plans、executing-plans、acceptance-qa 四个 SK
 
 ### Requirement: 插件根引用统一写法
 
-skills/、agents/、commands/ 中所有指向**插件内文件**的命令 SHALL 使用 `"${CLAUDE_PLUGIN_ROOT}/<相对插件根路径>"` 形态（变量双引号包裹），SHALL NOT 出现相对于 cwd 的裸路径，也 SHALL NOT 出现自造占位符（`<插件根>`、`<plugin-root>`、`<skill-base-directory>`）；各处 SHALL NOT 再各自复述降级说明——SKILL.md 与其 references 依赖载入即声明，两个 agent 与 commands/doctor.md（agent 与命令正文均由平台直接替换，无需声明行）各保留一句固定回退句「未替换时按插件根解析序列推导（定义见 exploration-patterns）」。codex-compat.md:61 的 anysearch CLI 命令 SHALL 同样改为变量写法（Codex 下该变量为占位符，按序列代入）。visual-preview 自造的 `<skill-base-directory>` SHALL 改为官方 `${CLAUDE_SKILL_DIR}` 并附"未替换时取 skill base directory"半句。本条不涉及：指向**目标仓库**的路径（守卫安装位置 `scripts/spec-dev/**`、迁移脚本，如 quick-fix:40、executing-plans:35，必须保持相对）；vendored skill（anysearch 的 `<skill_dir>`、sequential-thinking 的 `bun scripts/think.ts`）；commands/doctor.md:11 转述 doctor.mjs 输出的仓库开发期维护提示（`node scripts/update-vendored-skill.mjs`，仅对插件仓库开发者有意义，保持原样）。
+skills/、agents/、commands/ 中所有指向**插件内文件**的命令 SHALL 使用 `"${CLAUDE_PLUGIN_ROOT}/<相对插件根路径>"` 形态（变量双引号包裹），SHALL NOT 出现相对于 cwd 的裸路径，也 SHALL NOT 出现自造占位符（`<插件根>`、`<plugin-root>`、`<skill-base-directory>`）；各处 SHALL NOT 再各自复述降级说明——SKILL.md 与其 references 依赖载入即声明，两个 agent 与 commands/doctor.md（agent 与命令正文均由平台直接替换，无需声明行）各保留一句固定回退句「未替换时按插件根解析序列推导（定义见 exploration-patterns）」。codex-compat.md:61 的 anysearch CLI 命令 SHALL 同样改为变量写法（Codex 下该变量为占位符，按序列代入）。visual-preview 自造的 `<skill-base-directory>` SHALL 改为官方 `${CLAUDE_SKILL_DIR}` 并附"未替换时取 skill base directory"半句。本条不涉及：指向**目标仓库**的路径（守卫安装位置 `scripts/spec-dev/**`、迁移脚本，如 quick-fix:40、executing-plans:35，必须保持相对）；vendored skill（anysearch 的 `<skill_dir>`）；commands/doctor.md:11 转述 doctor.mjs 输出的仓库开发期维护提示（`node scripts/update-vendored-skill.mjs`，仅对插件仓库开发者有意义，保持原样）。
 
 #### Scenario: 用户项目 cwd 下校验命令可执行（bug 修复实证）
 
@@ -155,7 +155,7 @@ skills/、agents/、commands/ 中所有指向**插件内文件**的命令 SHALL 
 #### Scenario: 零裸路径与零自造占位符
 
 - **GIVEN** 仓库当前文本
-- **WHEN** 在 skills/ agents/ commands/ 中检索指向插件内文件的裸路径命令（`node|bash|python3 scripts/…`、`skills/…/scripts/…` 无变量前缀）与自造占位符（`<插件根>`、`<plugin-root>`、`<skill-base-directory>`），排除 `scripts/spec-dev/` 目标仓库路径、vendored 的 anysearch 与 sequential-thinking 目录、以及 commands/doctor.md:11 的维护提示
+- **WHEN** 在 skills/ agents/ commands/ 中检索指向插件内文件的裸路径命令（`node|bash|python3 scripts/…`、`skills/…/scripts/…` 无变量前缀）与自造占位符（`<插件根>`、`<plugin-root>`、`<skill-base-directory>`），排除 `scripts/spec-dev/` 目标仓库路径、vendored 的 anysearch 目录、以及 commands/doctor.md:11 的维护提示
 - **THEN** 零命中；`${CLAUDE_PLUGIN_ROOT}` 与 `${CLAUDE_SKILL_DIR}` 的每次命令出现都带双引号包裹
 
 #### Scenario: 降级说明不再各处复述

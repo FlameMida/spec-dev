@@ -6,4 +6,4 @@
 - **pass@k vs pass^k**：一次成功即可（生成类）用 pass@k；一致性要求（k 次全过）用 pass^k——单次 75% 时 pass^3≈42%，单跑 eval 全是噪声，20-50 任务起步。
 - **golden 数据集是代码**：文件化进仓库走 PR；回归套件（应近 100%）与能力套件（应从低分爬坡）分开维护。
 - **确定性纪律**：断言结构与 schema、永不断言精确文本；快照只快照装配后的 prompt。
-- **Lane 归属**：L0-L3 fast、L4/L5 manual，永不阻塞交付。
+- **Lane 归属**：L0-L3 fast、L4/L5 manual；执行条件与交付必需程度沿 [验证归属](verification-scope.md)，必需项未验证时保持未完成，不因 manual 自动放行。

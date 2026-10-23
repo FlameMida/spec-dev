@@ -25,28 +25,11 @@ Ask a domain expert: "Would you care if this happened?" If yes, it is a domain e
 
 Domain events are always named in past tense because they represent facts that have already occurred. By the time anyone processes the event, the thing has already happened.
 
-**Correct naming:**
-- `OrderPlaced` -- an order was placed
-- `PaymentReceived` -- a payment was received
-- `ShipmentDispatched` -- a shipment was dispatched
-- `AccountSuspended` -- an account was suspended
-- `PolicyRenewed` -- a policy was renewed
-
-**Incorrect naming:**
-- `PlaceOrder` -- this is a command, not an event
-- `OrderPlacing` -- this implies the action is in progress
-- `OrderEvent` -- too generic; what happened?
-- `OrderUpdate` -- "update" is not a domain concept; what specifically changed?
 
 ### Naming Specificity
 
 Be specific about what happened. Vague event names create the same problems as vague method names -- consumers cannot understand what occurred without reading the payload.
 
-| Vague | Specific | Why Specific Is Better |
-|-------|----------|----------------------|
-| `OrderChanged` | `OrderItemAdded`, `OrderItemRemoved`, `OrderAddressChanged` | Different changes trigger different business reactions |
-| `UserUpdated` | `UserEmailVerified`, `UserPasswordChanged`, `UserProfileCompleted` | A password change requires a security audit; a profile completion triggers onboarding flow |
-| `PaymentProcessed` | `PaymentAuthorized`, `PaymentCaptured`, `PaymentRefunded` | Authorization and capture are distinct business steps with different downstream effects |
 
 ### Event Naming Conventions
 
@@ -56,10 +39,6 @@ Adopt a consistent naming pattern across the codebase:
 {AggregateType}{DomainAction}
 ```
 
-Examples:
-- `OrderPlaced`, `OrderCancelled`, `OrderFulfilled`
-- `InvoiceSent`, `InvoicePaid`, `InvoiceOverdue`
-- `MemberRegistered`, `MemberSuspended`, `MemberReinstated`
 
 ## Event Structure
 
