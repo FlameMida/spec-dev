@@ -1,372 +1,574 @@
 # spec-dev
 
-English | [简体中文](README.zh-CN.md)
+**English | [简体中文](README.zh-CN.md)**
 
-A design→plan→execute skill pipeline plugin: polish ideas into specs, break them into executable plans, and deliver with TDD discipline in isolated workspaces.
+> From an idea to a design, from a design to a plan, and from a plan to evidence-backed delivery.
 
-Design→Plan→Execute pipeline | Adversarial validation | Visual preview | All-round acceptance | MCP enhancements
+[Changelog](CHANGELOG.md) · [License](LICENSE) · [Issues](https://github.com/FlameMida/spec-dev/issues)
 
-## Features
+**spec-dev** is a spec-driven development plugin for Claude Code, Codex, Grok Build, Pi, and generic Agent Plugins hosts. It turns a request into an approved spec, decomposes the spec into an independently verifiable task graph, implements it with TDD discipline in isolated workspaces, and finishes with independent verification, review, acceptance, and Requirement reconciliation.
 
-- **Visual explanations** — `wtf` explains concepts, code and processes so a 10-year-old can follow, using terminal character diagrams and very little prose while preserving the real mechanism and essential caveats.
-- **Exploration mode** — `exploring` keeps unsettled ideas open: read-only by default, with explicitly authorized throwaway spikes for questions that require running code. Optional background research traces material claims to primary sources. Decision lists remain one question at a time; notes can retain rejected options and their conditions. Handoff is proposed once the delivery question is precise, even when its answer is unknown.
-- **Requirement design** — `requirement-analysis`, an 8-phase design workflow: triage (light / standard / deep tiers), bounded internal/external exploration dispatched within actual capacity, one-question-at-a-time clarification, adversarial validation + 2-3 option comparison, spec writing with double review (structured behavior requirements: Requirement + Scenario); a HARD-GATE guarantees zero implementation before the design is approved
-- **Interactive prototypes** — new pages and substantial layout or interaction changes automatically open an HTML preview once goals are clear. Shared clarification resolves decisions; approved versions and assets flow into specs, plans and acceptance. Small changes may skip preview; explicit opt-outs persist.
-- **Implementation plans** — `writing-plans` decomposes specs into independently verifiable tasks: exact file paths, change notes, concrete assertions and commands, embedded 5-step TDD, and consume/produce interface contracts; code snippets are included when needed
-- **Plan execution** — main-thread implementation and commits, then independent final verification, 1/2/5 review routes, acceptance/reconciliation and delivery. Reuse verified originals; recheck gaps. High/medium candidates, large tier or explicit always trigger the critic.
-- **Unified execution** — `executing-plans`: parallel task-graph scheduling by default with continuous refill, exclusive progress and integration, and shared recovery/review/delivery.
-- **Engineering discipline** — `using-git-worktrees` (isolated workspaces, native tools first) and `test-driven-development` (valid red for behavior changes, green protection for refactors, and a single authorized exception policy) are standalone skills reusable from any workflow
-- **Outcome acceptance** — pages use three steps: verify the approved prototype, running version and evidence; compare actual layout, interactions and states; fill gaps and report. Reuse valid engineering evidence; backend contracts and specialist checks retain their own scope.
-- **Lightweight fix** — `quick-fix`, for decided fixes with no design space: evidence-backed diagnosis, one-question-at-a-time confirmation and TDD through the approved public seam. It offers escalation for contract scope, modules, dependencies, conflicting current specs or insufficient diagnostic evidence; comparable intermittent failures may stay in quick-fix. Closure checks reproduction rates, temporary instrumentation, the original symptom and root-cause evidence; original-symptom verification is required and specialist acceptance is invoked as needed.
-- **Shared clarification** — exploring, requirement analysis, quick fixes and visual preview share general and UI clarification. Resolve one real decision at a time, preserve prior decisions and distinguish local choices from design approval. Standalone clarification retains its three exits.
-- **Contract-driven orchestration** — subagent output goes through JSON Schema contracts, deterministically validated by `validate-output.mjs`, with one retry on failure
-- **Zero MCP dependency** — browser automation MCPs (playwright / chrome-devtools) are opt-in per project, see `skills/acceptance-qa/references/mcp-setup.md`
-- **4 specialized agents** — code-explorer, external-resource-explorer and code-reviewer handle analysis and verification; implementer writes claimed code in an isolated worktree once plan execution is authorized.
+It is not a rigid pipeline that must always start at the beginning: its 14 skills work together or independently. Use `exploring` before committing to implementation, `quick-fix` for a small bug, `writing-plans` when a spec already exists, or `executing-plans` when a plan is ready. DDD modeling, browser prototypes, real-time search, and `wtf` terminal explanations are included as well.
 
-## Skill Pipeline
+<a id="overview"></a>
+## Overview and end-to-end workflow
 
-For an explanation on its own, invoke `wtf`: `$wtf Explain caching with terminal diagrams`. It explains the question directly without requiring a design or implementation workflow.
-
-`wtf` ships with the plugin for Claude Code / Grok Build, Codex, Pi and generic Agent Plugins packages. Claude Code / Grok Build use the Claude marketplace skill list; Codex / Pi discover `skills/` through their manifests, and generic packages use the same directory under the standard layout. Git `dist`, ZIP, tar.gz and npm tgz distributions all include the skill.
-
-Skill `evals/evals.json` files contain intent cases. Structural checks do not prove real-model behavior; the new boundary cases remain manual-pending. See the [plan contracts](skills/writing-plans/references/plan-format.md) and [guard boundaries](guardrail/README.md).
-
-
-```text
-request → current facts + necessary general clarifying
-   ├─ exploring → investigate / compare → clarify key decisions → decide to implement
-   ├─ quick-fix → diagnose + clarify repair → fix → replay actual symptom
-   └─ requirement-analysis → general clarification
-              ↕ visual-preview + UI clarification (qualifying UI changes)
-          approved design + versioned HTML → spec → writing-plans → execution authorization
-              ↓
-          executing-plans → early real user journey + prototype comparison
-              ↓
-          final verification → independent review → acceptance-qa → reconciliation → delivery
-
-acceptance-qa: verify basis/evidence → compare actual page/behavior → fill gaps and report
-repairs: classify cause → rerun affected checks → reuse valid evidence → refresh conclusions
+```mermaid
+flowchart TD
+    A["User request"] --> B{"Committed to implementation?"}
+    B -->|"Not yet"| C["exploring<br/>Investigate, compare, run authorized spikes"]
+    C -->|"Ready to implement"| D["requirement-analysis<br/>Requirement design"]
+    B -->|"Yes"| E{"Any design space?"}
+    E -->|"No: small fix"| F["quick-fix<br/>Diagnose, TDD, replay original symptom"]
+    F --> Z["Outcome and evidence"]
+    E -->|"Yes: feature or behavior change"| D
+    D --> G["clarifying + internal / external exploration<br/>Adversarial validation and option comparison"]
+    G -.-> H["visual-preview<br/>Automatic for qualifying UI changes"]
+    H -.-> G
+    G --> I["Approved spec<br/>Requirements + Scenarios + acceptance matrix"]
+    I --> J["writing-plans<br/>Task graph, write scopes, TDD steps"]
+    J --> K{"Execution authorized by user"}
+    K --> L["executing-plans<br/>Worktrees, task graph, TDD"]
+    L --> M["Independent final verification<br/>Review + acceptance-qa"]
+    M --> N["Requirement reconciliation<br/>Merge, cleanup, sync_commit"]
+    N --> Z
 ```
 
-The three entry points split by commitment and design space: **exploring** (undecided — should we even do this?), **quick-fix** (decided, no design space — a small bug or adjustment), **requirement-analysis** (decided, has design space — a feature or change). quick-fix reuses test-driven-development and acceptance-qa, and hands control back to requirement-analysis the moment a fix turns out to need real design.
+The three main entry points are routed by **commitment to delivery** and **design space**. The main workflow reuses disciplines such as `using-git-worktrees`, `test-driven-development`, and `test-strategy`; `anysearch`, `ddd-lifecycle`, and `wtf` also work on their own. Design approval, plan approval, and execution authorization are separate decisions: reading a document or generating a plan never implicitly starts implementation.
 
-All artifacts (specs, plans, acceptance reports, exploration notes, ADRs, roadmaps) live under `.spec-dev/` at the project root; legacy-plan recovery preserves its carrier and historical evidence. Location migration follows the authorization for that operation; the guard still recognizes `docs/`, and the installer retains its separate migration tool and options.
+<a id="navigation"></a>
+## Quick navigation
 
-Each skill also works standalone: start from exploring while the idea is unsettled; enter at writing-plans with an existing spec; go straight to executing-plans with an existing plan; acceptance-qa / using-git-worktrees / test-driven-development can be triggered from any workflow; quick-fix handles small already-decided fixes without the full design workflow; clarifying grills an idea into shared understanding without committing to any workflow.
+- **[Quick start](#quick-start)** — [Install](#install) · [First use](#first-run) · [Platform support](#platform-support) · [Runtime dependencies](#runtime-dependencies)
+- **[Skill guide](#skill-guide)** — [Think and design](#design-skills) · [Plan and execute](#delivery-skills) · [Quality and repair](#quality-skills) · [Search and explain](#utility-skills)
+- **[Mechanisms, benefits, and characteristics](#mechanics)** — artifact contracts, approval boundaries, parallel recovery, quality evidence, drift guards, and cross-platform degradation
+- **Reference** — [Utility commands](#commands) · [Maintenance and releases](#maintenance) · [Directory layout](#directory-layout)
 
-## Installation
+---
 
-### Claude Code
+<a id="quick-start"></a>
+## Quick start
+
+### 1.1 Prerequisites
+
+For the complete development workflow, you should have:
+
+- a supported agent host and a Git project;
+- `git` for worktrees, task commits, delivery, and drift guards;
+- **Node.js ≥ 18** for contract validation, guardrails, doctor, and the visual-preview server;
+- browser, performance, or AI-driven acceptance tools only when the corresponding checks need them.
+
+> **Install from `dist`.** The `main` branch contains development sources; `dist` contains installable files generated from release tags and excludes this repository's own development `.spec-dev/` archive. After installation, spec-dev still reads and writes **your project's** `.spec-dev/` normally.
+
+<a id="install"></a>
+### 1.2 Install the plugin
+
+#### Claude Code
+
+Run these commands in Claude Code:
 
 ```bash
-# Add as a marketplace
 /plugin marketplace add https://github.com/FlameMida/spec-dev.git#dist
-
-# Install the plugin
 /plugin install spec-dev@spec-agent-skills
 ```
 
-### Codex
+#### Codex
+
+Run these commands in a terminal:
 
 ```bash
-# Add as a marketplace
 codex plugin marketplace add https://github.com/FlameMida/spec-dev.git --ref dist
-
-# Install the plugin
 codex plugin add spec-dev@spec-agent-skills
 ```
 
-The Codex manifests (`.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`) also expose plugin UI metadata. After a new release, run `codex plugin marketplace upgrade spec-agent-skills`.
+After a new release, run `codex plugin marketplace upgrade spec-agent-skills`. Codex 0.164.0 should use the Git `dist` entry above. After installation, the plugin page should list four hooks; review and trust them before use. The plugin never grants trust automatically.
 
-Use the Git `dist` entry above for Codex. It omits root `plugin.json` so Codex 0.164.0 loads hooks through its compatibility format. After upgrading, the plugin page should list four hooks; review and trust them in Codex before use. The plugin never grants trust automatically. Portable ZIP/tar.gz/npm packages retain the Agent Plugins root manifest and are not the Codex hook-installation target for this version.
-
-### Pi, Grok Build, and portable plugin packages
+#### Pi and Grok Build
 
 ```bash
 # Pi
 pi install git:github.com/FlameMida/spec-dev@dist
 
-# Grok Build
+# Grok Build direct installation
 grok plugin install https://github.com/FlameMida/spec-dev.git@dist
 ```
 
-Grok Build also honors `source.ref: "dist"` in a Claude marketplace plugin entry. Do not apply the direct-install `@dist` suffix to a `grok plugin marketplace add` source URL. Agent Plugins 1.0.0 is a package format and does not specify Git installation; portable hosts consume the distribution workflow's ZIP / tar.gz, while Git ref selection depends on the specific host. npm distribution uses the tgz produced by `npm pack`. These distribution artifacts exclude this repository's `.spec-dev/`; workflows still read and write the user's own project `.spec-dev/` normally.
+Grok Build also honors `source.ref: "dist"` in a marketplace plugin entry. Do not mechanically apply the direct-install `@dist` suffix to a `grok plugin marketplace add` source URL.
 
-Git branch selection was tested on 2026-10-23 with Claude Code 2.1.309, Codex CLI 0.164.0, Grok Build 1.0.67, and Pi 1.4.0. With `main` as the fixture repository's default branch, installed caches contained the distinct `dist` marker and no `.spec-dev`. Claude/Codex tests covered both a pinned marketplace branch and a main catalog selecting dist through `source.ref`; Grok tests covered direct installation and catalog `source.ref`.
+#### Generic Agent Plugins 1.0.0 packages
 
-`main` contains development sources; `dist` contains installable files generated from release tags. New installs should select `dist`. Existing main marketplace entries also redirect plugin installs to `dist`, but their old marketplace source caches are not automatically removed. Existing Pi Git installs must change their source to `@dist` as shown above. Cloning `main` still includes development records; updates do not guarantee removal of old versions retained by a host.
+Portable hosts can consume the ZIP / tar.gz produced by the distribution workflow; npm distribution uses the tgz produced by `npm pack`. Agent Plugins 1.0.0 specifies a package format, not a universal Git installation command, so Git ref selection depends on the host. Portable packages retain the root `plugin.json`; the Git `dist` package omits it for Codex hook compatibility.
 
-### Platform matrix
+<a id="first-run"></a>
+### 1.3 First use: start with a real request
 
-| Platform | Skills | Agents (subagents) | Hooks | Manifest |
+The examples below are **natural-language prompts for your agent**, not shell commands, so they do not depend on one host's invocation prefix. You can also use the skill command displayed by your host; hosts with plugin namespaces may show `/spec-dev:<skill>`.
+
+#### Route A: complete feature delivery
+
+1. **Design the requirement**
+
+   > Use requirement-analysis to design team-member invitations for this project, including permissions, failure paths, and acceptance criteria.
+
+2. **Review and approve the design**. The agent investigates the current system, clarifies one decision at a time, and compares options. It writes the spec only after your approval. A typical path is:
+
+   ```text
+   .spec-dev/<date-sequence-feature>/spec/<feature>-design.md
+   ```
+
+3. **Create an implementation plan**
+
+   > Use writing-plans to turn .spec-dev/&lt;feature&gt;/spec/&lt;feature&gt;-design.md into an independently verifiable implementation plan.
+
+4. **Review the plan and explicitly authorize execution**
+
+   > Use executing-plans to execute .spec-dev/&lt;feature&gt;/plan/index.md.
+
+5. **Inspect the delivery evidence**. The workflow covers implementation, independent final verification, review, applicable acceptance-qa, Requirement reconciliation, and delivery. A generated plan or a partially green test run does not mean the feature has been delivered.
+
+#### Route B: you have not decided whether to build it
+
+> Use exploring to help me decide whether this project needs real-time collaboration. Compare server push with polling in the current codebase; do not implement anything yet.
+
+#### Route C: a small, already-decided fix
+
+> Use quick-fix to repair duplicate rows on the last pagination page. Reproduce the root cause first, fix it with TDD, and replay the original request.
+
+If you are unsure which route to take, start with `/triage <request>`. It only recommends a route, writes no files, and leaves the final choice to you.
+
+### 1.4 Verify installation and optionally enable drift guards
+
+- On hosts that support commands, run `/doctor` to inspect the platform, guardrail, injection markers, SessionStart hooks, and anysearch health.
+- Plugin-level `hooks/hooks.json` automatically registers session-context injection on supported hosts; **this does not install the complete drift guard**.
+- To enable PreToolUse / Stop, pre-commit / pre-push, and CI defenses, install the guardrail into the target project:
+
+  ```bash
+  node "/actual/plugin/directory/guardrail/install.mjs" --repo "/absolute/path/to/your/project"
+  ```
+
+  The installer is idempotent; replace the plugin path with its actual location. If the Codex sandbox denies writes to Git configuration, the user should run the installer outside the sandbox. See the [guardrail guide](guardrail/README.md).
+
+<a id="platform-support"></a>
+### 1.5 Platform support
+
+| Platform | Skills | Agents (subagents) | Hooks | Manifest / discovery |
 |---|---|---|---|---|
-| Claude Code | ✅ marketplace `skills[]` | ✅ `agents/*.md` | ✅ guardrail install | `.claude-plugin/` |
-| Codex | ✅ directory auto-discovery | ⚠️ via dispatch prompts (`spawn_agent` does not read `agents/*.md`) | ✅ codex-hooks | `.codex-plugin/` |
-| Grok Build | ✅ zero-config Claude-compat (official claim) | ✅ same as Claude Code (field behavior: see acceptance walkthrough) | ✅ same as Claude Code | reuses `.claude-plugin/` |
-| Pi (pi.dev) | ✅ `package.json` `pi.skills` | ⚠️ requires the `pi-subagents` extension | ❌ needs a TS extension (not adapted) | `package.json` |
-| Agent plugins 1.0.0 | ✅ root `plugin.json` + `skills/` | — (outside the portable standard) | — (same) | `plugin.json` |
+| Claude Code | ✅ marketplace `skills[]` | ✅ `agents/*.md` | ✅ plugin injection; guardrail install available | `.claude-plugin/` |
+| Codex | ✅ directory auto-discovery | ⚠️ via dispatch prompts; `spawn_agent` does not read `agents/*.md` | ✅ codex-hooks; trust required | `.codex-plugin/` |
+| Grok Build | ✅ Claude-compatible (official claim) | ✅ same as Claude Code; field behavior subject to actual acceptance | ⚠️ hook support differs; SessionStart does not inject model context, PostModelSwitch is unsupported | reuses `.claude-plugin/` |
+| Pi | ✅ `package.json` `pi.skills` | ⚠️ requires the `pi-subagents` extension | ❌ requires a separate TS extension adaptation | `package.json` |
+| Agent Plugins 1.0.0 | ✅ root `plugin.json` + `skills/` | — outside the portable standard | — outside the portable standard | `plugin.json` |
 
-Plugin-level `hooks/hooks.json` auto-registers the SessionStart context injection on platforms that honor plugin hooks (Claude Code / Grok Build) — no manual install needed for injection. `guardrail/install.mjs` remains the way to get the git gate (pre-commit / pre-push / CI) and the PreToolUse / Stop drift guards.
-
-### Model-scoped collaboration
-
-GPT/Codex, Kimi and GLM can receive goal tracking, necessary-work checks, decision filtering, recovery and completion checks. Claude and unknown models are excluded. Selection uses each agent's actual model, including Kimi/GLM inside Claude Code. Both host adapters load one shared policy; see [configuration and limits](guardrail/model-policy.md) for aliases, switches, missing subagent identity and hook trust. Without an enabled hook status, skills do not activate the enhancement.
-
+<a id="runtime-dependencies"></a>
 ### Runtime dependencies
 
 | Tier | Dependency | Used by | When missing |
 |---|---|---|---|
 | hard | `git` | drift guard, worktrees, per-task commits, `sync_commit` anchoring | main workflows unavailable |
-| hard | Node.js ≥ 18 | `validate-output.mjs`, guardrail scripts, `doctor.mjs`, the visual-preview server, `node --test` | contract validation, guard, doctor and visual preview unavailable |
-| soft | `python3` | anysearch CLI (`anysearch_cli.py`) | falls back to the zero-dependency Node CLI (`anysearch_cli.js`), then to WebSearch / WebFetch |
-| soft | Playwright / k6 / Lighthouse / browser MCPs | acceptance-qa Tier A and performance rows | Tier D toolchain, or the row is marked `unverified` |
-| soft | `codex` CLI, `skill-creator` | repository development only (pre-commit checks) | skipped softly |
+| hard | Node.js ≥ 18 | contract validation, guardrail scripts, doctor, visual-preview, `node --test` | related validation and preview unavailable; degrade and report as documented |
+| soft | `python3` | anysearch Python CLI | falls back to the zero-dependency Node CLI, then WebSearch / WebFetch |
+| soft | Playwright / k6 / Lighthouse / browser MCPs | specialist acceptance, Tier A, and performance checks | uses the available Tier D toolchain, or marks the row `unverified` |
+| soft | `codex` CLI, `skill-creator` | repository development and release checks only | corresponding development checks skip softly |
 
-If the contract validator cannot run (Node missing, or the plugin root cannot be resolved), the main thread checks the required keys and `coverage_note` against the schema by hand and notes "contract validation degraded" in the report — the single definition point is `skills/requirement-analysis/references/exploration-patterns.md` (Output contracts & validation; plugin-root resolution).
+If the contract validator cannot run, the main thread checks required keys and `coverage_note` against the schema manually and reports "contract validation degraded"; see the [exploration and contract rules](skills/requirement-analysis/references/exploration-patterns.md). The controlled review entry point on macOS / Linux additionally requires Python 3.9+, an authenticated local Claude CLI, and rtk. Native workflows remain available on other platforms.
 
-Controlled reviews on macOS/Linux additionally require Python 3.9+, an authenticated local Claude CLI, and rtk. Native workflows remain available on other platforms, without claiming the same programmatic guarantees. See `skills/executing-plans/references/review-orchestration.md`.
+---
 
-## Plugin Package Maintenance
+<a id="skill-guide"></a>
+## Skill guide
 
-The repo root is the plugin root (flat layout): `skills/`, `agents/`, `commands/`, `scripts/`, `.claude-plugin/plugin.json` (Claude Code manifest), `.codex-plugin/plugin.json` (Codex manifest), root `plugin.json` (Agent Plugins 1.0.0) and `package.json` (pi distribution) are edited in place at the repo root; `README.md` and `CHANGELOG.md` exist as single copies with no mirror syncing. A release must bump the version in five places (`metadata.version` in `.claude-plugin/marketplace.json`, `version` in both `.claude-plugin/` and `.codex-plugin/` `plugin.json` files, root `plugin.json`, and `package.json`), and `check-plugin.mjs` verifies they stay in sync:
+Every skill can be invoked independently or reused by the main pipeline. Each example below is a natural-language prompt you can adapt directly. If your host provides `/`, `$`, or another skill invocation syntax, you can use that form instead.
+
+<a id="design-skills"></a>
+### 2.1 Think, clarify, and design
+
+<a id="skill-exploring"></a>
+#### `exploring` — a thinking partner before implementation is committed
+
+**Purpose:** Read code, investigate questions, and compare directions while delivery is still undecided. It is read-only by default; a question that genuinely requires execution can use an isolated, explicitly authorized spike. Exploration does not have to produce a conclusion and never automatically writes production code or saves notes.
+
+**Examples:**
+
+> Use exploring to help me decide whether this project needs real-time collaboration. Compare polling and server push against the current codebase; do not implement anything yet.
+
+> Use exploring to investigate three implementation directions for audit logging, preserving their assumptions and trade-offs. We can stop once the question is clear enough.
+
+<a id="skill-clarifying"></a>
+#### `clarifying` — reach shared understanding one decision at a time
+
+**Purpose:** Clarify an idea, plan, or decision along a decision tree. The agent checks facts it can answer itself and brings only genuine user decisions to the conversation, one at a time, preferably as mutually exclusive options with a recommendation. Standalone sessions end with a consensus summary and three exits: enter a main workflow, stop, or save Markdown. When referenced by another workflow, those extra exits are not imposed.
+
+**Examples:**
+
+> Use clarifying to grill my offline-sync proposal one question at a time until the goals, conflict rules, and boundaries are explicit.
+
+> Use clarifying to identify the remaining decisions in this plan that genuinely require me. Do not ask about facts you can verify in the codebase.
+
+<a id="skill-requirement-analysis"></a>
+#### `requirement-analysis` — turn a committed request into an approved spec
+
+**Purpose:** Designed for new features, APIs, data design, and behavior changes with meaningful design choices. Light / standard / deep tiers scale the investigation. The workflow covers current-state exploration, one-question clarification, adversarial validation, option comparison, complete-design approval, spec writing and review, then hands off to `writing-plans`. Every tier preserves the design-approval HARD-GATE.
+
+**Examples:**
+
+> Use requirement-analysis to design tenant-level API keys, including creation, rotation, revocation, permissions, and auditing, and produce a spec.
+
+> Use requirement-analysis to redesign notification retries. Compare viable approaches first and do not change code before I approve the design.
+
+<a id="skill-visual-preview"></a>
+#### `visual-preview` — interactive HTML prototypes in the browser
+
+**Purpose:** Present mockups, layout comparisons, diagrams, and important interface states, with clicks and choices flowing back into the session. It activates automatically under its contract for new pages, redesigns, major layout changes, and core interaction changes. Small changes may skip it, and an explicit opt-out is preserved. Visual questions go to the browser; ordinary text trade-offs stay in the conversation.
+
+**Examples:**
+
+> Use visual-preview to show two dashboard layouts side by side in the browser so I can click to choose one and keep iterating.
+
+> Use visual-preview to prototype loading, empty, error, and permission-denied states for the project-list page.
+
+<a id="skill-ddd-lifecycle"></a>
+#### `ddd-lifecycle` — from domain modeling to hexagonal architecture
+
+**Purpose:** Language-independent DDD guidance covering ubiquitous language, bounded contexts, entities / value objects / aggregates, domain events, repositories, Ports & Adapters, migration, and ADRs. Use it for greenfield modeling, everyday DDD decisions, or model-consistency reviews. It does not equate bounded contexts with microservices or force a rich model onto simple CRUD.
+
+**Examples:**
+
+> Use ddd-lifecycle to establish a ubiquitous language for orders, payments, and refunds, define bounded contexts, and design aggregate boundaries.
+
+> Use ddd-lifecycle to review dependency direction in the current domain model, identify logic that belongs in domain, and decide which choices deserve ADRs.
+
+<a id="delivery-skills"></a>
+### 2.2 Plan, isolate, and execute
+
+<a id="skill-writing-plans"></a>
+#### `writing-plans` — decompose a spec into a verifiable task graph
+
+**Purpose:** Turn an approved spec or explicit requirement into `index.md + tasks/ + progress.yaml`, with interfaces, real dependencies, exact write scopes, resource ownership, TDD steps, and verification commands. Tasks are vertical, independently deliverable and reviewable behavior slices rather than mechanical technology layers. Generating a plan does not authorize execution.
+
+**Examples:**
+
+> Use writing-plans to create an implementation plan from .spec-dev/&lt;feature&gt;/spec/&lt;feature&gt;-design.md, making task dependencies and per-task write scopes explicit.
+
+> Use writing-plans to revise this plan so independently verifiable slices can run in parallel, while preserving separate final, acceptance, and delivery tasks.
+
+After writing, the plan is checked against the [plan review checklist](skills/writing-plans/references/plan-review.md) for granularity, dependencies, contracts, and recovery. You then choose whether to execute it or review it first.
+
+<a id="skill-executing-plans"></a>
+#### `executing-plans` — execute, resume, review, and deliver a plan
+
+**Purpose:** Execute an approved written plan. By default, ready tasks are dispatched to implementers in independent worktrees according to the dependency graph, while the main thread exclusively owns progress and integration. Dependencies, write scopes, or resource conflicts force sequential execution where needed. The workflow supports interruption recovery, independent final verification, scale-appropriate review, acceptance-qa, Requirement reconciliation, merge and cleanup, and `sync_commit` anchoring.
+
+**Examples:**
+
+> Use executing-plans to execute .spec-dev/&lt;feature&gt;/plan/index.md, starting with task 0 and following the plan through delivery.
+
+> Use executing-plans to resume the plan interrupted in my previous session. Check progress, the actual worktrees, and existing evidence first; do not redo completed tasks.
+
+<a id="skill-using-git-worktrees"></a>
+#### `using-git-worktrees` — prepare an isolated, verifiable workspace
+
+**Purpose:** Detect existing isolation first, prefer the host's native worktree tool, and fall back to manual `git worktree` only when necessary. It handles directory safety, dependency readiness, and baseline verification, preventing nested worktrees, current-branch pollution, and confusion between pre-existing failures and new regressions.
+
+**Examples:**
+
+> Use using-git-worktrees to prepare an isolated workspace for the billing feature, install the necessary dependencies, and verify the test baseline.
+
+> Use using-git-worktrees to check whether I am already in an isolated environment; do not create another worktree if one is active.
+
+<a id="quality-skills"></a>
+### 2.3 Repair, test, and accept
+
+<a id="skill-quick-fix"></a>
+#### `quick-fix` — evidence-backed lightweight repair
+
+**Purpose:** Handle a small bug or adjustment that is already decided and has no design space. It follows root-cause diagnosis and spec lookup → focused clarification → TDD repair → original-symptom replay. Cross-spec or cross-module work, new dependencies, contract conflicts, or insufficient evidence trigger an escalation proposal rather than turning a small fix into a design bypass.
+
+**Examples:**
+
+> Use quick-fix to repair duplicate records caused by a pagination off-by-one error. Capture a real failure signal first, then fix it and replay the original request.
+
+> Use quick-fix to diagnose why the Save button intermittently stops responding. Keep it lightweight, but let me choose an escalation if the evidence shows cross-module design work.
+
+<a id="skill-test-driven-development"></a>
+#### `test-driven-development` — valid red to a minimal green implementation
+
+**Purpose:** Write a behavior test at the approved public seam, run it to confirm that the failure reflects the target behavior, implement the minimum, and verify green. Compilation errors, missing environments, zero tests, and SKIP are neither valid behavioral red nor passing evidence. Pure refactoring uses before-and-after behavior protection; retrospective tests record comparative evidence without fabricating test-first history.
+
+**Examples:**
+
+> Use test-driven-development to add expiry behavior to password-reset links, beginning with a failing test at the existing public service boundary.
+
+> Use test-driven-development to fix this validation bug, preserving the actual commands and results for valid red, minimal implementation, and the relevant checks turning green.
+
+<a id="skill-test-strategy"></a>
+#### `test-strategy` — put each test in the right execution window
+
+**Purpose:** Design fast / final / manual lanes that connect the spec acceptance matrix, planned tasks, and acceptance execution. It enforces the governance order flaky → duration → selection, distinguishes substitute-based tests from real integration confidence, and supplies model boundaries and layered test skeletons for AI agents.
+
+**Examples:**
+
+> Use test-strategy to design fast, final, and manual lanes for this spec, labeling the execution window of every acceptance-matrix row.
+
+> Use test-strategy to review our current test approach: remove repeated full-suite runs from every task while preserving real database integration and final full verification.
+
+<a id="skill-acceptance-qa"></a>
+#### `acceptance-qa` — verify against contracts and fill evidence gaps
+
+**Purpose:** Accept features, pages, or APIs and diagnose failures. Pages follow verify basis and evidence → compare the actual page → fill gaps and conclude; backends follow their behavior contracts. It supports unit / integration / E2E / visual / a11y / perf-web / perf-api / diagnose / all, reuses valid engineering evidence, and records `unverified` when tools or conditions are missing instead of turning gaps into passes.
+
+**Examples:**
+
+> Use acceptance-qa to accept the cart page against its active spec and approved prototype, covering success, failure, and permission-denied states, and list any remaining evidence gaps.
+
+> Use acceptance-qa perf-api to load-test the order endpoint in the authorized staging environment with a p95 budget under 300 ms.
+
+<a id="utility-skills"></a>
+### 2.4 Real-time search and terminal explanations
+
+<a id="skill-anysearch"></a>
+#### `anysearch` — real-time search and page extraction through a bundled CLI
+
+**Purpose:** General web search, vertical-domain retrieval, parallel batch search, and URL content extraction without MCP. It is the preferred external-search entry point for the other workflows; vertical searches first discover the sub-domain and required parameters. Anonymous access is supported, while `ANYSEARCH_API_KEY` only raises rate limits. Queries and URLs are sent to the AnySearch service, so do not submit sensitive information.
+
+**Examples:**
+
+> Use anysearch to find the current official documentation on OAuth token rotation, citing primary sources and noting version freshness.
+
+> Use anysearch to research these three independent topics in parallel, then extract and compare the full text of the most relevant documents.
+
+<a id="skill-wtf"></a>
+#### `wtf` — explain it clearly with terminal diagrams
+
+**Purpose:** Explain concepts, code, workflows, or problems in language a 10-year-old can follow, usually through 2–4 terminal character diagrams with a small amount of prose. It lowers the comprehension barrier without deleting important conditions or failure paths. When explaining code, logs, or documents, it reads the source first rather than drawing from guesses.
+
+**Examples:**
+
+> Use wtf to explain caching with terminal diagrams: what it is, why it is faster, and what happens when the cache and database disagree.
+
+> Use wtf to read this request-handling module and draw the complete path from entry to response with a few diagrams and very little text.
+
+<a id="commands"></a>
+### 2.5 Utility commands (not part of the 14 skills above)
+
+| Entry | Purpose | Example |
+|---|---|---|
+| `/doctor` | Inspect platform, guardrail, hook injection, and anysearch health | `/doctor` |
+| `/triage` | Recommend a route by commitment, task type, and design space; writes nothing | `/triage Help me choose the right workflow for this request` |
+| `status` | Summarize roadmap, spec, and plan records across worktrees in the same Git repository | see the CLI below |
+
+Run a status snapshot from any project subdirectory:
 
 ```bash
-node scripts/check-plugin.mjs
+node "<absolute-plugin-directory>/scripts/status.mjs" --repo "/project/path" --json
 ```
 
-`package.json.files` is the shared distribution file list. `scripts/build-distribution.mjs` extracts a real npm package and changes its marketplace entries to local paths. The default portable format retains the Agent Plugins root manifest; the git format omits only that file. All other runtime content is identical, with no second maintained source tree. Output must be a new directory outside the source checkout:
+Omit `--repo` to detect the current repository, or omit `--json` for human-readable output. The command is read-only, offline, and preserves each worktree's sources and disagreements. It neither re-runs acceptance nor verifies delivery facts.
+
+---
+
+<a id="mechanics"></a>
+## Mechanisms, benefits, and characteristics
+
+### 3.1 Request triage: match process weight to problem complexity
+
+**Mechanism:** Entry points select `exploring`, `quick-fix`, `requirement-analysis`, or a report channel according to commitment, task type, and design space. A committed repair whose size is unclear can start with quick-fix and escalate based on evidence. Existing decisions and exploration evidence are reused across handoffs.
+
+**Benefit:** Small fixes do not drown in paperwork, while complex features do not skip design. The routing reduces repeated questions, repeated investigation, and restarts after choosing the wrong workflow.
+
+### 3.2 Spec contracts: one language for design, code, tests, and acceptance
+
+**Mechanism:** Specs express observable behavior as **Requirement + Scenario (GIVEN / WHEN / THEN)**. Acceptance matrices record requiredness, D / A / X execution nature, and fast / final / manual timing. `writing-plans` translates Scenarios into verification steps; `executing-plans` and `acceptance-qa` check outcomes against the same contract. Spec frontmatter fields `covers`, `status`, `superseded_by`, and `sync_commit` manage ownership and lifecycle.
+
+**Benefit:** This reduces translation loss where the requirement says A, the implementation delivers B, and the tests verify C. Changes, supersession, deferral, and dropping all leave traceable records instead of surviving only in chat.
+
+A typical artifact layout is:
+
+```text
+.spec-dev/
+├── YYYY-MM-DD-NN-<feature>/
+│   ├── spec/                 # design, behavior contract, acceptance matrix, approved assets
+│   ├── plan/
+│   │   ├── index.md          # global constraints, interfaces, and task navigation
+│   │   ├── tasks/            # implementation, final, acceptance, and delivery tasks
+│   │   └── progress.yaml     # sole runtime state and resource ledger
+│   ├── visual/               # prototype sessions
+│   └── acceptance/           # acceptance report and evidence index
+├── explorations/             # exploration / clarification notes saved with authorization
+├── roadmaps/                 # multi-project routes and continuation state
+├── glossary.md               # cross-feature domain terminology
+└── adr/                      # architectural decisions worth preserving
+```
+
+Legacy `docs/` artifacts remain readable in place and are never migrated automatically without explicit authorization. Distribution packages exclude the plugin repository's own development archive without affecting user projects.
+
+### 3.3 Approval and authorization boundaries: automation does not decide for the user
+
+**Mechanism:** Exploration and design do not write production code by default. The spec is generated only after the complete design is approved; plan writing requires explicit consent, and executing a plan requires execution authorization. Contract-level deviations, expanded scope, deferral, or dropping return to the user for a decision, while ordinary reversible implementation details stay within the agent's authorized scope.
+
+**Benefit:** People retain control over direction, scope, and important trade-offs without being interrupted for every file operation. Design confirmation, a local prototype choice, plan approval, and execution permission cannot impersonate one another.
+
+### 3.4 Task graphs and isolated execution: parallel by default, recoverable by design
+
+**Mechanism:** Plans declare real dependencies, exact writes, shared resources, and independently verifiable boundaries. During execution, ready tasks are dispatched to implementers in independent worktrees by default, while the main thread owns claims, progress, integration, and delivery. Dependencies or resource conflicts serialize only the affected work. `progress.yaml` is the sole runtime state source; recovery checks committed state, actual worktrees, and original evidence.
+
+**Benefit:** Independent tasks do not wait unnecessarily, and conflicting tasks do not overwrite each other. Recovery resumes from real state rather than chat impressions. The resource ledger also makes cleanup of containers, temporary directories, and test data auditable.
+
+### 3.5 Evidence-driven quality: green tests are not the finish line
+
+**Mechanism:**
+
+- `test-driven-development` requires valid red, minimal implementation, and real green, distinguishing behavior tests, refactor protection, and retrospective-test evidence;
+- `test-strategy` separates per-task fast checks, independent final full verification, and manual checks with special conditions;
+- implementation finishes with independent final verification, followed by 1 / 2 / 5 review routes according to scale and a completeness critic when triggered;
+- `acceptance-qa` uses deterministic D, AI-autonomous A, and diagnostic X checks, with `pass / warn / fail / unverified` outcomes;
+- before delivery, every Requirement is reconciled as DELIVERED / DEFERRED / DROPPED / SUPERSEDED, with ADDED-IN-FLIGHT recording approved additions during execution.
+
+**Benefit:** Tests, review, and acceptance answer different questions. Failures, unverified checks, and missing coverage cannot disappear inside a broad "looks good." Fixes rerun only affected checks and reuse evidence that remains valid, while new candidates still receive the necessary re-review.
+
+### 3.6 A visual loop from prototype to running software
+
+**Mechanism:** `visual-preview` serves versioned HTML locally, and browser events return with their screen version. Approved finals and assets are archived under `spec/assets/`. The first real user journey is compared with the prototype as soon as it exists; acceptance later checks the actual page using the same roles, data, operations, viewports, and states.
+
+**Benefit:** Design feedback concerns something visible rather than imagined prose, and delivery is not declared from a screenshot alone. Save, price, and permission outcomes mocked in a prototype still require real business evidence.
+
+### 3.7 Contract-driven multi-agent collaboration: clear roles, validatable output
+
+| Agent | Responsibility | Main use |
+|---|---|---|
+| `code-explorer` | Read-only code analysis, call paths, and impact investigation | requirement exploration and root-cause investigation |
+| `external-resource-explorer` | External research with primary-source evidence | requirement design and follow-up exploration |
+| `code-reviewer` | Independent code review and spec-conformance checks | wrap-up review |
+| `implementer` | Single-task TDD and self-check in an isolated worktree | `executing-plans` |
+
+Subagent results are validated against JSON Schema contracts. If `validate-output.mjs` rejects a result, it is returned for completion once; a second failure is handled by the main thread or reported as a documented degradation. Exploration and review remain read-only, and an implementer writes only its claimed scope.
+
+**Benefit:** Parallelism does not blur responsibility, and structured receipts are easier to inspect than prose claims of completion. Missing capabilities can degrade safely, but the workflow cannot fabricate an independent review or a nonexistent tool result.
+
+### 3.8 Spec drift guards: layered defenses for synchronization
+
+**Mechanism:** An active spec's `covers` field declares the code it owns. When a change hits those paths without synchronizing the corresponding spec, the guardrail can block at edit, stop, commit, push, and CI layers. Task binding additionally checks the current task, spec, write scope, and worktree. `sync_commit` anchors the delivered synchronization point; it does not replace tests or behavioral review.
+
+**Benefit:** Documentation freshness no longer depends only on someone remembering to update it, and Git plus CI provide defenses across editing tools. The guard checks scope and synchronization facts, while tests and review remain responsible for behavioral correctness. See the [guardrail guide](guardrail/README.md) for installation and exception boundaries.
+
+### 3.9 Thin skills and progressive loading: one definition, loaded when needed
+
+**Mechanism:** Orchestration skills own flow, while clarification, TDD, test strategy, plan format, resource ledgers, and other disciplines each have one authoritative definition. Detailed templates, recovery protocols, and host adaptations load before the action that needs them. Every discovery mechanism points to the same `skills/` directory.
+
+**Benefit:** Workflows do not drift through copied rules, and irrelevant context stays unloaded. Individual skills remain reusable while the complete pipeline shares consistent constraints. Shorter files or valid structure are never presented as evidence of improved real-model behavior.
+
+### 3.10 Cross-platform, degradable design: no mandatory external MCP
+
+**Mechanism:** Claude Code / Grok Build use the Claude manifest, Codex auto-discovers the skills directory, and Pi / Agent Plugins use their own manifests. The core workflow requires no external MCP. Browser automation MCPs and performance tools are opt-in per project. AnySearch is a networked search service with its own degradation path: Python CLI → zero-dependency Node CLI → WebSearch / WebFetch according to the search rules. Missing tools, authorization, or environment conditions produce an explicit degradation or `unverified` result.
+
+**Benefit:** The same core artifacts and work discipline travel across hosts, while optional capabilities are added only when needed. Missing tools do not prevent safe progress on the remaining work, but unexecuted checks are never reported as passes.
+
+### 3.11 Model-scoped collaboration enhancements
+
+**Mechanism:** When an enabled hook explicitly reports the activation state, GPT / Codex, Kimi / Moonshot / GLM can load goal tracking, necessary-work checks, decision filtering, recovery, and delivery-omission checks. Claude and unknown models are excluded. Selection uses the receiving agent's actual model rather than the host name, and a subagent does not inherit activation merely from its parent.
+
+**Benefit:** Different models receive consistent execution discipline without changing approval gates, task scopes, or user authorization. See [model policy](guardrail/model-policy.md) for aliases, switches, and host limits.
+
+---
+
+<a id="maintenance"></a>
+## Maintenance and release reference
+
+### Plugin package maintenance
+
+The repository root is the plugin root, and runtime content has a single source tree. The two READMEs are maintained separately for English and Chinese, with no additional mirror directory. A release synchronizes five versions: `metadata.version` in `.claude-plugin/marketplace.json`, `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, root `plugin.json`, and `package.json`.
 
 ```bash
+# Manifest versions, skills[] versus disk, and symlink checks
+node scripts/check-plugin.mjs
+
+# Validate real Git-package installation and hook discovery in isolated Codex state
+node scripts/check-plugin.mjs --codex-validate
+
+# Validate every skill (including the SKILL.md UTF-8 size budget)
+node scripts/validate-skills.mjs
+
+# Build portable / Git packages; output must be a new directory outside the source checkout
 node scripts/build-distribution.mjs --output /tmp/spec-dev-package
 node scripts/build-distribution.mjs --output /tmp/spec-dev-git-package --format git
 node --test scripts/tests/distribution.test.mjs
 ```
 
-`.github/workflows/distribution.yml` builds, validates, and updates `dist` after a `v*` tag push, with ZIP, tar.gz, and npm tgz workflow artifacts. It also accepts an existing `vX.Y.Z` tag through manual dispatch. The branch has independent history and ordinary fast-forward updates, excluding source-history `.spec-dev` files. Identical rebuilds are no-ops; older or changed same-version packages are rejected. `.gitattributes` additionally uses `export-ignore` to exclude `.spec-dev` from new Git/GitHub source archives while retaining it in source control. Initial rollout requires a new release tag containing this workflow and a successful first `dist` build.
+`package.json.files` is the shared distribution list. `.github/workflows/distribution.yml` builds and updates `dist` after a `v*` tag and produces ZIP, tar.gz, and npm tgz workflow artifacts. Rebuilding identical output is a no-op; older versions or different content at the same version cannot overwrite the distribution.
 
-Validate the real install path with the official Codex CLI:
+### Maturity tiers and release discipline
 
-```bash
-node scripts/check-plugin.mjs --codex-validate
-```
+Stable skills live under `skills/`. Claude Code reads the explicit `skills[]` list in `.claude-plugin/marketplace.json`, and `check-plugin.mjs` verifies it in both directions against on-disk directories. Codex auto-discovers directories, Pi reads `pi.skills`, and Agent Plugins reads the root manifest plus `skills/`.
 
-`--codex-validate` builds the git format and uses isolated Codex installation state. It checks installed files, `hooks/list` and `plugin/read`: runtime discovery and plugin details must expose the same hooks; parsing warnings or an empty inventory fail. It starts no model turn, grants no hook trust, and leaves the current user's config, cache and daemon unchanged. npm and tar are required; CI pins Codex 0.164.0.
-
-Validate the bundled skills with `skill-creator`'s `quick_validate.py`:
-
-```bash
-node scripts/validate-skills.mjs
-```
-
-`validate-skills.mjs` also enforces a conservative UTF-8 budget of less than 20,000 bytes per `SKILL.md`. Use `--size-only` for the offline size check; move conditional detail to references with explicit reading points. This budget does not assert that every host truncates at the same character count.
-
-The script looks for the Codex built-in `skill-creator` first, and also supports `SKILL_CREATOR_QUICK_VALIDATE` or `SKILL_CREATOR_HOME` to point at a validator path. If the current Python lacks `PyYAML`, the script installs it into a temporary venv before validating.
+- Experimental skills live in `skills-in-progress/<name>/`, are absent from every plugin manifest, and promise no stability.
+- Graduation requires moving into `skills/`, registering the marketplace entry, adding `agents/openai.yaml` and evals, and updating both READMEs plus CHANGELOG.
+- Orchestration follows the thin-shell convention: disciplines reference their authoritative definition instead of creating a second copy. Shared entry points include clarifying, plan format, exploration contracts, the acceptance matrix, and test lanes.
 
 ### About evals
 
-`skills/*/evals/` holds two kinds of files with different roles:
+- `evals.json` is a **design-intent document** covering expected HARD-GATE, handoff, and degradation behavior for human review and future evaluation harnesses. The repository has no general runner for it, so it is not an automated regression line.
+- `trigger-evals.json` contains cold-startable, decidable trigger-surface cases (should-trigger / should-not-trigger and near-miss negatives), currently covering `acceptance-qa`, `clarifying`, `exploring`, `quick-fix`, `requirement-analysis`, `test-strategy`, `executing-plans`; connect them to an evaluation harness to run the verdicts.
 
-- `evals.json` — **design-intent documents**: they record the expected key behaviors of each skill (HARD-GATE refusals, handoff gates, degradation paths, etc.) for human review and a future evaluation harness. There is no runner in the repo, and most cases carry conversational preconditions with prose assertions — they are **not** an automated regression line; treat them as a checklist to walk through manually when changing skill behavior
-- `trigger-evals.json` — **cold-startable, decidable trigger-surface cases** (should-trigger / should-not-trigger single-shot prompts + near-miss negatives): currently covering seven skills — `acceptance-qa`, `clarifying`, `exploring`, `quick-fix`, `requirement-analysis`, `test-strategy`, `executing-plans`; plug into any evaluation harness and run the verdicts directly
+Structural checks, document contracts, and real-model behavior evaluations are different forms of evidence and cannot substitute for one another.
 
 ### Pre-commit hooks
 
-Enable the versioned Git hooks:
+Repository contributors can enable the versioned Git hooks:
 
 ```bash
 node scripts/install-git-hooks.mjs
 ```
 
-This sets `core.hooksPath=.githooks` for the repository. Once enabled, every commit runs:
+Once enabled, commits check the real Codex installation, skills, OpenAI metadata synchronization, and `git diff --cached --check`. A failed check aborts the commit. See `.githooks/` and the maintenance scripts for temporary skip switches and their boundaries.
 
-```bash
-node scripts/check-plugin.mjs --codex-validate
-node scripts/validate-skills.mjs
-node scripts/check-openai-sync.mjs
-git diff --cached --check
-```
-
-The hook aborts the commit on validation failure; fix per the error and commit again. Set `SKIP_CODEX_PACKAGE_HOOK=1` to skip the hook temporarily; set `SKIP_OPENAI_SYNC_CHECK=1` when a SKILL change is confirmed not to need openai.yaml syncing.
-
-### Maturity tiers and release discipline
-
-Skill discovery has four paths and all of them point at `skills/` only: Claude Code reads the explicit `skills[]` list in `.claude-plugin/marketplace.json` (`check-plugin.mjs` verifies it two-way against the directories on disk — a skill directory missing from the list, or a listed directory that does not exist, fails pre-commit); Codex auto-discovers `skills/`; Pi reads `pi.skills` in `package.json`; Agent Plugins 1.0.0 reads the root `plugin.json` plus `skills/`.
-
-- **Experimental skills** live under a top-level `skills-in-progress/<name>/` directory: nothing there enters any plugin manifest, no stability is promised, and users install one by pointing their tool at the path.
-- **Graduation checklist**: move the directory into `skills/` → add it to `skills[]` in `.claude-plugin/marketplace.json` → add `agents/openai.yaml` → add `evals/evals.json` (plus `trigger-evals.json` when the trigger boundary is tricky) → mention it in the README three times (Features, Skill Pipeline, Directory Layout) → CHANGELOG entry.
-- **Thin-shell convention**: orchestration skills only describe flow; discipline is referenced ("follow skill X; X is the definition"), never restated. Shared definition points: the clarifying core discipline, `writing-plans/references/design-principles.md`, `requirement-analysis/references/exploration-patterns.md` (dispatch, failure isolation, plugin-root resolution, contract validation), `requirement-analysis/references/codex-compat.md`, the writing-plans resource ledger (`progress.yaml` `resources`), `acceptance-qa/references/acceptance-matrix.md`, and the test-strategy lanes.
-
-## Using exploring
-
-```bash
-/exploring I'm wondering whether to build real-time collaboration — help me think it through
-```
-
-Thinking-partner posture: read code, compare directions and keep discussion open. A narrowly authorized spike may answer a question that requires execution; retain observations and an explicit resource disposition. Notes remain opt-in. Relevant implementations, prior rejections and shared terms in `.spec-dev/glossary.md` are reused without automatic decisions; shared terms are saved with approved specs.
-
-## Using requirement-analysis
-
-```bash
-/requirement-analysis design the user permission system
-```
-
-The 8-phase design workflow: understanding & triage → parallel exploration (internal + external in one wave) → general clarification plus automatic prototypes and UI clarification → adversarial validation + 2-3 options → full design presentation → write & commit the spec → self-review + adversarial validation → hand off to writing-plans.
-
-Phase 1 picks an execution tier and declares it to the user (overridable):
-
-- **light** — single-file/single-module small changes: main-thread lookups, options may collapse to one, a few-sentence spec — but the design must still be presented and approved (the HARD-GATE is never waived)
-- **standard** — the default: 3-5 code-explorers in parallel by layer/module + external-resource-explorer research + full option comparison
-- **deep** — cross-layer architecture changes / new tech stacks: multi-modal blind sweep (no cap on modality count) + contract JSON validation on merge
-
-The spec lands in the feature directory `.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md` and is committed (the later plan lands in the same directory's `plan/` as index.md + tasks/ + progress.yaml), then goes through an adversarial review subagent and user review before handing off to writing-plans. Design also checks actual actors, constraint ownership and test precedents. Behavior requirements use the **Requirement + Scenario** (GIVEN/WHEN/THEN) structure, and test & acceptance strategy uses the **acceptance matrix** — writing-plans maps Scenarios to behavior TDD, refactor protection or group verification, and the matrix anchors wrap-up review and acceptance-qa; changes to existing behavior use the ADDED/MODIFIED/REMOVED delta sections.
-
-## Using writing-plans / executing-plans
-
-```bash
-/writing-plans write an implementation plan from .spec-dev/2026-07-04-auth/spec/auth-design.md
-/executing-plans execute .spec-dev/2026-07-04-auth/plan/index.md
-```
-
-- **writing-plans**: generates T00, implementation tasks, independent final task F and maximum-numbered delivery task D; acceptance A depends on F when needed. Plans specify scopes, interfaces, changes, validation and ownership, then follow the [plan review checklist](skills/writing-plans/references/plan-review.md).
-- **executing-plans**: reuses execution authorization and persisted mode, resumes current work first and verifies writes against committed scopes. Implementation is followed by final, independent review, acceptance and reconciliation. Fixes require affected verification and review. Delivery verifies the merge/squash mapping, transfers originals, cleans owned resources and anchors sync_commit.
-
-## Using visual-preview
-
-Once essential goals are clear, qualifying page, layout and interaction changes automatically open a preview. Exploratory comparisons and diagrams can also be requested directly; see the [prototype contract](skills/visual-preview/references/ui-prototype-contract.md):
-
-```bash
-/visual-preview show me two dashboard layout options side by side in the browser
-```
-
-A local server renders HTML fragments in the browser; user clicks flow back into the session; session files persist under `<project>/.spec-dev/visual/`.
-
-## Using acceptance-qa
-
-```bash
-/acceptance-qa all run full acceptance on the export feature per the spec
-/acceptance-qa e2e add E2E tests for the cart flow
-/acceptance-qa perf-api load-test the order endpoint, p95 under 300ms
-/acceptance-qa visual run visual regression for this styling change
-/acceptance-qa diagnose the page stops responding after the button click
-/acceptance-qa accept the cart page          # without a prefix, dimensions route by intent
-```
-
-Runs over the dimension × execution-nature matrix:
-
-- **Tier D deterministic acceptance**: unit/integration/API, Playwright E2E (runs only files generated/involved this round), `toHaveScreenshot` visual regression, axe accessibility scans, performance thresholds (web CWV lab data, k6 thresholds for APIs) — real commands, zero LLM judgment
-- **Tier A AI autonomous acceptance**: Playwright MCP driven, `browser_verify_*` assertions first, mandatory evidence citation per verdict, serial adversarial recheck of fail/warn + independent evidence audit of pass
-- **Tier X diagnosis**: performance trace insights, heap snapshot comparison, network waterfall, root-cause hypothesis verification
-
-Pipeline integration: the spec's acceptance matrix → writing-plans generates the acceptance task → executing-plans triggers this skill at wrap-up → reports and evidence land in the feature directory `acceptance/`.
-
-## Using quick-fix
-
-For a bug or small adjustment you've already decided to make and that has no design space, invoke quick-fix instead of the full requirement-analysis workflow:
-
-> Use quick-fix to fix this small bug end-to-end.
-
-It follows one evidenced root-cause chain, obtains a real failure signal before confirming a non-obvious cause, and fixes through the approved public seam. Escalation remains a user decision; intermittent behavior alone is insufficient when reproduction conditions are comparable. Existing contract synchronization, TDD and authorization rules remain. Closure compares intermittent failure counts where relevant, accounts for temporary instrumentation, replays the original symptom, and explains the supported cause and verification limits. Independent side issues are recorded for follow-up; original-symptom verification is required and specialist acceptance is invoked as needed.
-
-## No External MCP Service Required
-
-The plugin needs no external MCP service. The controlled review entry point generates a local stdio MCP configuration for restricted tools without registering a global server. Browser automation for Tier A acceptance (playwright / chrome-devtools MCPs) is opt-in per project — see `skills/acceptance-qa/references/mcp-setup.md`; without them acceptance-qa degrades gracefully to the Tier D toolchain (native Playwright tests, traces, console logs).
-
-
-Check plugin health (platform / guardrail / markers / injection replay / anysearch): `/doctor`
-
-Triage a request to the right lane: `/triage <request>`
-
-### Recorded project progress
-
-Run `node "<absolute-plugin-directory>/scripts/status.mjs"` from any project subdirectory to read all registered worktrees of the same repository, or select a project with `--repo "/project/path"`. Use `--json` for the same snapshot as JSON and `--help` for usage.
-
-The output includes roadmap records, spec lifecycles, plan completion/waiting/blocked records, and their sources. It preserves differing worktree records without selecting a winner. This does not re-run acceptance or verify delivery. Exit 0 means reading completed (blocked tasks and differences are allowed), 1 means partial/invalid input, and 2 means an invocation error. Current v1 template YAML/JSON, v2 JSON, and legacy plan checkboxes are supported; unsupported syntax is diagnosed without migration. The command is read-only, offline, and one-shot, separate from doctor and execution recovery.
-
-Hosts supporting commands can use the status command instructions. Codex uses the plugin prompt entry or the same CLI above; it does not depend on commands being loaded. The script remains in the plugin directory and is not copied into the project.
-
-## Specialized Agents
-
-executing-plans dispatches ready tasks to implementers in independent worktrees by default; dependencies and resource conflicts limit concurrency, explicit serial preferences are honored, and the main thread owns progress and integration, while other agents retain analysis roles:
-
-| Agent | Purpose | Where it's used |
-|-------|------|---------|
-| **code-explorer** | Deep codebase analysis | requirement-analysis phase 2 parallel exploration |
-| **external-resource-explorer** | External resource research with citable evidence | requirement-analysis phase 2 external wave and follow-up exploration |
-| **code-reviewer** | Code review, spec conformance and optional architecture deepening | Shared wrap-up review; coverage checking remains a separate critic |
-| **implementer** | Single-task TDD and self-check | executing-plans parallel mode, isolated worktrees |
-
+<a id="directory-layout"></a>
 ## Directory Layout
 
-```
-spec-dev/                            # repo root is the plugin root (flat layout)
+```text
+spec-dev/                            # repository root = plugin root
 ├── .claude-plugin/
-│   ├── marketplace.json             # Claude Code marketplace config (points to ./)
+│   ├── marketplace.json             # Claude marketplace and explicit skills[] list
 │   └── plugin.json                  # Claude Code plugin manifest
-├── .codex-plugin/
-│   └── plugin.json                  # Codex plugin manifest
-├── .agents/
-│   └── plugins/
-│       └── marketplace.json         # Codex marketplace config (points to ./)
-├── .githooks/
-│   ├── pre-commit                   # validates the plugin package and skills before commit
-│   ├── post-commit                  # auto-release after commit (version bump + CHANGELOG + tag)
-│   └── pre-push                     # release backstop (checks CHANGELOG entry, backfills version tag)
-├── agents/                          # 4 agents, including isolated implementer
-├── commands/                        # /doctor, /triage commands
-├── guardrail/                       # spec drift guard (installable into target repos)
+├── .codex-plugin/plugin.json        # Codex plugin manifest
+├── .agents/plugins/marketplace.json # Codex marketplace configuration
+├── .githooks/                       # commit checks and release hooks
+├── agents/                          # 4 specialized agents
+├── commands/                        # doctor / triage / status
+├── guardrail/                       # spec drift guard installable into target repositories
+├── hooks/                           # Claude / Codex lifecycle hooks
 ├── skills/
-│   ├── wtf/                         # plain explanations, mostly terminal diagrams
-│   ├── ddd-lifecycle/               # DDD lifecycle workflow
-│   ├── exploring/                   # exploration mode (thinking partner)
-│   ├── clarifying/                  # shared clarification discipline (grill-style)
-│   ├── requirement-analysis/        # 8-phase requirement design workflow
-│   ├── visual-preview/              # browser visual preview
-│   ├── writing-plans/               # implementation plan writing
-│   ├── executing-plans/             # plan execution + wrap-up review
-│   ├── using-git-worktrees/         # isolated workspace discipline
-│   ├── test-driven-development/     # TDD discipline
-│   ├── test-strategy/               # test strategy discipline (lanes / governance / acceptance-matrix link)
-│   ├── acceptance-qa/               # all-round acceptance workflow
-│   ├── quick-fix/                   # lightweight bug-fix workflow
-│   └── anysearch/                   # vendored real-time search CLI (upstream snapshot)
+│   ├── exploring/                   # exploration before implementation commitment
+│   ├── clarifying/                  # shared one-question-at-a-time clarification
+│   ├── requirement-analysis/        # requirement design and specs
+│   ├── visual-preview/              # browser HTML prototypes and approved archives
+│   ├── ddd-lifecycle/               # DDD modeling, architecture, and ADRs
+│   ├── writing-plans/               # verifiable task graphs and implementation plans
+│   ├── executing-plans/             # execution, recovery, review, and delivery
+│   ├── using-git-worktrees/         # isolated-workspace discipline
+│   ├── test-driven-development/     # valid red-green and refactor protection
+│   ├── test-strategy/               # fast / final / manual test strategy
+│   ├── quick-fix/                   # lightweight diagnosis and repair
+│   ├── acceptance-qa/               # acceptance, specialist testing, and diagnosis
+│   ├── anysearch/                   # real-time search and page-extraction CLI
+│   └── wtf/                         # plain-language terminal diagrams
 ├── scripts/
-│   ├── check-plugin.mjs             # manifest version sync + symlink + Codex CLI install checks
-│   ├── validate-output.mjs          # subagent output contract validator + plan-index structure check
-│   ├── schemas/                     # 4 output contract schemas + 1 vendored manifest schema + usage notes
-│   ├── validate-skills.mjs          # validates skills via skill-creator
-│   ├── check-openai-sync.mjs        # openai.yaml structure & SKILL sync tripwire
-│   ├── doctor.mjs                   # /doctor health checks (platform / guardrail / markers / injection / anysearch)
-│   ├── update-vendored-skill.mjs    # syncs vendored skills from upstream (tag / SHA pinned)
-│   ├── release.mjs                  # release script (manual release / post-commit auto-release)
-│   └── install-git-hooks.mjs        # enables the versioned Git hooks
+│   ├── check-plugin.mjs             # manifest, directory, and Codex installation checks
+│   ├── validate-output.mjs          # output-contract and plan-index validation
+│   ├── schemas/                     # 4 output contract schemas + 1 vendored manifest schema
+│   ├── validate-skills.mjs          # skill structure and size validation
+│   ├── check-openai-sync.mjs        # openai.yaml synchronization check
+│   ├── doctor.mjs                   # health diagnostics
+│   ├── status.mjs                   # read-only cross-worktree progress snapshots
+│   ├── update-vendored-skill.mjs    # sync vendored skills from upstream
+│   ├── build-distribution.mjs       # build portable / Git distributions
+│   └── release.mjs                  # release script
 ├── CHANGELOG.md
-├── README.md
-└── README.zh-CN.md
+├── README.md                        # English
+├── README.zh-CN.md                  # Simplified Chinese
+└── LICENSE
 ```
 
-## Changelog
+---
 
-See [CHANGELOG.md](./CHANGELOG.md) (Chinese) for the detailed version history.
+**Author:** [FlameMida](https://github.com/FlameMida) · **License:** [MIT](LICENSE) · **Detailed history:** [CHANGELOG.md](CHANGELOG.md)
 
-## License
-
-MIT License
-
-## Author
-
-FlameMida
-
-## Contributing
-
-Issues and pull requests are welcome!
-
-## Instruction loading and shared document conventions
-
-Skill entry files retain purpose, trigger boundaries and persistent constraints; detailed workflows, declarations, templates and recovery protocols load before the applicable action.
-The [shared loading convention](skills/requirement-analysis/references/exploration-entry.md#技能定义与流程调用) distinguishes mentioning a skill, consuming its rules and handing off a workflow. A missing native loader does not imply a missing skill, and reading instructions does not authorize implementation.
-The existing exploration-patterns.md remains a valid navigation entry. Plugin-root resolution, dispatch/recovery and output contracts each retain one complete authoritative definition.
-The planning fields and resource ledger live in writing-plans/references/plan-format.md; generated plans carry change notes, concrete assertions, commands and interfaces, with snippets included when needed and each task file capped at 200 lines.
-DDD uses .spec-dev/glossary.md, feature-local spec terms and .spec-dev/adr/ in both standalone and delegated use.
-Write only after design or document-saving authorization; reuse same-scope decisions and do not migrate existing documents automatically.
-AnySearch and its upstream update behavior remain unchanged, including its existing invocation rules.
-Structure, document contracts and actual model behavior are separate verification results; shorter text is not evidence of improved model behavior.
+Issues and pull requests are welcome. For behavior changes, update the owning spec's requirements and acceptance matrix in the same change, and follow the repository's test and release checks.

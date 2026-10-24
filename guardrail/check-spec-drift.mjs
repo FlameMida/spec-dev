@@ -140,6 +140,14 @@ function extractHookFiles(raw) {
     return [];
   }
   const out = new Set();
+  // Codex exposes apply_patch as tool_input.command, not file_path. Include
+  // both sides of moves so a rename cannot escape either spec or task scope.
+  if (json?.tool_name === "apply_patch" && typeof json.tool_input?.command === "string") {
+    for (const line of json.tool_input.command.split(/\r?\n/)) {
+      const match = line.match(/^\*\*\* (?:Add File|Update File|Delete File|Move to): (.+)$/);
+      if (match) out.add(match[1]);
+    }
+  }
   const KEYS = ["file_path", "filePath", "path", "notebook_path", "target_file"];
   const walk = (node) => {
     if (!node || typeof node !== "object") return;
