@@ -7,6 +7,17 @@
 
 ---
 
+## [9.1.3] - 2026-10-24
+
+### 🔧 修复 (Fixed)
+
+- **hooks**：修复 SessionStart JSON 输出与 Codex 补丁守卫漏检
+
+### 📝 文档 (Docs)
+
+- **readme**：重写双语 README：工作流图、章节导航、快速开始、skill 指南与机制说明
+
+
 ## [Unreleased]
 
 ## [9.1.2] - 2026-10-23
