@@ -155,7 +155,7 @@ Grok Build 也支持 marketplace 插件条目中的 `source.ref: "dist"`；不�
 |---|---|---|---|---|
 | Claude Code | ✅ marketplace `skills[]` | ✅ `agents/*.md` | ✅ 插件注入；guardrail 可安装 | `.claude-plugin/` |
 | Codex | ✅ 目录自动发现 | ⚠️ 通过派发提示词；`spawn_agent` 不读取 `agents/*.md` | ✅ codex-hooks，需信任 | `.codex-plugin/` |
-| Grok Build | ✅ Claude 兼容（官方声明） | ✅ 同 Claude Code；字段行为以实际验收为准 | ✅ 同 Claude Code | 复用 `.claude-plugin/` |
+| Grok Build | ✅ Claude 兼容（官方声明） | ✅ 同 Claude Code；字段行为以实际验收为准 | ⚠️ hook 支持有差异；SessionStart 不注入模型上下文，不支持 PostModelSwitch | 复用 `.claude-plugin/` |
 | Pi | ✅ `package.json` 的 `pi.skills` | ⚠️ 需 `pi-subagents` 扩展 | ❌ 需另行适配 TS extension | `package.json` |
 | Agent Plugins 1.0.0 | ✅ 根级 `plugin.json` + `skills/` | — 不在便携标准内 | — 不在便携标准内 | `plugin.json` |
 

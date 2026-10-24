@@ -97,6 +97,21 @@ test("built plugin is self-contained; Git publication excludes specs, updates sa
   assert.equal(context.status, 0, context.stderr);
   assert.match(context.stdout, /collaboration: enabled/);
   assert.match(context.stdout, /最后答复/);
+  const noticeRepo = path.join(dir, 'notice-repo');
+  mkdirSync(path.join(noticeRepo, '.specs/demo'), { recursive: true });
+  run('git', ['init', '-q'], noticeRepo);
+  writeFileSync(path.join(noticeRepo, '.specs/demo/demo.md'), '---\nspec_dev:\n  status: active\n---\n# Demo\n');
+  run('git', ['add', '.specs/demo/demo.md'], noticeRepo);
+  for (const pluginRoot of [distribution, gitDistribution]) {
+    for (const config of ['hooks/hooks.json', 'hooks/codex-hooks.json']) {
+      const hook = JSON.parse(readFileSync(path.join(pluginRoot, config), 'utf8')).hooks.SessionStart
+        .flatMap(group => group.hooks).find(item => item.command.includes('session-context.mjs'));
+      const notice = run('sh', ['-c', hook.command], noticeRepo, { CLAUDE_PLUGIN_ROOT: pluginRoot });
+      const output = JSON.parse(notice).hookSpecificOutput;
+      assert.equal(output.hookEventName, 'SessionStart');
+      assert.match(output.additionalContext, /1 spec\(s\): 1 active/);
+    }
+  }
   const existing = spawnSync(process.execPath, [path.join(root, "scripts/build-distribution.mjs"), "--output", distribution], { env, encoding: "utf8" });
   assert.notEqual(existing.status, 0);
   assert.match(existing.stderr, /already exists/);

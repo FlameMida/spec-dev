@@ -176,6 +176,8 @@ Claude Code、Codex、Grok Build、Pi、Agent Plugins 1.0.0 的安装产物 SHAL
 
 2026-10-23 回归落点：`scripts/tests/distribution.test.mjs` 覆盖格式与真实 Git 发布树，`scripts/tests/codex-hook-check.test.mjs` 覆盖空发现/页面缺项/解析告警拒绝；`scripts/check-plugin.mjs --codex-validate` 使用当前 Codex 实际安装和 app-server 只读接口验证，CI 固定 0.164.0。Hook 文件顶层只使用受支持的 description/hooks，不把 JSON 可解析当作宿主可加载。
 
+2026-10-24 输出兼容修复：SessionStart 流程提示使用 Claude Code/Codex 共同支持的 `hookSpecificOutput.additionalContext` JSON，避免方括号横幅被 Codex 误判为损坏 JSON；提示内容、spec 发现、静默跳过与 `--explain` 契约不变。`hook-protocol.test.mjs` 执行插件及仓库安装后的全部已声明上下文事件，并验证 PreToolUse/Stop 的允许与阻断；distribution 测试执行 portable/git 包内的 SessionStart。Grok 的被动事件不提供同等上下文注入、缺少 PostModelSwitch，Pi 不注册这些 hooks，平台矩阵按此说明，不把清单校验作为注入成功证据。
+
 ### Requirement: doctor 诊断命令
 
 插件 SHALL 提供 `doctor` 命令（`commands/doctor.md` + `scripts/doctor.mjs`），报告五类状态并给修复指引：运行平台、guardrail 安装状态、CLAUDE.md/AGENTS.md 标记块完整性、SessionStart hook 挂载、anysearch 可用性（含双副本歧义与版本滞后）。2026-10-23 移除已退役的推理运行时诊断。

@@ -155,7 +155,7 @@ If you are unsure which route to take, start with `/triage <request>`. It only r
 |---|---|---|---|---|
 | Claude Code | ✅ marketplace `skills[]` | ✅ `agents/*.md` | ✅ plugin injection; guardrail install available | `.claude-plugin/` |
 | Codex | ✅ directory auto-discovery | ⚠️ via dispatch prompts; `spawn_agent` does not read `agents/*.md` | ✅ codex-hooks; trust required | `.codex-plugin/` |
-| Grok Build | ✅ Claude-compatible (official claim) | ✅ same as Claude Code; field behavior subject to actual acceptance | ✅ same as Claude Code | reuses `.claude-plugin/` |
+| Grok Build | ✅ Claude-compatible (official claim) | ✅ same as Claude Code; field behavior subject to actual acceptance | ⚠️ hook support differs; SessionStart does not inject model context, PostModelSwitch is unsupported | reuses `.claude-plugin/` |
 | Pi | ✅ `package.json` `pi.skills` | ⚠️ requires the `pi-subagents` extension | ❌ requires a separate TS extension adaptation | `package.json` |
 | Agent Plugins 1.0.0 | ✅ root `plugin.json` + `skills/` | — outside the portable standard | — outside the portable standard | `plugin.json` |
 

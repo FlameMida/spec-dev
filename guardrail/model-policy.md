@@ -35,6 +35,8 @@ Use exact, launcher-scoped alias mappings for gateways. Hidden routing and unrep
 
 - Codex 0.164.0 须从 Git `dist` 安装：其源码 [loader.rs](https://github.com/openai/codex/blob/rust-v0.164.0/codex-rs/core-plugins/src/loader.rs#L973) 对 Agent Plugins 格式直接跳过 hooks。Git 包省略根级 plugin.json，通用归档仍保留该清单；只增加 extensions.com.openai.hooks 不能绕过这一版本的限制。Hook JSON 顶层使用 description/hooks，不能放入 $comment。
 - 插件：Claude Code 使用 `hooks/hooks.json`；Codex 清单显式指向 `hooks/codex-hooks.json`。两份保留原 spec 流程提示，分别接入模型上下文。Hooks 须被宿主启用、允许或信任；安装成功不等于 hook 已执行。
+- 上下文输出：流程提示与模型增强均使用 `hookSpecificOutput: { hookEventName, additionalContext }` JSON；Codex 0.164.0 会把 `[` 开头的纯文本当作 JSON，不能直接输出方括号提示横幅。静默跳过仍零 stdout，`session-context --explain` 保持单行诊断。
+- Grok Build 1.0.67 的 hook 接口有独立限制：SessionStart/SubagentStart 属于被动事件，仅读取顶层 `systemMessage`，UserPromptSubmit 的放行输出不注入上下文，也没有 PostModelSwitch。复用 Claude 清单不代表模型增强已适配；Pi 仍仅分发 skills，不注册这些生命周期 hooks。不得根据这些平台的安装/清单校验成功推断上下文已注入。
 - 仓库安装器：`node guardrail/install.mjs --repo <目标仓库>` 复制脚本和规则副本，幂等合并两端 hooks。副本来自唯一规则文件，更新插件后重新运行安装器更新。增强不新增 git/Stop 闸门。
 - 新项目：模型上下文与原 `session-context.mjs` 的 spec 发现独立；没有 Git/spec 也能启用。
 - Claude Code：`SessionStart.model` 建立本代理状态，`PostModelSwitch.to_model` 更新；`UserPromptSubmit` 仅复用同一代理已观察状态。`PostModelSwitch` 需要 2.1.251+，较旧宿主不能保证会话内切换及时生效，应关闭增强或升级后使用。
@@ -63,4 +65,4 @@ node --test scripts/tests/model-collaboration.test.mjs
 
 缓存默认位于系统临时目录的 `spec-dev-collaboration-<uid>/`，按宿主、会话和代理隔离，目录 0700、文件 0600；只保存模型和注入状态，不保存用户消息、目标或任务完成状态。`SPEC_DEV_COLLABORATION_STATE_DIR` 可指定独立缓存位置。不可写或缺失状态不阻断任务，但缺模型事件不能凭空启用。删除缓存后由下一次带模型信息的事件恢复。
 
-`node scripts/check-plugin.mjs --codex-validate` 在隔离安装后读取真实 Codex 的 hooks/list 和 plugin/read，要求四个 hooks 被运行时与插件页一致识别且保持未信任；不发起模型请求或修改用户的 hook 信任。CLI/配置测试另验证模型路由、切换、恢复、安装副本与分发完整性。真实模型评测应另行对照首次交付、重复提问、目标遗漏、局部阻塞与越界情况；文件/测试通过不证明模型理解能力改善。
+`node scripts/check-plugin.mjs --codex-validate` 在隔离安装后读取真实 Codex 的 hooks/list 和 plugin/read，要求四个 hooks 被运行时与插件页一致识别且保持未信任；不发起模型请求或修改用户的 hook 信任。`node --test scripts/tests/hook-protocol.test.mjs scripts/tests/model-collaboration.test.mjs scripts/tests/distribution.test.mjs` 另执行配置中的实际命令，验证 JSON 输出、模型路由、安装副本、分发包以及 PreToolUse/Stop 的退出码；Codex apply_patch 的增删改与移动路径按真实 `tool_input.command` 检查。真实模型评测应另行对照首次交付、重复提问、目标遗漏、局部阻塞与越界情况；文件/测试通过不证明模型理解能力改善。

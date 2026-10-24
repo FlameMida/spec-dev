@@ -43,7 +43,7 @@ jobs:
             }
           '
           node scripts/check-plugin.mjs --codex-validate
-          node --test scripts/tests/distribution.test.mjs scripts/tests/codex-hook-check.test.mjs
+          node --test scripts/tests/distribution.test.mjs scripts/tests/codex-hook-check.test.mjs scripts/tests/hook-protocol.test.mjs
       - name: Build filtered plugin and archives
         run: |
           node scripts/build-distribution.mjs --output "$PACKAGE_DIR"
