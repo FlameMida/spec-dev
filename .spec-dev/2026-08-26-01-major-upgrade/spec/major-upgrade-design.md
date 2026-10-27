@@ -581,3 +581,7 @@ Agent plugins 1.0.0 字段细节以官方 schema 为准，探索结论若与 sch
 ## 与 status-overview 的分面共存
 
 .spec-dev/2026-09-10-01-status-overview/spec/status-overview-design.md 负责同一仓库多 worktree 的只读记录投影及独立 CLI。本文现行未取代条款、状态写入/恢复/验收/守卫/诊断行为保持，双方 covers 按各自切面声明；status 的完成仅表示记录，不替代本文要求的事实核验。本项不修改既有守卫执行入口。
+
+## 与工作区工具边界的共存（2026-10-27）
+
+计划生成和恢复中的命令形式及工具根核验由 [workflow-consistency A05](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-a05-工作区工具边界与宿主拒绝) 承接，在首次绑定/写入前加载共享专题；本文已取代的渐进执行条款保留历史身份。加载该专题不授权读取后继任务或重建已有工作区。验收消费 S32—S34，并核对 task-recovery 与 plan-format 引用同一权威且保留原进度、锁和原子更新协议。

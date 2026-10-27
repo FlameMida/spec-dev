@@ -175,6 +175,10 @@ spec (covers + 影响面)
 
 纯 skill 文档改动，无可执行测试；验收为文档一致性检查：三文件对新语义表述一致、引用不复制、旧版兼容句齐备，行为规范各 Scenario 作人工/AI 验收对照。
 
+## 与工作区工具边界的共存（2026-10-27）
+
+using-git-worktrees 的首次绑定/写入前置由 [workflow-consistency A05](../../2026-09-23-01-workflow-consistency/spec/workflow-consistency-design.md#requirement-a05-工作区工具边界与宿主拒绝) 定义。实际 cwd 核验和宿主命令拒绝的处理不重新定义基线测试范围；本文已标 Superseded 的范围与恢复规则仍按现行后继执行。验收消费其 S32—S34，另核对工具就绪步骤没有增加测试范围或把命令拒绝记作测试失败。
+
 ## 风险
 
 - 声明范围推导偏窄 → 回归延迟到最终全量暴露：接受的取舍，安全网保证不漏出合并门

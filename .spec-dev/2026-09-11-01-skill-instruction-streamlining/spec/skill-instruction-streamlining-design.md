@@ -322,6 +322,8 @@ writing-plans SHALL 取消跨所有任务类型的“超过五步必拆”，继
 
 worktree 就绪及计划 T00 SHALL 根据项目声明、锁文件和已有环境选择必要安装/构建命令，不用单个清单文件直接推断唯一包管理器。
 
+首次绑定/写入前的实际 cwd、文件定位、原生编辑和宿主拒绝处理 SHALL 统一消费 `skills/using-git-worktrees/references/tool-boundaries.md`；隔离入口、恢复入口、计划模板和 implementer 只保留适用时机与指针。验收复用 workflow-consistency S32—S34 的实际工具轨迹与文件读回，链接存在或 YAML 校验通过不证明模型遵循；该专题不新增安装或全量测试要求。
+
 #### Scenario: S23 已就绪的 pnpm 项目不被强制 npm 安装
 - **GIVEN** 项目明确采用 pnpm，环境已有可用依赖。
 - **WHEN** 建立或复用隔离环境。

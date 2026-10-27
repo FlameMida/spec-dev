@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,writeFileSync,existsSync,symlinkSync,unlinkSync} from 'node:fs';
+import {readFileSync,writeFileSync,existsSync,symlinkSync,unlinkSync,readdirSync} from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {workflowFixture} from './helpers/workflow-fixture.mjs';
@@ -13,6 +13,38 @@ test('S03 real committed binding activates and inspects without mutating Git',t=
   assert.equal(r.status,0,r.stdout+r.stderr);const value=JSON.parse(r.stdout);
   assert.equal(value.binding.authority,bound.authority);assert.deepEqual(value.binding.writes,['src/app.mjs']);
   assert.equal(f.git('rev-parse','HEAD'),tip);assert.equal(f.git('status','--porcelain'),'');
+});
+for(const leftover of ['file','symlink'])test('S35 an old temporary '+leftover+' cannot block a valid bind',t=>{
+  const f=workflowFixture(t),{authority}=f.bind(),file=receipt(f),stale=file+'.tmp';
+  const saved=path.join(f.outer,'old-attempt');writeFileSync(saved,'preserve old attempt\n');
+  if(leftover==='symlink')symlinkSync(saved,stale);else writeFileSync(stale,readFileSync(saved));
+  const r=f.run(cli,['bind','--plan',f.plan,'--task','T01','--authority',authority]);
+  assert.equal(r.status,0,r.stderr);assert.equal(inspect(f).status,0);
+  assert.equal(readFileSync(stale,'utf8'),'preserve old attempt\n');
+  assert.equal(readFileSync(saved,'utf8'),'preserve old attempt\n');
+});
+for(const failure of ['crash','rename-error'])test('S35 '+failure+' preserves the receipt and allows retry',t=>{
+  const f=workflowFixture(t),{authority}=f.bind(),file=receipt(f),before=readFileSync(file);
+  const dir=path.dirname(file),entries=()=>readdirSync(dir).sort(),initial=entries();
+  const preload=path.join(f.outer,'receipt-fault.cjs');
+  writeFileSync(preload,`const fs=require('node:fs'),mod=require('node:module'),rename=fs.renameSync;
+fs.renameSync=function(from,to){
+  if(String(to)===process.env.SPEC_DEV_TEST_RECEIPT){
+    if(process.env.SPEC_DEV_TEST_FAILURE==='crash')process.kill(process.pid,'SIGKILL');
+    throw Object.assign(new Error('injected receipt rename failure'),{code:'EACCES'});
+  }
+  return rename.call(this,from,to);
+};mod.syncBuiltinESMExports();\n`);
+  const args=['bind','--plan',f.plan,'--task','T01','--authority',authority];
+  const failed=f.run(cli,args,{env:{...process.env,NODE_OPTIONS:'--require='+preload,SPEC_DEV_TEST_RECEIPT:file,SPEC_DEV_TEST_FAILURE:failure}});
+  if(failure==='crash')assert.equal(failed.signal,'SIGKILL');else{assert.equal(failed.status,1);assert.match(failed.stderr,/injected receipt rename failure/);}
+  assert.deepEqual(readFileSync(file),before);
+  const afterFailure=entries();
+  if(failure==='rename-error')assert.deepEqual(afterFailure,initial,'a handled failure cleans only its temporary files');
+  else assert.ok(afterFailure.length>initial.length,'the crash leaves an interrupted attempt for the retry test');
+  const retried=f.run(cli,args);assert.equal(retried.status,0,retried.stderr);
+  assert.equal(inspect(f).status,0);assert.deepEqual(readFileSync(file),before);
+  assert.deepEqual(entries(),afterFailure,'retry must preserve older attempts and leave no temporary file of its own');
 });
 for(const target of ['spec','task','scope'])test('S02 modified '+target+' invalidates existing authority',t=>{
   const f=workflowFixture(t);f.bind();

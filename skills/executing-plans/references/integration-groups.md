@@ -57,7 +57,7 @@ completed 组必须有 verify 自己目录中的通过证据，记录的业务�
 
 以下 Python 3 标准库片段演示上面的既有协议，不是新的锁 CLI、状态格式或自动恢复服务。计划作者按实际特性路径、会话 owner、任务角色和批准命令内嵌适用代码；执行者仍须先核对授权与 plan-state。每个取锁→操作→检查点→释放阶段在同一脚本内保留锁凭据，并在首次保护写入前向实际工具回执 flush 原始凭据，不把短命进程 PID 当编排 owner。默认入口不接管已有锁；仅下述已核验同会话续接可继续原锁。未知锁、维护门、身份不符或异常均停止并保留现场。
 
-脚本通过已有许可通道执行，例如 `rtk proxy python3 -` 的标准输入；仅需计算哈希时可直接用该通道，不必先写临时脚本。文件写入限于批准的特性目录及该特性在真实 common-dir 下的锁/维护门元数据。工具拒绝后报告该具体命令和许可缺口；不得转去范围外临时仓实施任务，也不得以禁用权限限制代替授权。只编写计划时，只生成和校验计划；实际执行仍等待对应授权。
+本节代码表达锁内原子协议，不保证任意宿主接受内联 Python 或 RTK 包装。首次执行前按 [工具边界](../../using-git-worktrees/references/tool-boundaries.md) 核对当前宿主支持的获批入口；不能为避开命令检查拆散锁生命周期或临时换包装。协议内子进程直接调用实际 Git/Node，RTK 是可选的宿主集成，不是协议依赖。文件写入限于批准的特性目录及该特性在真实 common-dir 下的锁/维护门元数据。工具拒绝后报告该具体命令和许可缺口；不得转去范围外临时仓实施任务，也不得以禁用权限限制代替授权。只编写计划时，只生成和校验计划；实际执行仍等待对应授权。
 
 <!-- integration-group-reference:start -->
 ```python
@@ -71,7 +71,7 @@ def require(condition, message):
 
 def git(worktree, *args):
     return subprocess.check_output(
-        ["rtk", "proxy", "git", *args], cwd=worktree)
+        ["git", *args], cwd=worktree)
 
 def identity(directory):
     info = directory.lstat()
@@ -192,7 +192,7 @@ def checkpoint(receipt, state, message):
 def preflight(receipt, schemas=("plan-index", "plan-state")):
     validator = Path(receipt["validator"]).resolve(strict=True)
     for schema in schemas:
-        result = subprocess.run(["rtk", "proxy", "node", str(validator), schema,
+        result = subprocess.run(["node", str(validator), schema,
                                  str(receipt["feature"] / "plan")],
                                 cwd=receipt["worktree"], capture_output=True)
         print(result.stdout.decode(), end="", flush=True)
@@ -218,7 +218,7 @@ def register_evidence(receipt, state, directory, policy):
             "canonical evidence resource path required")
     require(isinstance(policy, str) and policy.strip(), "resource retention policy required")
     entry = ("evidence: " + receipt["feature_key"] + "/" + directory
-             + " —— rtk proxy echo 'retain registered evidence; no cleanup in this phase'")
+             + " —— echo 'retain registered evidence; no cleanup in this phase'")
     if entry not in state["resources"]:
         state["resources"].append(entry)
         state["notes"].append("evidence " + directory + ": " + policy)

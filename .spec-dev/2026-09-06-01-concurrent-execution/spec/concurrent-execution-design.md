@@ -283,8 +283,8 @@ implementer SHALL 在给定绝对 worktree 内核对仓库、分支和基线，�
 
 #### Scenario: S13 基线错误先停
 - **GIVEN** 工具继承了主线程 cwd，或 worktree HEAD 不是派发基线。
-- **WHEN** implementer 准备首次写文件。
-- **THEN** 先切到正确 worktree 并复核；无法建立绑定则 blocked，主线程工作区零业务改动。
+- **WHEN** implementer 准备激活任务绑定或首次写文件。
+- **THEN** 在宿主支持的目标工作区先核对实际 cwd、仓库、分支、基线和本次派发/恢复现场，再 bind/inspect；宿主不支持切换或无法建立绑定则 blocked，主线程工作区零业务改动。已登记的 dirty 恢复现场不自动清空。验收同时消费 workflow-consistency S32、S34，不能用父线程 cwd 或人工绑定证明子线程自动入口可用。
 
 #### Scenario: S14 红绿与自检证据齐全
 - **GIVEN** 一票有可复现的失败测试。

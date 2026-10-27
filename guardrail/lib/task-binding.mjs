@@ -1,6 +1,6 @@
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {readFileSync,writeFileSync,existsSync,realpathSync,renameSync,unlinkSync,lstatSync} from 'node:fs';
+import {readFileSync,writeFileSync,existsSync,realpathSync,renameSync,unlinkSync,lstatSync,mkdtempSync,rmSync} from 'node:fs';
 import {parseRecord,parseUniqueJson} from './record-data.mjs';
 import {readScopes,scopeFingerprint,legacyTasks} from './task-scopes.mjs';
 import {normalizeWrite,resolveWrite} from './write-paths.mjs';
@@ -104,8 +104,14 @@ export function localReference(repo){
 export function activateReceipt(repo,reference){
   const binding=readBinding(repo,reference),old=localReference(repo);
   need(!old||(old.plan===reference.plan&&old.task===reference.task),'another task receipt is active');
-  const file=receiptPath(repo),tmp=file+'.tmp';
-  writeFileSync(tmp,JSON.stringify(reference)+'\n',{flag:'wx'});renameSync(tmp,file);return {ok:true,receipt:file,binding};
+  const file=receiptPath(repo),dir=mkdtempSync(file+'.tmp-'),tmp=path.join(dir,'receipt.json');
+  try{
+    writeFileSync(tmp,JSON.stringify(reference)+'\n',{flag:'wx',mode:0o600});
+    renameSync(tmp,file);
+  }finally{
+    rmSync(dir,{recursive:true,force:true});
+  }
+  return {ok:true,receipt:file,binding};
 }
 export function clearReceipt(repo,plan,task){
   const old=localReference(repo);need(old&&old.plan===plan&&old.task===task,'receipt identity mismatch');
