@@ -267,7 +267,7 @@ Grok Build 也支持 marketplace 插件条目中的 `source.ref: "dist"`；不�
 <a id="skill-using-git-worktrees"></a>
 #### `using-git-worktrees` — 准备隔离且可验证的工作区
 
-**用途：** 先检测现有隔离，再优先使用宿主原生 worktree 工具，最后才降级到手工 `git worktree`。负责目录安全检查、依赖就绪和基线测试，避免嵌套 worktree、污染当前分支或把既有测试失败误认为本次回归。
+**用途：** 先检测现有隔离；新建 worktree 始终放在项目根 `.worktrees/`，宿主原生工具能遵守目标路径时才优先，否则使用 `git worktree`。已有工作区保留原位置。负责目录安全检查、依赖就绪和基线测试，避免嵌套 worktree、污染当前分支或把既有测试失败误认为本次回归。
 
 **调用示例：**
 

@@ -1,6 +1,6 @@
 interface:
   display_name: "Using Git Worktrees"
-  short_description: "隔离工作区：核对执行能力，优先可用的原生 worktree，自动 Git 降级，按管理方式恢复并验证依赖和基线。仅在需要隔离的开发或执行计划前使用；日常小改动无需隔离"
+  short_description: "隔离工作区：新建固定在项目根 .worktrees，原生工具能遵守路径才优先，否则使用 Git；核对执行能力、管理方式、依赖和基线。仅在需要隔离的开发或执行计划前使用；日常小改动无需隔离"
   default_prompt: "用 $using-git-worktrees 在动手实现前建立隔离工作区。"
 
 policy:

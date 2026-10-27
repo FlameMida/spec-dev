@@ -19,9 +19,10 @@
 
 **步骤 2：建立 worktree**
 
-先按 using-git-worktrees 核对执行能力与实际管理方式；优先可用的宿主原生 worktree 入口，入口不可用或创建失败且允许安全降级时自动使用 Git：
-确认 `.worktrees/` 已被忽略（`git check-ignore -q .worktrees`，未忽略先加入 `.gitignore` 并提交），然后
-`git worktree add .worktrees/<分支名> -b <分支名>` 并切换到该目录（分支名对齐计划，如 `plan/YYYY-MM-DD-NN-<feature>`）。
+先按 using-git-worktrees Step 1 核对执行能力，并将新建目标固定为 `<实际项目根>/.worktrees/<分支名>` 的绝对路径；路径不得逃逸，已有 `worktrees/` 或宿主默认目录不改变目标。
+两种机制创建前都确认 `.worktrees/` 已被忽略（在项目根运行 `git check-ignore -q .worktrees/`，未忽略先将 `/.worktrees/` 加入根 `.gitignore` 并提交）。只有能明确指定或确认使用目标路径的宿主原生入口才优先；仅名称参数、路径能力未知或目标不同则直接使用 Git。原生失败时先核对遗留资源，允许安全降级才继续：
+`git -C "<实际项目根>" worktree add "<实际项目根>/.worktrees/<分支名>" -b "<分支名>"`（分支名对齐计划，如 `plan/YYYY-MM-DD-NN-<feature>`）。
+创建后核对回执与 Git 列表中的实际路径再进入；路径不符时停止后续写入并报告，不自动搬移、删除或重复创建。Step 1 已复用的工作区保留原位置，不因新目录规则自动迁移。
 
 在现有 notes/resources 中记录宿主原生或 Git 管理、实际根/分支及恢复入口。一次 Bash 的 cd 不证明会话或其他文件工具已切换；首次绑定前核对实际工具 cwd。Git 降级后的普通会话不因恢复而无条件 EnterWorktree 接管，已有原生隔离会话也不自动移出。
 
