@@ -31,6 +31,8 @@ T00、独立 final 验证、验收、最终任务只由主线程执行；已授�
 
 ## 独占与恢复
 
+首次认领/派发前按 [工作区工具边界](../../using-git-worktrees/references/tool-boundaries.md) 核对运行能力。派发携带已有管理方式及恢复记录指针；spawn 的 cwd、子代理命令的 cwd 和文件工具根分别验证，不能把提供绝对路径当作隔离已经生效。工具缺少所需能力时按主入口处理，不派发后再要求执行者用 cd 或 EnterWorktree 猜测修正。
+
 首次受保护写入前实际取得 [特性锁协议](feature-lock.md)，沿 common-dir/feature_key 竞争同一锁；持锁主线程独占进度与集成。未知旧 owner 不按时间抢锁，释放后不写状态。
 首次激活、模式切换及中断恢复之前取得 [激活与恢复](parallel-activation-recovery.md) 完整规则，已有当前定义可复用。
 

@@ -16,7 +16,7 @@ color: green
 
 输入必须包含任务绑定 authority、task_id、claim_key、绝对 worktree、branch、base_commit、任务/spec/index 指针、依赖产出接口定位、writes/resources、基线与票内测试命令、研究指针及已预登记的证据目录。缺少任一影响执行的输入，回报 blocked。
 
-先使用主线程提供的实际 task-binding.mjs 执行 bind/inspect（只激活局部引用，不编辑 progress 或手写 Git 元数据），再在指定 worktree 执行 `git rev-parse --show-toplevel`、`git branch --show-current`、`git rev-parse HEAD`、`git status --porcelain --untracked-files=all`，与派发值逐项核对。工具继承主线程 cwd 时显式切换，并让每条后续命令指定该 worktree。基线、分支或干净状态不符就停止写入，不能在主线程工作区临时实现。
+先读取 [worktree 工具与命令边界](../skills/using-git-worktrees/references/tool-boundaries.md)，在宿主支持的目标工作区依次执行 `pwd`、`git rev-parse --show-toplevel`、`git branch --show-current`、`git rev-parse HEAD`、`git status --porcelain --untracked-files=all`，与派发值逐项核对。确认实际工作区、基线和现场符合本次派发/恢复记录后，才使用主线程提供的实际 task-binding.mjs 执行 bind/inspect（只激活局部引用，不编辑 progress 或手写 Git 元数据）。工具支持 cwd 时每条后续命令明确指定；宿主固定在其他工作区或不允许切换时回报 blocked，不能先在主线程目录绑定或临时实现。已登记保全的 dirty 恢复现场按恢复协议消费，不能为恢复“干净”而丢弃半成品。
 
 渐进加载：只读自己的任务、spec、导航表依赖行和研究指针，不读无关后继正文。任务文件块与 writes 不一致立即 blocked，不能自行扩大授权。基线按 using-git-worktrees 和计划「相关测试范围」执行；缺工具、零测试或 skip 不是通过。
 

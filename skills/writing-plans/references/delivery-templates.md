@@ -2,6 +2,8 @@
 
 > 阅读时机：生成 F、A、D 前。把示例路径、ID、argv 和已核实的 T00 来源绑定替换为计划实际值；每个任务给出自己的变量来源和失败分支，不依赖前一工具调用的 shell 变量。所调用工具必须在执行环境可达；脱离插件携带时，内嵌或随计划保存获批工具及直接依赖，不能留下失效的插件缓存路径。
 
+所有入口遵循 [工作区工具边界](../../using-git-worktrees/references/tool-boundaries.md)：恢复同一管理方式，核对实际 cwd/权限及原子操作能力，Git 查询与后续独立动作分调用。下面的命令不依赖 RTK；项目需要包装时核对其真实入口和原始输出语义。原子协议示例不得因拆命令而丢锁，也不保证任意宿主接受内联形式。
+
 ## 独立 final 验证票 F（每份计划固定生成）
 
 F 依赖全部实施和组验证出口，final 先于审查与验收；F 不依赖验收 A 或最大号交付 D。编号按导航顺延，禁止按“全部任务已完成”进入 F。
@@ -10,7 +12,7 @@ F 依赖全部实施和组验证出口，final 先于审查与验收；F 不依�
 2. 在已提交业务版本上真实运行并保存回执：
 
 ```bash
-rtk proxy node "${CLAUDE_PLUGIN_ROOT}/scripts/execution-evidence.mjs" record \
+node "${CLAUDE_PLUGIN_ROOT}/scripts/execution-evidence.mjs" record \
   --feature "<绝对特性目录>" --task <F任务ID> --phase final --attempt <唯一尝试名> \
   -- <项目实际完整套件argv>
 ```
@@ -42,7 +44,7 @@ rtk proxy node "${CLAUDE_PLUGIN_ROOT}/scripts/execution-evidence.mjs" record \
 按实际前置 ID 对账 T00、实施、F、A，不要求 D 先 completed。保存 D in_progress；逐条核对独立审查、适用 critic、验收及 Requirement 对账。按已有授权处置修复；新增取舍才询问，范围内例行修复不重复索取许可。
 
 ```bash
-rtk proxy node "${CLAUDE_PLUGIN_ROOT}/scripts/execution-evidence.mjs" verify \
+node "${CLAUDE_PLUGIN_ROOT}/scripts/execution-evidence.mjs" verify \
   --feature "<实际实施特性目录>" --record "<F的实际record路径>" --candidate <实际候选SHA>
 ```
 
@@ -86,10 +88,10 @@ console.log(JSON.stringify({record_path:output}));
 在实施根取得已存在的 SOURCE_TIP，使用 businessTree 实算 source_tree；创建前核对 HISTORY_REF 未占用或已等于同一 tip：
 
 ```bash
-rtk proxy git -C "<实际实施根>" rev-parse HEAD
-rtk proxy git -C "<实际实施根>" show-ref --verify "refs/spec-dev/archive/<实际特性标识>/source"
+git -C "<实际实施根>" rev-parse HEAD
+git -C "<实际实施根>" show-ref --verify "refs/spec-dev/archive/<实际特性标识>/source"
 # 不存在时，用全零旧值防止覆盖；已存在且不同则停止，不能强制改写。
-rtk proxy git -C "<实际实施根>" update-ref "refs/spec-dev/archive/<实际特性标识>/source" <SOURCE_TIP> <全零旧值>
+git -C "<实际实施根>" update-ref "refs/spec-dev/archive/<实际特性标识>/source" <SOURCE_TIP> <全零旧值>
 ```
 
 history_ref 登记为保留/移交资源。转存目标须位于清理后仍存活的目录，不能放在将删除的 worktree 或资源内；只保存 SHA 字符串不等于保存来源对象。
@@ -127,7 +129,7 @@ print(json.dumps({'target_commit':head,'record_path':relative+'/record.json'}))
 实际 operations 例如 `[["git","merge","--ff-only","<实施分支>"]]`；squash 包含 merge --squash 与随后的实际 commit。PR 沿授权执行对应工具动作，保存原始 API 响应、URL、source head、merge commit 与 hash；仍 open 则 awaiting_merge、D in_progress，不能锚定。默认本地，不因计划存在自动 push/创建/合并 PR。
 
 ```bash
-rtk proxy node "${CLAUDE_PLUGIN_ROOT}/scripts/execution-evidence.mjs" transfer \
+node "${CLAUDE_PLUGIN_ROOT}/scripts/execution-evidence.mjs" transfer \
   --source "<实际实施特性目录>" --target "<存活目标特性目录>"
 ```
 

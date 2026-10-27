@@ -19,9 +19,11 @@
 
 **步骤 2：建立 worktree**
 
-有原生 worktree 工具（如 EnterWorktree）或 using-git-worktrees skill 时优先使用（以本次平台实际能力为准）；否则手工降级：
+先按 using-git-worktrees 核对执行能力与实际管理方式；优先可用的宿主原生 worktree 入口，入口不可用或创建失败且允许安全降级时自动使用 Git：
 确认 `.worktrees/` 已被忽略（`git check-ignore -q .worktrees`，未忽略先加入 `.gitignore` 并提交），然后
 `git worktree add .worktrees/<分支名> -b <分支名>` 并切换到该目录（分支名对齐计划，如 `plan/YYYY-MM-DD-NN-<feature>`）。
+
+在现有 notes/resources 中记录宿主原生或 Git 管理、实际根/分支及恢复入口。一次 Bash 的 cd 不证明会话或其他文件工具已切换；首次绑定前核对实际工具 cwd。Git 降级后的普通会话不因恢复而无条件 EnterWorktree 接管，已有原生隔离会话也不自动移出。
 
 **步骤 3：安装依赖并验证基线**
 
@@ -35,7 +37,7 @@
 将已验证的实际基线 SHA 写入 T00.commit，保存 T00 completed 检查点；步骤 2 跳过不意味着 T00 无需落盘。状态写入采用同目录临时文件 + rename，保留原 tasks/notes/resources；状态提交独立于它引用的实际基线提交。
 ````
 
-降级：非 git 仓库、或沙箱拒绝创建 → 在执行记录中注明"未隔离"及原因，原地继续任务 1。
+降级：非 Git 仓库或无法创建隔离时，注明真实限制；仅在用户/计划已允许未隔离执行时原地继续。隔离为明确约束时停止依赖它的写入，不自动改到来源工作区实施。原生入口失败后仍保留获准的 Git worktree 自动降级。
 
 ## 任务结构
 

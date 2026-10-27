@@ -91,6 +91,8 @@ notes: []               # 偏差与备注，append-only
 
 ## 绑定与激活（唯一定义点）
 
+生成与执行命令时遵循 [worktree 工具与命令边界](../../using-git-worktrees/references/tool-boundaries.md)：先核对实际 cwd，普通文件编辑优先原生工具，保留进度/锁的原子更新要求。下列程序片段表达绑定协议，不保证任意宿主接受该内联形式；宿主拒绝时保留原件和现有状态，不能把片段藏进新脚本或改写 CLI 来通过检查。计划不得把人工执行后的 inspect 成功写成自动绑定已验证。
+
 分文件 `tasks.TNN.binding` 仅含 `{scope_commit,scope_digest,authorization_ref,worktree,branch,claim_key,claim_checkpoint}`。scope_commit 是已经提交的静态版本，digest 由上述函数实算；worktree/branch 来自实际 Git，串行 claim 两项为 null。主线程核对已有用户授权、写入 in_progress/current 与 binding 后独立提交，得到 authority SHA，再激活本地引用。字段非空不证明用户授权或行为符合性。
 
 生成每张需写入的票时，把以下顺序及实际变量值写全：
