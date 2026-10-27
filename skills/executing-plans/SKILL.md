@@ -74,7 +74,7 @@ flowchart TD
 
 ## 阶段 2：隔离工作区
 
-执行计划的任务 0（建立隔离工作区）——完整纪律遵循 using-git-worktrees skill（已隔离检测、原生工具优先、git 降级、基线测试验证），分支名对齐计划（如 `plan/2026-07-03-export-report`）。计划缺任务 0（旧版计划）时，直接调用 using-git-worktrees 补齐同等效果。T00 无论新建或复用隔离，都消费 using-git-worktrees Step 1b 的跨特性残留只读报告；同一现场已有报告则复用，不重复扫描或删除其他特性资源。基线验证范围遵循计划头部「相关测试范围」声明（判据见 using-git-worktrees Step 3 与 writing-plans 任务 0 模板）；旧版计划无该节 → 按全量执行。
+执行任务 0，遵循 using-git-worktrees：复用已有隔离；新建固定项目根 `.worktrees`，原生工具能遵守路径才优先，否则用 Git；验证基线。分支名对齐计划（如 `plan/2026-07-03-export-report`）。旧版计划缺任务 0 时，直接调用该 skill 补齐。T00 无论新建或复用，都消费其 Step 1 的跨特性残留只读报告；同一现场已有报告则复用，不重复扫描或删除其他特性资源。基线验证范围遵循计划头部「相关测试范围」声明（判据见 using-git-worktrees Step 3 与 writing-plans 任务 0 模板）；旧版计划无该节 → 按全量执行。
 
 **降级**：非 git 仓库或无法建立隔离时，按 using-git-worktrees 的既有纪律记录并处理；来源分支受保护不是原地实施理由，仍在隔离特性分支工作。交付与权限遵循 references/delivery-channels.md，策略无法查询时记未知。
 

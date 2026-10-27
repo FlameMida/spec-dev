@@ -267,7 +267,7 @@ After writing, the plan is checked against the [plan review checklist](skills/wr
 <a id="skill-using-git-worktrees"></a>
 #### `using-git-worktrees` — prepare an isolated, verifiable workspace
 
-**Purpose:** Detect existing isolation first, prefer the host's native worktree tool, and fall back to manual `git worktree` only when necessary. It handles directory safety, dependency readiness, and baseline verification, preventing nested worktrees, current-branch pollution, and confusion between pre-existing failures and new regressions.
+**Purpose:** Detect existing isolation first. Always create new worktrees under the project root's `.worktrees/`; prefer the host's native tool only when it can use the required path, otherwise use `git worktree`. Existing worktrees stay in place. It handles directory safety, dependency readiness, and baseline verification, preventing nested worktrees, current-branch pollution, and confusion between pre-existing failures and new regressions.
 
 **Examples:**
 
