@@ -15,17 +15,19 @@
 
 ### Step 2：按类别选工具
 
+浏览器诊断先按 [浏览器接入](browser-setup.md) 读取官方 `ego-browser` skill 与 `ego-browser skill` 完整指南，使用 ego-lite 的实际能力；以下是取证方向，具体 API/参数须在当前指南或 `help()` 中核对。
+
 | 类别 | 工具与操作 |
 |------|-----------|
-| 渲染 | playwright MCP：`browser_snapshot` 结构对照 + 截图对比；`browser_console_messages` 查报错；必要时 `browser_evaluate` 读计算样式 |
-| 渲染（Shadow DOM/iframe） | 先用 playwright MCP 官方能力：snapshot 可穿透开放 Shadow DOM，`--caps vision` 启用坐标族（`browser_mouse_click_xy`）兜底闭合边界；仍不可达再考虑外部 CDP 工具（见下方信任边界） |
-| 前端性能 | chrome-devtools MCP：`performance_start_trace` → `performance_analyze_insight`（LCPBreakdown/DocumentLatency 等）；`emulate` CPU/网络节流复现（区分环境慢/代码慢）——细则见 [performance.md](performance.md) |
-| 内存 | chrome-devtools MCP：操作前后 `take_heapsnapshot` × 2 → `compare_heapsnapshots` 看增长类 → `get_heapsnapshot_retainers` 找持有链 |
-| 网络 | chrome-devtools MCP：`list_network_requests` 瀑布（慢/失败/串行链）→ `get_network_request` 看单请求明细；对照后端日志 |
-| 逻辑 | playwright MCP 交互复现 + 源码分析（复现路径 → 定位到 file:line） |
+| 渲染 | ego-browser `page.snapshot()` 结构对照，按需截图；用 `page.evaluate()` 读计算样式，错误日志按当前指南支持的 CDP/事件能力采集 |
+| 渲染（Shadow DOM/iframe） | 按官方指南使用快照、开放 shadow root 选择器和 iframe 子树；语义不可达时根据截图使用官方鼠标/键盘 API；仍不可达如实记录缺口 |
+| 前端性能 | ego-lite 复现关键交互，按实际可用的页面指标或官方 CDP 通道取证；区分环境慢/代码慢——细则见 [performance.md](performance.md) |
+| 内存 | 在同一条件下比较操作前后可取得的内存数据；需要堆快照/持有链时先核实官方 CDP 通道和事件采集支持，不能把粗粒度内存增长直接判为泄漏 |
+| 网络 | 复现前按官方指南启用必要的 CDP/事件采集，保存请求状态、耗时和错误并对照后端日志；页面资源时序不能代替完整请求体或失败原因 |
+| 逻辑 | ego-lite 交互复现 + 源码分析（复现路径 → 定位到 file:line）；按真实结果断言 |
 | 后端性能 | k6 输出按时间轴分层（错误率何时抬升、p95 拐点对应 VU 数）+ 服务端日志/慢查询/资源指标对照 |
 
-同一浏览器实例不要同时被 playwright MCP 与 chrome-devtools MCP 驱动——诊断切换工具时结束前一会话。
+同一目标复用一个 TaskSpace，浏览器操作串行。缺少指标或无法访问目标时标记未验证，不猜用旧工具名。Safari/Firefox 特有故障不能仅凭 ego-lite 的 Chromium 结果归因或宣布修复。
 
 ### Step 3：根因假设验证（铁律 3）
 
@@ -44,6 +46,6 @@
 **优先级**: P1/P2/P3 + 一句话影响
 ```
 
-## 外部 CDP 工具的信任边界
+## 能力边界
 
-穿透闭合 Shadow DOM/跨域 iframe/Electron 内嵌页的极端场景，官方 MCP 能力不够时可引入第三方 CDP 工具（如 browser-use/browser-harness）。**引入前必须向用户说明并获得同意**——克隆并执行第三方仓库代码是外部代码进入本机的信任边界；同时先检查该仓库是否仍在维护（已归档或长期无更新时提示风险）。使用方式：Chrome 以 `--remote-debugging-port=9222` 启动，工具经 CDP WebSocket 连接，坐标级 `Input.dispatchMouseEvent` 穿透 DOM 边界。
+先使用官方 Page API；确有缺口时才沿官方指南核对 `page.evaluate()` / `page.cdp()`。原生桌面、闭合边界或目标浏览器仍无法取证时，保留实际错误、已排除项和缺失条件，使用项目已有的对应工具或声明未验证；不自动安装另一套浏览器驱动来掩盖缺口。

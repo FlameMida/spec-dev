@@ -9,7 +9,7 @@
     {
       "id": "aq-ai-acceptance-evidence",
       "prompt": "验收一下购物车页面 http://localhost:5173/cart，重点看数量增减和小计联动",
-      "expected_output": "页面默认三步：核对定稿/预期与有效原件，对照实际数量和小计交互，缺口补验。按真实工具断言并保存expected/observed/required及证据hash；校验原件不替代语义，风险复核聚焦关键或弱证据，不固定审计每个pass。"
+      "expected_output": "先读取官方 ego-browser skill 并完整读取 ego-browser skill 输出，在同一 TaskSpace 内通过 ego-lite 串行操作。页面默认三步：核对定稿/预期与有效原件，对照实际数量和小计交互，缺口补验。按真实页面观测和实际执行的断言保存expected/observed/required及证据hash；动作成功不代表业务通过，不猜用Playwright或旧MCP API；校验原件不替代语义，风险复核聚焦关键或弱证据，不固定审计每个pass。按官方TaskSpace规则收尾。"
     },
     {
       "id": "aq-perf-api-threshold",
@@ -19,7 +19,7 @@
     {
       "id": "aq-perf-web-cwv",
       "prompt": "看看首页加载性能达不达标，我们要求 LCP 2.5 秒内",
-      "expected_output": "路由到 perf-web；用 chrome-devtools MCP performance_start_trace（先导航后开 trace）采集 LCP/INP/CLS lab 值；至少采样 3 次取中位数并附原始值；对 2500ms 预算判定；标注\"本机 lab 数据非生产 RUM\"；超线时用 performance_analyze_insight 展开根因"
+      "expected_output": "路由到 perf-web；先读取官方 ego-browser skill 和完整运行时指南，用 ego-lite 及已核实的采集能力或项目已有测量工具取证。需要提前注册的采集器须在导航前就绪；至少采样3次取中位数并附原始值、来源、单位和环境；有效LCP对2500ms预算判定，标注本机lab非生产RUM。无法采集则unverified，不把load时间冒充LCP，不假定trace或INP可用；超线按真实观测验证根因。"
     },
     {
       "id": "aq-matrix-integration",
@@ -29,7 +29,12 @@
     {
       "id": "aq-intent-routing-diagnose",
       "prompt": "为什么这个下拉菜单在 Safari 里点了没反应？页面是 staging.example.com/settings",
-      "expected_output": "意图推断路由到 diagnose，不先跑其他维度；按失败分类选工具（渲染/逻辑类 → playwright MCP + 源码分析）；根因按\"若成立做 X 应观察到 Y\"假设验证后才写报告；产出定位到 file:line 的根因与修复建议"
+      "expected_output": "意图推断路由到 diagnose，不先跑其他维度；浏览器操作按官方 ego-browser skill 和完整运行时指南使用 ego-lite，结合源码和实际可得事件。明确Chromium不能证明Safari行为；沿项目已有Safari/设备工具获取目标证据，否则Safari项保持unverified。根因按若成立做X应观察到Y验证，未证实只列假设；已证实根因给file:line和修复建议。"
+    },
+    {
+      "id": "aq-ego-browser-missing",
+      "prompt": "验收购物车页，但当前没有官方 ego-browser skill，ego-browser 命令也不存在。项目已有 Playwright Test 脚本。",
+      "expected_output": "指出官方skill和CLI缺失，提供官方接入路径；不自动安装旧浏览器MCP，不修改全局配置，不把spec-dev安装视为浏览器就绪。继续适用的独立Playwright Test检查；页面AI验收受阻项保持unverified，不冒称通过。"
     },
     {
       "id": "aq-should-not-trigger-daily-test",

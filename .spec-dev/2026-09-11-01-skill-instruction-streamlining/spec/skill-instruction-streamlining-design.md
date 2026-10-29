@@ -72,7 +72,7 @@ spec_dev:
 | A17 | 删除重复测试劝诫 | `skills/test-driven-development/SKILL.md:29、149、163` |
 | A18 | 统一验收测试范围与时机 | acceptance-qa 主文件、`unit-integration.md`、矩阵 |
 | A19 | 证据驱动的契约影响判定 | quick-fix 步骤 3、4、5a/5b |
-| C01 | 浏览器 MCP 自配说明统一 | acceptance-qa 主文件和 `mcp-setup.md` |
+| C01 | ego-lite 与官方 ego-browser 入口统一 | acceptance-qa、visual-preview 和 `browser-setup.md` |
 | C02 | 计划模板的有效行为红 | `skills/writing-plans/SKILL.md:284` |
 | C03 | DDD 文档与保存规范统一 | DDD 全套指令与 RA 文档规则 |
 
@@ -395,19 +395,23 @@ quick-fix SHALL 将契约影响作为现行要求、实现行为和拟议修复�
 - **WHEN** 处理明确的小修。
 - **THEN** 如实记录未命中，以已知需求及适用测试边界处理，不编造契约，也不询问缺少对应依据的问题。
 
-### Requirement: C01 浏览器 MCP 能力按实际配置说明
+### Requirement: C01 浏览器统一使用 ego-lite 与官方 ego-browser
 
-验收文档 SHALL 统一说明插件不分发浏览器 MCP，使用目标项目实际可用能力及适用降级路径，不声称安装插件即完成浏览器配置。
+2026-10-29 用户明确要求移除 Chrome DevTools MCP 与 Playwright MCP 的依赖，直接使用 ego-lite 浏览器及其官方 `ego-browser` skill；此决定替代此前的浏览器 MCP 按项目自配路径。
 
-#### Scenario: S34 未配置浏览器 MCP 如实降级
-- **GIVEN** 仅安装本插件，项目未自配浏览器 MCP。
+浏览器预览、实际页面验收和诊断 SHALL 先读取宿主可用的官方 `ego-browser` skill，执行 `ego-browser skill` 并完整读取当前版本指南，再经 `ego-browser nodejs` 操作 ego-lite。插件不内嵌或改写官方 skill，不分发、注册或推荐旧浏览器 MCP；安装和故障排查指向官方 skill 与官网。不得把 ego-browser 当成 Playwright API。
+
+项目已有的 Playwright Test/CLI、axe、Lighthouse CI 等确定性测试入口继续按需使用，不作为 ego-lite 页面操作的前置依赖。性能、内存、网络取证只按当前指南实际能力执行；缺失的指标或目标浏览器不能用推测值或 Chromium 结果代替。相关说明、评估预期、双语 README 与插件元数据同步。
+
+#### Scenario: S34 缺少 ego-browser 如实报告
+- **GIVEN** 仅安装本插件，缺少官方 skill、ego-lite 或可用连接。
 - **WHEN** 装配验收能力。
-- **THEN** 不报告自动生效；使用适用现有工具或标记未验证，不自动写全局配置。
+- **THEN** 指向官方安装/排障指引，未执行的页面项标记 unverified；独立的既有确定性测试可继续，不回退安装旧浏览器 MCP，不自动写全局配置。
 
-#### Scenario: S35 已有能力正常复用
-- **GIVEN** 项目已有可核验的浏览器能力。
-- **WHEN** 验收需要它。
-- **THEN** 正常复用；配置无效报告实际故障，不将本地受控审查 stdio 工具等同浏览器 MCP。
+#### Scenario: S35 官方浏览器入口与既有测试边界
+- **GIVEN** ego-lite 与官方 ego-browser 可用，项目可另有 Playwright Test。
+- **WHEN** 浏览器预览、验收或诊断需要实际操作。
+- **THEN** 完整读取运行时指南并在同一 TaskSpace 串行操作、观察结果、保存真实证据；既有确定性测试保持原 runner；不调用旧 MCP 工具或虚构 ego-browser API，缺失能力明确未验证。
 
 ### Requirement: C02 计划模板要求具体行为断言失败
 
@@ -525,7 +529,7 @@ Lane 的执行归属固定如下，表中斜线不是执行者自行择一的许
 | S27—S28 | TDD/eval | 原行为保护及正反场景 | PR / nightly | 删除劝诫不放宽有效红、纯重构或例外处理 |
 | S29—S30 | acceptance/eval | 范围/时机夹具 + 实际模型任务 | PR / nightly | 局部不自加全量；获批到期全量、独立复跑不得省略 |
 | S31—S33 | contract/eval | 现行要求与批准状态夹具 | PR / nightly | 恢复行为可继续，新语义/冲突仍裁决，无 spec 不编问题 |
-| S34—S35 | capability/docs/eval | manifest/说明检查与能力夹具 | PR / nightly | 自配/缺失/无效如实区分，无新增浏览器注册 |
+| S34—S35 | capability/docs/eval | 分发内容与引用检查、能力评估场景；本机 ego-lite 实际导航和快照 smoke | PR / nightly | 官方指南完整读取、旧 MCP 依赖移除、既有 Test runner 保留；缺失/无效/指标不足如实区分，静态检查不冒充模型评估 |
 | S36—S37 | TDD/template/eval | 模板回归与可执行目标行为夹具 | PR / nightly | 业务失败与符号/环境/零测试故障分开 |
 | S38—S41 | DDD/docs/eval | 独立/引用、域、保存与旧位置夹具 | PR / nightly | 同一位置/权限/生命周期，不自动迁移或创建空文件 |
 | S43 | integrity/integration | 文件内容和实际访问/写入核对 | PR | 排除源文件不变，旧档案不被消费，无关工作不受影响 |
@@ -561,7 +565,7 @@ nightly 完整模型评测沿现行非阻塞约定，未执行时明确记录未
 - [需求主流程](../../../skills/requirement-analysis/SKILL.md)、[共享上下文规则](../../../skills/requirement-analysis/references/context-reuse.md)、[探索与派发规则](../../../skills/requirement-analysis/references/exploration-patterns.md)。
 - [计划主文件](../../../skills/writing-plans/SKILL.md)、[设计判据](../../../skills/writing-plans/references/design-principles.md)、[并发入口](../../../skills/executing-plans-parallel/SKILL.md)、[组执行协议](../../../skills/executing-plans/references/integration-groups.md)。
 - [小修流程](../../../skills/quick-fix/SKILL.md)、[TDD](../../../skills/test-driven-development/SKILL.md)、[测试策略](../../../skills/test-strategy/SKILL.md)、[隔离工作区](../../../skills/using-git-worktrees/SKILL.md)。
-- [验收入口](../../../skills/acceptance-qa/SKILL.md)、[验收矩阵](../../../skills/acceptance-qa/references/acceptance-matrix.md)、[MCP 配置说明](../../../skills/acceptance-qa/references/mcp-setup.md)。
+- [验收入口](../../../skills/acceptance-qa/SKILL.md)、[验收矩阵](../../../skills/acceptance-qa/references/acceptance-matrix.md)、[浏览器接入说明](../../../skills/acceptance-qa/references/browser-setup.md)。
 - [DDD 入口](../../../skills/ddd-lifecycle/SKILL.md)、[建模规则](../../../skills/ddd-lifecycle/references/modeling/SKILL.md)、[来源与许可](../../../skills/ddd-lifecycle/references/ATTRIBUTION.md)。
 - [探索角色](../../../agents/code-explorer.md)、[输出契约](../../../scripts/schemas/exploration-report.json)、[当前格式测试](../../../scripts/tests/plan-single-format.test.mjs)、[包维护说明](../../../README.md)。
 

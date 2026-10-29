@@ -167,8 +167,11 @@ Grok Build 也支持 marketplace 插件条目中的 `source.ref: "dist"`；不�
 | hard | `git` | 漂移守卫、worktree、每任务提交、`sync_commit` 锚定 | 主流程不可用 |
 | hard | Node.js ≥ 18 | 契约校验、guardrail、doctor、visual-preview、`node --test` | 相关校验与预览不可用，按约定降级并报告 |
 | soft | `python3` | anysearch Python CLI | 降级到零依赖 Node CLI，再到 WebSearch / WebFetch |
-| soft | Playwright / k6 / Lighthouse / 浏览器 MCP | 专项验收、Tier A 与性能检查 | 使用可用的 Tier D 工具链，或将对应项标为 `unverified` |
+| soft | ego-lite + 官方 `ego-browser` skill | 浏览器预览、页面验收和诊断 | 按官方指引接入；受影响的浏览器项标为 `unverified` |
+| soft | 项目已有 Playwright Test / k6 / Lighthouse | 确定性 E2E 与专项检查 | 使用适用的既有工具，或将对应项标为 `unverified` |
 | soft | `codex` CLI、`skill-creator` | 仅本仓库开发与发布校验 | 对应开发检查软跳过 |
+
+浏览器任务需安装 [ego-lite 及官方 `ego-browser` skill](https://lite.ego.app/document/en/docs/quick-start)。操作前读取该 skill，执行 `ego-browser skill` 并完整读取与当前版本匹配的指南。本插件不内嵌官方 skill，也不注册浏览器 MCP；详见[浏览器接入](skills/acceptance-qa/references/browser-setup.md)。项目已有的 Playwright Test/CLI 测试独立保留。
 
 契约校验器无法运行时，主线程按 schema 人工核对必填键与 `coverage_note`，并在报告中注明“契约校验降级”；定义见 [探索与契约规则](skills/requirement-analysis/references/exploration-patterns.md)。macOS / Linux 的受控审查入口另需 Python 3.9+、已认证的本机 Claude CLI 和 rtk；这不影响其他平台使用原生工作流。
 
@@ -458,7 +461,7 @@ node "<插件绝对目录>/scripts/status.mjs" --repo "/项目路径" --json
 
 ### 3.10 跨平台与可降级设计：主流程不强制外部 MCP
 
-**机制：** Claude Code / Grok Build 使用 Claude 清单，Codex 自动发现技能目录，Pi 与 Agent Plugins 使用各自清单。基础流程不要求外部 MCP；浏览器自动化 MCP 和性能工具按项目选择。AnySearch 是可降级的联网搜索服务，Python CLI 不可用时切换零依赖 Node CLI，再按规则降级到 WebSearch / WebFetch。工具、授权或环境缺失会记录降级或 `unverified`。
+**机制：** Claude Code / Grok Build 使用 Claude 清单，Codex 自动发现技能目录，Pi 与 Agent Plugins 使用各自清单。基础流程不要求外部 MCP；浏览器操作通过官方 `ego-browser` skill 和当前运行时指南使用 ego-lite，专项测试工具按项目选择。AnySearch 是可降级的联网搜索服务，Python CLI 不可用时切换零依赖 Node CLI，再按规则降级到 WebSearch / WebFetch。工具、授权或环境缺失会记录降级或 `unverified`。
 
 **优点：** 同一套核心产物和工作纪律可跨宿主使用，增强能力按需接入；缺工具时仍能安全完成可完成的部分，但不会把未执行检查写成通过。
 

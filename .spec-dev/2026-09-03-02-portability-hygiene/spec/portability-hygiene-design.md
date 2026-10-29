@@ -194,7 +194,7 @@ plan-index 校验器（validate-output.mjs）SHALL 把依赖列中的 `TNN-TMM` 
 
 ### Requirement: 运行时依赖分级表
 
-README.md 与 README.zh-CN.md SHALL 各含「运行时依赖」节（平台矩阵之后），以表格声明：hard 依赖（缺失即主流程不可用）= git、Node.js ≥ 18；soft 依赖各自的用途与降级链——bun/tsx → `think.mjs` → 回复内分点推演，python3 → anysearch Node 版 → WebSearch/WebFetch，Playwright/k6/Lighthouse/浏览器 MCP → Tier D 工具链或标记 unverified，codex CLI 与 skill-creator 仅仓库开发期（缺失软跳过）；校验器不可用的降级一句指向 exploration-patterns。
+README.md 与 README.zh-CN.md SHALL 各含「运行时依赖」节（平台矩阵之后），以表格声明：hard 依赖（缺失即主流程不可用）= git、Node.js ≥ 18；soft 依赖各自的用途与降级链——python3 → anysearch Node 版 → WebSearch/WebFetch；ego-lite 与官方 ego-browser 用于实际浏览器操作，缺失时按官方安装指引处理并标记未验证；项目既有 Playwright Test/k6/Lighthouse 用于对应确定性专项，独立可行项可继续；codex CLI 与 skill-creator 仅仓库开发期（缺失软跳过）。校验器不可用的降级一句指向 exploration-patterns。2026-10-23 推理记录器退役；2026-10-29 浏览器决定与验收沿 skill-instruction-streamlining C01/S34—S35，同步双语表，不保留浏览器 MCP 配置要求。
 
 #### Scenario: 双语表存在且分级一致
 

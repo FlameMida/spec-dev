@@ -42,7 +42,7 @@ spec_dev:
     - "skills/acceptance-qa/SKILL.md"
     - "skills/acceptance-qa/references/acceptance-matrix.md"
     - "skills/acceptance-qa/references/unit-integration.md"
-    - "skills/acceptance-qa/references/mcp-setup.md"
+    - "skills/acceptance-qa/references/browser-setup.md"
     - "agents/code-explorer.md"
     - "agents/external-resource-explorer.md"
     - "README.md"
@@ -443,11 +443,11 @@ requirement-analysis（阶段 1/阶段 4/Checklist）、exploring、quick-fix、
 
 ### Requirement: check-mcp 健康检查命令
 
-移除 `commands/check-mcp.md`。原因：MCP 清零后检查对象消失；健康检查职能（含可选浏览器 MCP 的 opt-in 检测）并入 doctor 命令。
+移除 `commands/check-mcp.md`。原因：MCP 清零后检查对象消失；健康检查职能并入 doctor 命令。浏览器接入指向官方 ego-browser 指南，doctor 不检测浏览器连接（2026-10-29 同步 C01）。
 
 ### Requirement: 插件分发 MCP 配置
 
-移除 `.mcp.json` 及 `.codex-plugin/plugin.json` 中的 mcpServers 配置（`.agents/plugins/marketplace.json` 经核实无 mcpServers 键，交付时仅核实无残留引用）。原因：零 MCP 依赖策略——sequential-thinking 由 vendored skill 承接；playwright/chrome-devtools 转为 acceptance-qa `references/mcp-setup.md` 指引下的用户按需自配（Tier A 浏览器自动化的智能降级语义不变，Tier D 的 Playwright CLI 不受影响）。
+移除 `.mcp.json` 及 `.codex-plugin/plugin.json` 中的 mcpServers 配置（`.agents/plugins/marketplace.json` 经核实无 mcpServers 键，交付时仅核实无残留引用）。2026-10-23 推理记录器退役沿 ADR-0012；2026-10-29 浏览器改用 ego-lite 与官方 ego-browser，接入沿 acceptance-qa `references/browser-setup.md` 及 skill-instruction-streamlining C01/S34—S35，不保留旧浏览器 MCP 自配路径。Tier D 的 Playwright Test/CLI 不受影响。
 
 ## 方案设计
 
