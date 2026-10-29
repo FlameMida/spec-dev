@@ -47,7 +47,7 @@ D/A/X、unit/e2e/visual 等维度、fast/final/manual 时机与 required 必需�
 node "${CLAUDE_PLUGIN_ROOT}/skills/acceptance-qa/scripts/detect-env.mjs" --cwd <项目根>
 ```
 
-输出含 stacks、projects 和各项目的框架/配置/目录。Go 根加 web 前端按各自 project_root 执行，不在仓库根误装一套工具；suggestions 只处置选中检查需要的项目。复用实际已连接的浏览器/Playwright/MCP 能力；不分发浏览器 MCP，不自动注册浏览器 MCP。未配置或无效时按 [mcp-setup.md](references/mcp-setup.md) 与可用工具链降级，缺工具/网络/账号标 unverified，不能假装执行成功或自动开启外部业务写入。
+输出含 stacks、projects 和各项目的框架/配置/目录。Go 根加 web 前端按各自 project_root 执行，不在仓库根误装一套工具；suggestions 只处置选中检查需要的项目。浏览器操作统一使用 ego-lite：先读取官方 `ego-browser` skill，执行 `ego-browser skill` 并完整读取当前版本指南，再按指南操作。接入与缺失处理见 [browser-setup.md](references/browser-setup.md)；缺工具/网络/账号标 unverified，不能假装执行成功或自动开启外部业务写入。项目已有 Playwright Test/CLI 等确定性测试继续复用，不作为页面操作的前置依赖。
 
 持久资源沿 [资源台账总则](../writing-plans/references/plan-format.md#资源台账总则)：可隔离则复用并只登记自建隔离单元，无法确认隔离才建自有实例；共享实例不做破坏性操作。计划内登记 progress.resources，独立验收对话记账并在报告保留清理去向。
 
@@ -87,4 +87,4 @@ light/standard 默认采用上述三步和风险复核；deep 扩大适用状态
 
 ## 环境兼容
 
-按当前宿主实际可用的浏览器工具执行，不硬编码不存在的 browser_verify_* 能力。能用真实框架断言时优先；没有对应能力明确记录缺口。需要独立证据审计时用实际可用的独立执行者，不继承原结论；不可用则主线程复核并声明非独立。浏览器操作始终串行，证据审计只读原件。真实模型评估与静态/工具测试分开记账。
+各宿主均通过官方 `ego-browser` skill 使用 ego-lite，API 以 `ego-browser skill` 的完整输出为准，不套用 Playwright API 或旧 MCP 工具名。能用真实断言时优先；没有对应能力明确记录缺口。需要独立证据审计时用实际可用的独立执行者，不继承原结论；不可用则主线程复核并声明非独立。同一目标复用一个 TaskSpace，浏览器操作始终串行，证据审计只读原件。真实模型评估与静态/工具测试分开记账。

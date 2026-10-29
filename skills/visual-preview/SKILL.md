@@ -29,11 +29,13 @@ exploring 先澄清探索目的，实际需要界面比较时再展示；纯概�
 
 ## 启动会话
 
+代理查看、操作和验证原型时，先读取官方 `ego-browser` skill，执行 `ego-browser skill` 并完整读取当前版本指南，通过 ego-lite 打开下方服务器返回的 URL；同一目标复用一个 TaskSpace。接入与缺失处理见 [浏览器接入](../acceptance-qa/references/browser-setup.md)。用户打开预览链接不等于代理已完成页面验证；缺少浏览器能力时明确说明未验证。
+
 ```bash
-# 命中自动入口或已有明确预览请求后启动。--open 打开浏览器；--project-dir 支持持久化和同端口重启。
+# 命中自动入口或已有明确预览请求后启动；将返回 URL 交给 ego-lite。--project-dir 支持持久化和同端口重启。
 # 可选 --theme-css <file>：注入项目的 design tokens/CSS 变量，让 mockup 用项目自己的配色。
 # ${CLAUDE_SKILL_DIR} 由平台替换为本 skill 目录；未替换时取 skill base directory。
-bash "${CLAUDE_SKILL_DIR}/scripts/start-server.sh" --project-dir /path/to/project --open
+bash "${CLAUDE_SKILL_DIR}/scripts/start-server.sh" --project-dir /path/to/project
 ```
 
 当前处于特性上下文（本次会话正在做某特性的需求设计/计划）时**必须**额外传 `--feature-dir .spec-dev/<当日特性目录>`——产物落 `<feature-dir>/visual/<session-id>/`（端口/密钥记忆文件仍固定在 `.spec-dev/visual/` 根，跨特性共享端口）；无特性上下文时不传，回退 `<project>/.spec-dev/visual/`。

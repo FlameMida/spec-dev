@@ -267,19 +267,19 @@
     },
     {
       "id": "S34",
-      "title": "S34 未配置浏览器 MCP 如实降级",
+      "title": "S34 缺少 ego-browser 能力如实降级",
       "lane": "nightly",
-      "given": "仅安装本插件，项目未自配浏览器 MCP。",
+      "given": "仅安装本插件，缺少官方 ego-browser skill、CLI 或浏览器连接。",
       "when": "装配验收能力。",
-      "then": "不报告自动生效；使用适用现有工具或标记未验证，不自动写全局配置。"
+      "then": "报告真实缺口并指向官方接入指南；独立的已有测试继续，受阻项标记 unverified，不安装旧浏览器 MCP 或自动写全局配置。"
     },
     {
       "id": "S35",
       "title": "S35 已有能力正常复用",
       "lane": "nightly",
-      "given": "项目已有可核验的浏览器能力。",
+      "given": "官方 ego-browser skill 与 ego-lite 可用，项目已有确定性测试入口。",
       "when": "验收需要它。",
-      "then": "正常复用；配置无效报告实际故障，不将本地受控审查 stdio 工具等同浏览器 MCP。"
+      "then": "先读取官方 skill 并完整读取 ego-browser skill 输出；页面操作使用 ego-browser nodejs，同一目标复用一个 TaskSpace 串行操作，按官方生命周期收尾；保留项目已有测试，连接失败如实报告。"
     },
     {
       "id": "S36",

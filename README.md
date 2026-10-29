@@ -167,8 +167,11 @@ If you are unsure which route to take, start with `/triage <request>`. It only r
 | hard | `git` | drift guard, worktrees, per-task commits, `sync_commit` anchoring | main workflows unavailable |
 | hard | Node.js ≥ 18 | contract validation, guardrail scripts, doctor, visual-preview, `node --test` | related validation and preview unavailable; degrade and report as documented |
 | soft | `python3` | anysearch Python CLI | falls back to the zero-dependency Node CLI, then WebSearch / WebFetch |
-| soft | Playwright / k6 / Lighthouse / browser MCPs | specialist acceptance, Tier A, and performance checks | uses the available Tier D toolchain, or marks the row `unverified` |
+| soft | ego-lite + official `ego-browser` skill | browser previews, page acceptance, and diagnosis | follow the official setup guide; affected browser checks remain `unverified` |
+| soft | existing Playwright Test / k6 / Lighthouse | deterministic E2E and specialist checks | run applicable existing tools, or mark the row `unverified` |
 | soft | `codex` CLI, `skill-creator` | repository development and release checks only | corresponding development checks skip softly |
+
+For browser work, install [ego-lite and its official `ego-browser` skill](https://lite.ego.app/document/en/docs/quick-start). Read that skill, run `ego-browser skill`, and read the complete version-matched guide before operating the browser. Spec-dev does not bundle the official skill or register browser MCPs; see [browser setup](skills/acceptance-qa/references/browser-setup.md). Existing Playwright Test/CLI suites remain supported independently.
 
 If the contract validator cannot run, the main thread checks required keys and `coverage_note` against the schema manually and reports "contract validation degraded"; see the [exploration and contract rules](skills/requirement-analysis/references/exploration-patterns.md). The controlled review entry point on macOS / Linux additionally requires Python 3.9+, an authenticated local Claude CLI, and rtk. Native workflows remain available on other platforms.
 
@@ -458,7 +461,7 @@ Subagent results are validated against JSON Schema contracts. If `validate-outpu
 
 ### 3.10 Cross-platform, degradable design: no mandatory external MCP
 
-**Mechanism:** Claude Code / Grok Build use the Claude manifest, Codex auto-discovers the skills directory, and Pi / Agent Plugins use their own manifests. The core workflow requires no external MCP. Browser automation MCPs and performance tools are opt-in per project. AnySearch is a networked search service with its own degradation path: Python CLI → zero-dependency Node CLI → WebSearch / WebFetch according to the search rules. Missing tools, authorization, or environment conditions produce an explicit degradation or `unverified` result.
+**Mechanism:** Claude Code / Grok Build use the Claude manifest, Codex auto-discovers the skills directory, and Pi / Agent Plugins use their own manifests. The core workflow requires no external MCP. Browser operations use ego-lite through the official `ego-browser` skill and its current runtime guide; specialist test tools remain project-specific. AnySearch is a networked search service with its own degradation path: Python CLI → zero-dependency Node CLI → WebSearch / WebFetch according to the search rules. Missing tools, authorization, or environment conditions produce an explicit degradation or `unverified` result.
 
 **Benefit:** The same core artifacts and work discipline travel across hosts, while optional capabilities are added only when needed. Missing tools do not prevent safe progress on the remaining work, but unexecuted checks are never reported as passes.
 

@@ -22,13 +22,13 @@
 
 默认验收线取 good 阈值；矩阵可覆盖。
 
-### 路径 A（默认，零新增依赖）：chrome-devtools MCP trace
+### 路径 A（默认）：ego-lite 复现与实际指标取证
 
-1. `navigate_page` 到目标 URL（**先导航后开 trace**——reload/autoStop 模式要求如此）
-2. `performance_start_trace`（`reload: true, autoStop: true`）→ 结果含 LCP/INP/CLS lab 值与 insight 列表
-3. 需要细分时 `performance_analyze_insight`（如 `LCPBreakdown`、`DocumentLatency`）
-4. 弱环境复现：`emulate` 设 `cpuThrottlingRate: 4` + `networkConditions: "Slow 4G"` 再采一组——桌面开发机的裸数字普遍过于乐观
-5. 对预算逐指标判定，中位数超线即 fail
+1. 按 [浏览器接入](browser-setup.md) 读取官方 `ego-browser` skill，执行并完整读取 `ego-browser skill`；在同一 TaskSpace 中打开目标并复现关键交互。
+2. 优先使用项目已有的性能采集入口和 `web-vitals` 数据，通过官方 `page.evaluate()` 读取可观察指标；需要低层取证时先核对当前官方 `page.cdp()` / 事件能力。加载前需启用的采集器先准备，再导航/重载；不能假定导航后的一次读取已覆盖全部指标。
+3. 记录每个指标的采集来源、单位、页面版本、视口、采样窗口、缓存与节流条件。原始导航/资源时序和通用 CDP metrics 不等于 LCP/INP/CLS；没有可靠采集器的指标标记 `unverified`，不能用 0 或加载时间替代。
+4. 同一条件至少采样 3 次，保存全部原始值并取中位数；预算内为 pass，超线为 fail。弱环境复现只使用官方通道实际支持的设置，记录并恢复本次设置，未执行的环境不泛化结论。
+5. 需要完整 trace、性能审计或归因而当前能力不足时，使用项目已有的对应工具；否则明确缺口。ego-browser 不承诺提供现成的 Web Vitals 报告或自动 insight 分析。
 
 ### 路径 B（项目要持久化性能门禁进 CI）：Lighthouse CI
 
@@ -57,8 +57,8 @@ npm i -D @lhci/cli && npx lhci autorun --collect.url=<url> --collect.numberOfRun
 
 ### 补充
 
-- `lighthouse_audit`（chrome-devtools MCP）产出 **accessibility/SEO/best-practices** 评分，**不含性能**——性能一律走 trace；该工具用于 a11y 维度的补充证据
-- INP 的 lab 复现需要真实交互：trace 期间执行矩阵中的关键交互（点击/输入）再停止，否则只有加载类指标
+- 项目已有 Lighthouse CLI/CI 的审计报告可作为对应维度证据，记录实际审计配置和覆盖范围；不把页面截图当成性能报告
+- INP 的 lab 复现需要可靠采集器和真实交互：采集期间执行矩阵中的关键操作（点击/输入），没有交互或有效样本时不能把缺值当 0
 - RUM（真实用户数据）不在验收范围内，但报告可提示接入 `web-vitals` 库作为长期观测
 
 ## perf-api：后端性能
@@ -111,8 +111,8 @@ load 及以上必须先和用户确认目标环境——**对生产或共享环�
 
 ## 诊断联动（性能 fail 时）
 
-1. `performance_analyze_insight` 逐个展开高影响 insight（LCPBreakdown → 定位慢在 TTFB/资源/渲染哪段）
-2. `list_network_requests` 找大响应/串行瀑布/未压缩资源
-3. `emulate` 节流下复现，区分"环境慢"与"代码慢"
+1. 对照实际采集的指标与时序，定位慢在服务器响应、资源加载还是渲染；没有足够证据时保留假设
+2. 经 ego-browser 官方 CDP/事件能力或项目已有原件检查大响应、串行请求和资源传输，不能编造瀑布
+3. 在有能力且可比较的节流条件下复现，区分"环境慢"与"代码慢"
 4. 后端：k6 结果按时间轴分层（错误率何时开始抬升、p95 拐点对应的 VU 数）→ 对照服务端日志/慢查询
 5. 根因写入报告前按铁律 3 做假设验证
