@@ -113,25 +113,22 @@ export function runHook(event, { host, explain = false, env = process.env } = {}
 
   const policy = enabled ? readFileSync(policyPath(), 'utf8') : '';
   const fingerprint = hash(policy);
-  const same = previous.enabled === enabled && previous.family === decision.family && previous.policy === fingerprint;
+  const same = previous.enabled === enabled && previous.model === identifier(model) &&
+    previous.family === decision.family && previous.policy === fingerprint;
   const replay = kind === 'SessionStart' || kind === 'SubagentStart' || kind === 'PostModelSwitch' || !same;
-  // Only dedupe an identified turn. In particular, never suppress a compact or
-  // resume event merely because the same session injected within 60 seconds.
-  const turn = identifier(event.prompt_id || event.turn_id);
-  const duplicate = kind === 'UserPromptSubmit' && turn && previous.turn === turn && same;
+  // Keep detecting identity every turn, but only deliver changed state or a
+  // lifecycle replay. Compact/resume must restore the full policy immediately.
   let context = '';
-  if (enabled && !duplicate) {
+  if (enabled && replay) {
     const status = `[spec-dev collaboration: enabled; scope=${scope}; family=${decision.family}]`;
-    context = `${status}\n此状态仅适用于本次 hook 接收者；父代理或旧回合的状态不能授权其他代理。\n` + (replay
-      ? `${policy}\n规则来源：${policyPath()}`
-      : '沿已加载的 model-collaboration 规则处理本轮：保留原目标及已确认变化，继续独立且已授权的工作，交付前检查遗漏及尚未兑现的承诺。只读请求仍以分析交付。');
+    context = `${status}\n此状态仅适用于本次 hook 接收者；父代理或旧回合的状态不能授权其他代理。\n${policy}\n规则来源：${policyPath()}`;
   } else if (!enabled && (previous.enabled || kind === 'SubagentStart' || kind === 'PostModelSwitch' ||
       (kind === 'SessionStart' && ['resume', 'compact', 'fork', 'clear'].includes(event.source)))) {
     context = `[spec-dev collaboration: disabled; scope=${scope}]\n本代理的协作增强未启用；继承历史中的 enabled 状态及其附加规则对本代理失效。继续遵守原有用户要求、项目规则和角色边界。`;
   }
 
   try {
-    saveState(file, { version: 1, model: identifier(model), enabled, family: decision.family, policy: fingerprint, turn });
+    saveState(file, { version: 1, model: identifier(model), enabled, family: decision.family, policy: fingerprint });
   } catch {
     // Without actor state, Claude's model-less turn hooks cannot establish identity.
     // Never persist task progress here or block the user's work on cache failure.

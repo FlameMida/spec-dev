@@ -8,6 +8,7 @@ import {createGitView,ScopeViolation,taskAssociation} from './lib/git-view.mjs';
 import {localReference,readBinding} from './lib/task-binding.mjs';
 import {normalizeWrite} from './lib/write-paths.mjs';
 const MODE=process.argv[2],TRAILER_RE=/^spec-guard:\s*(off|skip)\b/im;
+const warnOnly=MODE==='--worktree'&&process.argv.includes('--warn-only'),notices=[];
 let stdinCache=null,associated=false;
 const raw=(repo,...args)=>execFileSync('git',['-C',repo,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
 const git=(repo,...args)=>raw(repo,...args).trim();
@@ -20,7 +21,6 @@ function history(repo,...args){
 }
 const blockedCode=()=>['--hook','--worktree'].includes(MODE)?2:1;
 function readStdin(){if(stdinCache===null)stdinCache=process.stdin.isTTY?'':readFileSync(0,'utf8');return stdinCache;}
-function stopHookActive(){try{return JSON.parse(readStdin()).stop_hook_active===true;}catch{return false;}}
 function changedBetween(repo,before,after){
   if(!before)return files(repo,'diff-tree','--root','--no-commit-id','--name-only','--no-renames','-r','-z',after);
   return files(repo,'diff','--name-only','--no-renames','-z',before,after);
@@ -104,6 +104,7 @@ function pushChecks(repo){
 }
 try{
   if(!['--staged','--range','--push','--files','--hook','--worktree'].includes(MODE))usage();
+  if(process.argv.includes('--warn-only')&&!warnOnly)usage();
   const repo=realpathSync(git(process.cwd(),'rev-parse','--show-toplevel'));let violations=[];
   if(MODE==='--range'||MODE==='--push'){
     const records=MODE==='--range'?rangeChecks(repo,process.argv[3]):pushChecks(repo);
@@ -124,12 +125,15 @@ try{
     violations=check(repo,changed,view,previous,reference,MODE==='--hook'?dirty(repo):[]);
   }
   if(violations.length){
-    if(!associated&&MODE==='--worktree'&&stopHookActive()){warn('工作区仍存在 spec 漂移，本回合不再重复阻断。');process.exit(0);}
-    report(violations);process.exit(blockedCode());
+    report(violations);process.exitCode=blockedCode();
   }
 }catch(error){
-  if(error instanceof ScopeViolation||associated){process.stderr.write('[spec-dev scope] '+error.message+'\n');process.exit(blockedCode());}
-  warn('漂移守卫执行异常，已放行（请检查守卫脚本）：'+error.message);
+  if(error instanceof ScopeViolation||associated){output('[spec-dev scope] '+error.message+'\n');process.exitCode=blockedCode();}
+  else warn('漂移守卫执行异常，已放行（请检查守卫脚本）：'+error.message);
+}
+if(warnOnly){
+  process.exitCode=0;
+  if(notices.length)console.log(JSON.stringify({systemMessage:'spec-dev Stop audit (advisory / 仅提醒):\n'+notices.join('\n')}));
 }
 function extractHookFiles(raw) {
   if (!raw.trim()) return [];
@@ -181,16 +185,21 @@ function report(violations) {
   lines.push(`  3) If the spec is obsolete, set its frontmatter ${B("status")} to superseded AND fill ${B("superseded_by")} with the successor spec path (repo-root-relative; write a lightweight REMOVED-only successor spec if the feature is simply deleted). / 该 spec 已作废时，把其 frontmatter 的 status 改为 superseded 并同时填写 superseded_by 指向后继 spec（仓库根相对路径；特性纯删除时先写一份仅含 REMOVED 的轻量后继 spec）。`);
   lines.push("");
   lines.push(`  This applies without the spec-dev plugin too: artifacts live in .spec-dev/<date-feature>/; changing code means syncing the sibling spec. / 未安装 spec-dev 插件也应遵守：产物在 .spec-dev/<日期-特性>/，改代码即需同步同目录 spec。`);
-  process.stderr.write(lines.join("\n") + "\n");
+  output(lines.join("\n") + "\n");
 }
 
 function usage() {
   process.stderr.write(
-    "Usage / 用法: check-spec-drift.mjs --staged | --range <A>..<B> | --push | --files <f…> | --hook | --worktree\n",
+    "Usage / 用法: check-spec-drift.mjs --staged | --range <A>..<B> | --push | --files <f…> | --hook | --worktree [--warn-only]\n",
   );
   process.exit(2);
 }
 
 function warn(msg) {
-  process.stderr.write(`\x1b[33m[spec-dev guard] ${msg}\x1b[0m\n`);
+  output(`\x1b[33m[spec-dev guard] ${msg}\x1b[0m\n`);
+}
+
+function output(message) {
+  if(warnOnly)notices.push(message.replace(/\x1b\[[0-9;]*m/g,'').trimEnd());
+  else process.stderr.write(message);
 }

@@ -477,6 +477,8 @@ node "<插件绝对目录>/scripts/status.mjs" --repo "/项目路径" --json
 
 仓库根即插件根，运行内容只有一份源码；两个 README 分别维护中英文，无额外镜像目录。发版需同步五处版本号：`.claude-plugin/marketplace.json` 的 `metadata.version`、`.claude-plugin/plugin.json`、`.codex-plugin/plugin.json`、根级 `plugin.json` 和 `package.json`。
 
+安装本仓库 Git hooks 后，普通提交只做插件静态校验、skill 校验、元数据同步检查和暂存差异检查，不改版本、不 amend、不打 tag。pre-push 检查 CHANGELOG 条目与远端 tag 冲突，不创建 tag。显式发版时，在干净工作区运行 `node scripts/release.mjs <patch|minor|major|X.Y.Z>`（加 `--dry-run` 可预览）：更新五处版本及 CHANGELOG，执行 `check-plugin.mjs --codex-validate`，再创建独立 release 提交和附注 tag。安装器启用 `push.followTags=true`，后续推送会携带可达的附注 tag。插件安装与 hooks 发现检查继续保留在发布 CI，相关包或 hook 改动后也应主动运行；缺少 Codex CLI 时该项会明确报告跳过。
+
 ```bash
 # 清单版本、skills[] 与磁盘目录、符号链接检查
 node scripts/check-plugin.mjs

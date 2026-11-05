@@ -80,7 +80,7 @@ test('session notice keeps CLI diagnostics and silent skips separate from hook J
   assert.equal(run(process.execPath, [script], nonGit, { input }), '');
 });
 
-test('installed edit and stop guards preserve silent allow and exit-2 rejection', t => {
+test('installed edit guards reject writes while Stop reports drift without blocking', t => {
   const dir = fixture(t);
   run(process.execPath, [path.join(root, 'guardrail/install.mjs'), '--repo', dir, '--no-git-hook', '--no-ci'], dir);
   for (const file of ['.claude/settings.json', '.codex/hooks.json']) {
@@ -97,10 +97,52 @@ test('installed edit and stop guards preserve silent allow and exit-2 rejection'
   const invoke = active => spawnSync(stop, { shell: true, cwd: dir, env, encoding: 'utf8', input: JSON.stringify({ hook_event_name: 'Stop', stop_hook_active: active }) });
   assert.equal(invoke(false).status, 0);
   writeFileSync(path.join(dir, 'src/app.mjs'), 'export const value = 2;\n');
-  assert.equal(invoke(false).status, 2);
-  const repeat = invoke(true);
-  assert.equal(repeat.status, 0, repeat.stderr);
-  assert.equal(repeat.stdout, '');
+  for (const active of [false, true]) {
+    const result = invoke(active);
+    assert.equal(result.status, 0, result.stderr);
+    const output = JSON.parse(result.stdout);
+    assert.deepEqual(Object.keys(output), ['systemMessage']);
+    assert.match(output.systemMessage, /src\/app\.mjs/);
+    assert.match(output.systemMessage, /drift guard/);
+  }
+  const script = path.join(dir, 'scripts/spec-dev/check-spec-drift.mjs');
+  const audit = spawnSync(process.execPath, [script, '--worktree'], { cwd: dir, env, encoding: 'utf8', input: '{"stop_hook_active":true}' });
+  assert.equal(audit.status, 2, audit.stderr);
+  run('git', ['add', 'src/app.mjs'], dir);
+  const staged = spawnSync(process.execPath, [script, '--staged'], { cwd: dir, env, encoding: 'utf8' });
+  assert.equal(staged.status, 1, staged.stderr);
+});
+
+test('reinstallation migrates the owned blocking Stop command and preserves custom hooks', t => {
+  const dir = fixture(t);
+  const file = path.join(dir, '.claude/settings.json');
+  mkdirSync(path.dirname(file), { recursive: true });
+  const legacy = 'node scripts/spec-dev/check-spec-drift.mjs --worktree';
+  const custom = { type: 'command', command: legacy + ' && echo custom', timeout: 42 };
+  writeFileSync(file, JSON.stringify({ env: { CUSTOM: 'keep' }, hooks: { Stop: [{ hooks: [
+    { type: 'command', command: legacy, timeout: 27 }, custom,
+  ] }] } }));
+  const install = () => run(process.execPath, [path.join(root, 'guardrail/install.mjs'), '--repo', dir, '--no-git-hook', '--no-ci'], dir);
+  install();
+  const first = readFileSync(file, 'utf8');
+  install();
+  assert.equal(readFileSync(file, 'utf8'), first);
+  const settings = read(file);
+  assert.deepEqual(settings.env, { CUSTOM: 'keep' });
+  const commands = settings.hooks.Stop.flatMap(group => group.hooks);
+  assert.equal(commands.length, 2);
+  assert.deepEqual(commands[0], { type: 'command', command: legacy + ' --warn-only', timeout: 27 });
+  assert.deepEqual(commands[1], custom);
+});
+
+test('advisory audit reports diagnostic exceptions as one visible nonblocking message', t => {
+  const dir = mkdtempSync(path.join(os.tmpdir(), 'spec-dev-advisory-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const script = path.join(root, 'guardrail/check-spec-drift.mjs');
+  const result = spawnSync(process.execPath, [script, '--worktree', '--warn-only'], { cwd: dir, env, encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(Object.keys(JSON.parse(result.stdout)), ['systemMessage']);
+  assert.match(JSON.parse(result.stdout).systemMessage, /执行异常/);
 });
 
 test('Codex apply_patch checks added, updated, deleted and moved paths before editing', t => {

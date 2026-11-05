@@ -119,6 +119,15 @@ function mergeJsonHooks(file, newHooks, description) {
   cur.hooks = cur.hooks || {};
   for (const [event, groups] of Object.entries(newHooks)) {
     cur.hooks[event] = cur.hooks[event] || [];
+    // Upgrade only our exact legacy Stop command; preserve custom commands,
+    // group settings and user-selected timeouts instead of adding a second gate.
+    if (event === 'Stop') {
+      for (const hook of cur.hooks[event].flatMap(g => g.hooks || [])) {
+        if (hook.type === 'command' && hook.command === 'node scripts/spec-dev/check-spec-drift.mjs --worktree') {
+          hook.command += ' --warn-only';
+        }
+      }
+    }
     for (const group of groups) {
       const cmds = new Set(
         cur.hooks[event].flatMap((g) => (g.hooks || []).map((h) => h.command)),
