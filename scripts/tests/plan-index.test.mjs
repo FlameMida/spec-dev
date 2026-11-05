@@ -105,17 +105,21 @@ test("S02 并发声明损坏不可交付：CLI", () => {
 });
 
 const lines = (n) => Array.from({ length: n }, (_, i) => `line ${i + 1}`).join("\n") + "\n";
-test("S1.2 任务文件超过 200 行被拦截", () => {
+test("S1.2 长任务按计划结构校验，不因篇幅被拒绝", () => {
   const dir = makePlan(["| T01 a | — | — | f() |"], ["T01.md"]);
-  writeFileSync(path.join(dir, "tasks", "T01.md"), lines(201));
   try {
-    const r = runCapture(dir);
-    assert.equal(r.status, 1);
-    assert.match(r.stderr, /tasks\/T01\.md/); assert.match(r.stderr, /<= 200 lines/); assert.match(r.stderr, /201 lines/);
+    for (const count of [200, 201, 600]) {
+      writeFileSync(path.join(dir, "tasks", "T01.md"), lines(count));
+      assert.equal(run(dir), 0, `${count} 行的任务应通过结构校验`);
+    }
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
-test("S1.2 恰好 200 行通过", () => {
-  const dir = makePlan(["| T01 a | — | — | f() |"], ["T01.md"]);
-  writeFileSync(path.join(dir, "tasks", "T01.md"), lines(200));
-  try { assert.equal(run(dir), 0); } finally { rmSync(dir, { recursive: true, force: true }); }
+test("S1.2 长任务仍须满足依赖约束", () => {
+  const dir = makePlan(["| T01 a | T99 | — | f() |"], ["T01.md"]);
+  writeFileSync(path.join(dir, "tasks", "T01.md"), lines(600));
+  try {
+    const result = runCapture(dir);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /T99/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });

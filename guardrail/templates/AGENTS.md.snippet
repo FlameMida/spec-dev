@@ -6,7 +6,8 @@ This repository follows the [spec-dev](https://github.com/FlameMida/spec-dev) wo
 
 ### Where artifacts live
 
-- **spec / plan**: `.spec-dev/YYYY-MM-DD-NN-<feature>/` (NN = same-day two-digit sequence; legacy `YYYY-MM-DD-<feature>/` dirs are read as-is) — `spec/<feature>-design.md` is the behavior contract and acceptance matrix. **plan**: `plan/` directory (`index.md` + `tasks/` + `progress.yaml`) is the executable plan — legacy single-file plans (`plan/<feature>-plan.md`) are read as-is. `plan/index.md` anchors the task nav table and global constraints. Read legacy artifacts under `docs/` in place. Migration is a separate authorized operation (`node scripts/spec-dev/migrate-to-spec-dev.mjs`), not an installation or task prerequisite.
+- **spec / plan**: `.spec-dev/YYYY-MM-DD-NN-<feature>/` (NN = same-day two-digit sequence; legacy `YYYY-MM-DD-<feature>/` dirs are read as-is) — `spec/<feature>-design.md` is the behavior contract and acceptance matrix. **plan**: new plans use one `plan/<feature>-plan.md` file containing global constraints, the task navigation table, task checkboxes and the final task resource ledger. Read legacy artifacts under `docs/` in place. Migration is a separate authorized operation (`node scripts/spec-dev/migrate-to-spec-dev.mjs`), not an installation or task prerequisite.
+- **execution**: temporary local artifacts only. Ignore `.spec-dev/**/execution/` before generating them and keep them out of Git. Once acceptance, necessary rechecks and reconciliation conclude, keep a concise result in the plan/report and delete that feature’s entire execution directory; do not archive or transfer it.
 - The `spec_dev.covers` frontmatter at the top of each spec declares the code paths it covers.
 
 ### Obligations when changing code (plugin installed or not)
@@ -21,7 +22,7 @@ This repository follows the [spec-dev](https://github.com/FlameMida/spec-dev) wo
 
 Drive work with the `requirement-analysis` (requirement→spec), `writing-plans` (spec→plan) and `executing-plans` (TDD task-by-task execution + wrap-up acceptance) skills; do not bypass the workflow and edit code directly.
 
-Once plan execution is authorized, `executing-plans` dispatches ready tasks to implementers in isolated worktrees by default. Dependencies and write/resource conflicts limit concurrency; an explicit serial preference takes precedence. The coordinator owns progress and integration, and declared task scopes remain mandatory. `Spec: <repo-relative spec path>` is a traceability trailer, not a drift-guard bypass.
+Once plan execution is authorized, `executing-plans` runs tasks serially in the main thread, respecting real dependencies. Task scopes, binding, independent review and delivery checks remain mandatory. `Spec: <repo-relative spec path>` is a traceability trailer, not a drift-guard bypass.
 
 ## 本仓库采用 spec 驱动开发（spec-dev）
 
@@ -29,7 +30,8 @@ Once plan execution is authorized, `executing-plans` dispatches ready tasks to i
 
 ### 产物位置
 
-- **spec / plan**：`.spec-dev/YYYY-MM-DD-NN-<特性>/`（NN 为当日两位序号；存量旧命名 `YYYY-MM-DD-<特性>/` 目录按原样读取），其中 `spec/<特性>-design.md` 是行为契约与验收矩阵。**plan**：`plan/` 目录（`index.md` + `tasks/` + `progress.yaml`）是可执行计划——存量单文件（`plan/<特性>-plan.md`）按原样读取。`plan/index.md` 承载任务导航表与全局约束。`docs/` 历史位置的产物按原位读取。迁移是另行授权的操作（`node scripts/spec-dev/migrate-to-spec-dev.mjs`），不作为安装或当前任务的前置条件。
+- **spec / plan**：`.spec-dev/YYYY-MM-DD-NN-<特性>/`（NN 为当日两位序号；存量旧命名 `YYYY-MM-DD-<特性>/` 目录按原样读取），其中 `spec/<特性>-design.md` 是行为契约与验收矩阵。**plan**：新计划使用单文件 `plan/<特性>-plan.md`，包含全局约束、任务导航表、任务复选框及最终任务资源台账。`docs/` 历史位置的产物按原位读取。迁移是另行授权的操作（`node scripts/spec-dev/migrate-to-spec-dev.mjs`），不作为安装或当前任务的前置条件。
+- **execution**：仅作本地临时产物；生成前忽略 `.spec-dev/**/execution/`，不纳入 Git。验收、必要补验和对账收口后，在计划/报告保留简短结论，统一删除本特性整个 execution，不归档或转存。
 - 每份 spec 顶部 frontmatter 的 `spec_dev.covers` 声明它覆盖的代码路径。
 
 ### 改代码的义务（无论是否安装插件）
@@ -44,7 +46,7 @@ Once plan execution is authorized, `executing-plans` dispatches ready tasks to i
 
 用 `requirement-analysis`（需求→spec）、`writing-plans`（spec→plan）、`executing-plans`（TDD 逐任务执行 + 收尾验收）三个 skill 推进，不要绕过流程直接改代码。
 
-用户授权执行计划后，`executing-plans` 默认按依赖图派发 implementer，在独立 worktree 写认领代码；写集合和资源有冲突时顺序执行，明确串行要求优先。主线程独占进度与集成；默认并发不免除任务范围校验。`Spec: <仓库根相对 spec 路径>` 仅作追溯，不代替 spec 同步或漂移检查。
+用户授权执行计划后，`executing-plans` 由主线程按真实依赖串行执行。任务范围、绑定、独立审查与交付核验仍须执行。`Spec: <仓库根相对 spec 路径>` 仅作追溯，不代替 spec 同步或漂移检查。
 
 ### 联网检索约定
 

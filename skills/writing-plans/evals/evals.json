@@ -4,7 +4,7 @@
     {
       "id": "wp-bite-sized-tdd",
       "prompt": "基于已批准的 spec（.spec-dev/2026-07-03-export-report/spec/export-report-design.md，CLI 导出报告子命令）编写实施计划",
-      "expected_output": "计划保存至 .spec-dev/2026-07-03-export-report/plan/（index.md + tasks/ + progress.yaml 分文件三件套，与 spec 同一特性目录）；index.md 含头部（执行方式指向 executing-plans、目标、spec 路径、全局约束）；固定生成任务 0（建立隔离工作区：已隔离检测→worktree 建立→基线验证，含 git 降级命令）；先给文件结构映射；每任务含精确文件路径、接口消费/产出块、TDD 五步（失败测试的公共入口、输入与断言→确认有效失败的命令与预期→最小实现改动要点→确认通过→提交命令；代码片段按需，不强制完整测试或函数体）；失败测试由 spec 的 Scenario 直译（GIVEN→arrange、WHEN→act、THEN→assert，测试名沿用 Scenario 名）；任务文件步骤用「**步骤 N:**」标题式（progress.yaml 唯一状态源）；以最终任务（合并与清理，台账在 progress.yaml resources）收尾；无任何 TBD/占位符"
+      "expected_output": "计划保存至 .spec-dev/2026-07-03-export-report/plan/export-report-plan.md，单文件含头部、文件结构映射、四列导航、公共协议、scopes、全部任务与最终台账；固定 T00 隔离/基线，任务为 ### 任务 N 和复选框步骤。每票含精确路径、消费/产出接口、公共测试入口、Scenario 的输入/动作/断言、有效红绿命令与提交；只在有助执行时提供代码片段，不预写全文。独立 F、适用 A、最大号 D 首尾闭合，不生成 index/tasks/progress，无 TBD。"
     },
     {
       "id": "wp-self-review-catches-gap",
@@ -14,7 +14,7 @@
     {
       "id": "wp-final-task-closure",
       "prompt": "（Self-Review 中）计划以任务 6「接入 CLI 入口」结束，没有收尾任务",
-      "expected_output": "按固定模板补任务 7（合并与清理：全量验证→合并回来源分支→清理 worktree 与分支），与任务 0 首尾对称——脱离插件执行时 worktree 生命周期也能在计划内闭合"
+      "expected_output": "补独立final F、适用验收A与最大号交付D；F先于审查和A/D。全部验收、补验与对账收口后留简短结论并删除execution，不入Git；D消费摘要完成合并、资源清理、sync_commit和最终记录，不转存原件或首次全量。最终任务预登记资源，与T00闭合。"
     },
     {
       "id": "wp-confirm-before-writing",
@@ -27,24 +27,19 @@
       "expected_output": "向用户交接（说明将先 using-git-worktrees 再 executing-plans），等待用户确认；不在本 skill 内直接开始写实现代码"
     },
     {
-      "id": "wp-parallel-declaration",
+      "id": "wp-default-single-file",
       "prompt": "已批准 spec；T01/T02 只依赖 T00，分别修改 src/a.mjs 与 src/b.mjs，测试资源隔离。编写计划。",
-      "expected_output": "保持三件套与四列导航，scopes 唯一声明 writes，parallel 声明所有合格票的 resources，取得 scope_protocol_version:1。计划尚未获准执行时不启动；执行获准后默认按图编排。"
+      "expected_output": "生成一个 plan/<feature>-plan.md，保留四列导航、真实独立依赖、scopes 精确 writes 和最终任务资源台账；不生成 parallel 声明或 progress。交接默认主线程串行，计划批准不等于执行授权。"
     },
     {
-      "id": "wp-parallel-exceptions",
-      "prompt": "T01 已获 TDD 例外；T02 的相关基线范围显式为空；T03/T04 有完整测试且写集合独立。",
-      "expected_output": "T01/T02 不进入声明，主线程串行；T03/T04 可声明；空基线不自动免除票内 TDD；progress 仍 format_version 1，默认不激活 execution。"
-    },
-    {
-      "id": "wp-parallel-state",
-      "prompt": "为已明确选择并发的分文件计划说明恢复字段与资源台账。",
-      "expected_output": "writing-plans 为唯一字段定义；execution.owner 与 claim.owner 含义不同；model-declaration 只在 notes，claim.model_declaration_id 追溯；模型声明内容由并发 skill 定义；资源先登记再确认创建，进度原子更新。"
+      "id": "wp-serial-exceptions",
+      "prompt": "新计划T01有批准TDD例外，T02相关基线范围为空，T03/T04测试完整且独立。",
+      "expected_output": "单文件逐票写清例外与基线原因；所有实施由主线程串行，空基线不免除票内TDD，不生成parallel或execution。"
     },
     {
       "id": "tdd-seam-s02",
-      "prompt": "S02 并发消费者无需读取前票正文：\nGIVEN T02 依赖 T01 的公共接口，两个任务共享一个已批准 seam\nWHEN 只向 T02 提供本票、spec、index 与依赖接口行",
-      "expected_output": "输入可定位 seam、接口签名与对应 Scenario；无需读取 T01 正文；导航仍为四列，无新进度字段或清单文件。"
+      "prompt": "T02消费T01接口并共享已批准seam；读取完整单文件计划及本票/依赖接口行。",
+      "expected_output": "可以定位seam、接口签名与Scenario，不必额外读取前票全文；四列导航和公共协议保留，不新增进度真源。"
     },
     {
       "id": "tdd-seam-s11",
@@ -79,7 +74,7 @@
     {
       "id": "plan-decomposition-s02",
       "prompt": "批次不能独立绿时保留小票\nGIVEN 共享类型改动导致多个包必须全部迁移后才能通过相关验证，批准设计记录该事实。\nWHEN 编写计划。",
-      "expected_output": "各批次各有 TNN 文件和提交，归入明确组及组验证任务，不合并为一张超大票，不承诺中间绿。"
+      "expected_output": "同一计划内各批次各有任务节、实际提交和待验记录，列明组成员、全部外部前置、组内依赖与统一验证任务；不合成巨票、不伪造中间绿。组身份不豁免行为红，仅明确列出的命令/范围/原因可延期；保留未勾选组验证项，统一通过后才解锁组外。"
     },
     {
       "id": "plan-decomposition-s19",
@@ -98,13 +93,13 @@
     },
     {
       "id": "plan-decomposition-s26",
-      "prompt": "脱离会话仍能找到纪律\nGIVEN 新执行者只取得特性目录、index、spec 与本票。\nWHEN 读取 T01 或组验证任务。",
-      "expected_output": "能从声明定位 TDD/集成组/测试策略的适用规则，seam 仍来自原接口传递；技能不可用时使用计划自足步骤，唯有组的必需机器入口不可用时停止而非猜执行。"
+      "prompt": "脱离会话仍能找到纪律：新执行者只取得完整单文件计划与 spec，读取 T01 或组验证任务。",
+      "expected_output": "从计划声明定位 TDD、集成组和测试策略；没有技能时仍可按具体路径、命令、断言与恢复记录执行，seam 来自原接口传递。导航、复选框、执行记录与统一验证步骤都在同一文件。"
     },
     {
       "id": "plan-decomposition-s27",
       "prompt": "各类任务有实际步骤且首尾闭合\nGIVEN 同一计划有普通票、T01 纯重构、集成组、项目验收及最终任务。\nWHEN 检查生成产物。",
-      "expected_output": "每票有精确文件、接口、命令、预期结果与对应类型的完整步骤，组员没有假绿步骤；T00 与最终生命周期闭合、只一个状态源，导航通过结构校验。"
+      "expected_output": "每任务节含精确文件、接口、命令、预期与对应类型完整步骤，组员没有假绿；T00/最终任务闭合，复选框和执行记录只留在原单文件，逐项核对导航与任务节，不拿不适用的机器校验冒称验证。"
     },
     {
       "id": "plan-decomposition-s32",
@@ -113,28 +108,28 @@
     },
     {
       "id": "workflow-S25-F-A-D",
-      "prompt": "将获批设计写成带验收任务的新计划，工具返回 ok=true 但没有 scope_protocol_version。",
-      "expected_output": "生成 T00、实施、独立 final F、依赖 F 的验收 A 与最大号交付 D；共用 scopes 是唯一 writes 来源。含 scopes 而缺 scope_protocol_version:1 时不能宣称协议可执行；补齐工具能力或报告缺口。"
+      "prompt": "将获批设计写成带验收任务的新单文件计划，生成收尾顺序及范围绑定。",
+      "expected_output": "单文件生成 T00、实施、独立 F、依赖 F 的 A 和最大号 D；scopes 是唯一 writes 来源，final_task/acceptance_tasks 指向真实任务。按现有单文件 bind/inspect 核验 scope_protocol_version:1，不用 plan-index 要求它生成三件套；未执行工具不声称运行通过。"
     },
     {
-      "id": "parallel-readiness-shared-registration",
+      "id": "task-boundaries-shared-registration",
       "prompt": "已授权写计划：CSV/JSON 使用已落地扩展点，各能独立测试，但都要改 formats/index.ts 注册。给出切片、依赖、共享文件所有者和组合验证。",
-      "expected_output": "按可观察格式行为纵向切片；将共享注册及组合验证归入依赖两票的汇总任务，或依据实际不能拆分的原因排他实施；保留独立验证，不让两个并发写集同时占用注册文件。index 写准备说明，scopes 为 writes 唯一来源，parallel 只列 resources。"
+      "expected_output": "按可观察格式行为纵向切片；共享注册与组合验证归入依赖两票的汇总任务，或说明真实共享写入。计划头部记录所有者与必要依赖，scopes 为 writes 唯一来源；默认串行也不能省独立验证，不为独立票自动生成 parallel 声明。"
     },
     {
-      "id": "parallel-readiness-contract-gap",
-      "prompt": "用户已要求计划并希望并行。两个消费者需要共享错误协议，但 spec 没有确定错误码、重试语义，也没有既有实现可推导。",
-      "expected_output": "先定位受影响的共同契约缺口，沿原澄清同步 spec；不为两票各自编造协议，不把外部结果模拟成已获批替换边界。已确定的独立范围可继续梳理。"
+      "id": "task-boundaries-contract-gap",
+      "prompt": "两个消费者需共享错误协议，spec未确定错误码/重试语义，也无既有实现可推导。",
+      "expected_output": "先定位共同契约缺口并沿原澄清同步spec，不为两票各自造协议；独立已知范围可继续梳理。"
     },
     {
-      "id": "parallel-readiness-handoff",
-      "prompt": "新计划中 T01 为共同前置，T02/T03 独立，T04 仅依赖 T02；完整测试与资源隔离条件成立，用户未选择执行模式。",
-      "expected_output": "不加无理由的 T03→T04 边；为所有合格实施票准备声明，交接说明默认并发和资源限制，只沿原门确认开始或 review；不额外设置模式选择，保留明确串行要求。"
+      "id": "task-boundaries-handoff",
+      "prompt": "T01共同前置，T02/T03独立，T04只依赖T02，编写新计划。",
+      "expected_output": "单文件保留真实依赖、写集和资源边界，不加T03→T04伪依赖；交接主线程串行，无模式选择。"
     },
     {
-      "id": "default-graph-plan-chain",
+      "id": "serial-plan-chain",
       "prompt": "已授权写计划，现有设计只能形成 T01→T02 链，两票都能独立验证并有精确写集。",
-      "expected_output": "仍给两票生成资源声明并由 scopes 定义写入；不省略声明、不凑独立票，执行时逐票派发。尚未授权开始时只交接，不创建运行身份或 SHA。"
+      "expected_output": "单文件记录真实 T01→T02、scopes 写集和具体测试步骤，主线程串行执行；不凑独立票、不生成并发声明或运行身份。未授权执行时只交接。"
     },
     {
       "id": "wp-vertical-behavior-not-layer-chain",
@@ -148,13 +143,13 @@
     },
     {
       "id": "wp-shared-export-owner-conflict",
-      "prompt": "index称公共API总导出只由T05汇总，但T02/T03各自scopes都含该文件；两票业务独立，T05依赖二者。审查计划。",
-      "expected_output": "发现职责说明与writes矛盾；核实普通票能独立验证后将总导出交汇总所有者，或如实保留不可拆的共享写入并说明互斥。不因两票只写不同段而宣称无冲突；修改接口块/任务文件与scopes保持一致。"
+      "prompt": "计划头部称公共 API 总导出只由 T05 汇总，但 T02/T03 各自 scopes 都含该文件；两票业务独立，T05 依赖二者。审查计划。",
+      "expected_output": "发现职责说明与 writes 矛盾；核实普通票能独立验证后将总导出交汇总所有者，或保留真实共享写入并说明顺序。不因写不同段宣称无冲突；同步接口块、任务正文及 scopes。"
     },
     {
-      "id": "wp-ready-frontier-after-conflicts",
-      "prompt": "T00完成后T01/T02/T03均ready。T01/T02共同修改sqlc.yaml并共享pg:owned，T03写独立页面且无共享服务。交接时计划声称可同时运行三票。",
-      "expected_output": "纸上走查先找ready再扣除具体文件/资源冲突：T01或T02可与T03重叠，三票不能同时跑。核对可集中归属的共享文件，不改资源名绕过同一实例；在index准备说明给实际窗口，不新增状态真源或worktree来证明并行。"
+      "id": "wp-shared-resource-order",
+      "prompt": "T01/T02共享sqlc.yaml和同一测试库，T03独立；编写新计划。",
+      "expected_output": "记录共享文件归属与真实资源使用/释放顺序；主线程串行执行，保留真实语义依赖，不改资源名伪造隔离，不生成并发窗口或新状态源。"
     },
     {
       "id": "wp-semantic-review-with-delegation-unavailable",
@@ -180,6 +175,36 @@
       "id": "wp-reject-vague-test-despite-short-plan",
       "prompt": "计划任务只有“修改分页模块，添加适当校验，写测试，确认通过”，没有路径、公共入口、具体输入、错误结果或运行命令。是否足够精简可执行？",
       "expected_output": "指出缺少执行与验证依据，补齐真实文件/符号、接口来源、输入、动作、预期结果与可运行命令；涉及未决产品规则时沿原澄清处理，不自行编造，也不以补写整份实现代码代替这些信息。"
+    },
+    {
+      "id": "review-focus-traceability",
+      "prompt": "获批 R1 规定最后一本书只能成功借给一人，Scenario 已给出两人同时借阅且仅一笔成功记录。T02 负责借书公共接口，T03 是纯重构并保留行为保护。编写对应计划片段。",
+      "expected_output": "审查关注点简述 R1/Scenario 来源、同时借阅的失败条件，指向 T02 的具体输入/动作/断言；原 Scenario 仍逐条映射，T03 不被强制写假红。使用现有测试与收尾审查，不新增风险阶段或固定数量的关注点，不重复抄整段测试到头部。"
+    },
+    {
+      "id": "review-focus-without-contract",
+      "prompt": "已有获批 CLI 文案调整需求，计划作者提议将“五种网络故障、支付重试和响应时间小于100ms”加入审查关注点；项目与用户都未要求这些行为。",
+      "expected_output": "不凑风险数量或引入无依据的需求/性能阈值；只保留与已批准文案行为相关且有依据的关注点，无则省略。真正会改变交付的未决需求回需求澄清，不藏入测试断言。"
+    },
+    {
+      "id": "plan-proportion-real-boundaries",
+      "prompt": "计划单任务节有260行：包含必须精确保留的迁移命令、关键断言、导航和接口块同签名，以及多次复制的spec论证。该任务没有额外独立交付边界。另一个80行任务只有“添加校验，写测试”。自检并给出修订原则。",
+      "expected_output": "通读整份计划，收敛重复spec论证和可推导细节，保留真实命令、断言及有意导航重复；不因260行拆票、不将细节搬到头部、不要求压到200行。80行任务仍补明确输入/动作/结果，信息密度不能牺牲可执行性。"
+    },
+    {
+      "id": "review-migration-check-phases",
+      "prompt": "审查一个获批保持公开行为的 ESM trim→normalize 改名计划：expand 留旧形，migrate 分票迁移，contract 删除旧导出。计划把新导出尚不存在的链接错误当红；contract 删除旧定义前就要求所有旧定义为零；检查用整行 export+trim 匹配，并排除含 .trim() 的行。样本包括 export const trim = s => s.trim() 和 export const normalize = s => s.trim()。请只读修订验证安排。",
+      "expected_output": "纯重构用前后公开行为保护，不把 ESM 链接错误当业务红；按阶段在删除前查消费者旧绑定、删除后查旧绑定与旧定义且跑行为保护。检查识别 import/export 的旧具名绑定和旧导出声明，不能漏掉 trim 的旧导出或误报 normalize 内的字符串方法；按实际语法检查，不盲套正则或新增解析依赖，不执行生成任务。"
+    },
+    {
+      "id": "review-tap-stream-and-relative-path",
+      "prompt": "计划 .spec-dev/demo/plan/demo-plan.md 用 ../../spec-expand.md 指向仓库根 spec-expand.md，计划还称普通 fixtures/repo 子目录已经是 Git 根。Node TAP 测试在 stdout 打出 AssertionError 且退出1，stderr为空，作者要求 stderr 非空才认行为红。只读检查计划，不执行其命令。",
+      "expected_output": "解析出该相对链接实际指向 .spec-dev/spec-expand.md，按真实来源修正；夹具仓库须有实际物化步骤与明确 cwd。保存 stdout/stderr 与退出码，核对测试确实跑到目标业务断言，stderr为空本身不否定有效红；不借自检执行计划或写临时产品文件。"
+    },
+    {
+      "id": "wp-ui-decision-to-task",
+      "prompt": "获批spec R1/Scenario返回保留筛选，R2/Scenario保存失败保留输入；v3原型明确只模拟保存。计划头部已有归档链接，T01只写“照图做页面”，T02接真实保存。修订计划。",
+      "expected_output": "在T01/T02现有任务的交付/验证处引用适用版本与决定，明确入口、动作、筛选和输入保留断言及验证方式；T02验证真实失败而非模拟成功，不只补链接，不按原型屏数拆票，也不重问已批准规则。"
     }
   ]
 }

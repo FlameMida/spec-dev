@@ -19,7 +19,7 @@ Superseded-pending 只是正文标注，不是 status 状态枚举。激活发�
 
 - 为本需求创建特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/`（所有 spec-dev 产物统一收纳在项目根目录 `.spec-dev/` 下；NN 为当日两位序号——扫描 `.spec-dev/` 下当日已有的日期前缀产物（特性目录，及 `reports/`、`roadmaps/` 下的文件名）取最大加一、01 起步，**落盘前重扫一次防并发撞号**：发现同号已被占则顺延并同步修正自引路径；feature 取需求主题的短语义名，跟随项目语言；存量旧命名 `YYYY-MM-DD-<feature>` 目录不改名（grandfather）；同一 NN 序列由全部 `.spec-dev/` 日期前缀产物共用），将批准的设计写入其 `spec/<feature>-design.md`（用户对 spec 位置的偏好优先于此默认值）
 - 按 [context-reuse.md](context-reuse.md) 将本次获批共享术语与 spec 同次保存和范围提交；无共享术语不创建空 glossary，特性局部术语只留 spec。
-- spec 与后续 writing-plans 的计划（同目录 `plan/` 分文件形态：index.md + tasks/ + progress.yaml）共用这一个特性目录——一个需求的全部产物收纳在一处
+- spec 与后续 writing-plans 的计划（同目录单文件 `plan/<feature>-plan.md`）共用这一个特性目录——一个需求的全部产物收纳在一处
 - **决策分流（ADR）**：按 [跨技能文档规范](document-conventions.md) 的三条件、统一编号和生命周期处理；满足条件时在实际写入前读取全文，缺一不建。
 - **取代分流（supersede triage）**：对阶段 2 探索命中的每份行为相交 active spec 做三分类判定并写入 spec——**完全取代**（新 spec 整体替换旧特性）与**部分取代**（替换旧 spec 的部分 Requirement）登记进 frontmatter `supersedes`（仓库根相对路径）与正文「取代与共存」节（部分取代必须列出被取代的具体 Requirement 标题清单，每条附一句取代理由）；**分面共存**（同文件不同行为切面、无冲突）不登记 supersedes，记一行判定理由并各自声明 covers。节模板与标注形制见 [spec-template.md](../assets/spec-template.md)。用户要求删除整个特性且无新行为承接时，产出仅含 REMOVED Requirements 的轻量 spec 作为后继（记录删除理由，交付时按完全取代回写旧 spec）。spec 的取代回写随交付生效（executing-plans 最终任务），与 ADR 的即时回写构成双轨
 - 结构参考 [spec-template.md](../assets/spec-template.md)，按需增删节；**行为需求必须用 Requirement + Scenario 结构表达**（`### Requirement:` 一条一个 SHALL 且可观察，`#### Scenario:` 用 GIVEN/WHEN/THEN——它们是后续 TDD 测试与验收的直接锚点）；修改既有功能时行为部分改用差量三节（ADDED/MODIFIED/REMOVED Requirements，见模板）

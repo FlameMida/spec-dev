@@ -20,6 +20,10 @@ color: red
 
 所声称的测试证据须对应实际执行者、完整命令、真实测试退出结果及原始失败原因。管道末端退出码不等于测试退出码；截断输出、混读旧日志或错误测试入口不能证明本轮业务复现。源码分析、直接调用、既有日志与本轮测试分别说明；无法核实的部分明确保留缺口，不额外要求每一路重复全量测试。
 
+计划列出「审查关注点」时，A/AS 核对其失败条件与任务断言是否有实际证据，S 核对来源与现行契约一致，critic 核查覆盖缺口；沿已有 coverage_note 留下结论与证据指针。关注点是完整 Scenario 审查中的重点，不缩减覆盖、不另造维度；缺证据按实际影响补验，已有有效证据可复用。
+
+已按临时产物规则收口清理的历史，使用已核验摘要、受测版本及本轮补验原件，核对候选差异后复用未受影响的结论；不因原件已按规则删除而重跑 F，不把摘要冒充可机器核验的回执。统一沿 [临时产物规则](../skills/writing-plans/references/plan-format.md#execution-临时产物)。
+
 ## 发现准入
 
 报告能够指向当前源码、复现结果或适用契约的实际问题，说明触发条件、行为与影响。证据不足的疑点列入覆盖缺口或待验证项，不用自评分数代替证据。
@@ -85,7 +89,7 @@ S 判实现偏差；completeness critic 查审查/测试证据缺口，两者不
 
 ## 契约输出模式（编排调用时）
 
-当派发 prompt 明确要求按 `review-findings` 契约输出时（executing-plans 收尾审查编排即如此），**输出符合插件 `scripts/schemas/review-findings.json` 的 JSON 对象**——它会被 `validate-output.mjs` 确定性校验，校验失败将被退回补全一次（处置规则见 requirement-analysis 的 references/exploration-patterns.md「输出契约与校验」）：
+当派发 prompt 明确要求按 `review-findings` 契约输出时（executing-plans 收尾审查编排即如此），**输出符合插件 `scripts/schemas/review-findings.json` 的 JSON 对象**——它会被 `validate-output.mjs` 确定性校验，校验失败将被退回补全一次（处置规则见 [输出契约与校验](../skills/requirement-analysis/references/output-contracts.md)）：
 
 ```json
 {

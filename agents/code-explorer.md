@@ -18,7 +18,7 @@ JSON 契约模式继续遵循下方 schema；未要求契约时使用同等内�
 
 ## 契约输出模式（编排调用时）
 
-当派发 prompt 明确要求按 `exploration-report` 契约输出时（requirement-analysis deep 档 multi-modal sweep 即如此），**输出符合插件 `scripts/schemas/exploration-report.json` 的 JSON 对象**——它会被 `validate-output.mjs` 确定性校验，校验失败将被退回补全一次（处置规则见 requirement-analysis 的 references/exploration-patterns.md「输出契约与校验」）：
+当派发 prompt 明确要求按 `exploration-report` 契约输出时（requirement-analysis deep 档 multi-modal sweep 即如此），**输出符合插件 `scripts/schemas/exploration-report.json` 的 JSON 对象**——它会被 `validate-output.mjs` 确定性校验，校验失败将被退回补全一次（处置规则见 [输出契约与校验](../skills/requirement-analysis/references/output-contracts.md)）：
 
 ```json
 {
@@ -42,4 +42,4 @@ JSON 契约模式继续遵循下方 schema；未要求契约时使用同等内�
 ## 外部资料
 
 当需要了解外部库/框架时，使用以下工具：
-AnySearch（插件内嵌 skill 自带 CLI：`python3 "${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py" search "查询词"`，python 缺依赖换同目录 `anysearch_cli.js`；`${CLAUDE_PLUGIN_ROOT}` 未替换时按插件根解析序列推导——定义见 requirement-analysis 的 references/exploration-patterns.md），再降级 `WebSearch`。
+AnySearch（插件内嵌 skill 自带 CLI：`python3 "${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py" search "查询词"`，python 缺依赖换同目录 `anysearch_cli.js`；`${CLAUDE_PLUGIN_ROOT}` 未替换时按插件根解析序列推导——定义见 [插件根解析](../skills/requirement-analysis/references/plugin-root.md)），再降级 `WebSearch`。

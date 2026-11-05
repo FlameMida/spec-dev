@@ -41,19 +41,19 @@ frontmatter 的 `sync_commit` 是交付锚点：最近一次确认代码与本 s
 
 编辑时（`--hook`）的"是否同步"认定包含工作区已有改动（暂存 + 未暂存 + 未跟踪）：**先把 spec 改好，再动覆盖代码即放行**；但工作区脏文件不会扩大触发集，编辑无关文件不受既有漂移影响。收尾审计（`--worktree`）以整个工作区为变更集，对回合内绕过工具面写入的文件兜底。
 
-用户授权执行计划后，`executing-plans` 默认按依赖图派发 implementer，在独立 worktree 写认领代码；写集合和资源有冲突时顺序执行，明确串行要求优先。主线程独占进度与集成；默认并发不免除任务范围校验。`Spec: <仓库根相对 spec 路径>` 仅作追溯，不代替 spec 同步或漂移检查。
+用户授权执行计划后，`executing-plans` 由主线程按真实依赖串行执行。任务范围、绑定、独立审查与交付核验仍须执行。`Spec: <仓库根相对 spec 路径>` 仅作追溯，不代替 spec 同步或漂移检查。
 
 ## 任务范围放行
 
-主线程先提交 spec、计划和精确写集合，再把任务绑定写入 `progress.yaml` 并提交，取得 authority SHA。旧单文件计划仍保留原格式，使用其已提交范围声明。随后在对应工作区激活：
+主线程先提交 spec、计划和精确写集合，单文件使用该已提交范围版本作为 authority SHA。随后在对应工作区激活：
 
 ```bash
-node scripts/spec-dev/task-binding.mjs bind --plan .spec-dev/<feature>/plan/index.md --task T01 --authority <完整SHA>
+node scripts/spec-dev/task-binding.mjs bind --plan .spec-dev/<feature>/plan/<feature>-plan.md --task T01 --authority <完整SHA>
 node scripts/spec-dev/task-binding.mjs inspect
-node scripts/spec-dev/task-binding.mjs clear --plan .spec-dev/<feature>/plan/index.md --task T01
+node scripts/spec-dev/task-binding.mjs clear --plan .spec-dev/<feature>/plan/<feature>-plan.md --task T01
 ```
 
-本地引用位于实际 Git dir，不能自行授权。任务、spec、写集合、工作区或 claim 过期时必须重新核验。守卫核对范围；行为符合性仍由测试与审查负责，行为变更必须同步 spec。
+本地引用位于实际 Git dir，不能自行授权。任务、spec、写集合、工作区 过期时必须重新核验。守卫核对范围；行为符合性仍由测试与审查负责，行为变更必须同步 spec。
 
 `prepare-commit-msg` 从有效绑定补充单行 `Spec-Task` JSON；`commit-msg` 在原 hook 执行后核对最终消息。历史检查使用该关联及提交内的视图，不读取当前工作区的授权引用。缺少源 Git 对象会拒绝核验。守卫脚本及其纯模块一起安装，无需插件缓存。
 

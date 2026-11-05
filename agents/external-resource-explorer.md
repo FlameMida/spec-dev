@@ -39,7 +39,7 @@ color: cyan
 **通用外部研究、时效信息、垂直领域(金融/学术/安全等)、多主题批量检索:优先 AnySearch**(插件内嵌 skill 自带 CLI,无 MCP 依赖):
 
 ```bash
-CLI="${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py"  # 未替换时按插件根解析序列推导（定义见 requirement-analysis 的 references/exploration-patterns.md）
+CLI="${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py"  # 未替换时按插件根解析序列推导（定义见 [插件根解析](../skills/requirement-analysis/references/plugin-root.md)）
 python3 "$CLI" search "查询词" --max_results 5
 python3 "$CLI" batch_search --queries '[{"query":"主题1","max_results":5},{"query":"主题2","max_results":5}]'  # 多主题一次并行
 python3 "$CLI" extract "https://example.com/page"  # 全文抽取,输出已是 Markdown
@@ -57,7 +57,7 @@ python3 "$CLI" extract "https://example.com/page"  # 全文抽取,输出已是 M
 - 网络/服务错误或超时,间隔 30s 重试 1 次仍失败
 - 配额耗尽——子代理内不处理换 key,直接降级
 
-**搜索工具重试纪律**：本段只处理 AnySearch/WebSearch/WebFetch 等检索工具失败；子代理任务失败或预算耗尽后目标未完成，按 exploration-patterns 的失败隔离规则处理，不能混用为直接接管的例外。每层最多 2 次尝试(首次 + 1 次重试),重试前 `sleep 30` 给瞬时故障(网络抖动、限流)留恢复窗口;确定性失败(文件不存在、配额耗尽)无需重试,即刻降级。降级链各层同此上限,不得因搜索工具问题卡住探索任务本身。
+**搜索工具重试纪律**：本段只处理 AnySearch/WebSearch/WebFetch 等检索工具失败；子代理任务失败或预算耗尽后目标未完成，按[失败隔离规则](../skills/requirement-analysis/references/agent-dispatch.md)处理，不能混用为直接接管的例外。每层最多 2 次尝试(首次 + 1 次重试),重试前 `sleep 30` 给瞬时故障(网络抖动、限流)留恢复窗口;确定性失败(文件不存在、配额耗尽)无需重试,即刻降级。降级链各层同此上限,不得因搜索工具问题卡住探索任务本身。
 
 ## Output Requirements
 

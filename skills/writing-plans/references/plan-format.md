@@ -9,7 +9,7 @@
 ```markdown
 # [功能名] 实施计划
 
-> **执行方式**：使用 spec-dev 的 executing-plans skill 逐任务执行本计划；无该 skill 的环境直接从任务 0 起按序执行至最终任务。任务状态由 `plan/progress.yaml` 跟踪（唯一状态源；任务文件步骤用「**步骤 N:**」标题式、不含复选框）；脱离项目携带时连同特性目录（含 spec）整体带走。
+> **执行方式**：使用 spec-dev 的 executing-plans skill 逐任务执行本计划；无该 skill 的环境直接从任务 0 起按序执行至最终任务。任务状态由本文件任务节的 `- [ ] **步骤 N：…**` 复选框跟踪；完成后勾选，保留实际提交与验证证据引用；脱离项目携带时连同特性目录（含 spec）整体带走。
 >
 > **偏差处理**：执行中发现计划与现实不符——小偏差（路径笔误、明显遗漏但意图清楚）就地修正并在提交信息中注明；接口、数据结构等契约级偏差停下向计划作者确认，不猜着改。
 
@@ -20,6 +20,8 @@
 **架构**：[2-3 句方案概述]
 
 **关键取舍**：[仅列影响任务边界或执行顺序的已批准取舍，每项一行摘要 + spec 小节指针；无则省略]
+
+**审查关注点**：[按需列出「来源 Requirement/Scenario/获批约束 → 具体失败条件 → 负责的任务与测试/验收断言指针」；每项一行，无则省略]
 
 **技术栈**：[关键技术/库]
 
@@ -45,107 +47,86 @@
 ---
 ```
 
-**计划内公共内容**：跨任务的全局规则与共用操作协议唯一落点在 index；共用协议在此给全实际步骤、参数化命令与预期，任务用明确节名指针和本票实参调用，本票专属内容仍留在任务文件。导航行与任务接口块的同签名、每票 TDD 五步骨架均保留，前者服务依赖方读取，后者保持任务可执行。
+**计划内公共内容**：跨任务的全局规则与共用操作协议唯一落点在计划头部；共用协议在此给全实际步骤、参数化命令与预期，任务用明确节名指针和本票实参调用，本票专属内容仍留在任务节。导航行与任务接口块的同签名、每票 TDD 五步骨架均保留，前者服务依赖方读取，后者保持任务可执行。
 
-**index 体量纪律**：index 是启动、恢复和 implementer 派发的公共读集，只保留跨任务必需信息。头部复用已有目标与架构栏，关键取舍按模板简述并指向 spec，不复制决策论证；不得为压低任务行数把本票细节搬进 index。新增内容先检查能否合并已有条目或以来源指针表达，避免公共读集随去重膨胀。
+**审查关注点**：只提取当前获批需求中有依据、容易遗漏或破坏的行为，不凑固定数量或泛化风险清单。具体输入、动作与断言留在负责的任务，头部仅连起来源和验证位置，供收尾审查核对。它补充已有 Scenario 覆盖，不替代或改写 Scenario；预期行为未决或需要改变契约时回需求澄清。验证沿既有 TDD、纯重构保护或组验证类型，无须新增验证阶段。
 
-index.md 头部之后是**任务导航表**——四列：`任务 | 依赖 | 消费接口 | 产出接口`。规则：任务 ID 形如 `T\d\d` 全局唯一且与 tasks/ 文件名一一对应；依赖只引用表内 ID，可用闭区间写法（`T01-T06` 表示 T01 至 T06 闭区间——区间内每个编号都必须是表内任务，起点不得大于终点）；禁止环；接口列写精确签名（执行者只读自己的任务文件 + 依赖行的产出接口，不读其它任务正文）。生成后运行 `node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" plan-index <plan目录>`（结构校验：文件↔导航表一致、依赖存在且区间可展开、无环），失败不得交付执行。
+**公共内容体量纪律**：计划头部是启动与恢复的公共读集，只保留跨任务必需信息。头部复用已有目标与架构栏，关键取舍按模板简述并指向 spec，不复制决策论证；本票细节留在任务节，不为缩短任务正文搬进头部。新增内容先检查能否合并已有条目或以来源指针表达，避免公共读集随去重膨胀。
+
+头部之后保留**任务导航表**——四列：`任务 | 依赖 | 消费接口 | 产出接口`。任务 ID `TNN` 对应同文件 `### 任务 N`，编号全局唯一；依赖只引用表内 ID，闭区间 `T01-T06` 须每个编号存在，禁止环。接口写精确签名，执行者按本票与依赖行读取；串行顺序遵守真实依赖，同等候选按编号，不为顺序增加假依赖。
+
+在 Self-Review 核对导航与任务节一一对应、依赖闭包及整份计划的信息密度。
 
 ### 测试落点的接口传递
 
-spec 测试策略中的获批 seam 沿四列导航的消费/产出接口及本票接口块传递：保留精确签名/协议，列出覆盖 Scenario、依赖替换边界和 spec 来源指针；执行者只读本票、spec 与依赖接口行就能获得同一边界，不把声明藏在前置任务正文。产出接口不是逐函数直测清单；不新增导航列、清单文件或 progress 字段。
+spec 测试策略中的获批 seam 沿四列导航的消费/产出接口及本票接口块传递：保留精确签名/协议，列出覆盖 Scenario、依赖替换边界和 spec 来源指针；执行者只读本票、spec 与依赖接口行就能获得同一边界，不把声明藏在前置任务正文。产出接口不是逐函数直测清单；不新增导航列、清单文件或第二份进度。
 
 ### 静态快检命令
 
 计划头部与本票测试命令中提供项目已有、适用的 typecheck/静态命令及配置来源，无则写不适用。编辑批次间快检的节奏与边界遵循 test-strategy；保留任务五步的有效红绿、相关测试、最终全量和失败归属裁决，不把编译报错写为预期红。
 
-## progress.yaml 键结构
+## 单文件进度与资源台账
 
-```yaml
-format_version: 1
-current: T03            # 当前指针（null=未开始）
-tasks:
-  T01: { status: completed, commit: <sha>, tests: pass }
-  T02: { status: completed, commit: <sha>, tests: pass, deviations: ["路径笔误就地修正"] }
-  T03: { status: in_progress }
-resources:              # 资源台账（唯一登记处；最终任务清理步骤遍历此清单）
-  - "worktree: .worktrees/<分支> —— git worktree remove …"
-notes: []               # 偏差与备注，append-only
+每步保留复选框；完成 SHA 指已经存在的实现/验证提交，记录实际命令结果、原件路径与偏差。恢复先核对本地绑定和执行记录，再对照复选框；不能把首个未勾选项当授权。任务结束先 clear 绑定，再保存完成记录与勾选、窄暂存并提交计划，避免自引用未来提交。
+
+**资源台账规范定义点**：最终任务内嵌台账，生成时预登记，中途新增在创建前追加，清理时逐行核对。追加正文按下文绑定协议清旧绑定、窄提交计划并重新绑定，保留当前业务 dirty。沿历史行格式：
+
+```markdown
+**资源台账**
+- [ ] worktree: <实际项目根>/.worktrees/<分支> —— <已核实的清理命令或保留/移交依据>
 ```
 
-状态枚举：pending | in_progress | completed | blocked。主线程用同目录临时文件 + rename 原子保存，再单独提交；completed.commit 指已经存在的实现或验证 SHA，不自引用。in_progress 可无完成 SHA；串行先恢复 current（blocked 先处理阻塞），没有当前任务才取 ready。progress 不由 implementer 合并覆盖。`resources` 键即**资源台账规范定义点**（生成时预登记，创建即追加，交付时逐条核对）。
+只有实际清理、核实不存在或有明确保留/移交处置后才勾选，并附回执与归属；失败保持未勾选。来源、工作区管理方式、基线 SHA、偏差与证据引用记在本计划的执行记录中，不另建状态文件。
 
 ## 静态任务范围与能力标识（唯一定义点）
 
-每份新计划在 index 放一个 `json spec-dev-scopes` 块。示例的 T01 为实施、T02 为 F、T03 为验收 A、T04 为最大号交付 D；真实任务号、路径与授权来源由生成者填实。F 的依赖闭包覆盖全部实施/组出口，A 依赖 F，D 依赖 F 与所有 A；F 不依赖 A/D。
+每份计划在头部放一个 `json spec-dev-scopes` 块。示例的 T01 为实施、T02 为 F、T03 为验收 A、T04 为最大号交付 D；真实任务号、路径与授权来源由生成者填实。F 的依赖闭包覆盖全部实施/组出口，A 依赖 F，D 依赖 F 与所有 A；F 不依赖 A/D。
 
 ```json spec-dev-scopes
 {"version":1,"final_task":"T02","acceptance_tasks":["T03"],"tasks":{"T01":{"writes":["src/cart.mjs","tests/cart.test.mjs"],"specs":[".spec-dev/cart/spec/cart-design.md"],"authorization_ref":"已核实的计划执行授权来源"}}}
 ```
 
-`tasks` 中每项仅有 `writes/specs/authorization_ref`；实施写集非空，主线程隔离/验证/交付可为空；specs 非空。路径是精确仓库相对文件名，拒绝 glob、目录、逃逸、重复键/块与大小写/Unicode 碰撞。`.git` 永不授权；主线程管理任务可列精确 `.spec-dev` 文件，implementer 不可。新 parallel 块只列 resources，writes 从本块读取；同一任务有两份 writes 即拒绝。没有 scopes 的历史 parallel 声明仍按原形读取。
+`tasks` 中每项仅有 `writes/specs/authorization_ref`；实施写集非空，主线程隔离/验证/交付可为空；specs 非空。路径是精确仓库相对文件名，拒绝 glob、目录、逃逸、重复键/块与大小写/Unicode 碰撞。`.git` 永不授权；管理任务可列精确 `.spec-dev` 文件。scopes 是 writes 唯一来源。
 
-运行 `node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" plan-index <实际plan目录>`；含 scopes 时必须同时取得 `ok:true` 与 `scope_protocol_version:1`。旧工具仅返回 ok 不证明能力；缺能力停止新协议动作并报告缺口。引导计划未声明新块时不伪造能力回执。
-
-静态指纹由 `guardrail/lib/task-scopes.mjs` 的 `scopeFingerprint(view,plan,task)` 计算，覆盖计划、任务正文与关联 spec。progress 和 execution 不混入静态范围；旧单文件仅归一化已识别任务内复选框的状态字符，保留正文、代码样例及所有授权内容。
+静态指纹由 `guardrail/lib/task-scopes.mjs` 的 `scopeFingerprint(view,plan,task)` 计算，覆盖计划、任务正文与关联 spec；归一化已识别任务内复选框的状态字符及交付记录，保留正文、代码样例及所有授权内容。
 
 ## 绑定与激活（唯一定义点）
 
-生成与执行命令时遵循 [worktree 工具与命令边界](../../using-git-worktrees/references/tool-boundaries.md)：先核对实际 cwd，普通文件编辑优先原生工具，保留进度/锁的原子更新要求。下列程序片段表达绑定协议，不保证任意宿主接受该内联形式；宿主拒绝时保留原件和现有状态，不能把片段藏进新脚本或改写 CLI 来通过检查。计划不得把人工执行后的 inspect 成功写成自动绑定已验证。
+生成与执行命令时遵循 [worktree 工具与命令边界](../../using-git-worktrees/references/tool-boundaries.md)：先核对实际 cwd，普通文件编辑优先原生工具。宿主拒绝时保留原件和现有状态，不能把命令藏进新脚本或改写 CLI 来通过检查；人工执行后的 inspect 成功不证明自动绑定已验证。
 
-分文件 `tasks.TNN.binding` 仅含 `{scope_commit,scope_digest,authorization_ref,worktree,branch,claim_key,claim_checkpoint}`。scope_commit 是已经提交的静态版本，digest 由上述函数实算；worktree/branch 来自实际 Git，串行 claim 两项为 null。主线程核对已有用户授权、写入 in_progress/current 与 binding 后独立提交，得到 authority SHA，再激活本地引用。字段非空不证明用户授权或行为符合性。
+1. 提交 spec/计划范围，以该已存在的完整提交 SHA 作为 authority。核对已有授权、稳定 TNN 和精确 writes/specs。
+2. 执行 `node <实际task-binding.mjs> bind --plan <仓库相对计划路径> --task TNN --authority <完整SHA>`，再 `inspect` 核对任务、范围、工作区及 `scope_protocol_version:1`。插件路径为 `guardrail/task-binding.mjs`，独立安装路径为 `scripts/spec-dev/task-binding.mjs`。未运行或工具缺少协议能力不记验证通过。
+3. 实施提交保留 `Spec-Task` trailer；普通 `Spec:` 只作追溯，不能代替绑定。任务关联不能混用宽跳过。
+4. 结束先 `clear --plan <入口> --task TNN`，再保存复选框、既存实现 SHA 与证据引用并窄提交计划；下一任务使用最新已提交范围重新绑定。正文或范围变化同样先清旧绑定、提交检查点再重新 bind。未清除他票引用时不得覆盖。
 
-生成每张需写入的票时，把以下顺序及实际变量值写全：
+本地引用由工具写到实际 Git dir 的 `spec-dev-task.json`，仅含 `{version:1,plan,task,authority,worktree,branch}`；不另建计划状态文件。恢复不重写已完成历史或原件，只修订当前/未执行范围；缺版本、路径或授权证据时报告具体缺口。
 
-1. 提交 spec/plan/任务范围；用 `git show <scope_commit>:<路径>` 的原始内容构造 view（不能 trim blob），计算 digest。
-2. 主线程原子写入 binding 与任务状态，`git add -- <实际progress路径>` 后单独 commit；取得 `git rev-parse HEAD` 为 authority，不能把它回填进同一个提交。
-3. `node <实际task-binding.mjs路径> bind --plan <仓库相对入口> --task TNN --authority <完整SHA>`；再 `inspect` 核对回执。插件路径为 `guardrail/task-binding.mjs`，独立安装路径为 `scripts/spec-dev/task-binding.mjs`。
-4. 实施提交由 prepare-commit-msg 补单行 `Spec-Task: {"plan":...,"task":...,"authority":...}`，commit-msg 核对最终消息；普通 `Spec:` 只作追溯，不能代替绑定。任务关联不能混用宽跳过。
-5. 实现与验证提交已存在后，`clear --plan <入口> --task TNN` 清本地引用，再原子保存 completed 与该既存 SHA、独立提交进度。切票、范围过期或恢复时先核对旧引用，不能覆盖其他任务引用。
+## execution 临时产物
 
-普通分文件串行任务的实际绑定写入如下；生成计划时填写四个真实参数，并把随后的窄暂存/状态提交、取得 authority、bind 命令写全。v2 仍在既有主线程锁内调用；并发由主线程按 claim 检查点生成绑定，不使用此串行片段。
+`<特性目录>/execution/` 统一容纳本轮日志、回执、审查输出、验收截图/trace、临时快照及失败尝试，均不提交 Git。工具强制置于仓库外的运行目录按同一生命周期预登记为本特性外置临时产物，收口时一并删除，不能借此长期保留。生成前确保项目忽略 `.spec-dev/**/execution/`（存量其他路径使用其精确目录），用 `git check-ignore` 核对；提交前检查暂存清单，禁止 `git add -f` 纳入这些文件。已误跟踪的只从索引移除，不改写历史。
 
-```javascript
-// node --input-type=module - <实际lib/task-binding.mjs> <实际仓库根> <计划相对入口> <任务ID>
-import fs from 'node:fs';
-import path from 'node:path';
-import {pathToFileURL} from 'node:url';
-const [library,repo,plan,task]=process.argv.slice(2),url=pathToFileURL(library);
-const {git,commitView,worktreeView}=await import(url.href);
-const {readScopes,scopeFingerprint}=await import(new URL('./task-scopes.mjs',url).href);
-const {parseRecord}=await import(new URL('./record-data.mjs',url).href);
-const file=path.join(repo,path.dirname(plan),'progress.yaml'),state=parseRecord(fs.readFileSync(file,'utf8'));
-if(state.execution||!state.tasks[task]||['completed','blocked'].includes(state.tasks[task].status)||(state.current!==null&&state.current!==task))throw Error('resolve current/blocked state before binding');
-const scope_commit=git(repo,'rev-parse','HEAD'),view=commitView(repo,scope_commit);
-const scope=readScopes(view.readText(plan),Object.keys(state.tasks)).tasks[task];
-const scope_digest=scopeFingerprint(view,plan,task).digest;
-if(scopeFingerprint(worktreeView(repo),plan,task).digest!==scope_digest)throw Error('static inputs must be committed');
-state.tasks[task].binding={scope_commit,scope_digest,authorization_ref:scope.authorization_ref,worktree:fs.realpathSync(repo),branch:git(repo,'branch','--show-current'),claim_key:null,claim_checkpoint:null};
-state.tasks[task].status='in_progress';state.current=task;
-fs.writeFileSync(file+'.tmp',JSON.stringify(state,null,2)+'\n',{flag:'wx'});fs.renameSync(file+'.tmp',file);
-```
+验收含必要补验、审查处置与 Requirement 对账结束后统一删除本特性的整个 `execution/`，不压缩、转存或换目录长期保存。没有独立 A 时在 F、审查与对账收口后执行；失败或延期收口也删除，但摘要如实保留结论与缺口，不能记通过。仍在补验或尚未收口的轮次暂不清理。
 
-本地引用由工具写到实际 Git dir 的 `spec-dev-task.json`，仅含 `{version:1,plan,task,authority,worktree,branch}`。并发 claim_checkpoint 指主线程保存真实 claim 的提交，可以不在 implementer 的祖先链上；scope_commit 必须先于 validated_commit，不能为适配绑定移动验证基线。主线程在 claim/工作区建立后保存绑定与 authority，才允许 implementer 激活。
+删除前把必要信息写进已有计划记录或 `acceptance/acceptance-report.md`：受测 SHA/条件、关键命令与退出码、覆盖范围、审查/验收结论、剩余缺口和实际裁决来源。只记摘要，不复制原始日志或整份 JSON。明确注明“execution 临时原件已清理”，旧路径只作历史定位，不再作为可打开的有效证据；`receipt_paths` 清空。摘要与删除结果沿正常记录检查点保存，无须新建归档清单。
 
-旧计划恢复不重写 completed、历史提交或原件：先核对已有授权，再在原载体补当前/未执行任务范围和必要步骤。旧单文件继续使用复选框，以稳定 TNN 选任务，authority 指原计划的已提交范围版本；不新增 progress。缺版本、路径或授权证据时报告具体缺口，不批量迁移。
+清理针对已核实的特性绝对路径，检查目录归属及仍在运行的写入者；执行精确删除并核实不存在。失败如实记录，不能报清理完成。该目录生成计划时预登记到资源台账；旧计划遗漏时按用户清理授权补记，不能因此无限保留。只清本特性的 execution，保留 spec、plan、验收报告、定稿原型及其他特性。
+
+后续 D 或 PR 等待合并消费上述已核验摘要、受测版本与实际 Git/PR 事实；不为重读已清理原件而重跑全量，也不再创建 execution/delivery。候选或条件变化时按影响新建本轮临时证据，完成补验和对账后再次删除。清理后摘要不是可重新执行 `verifyReceipt` / `verifyDelivery` 的原件，不声称机器核验仍可通过。重新进入验收或复审时，以已核验摘要、受测版本与本轮补验原件为输入，明确哪些结论经差异核对仍适用；未受影响的历史不因原件已删而自动变成缺口。
 
 ## 回执与交付映射（唯一定义点）
 
-未提交的 TDD 红绿保留原始工具输出与工作副本记录，不伪绑提交 SHA；正式 record 要求业务版本已提交。普通 Receipt v1：`{version:1,task,phase,command,cwd,exit_code,commit,tree,scope,stdout,stderr,stdout_sha256,stderr_sha256}`。phase 为 baseline/red/green/final/integration；scope 为 `{kind:"repository",outputs:[]}` 或获批精确验证范围 `{kind:"paths",paths:[...],digest,outputs:[]}`。默认覆盖全仓，仅排除本特性 progress/execution；outputs 只允许显式生成的 `acceptance/acceptance-report.md`，该文件若作为测试输入则不能排除。旧组记录保留现有九个原字段与 bytes，不补造字段。
+执行 [交付模板](delivery-templates.md)，将实际版本、命令、退出码、原始输出路径及 SHA-256 留在执行记录。未提交的 TDD 红绿保留实际工作副本和原始输出，不伪绑提交 SHA。正式回执沿现有 Receipt v1 字段：`{version:1,task,phase,command,cwd,exit_code,commit,tree,scope,stdout,stderr,stdout_sha256,stderr_sha256}`；原生审查与诊断报告保留其原始格式及附件，不强改为正式回执。
 
-原生审查、诊断捕获等非正式回执按登记范围原样转存；将完整原件目录登记为 evidence 资源，或逐文件登记全部附件。它们的自定义 stdout/hash 字段不自动套用 Receipt 的相对路径规则；转存证明字节一致，不证明这些原生报告通过了正式回执校验。正式 task/group record 与 delivery.receipt_paths 继续按各自协议解析、展开并核验原件。
+检查范围默认覆盖仓库输入；显式输出与获批范围须写清。复用证据要比较受测版本与候选差异，纯复选框/执行记录变化可复用，业务代码、断言、fixture、配置、契约或验证条件变化按影响补验。不能只凭相同退出码、非空 hash 或计划勾选判通过。原件仅在本轮执行和验收期间保留，收口后沿 [临时产物规则](#execution-临时产物) 删除；提交简短结论，不提交原件。
 
-`execution-evidence.mjs record --feature <绝对特性目录> --task TNN --phase <phase> --attempt <唯一名> [--output acceptance/acceptance-report.md] -- <真实argv>` 真正执行并保存；工具 exit0 表示保存成功，还须读取 JSON.exit_code。信号/启动错误或额外写入留下 incomplete 与原始输出。`verify --feature <目录> --record <特性相对record路径> --candidate <SHA>` 核对原件与适用版本；`transfer --source <原特性目录> --target <存活特性目录> [--task TNN | --claim <key>]` 只复制并核对原件，不删除来源。scope 互斥且仅用于票级子集，所选登记材料仍必需；整组/最终交付不传 scope，保持全量严格闭包。原件不进 Git；提交引用，清理前转存并保存真实回执。
+现有 `execution-evidence verify` 的 repository 范围包含单文件计划，保存记录后不能直接按新 HEAD 验旧回执。使用该工具产生的回执时，先以 `--candidate <record.commit 的完整 SHA>` 核验原件，再核对受测 SHA 到当前候选的完整 diff，记录仅复选框/执行记录变化的复用依据；不得重写回执版本、哈希或缩小 scope 来凑通过。原件损坏、版本不可达或验证输入变化仍须保留缺口并按影响补验。原生报告按其实际格式逐项核验；不声称人工复用等同于工具已验证新候选。
 
-分文件唯一 `progress.delivery`：`{version:1,channel,state,source_tip,source_tree,target_branch,merge_method,merge_commit,verified_target,history_ref,receipt_paths,post_merge}`。channel 为 local/pr；state 为 implementing/awaiting_merge/merged/completed；method 为 ff/merge/squash，未知事实填 null。source_tree 由 `businessTree(repo,feature,commit)` 实算；history_ref 使用 `refs/spec-dev/archive/<特性标识>/source`，保留并登记，不随工作分支删除。post_merge 项为 `{commit,kind,files}`，kind 为 progress/sync_commit/acceptance_delivery；仅允许精确进度、单一 sync_commit 或验收报告追加的“实际交付”节，其它改动须有当前版本补验。
+最终任务内保留一个 `json spec-dev-delivery` 块：`{version:1,channel,state,source_tip,source_tree,target_branch,merge_method,merge_commit,verified_target,history_ref,receipt_paths,post_merge}`。channel 为 local/pr；state 为 implementing/awaiting_merge/merged/completed；merge_method 为 ff/merge/squash；未知事实填 null。source_tip 为实际来源提交，source_tree 记录其 Git tree（`git rev-parse <source_tip>^{tree}`）；history_ref 使用 `refs/spec-dev/archive/<特性标识>/source`，登记为保留资源，不随工作分支删除。receipt_paths 仅在验收期间引用仍存活的原件，清理后置空；post_merge 项 `{commit,kind,files}` 记录实际后续提交。纯进度、sync_commit 和验收报告“实际交付”追加须核对差异；其余变化按影响补验，不靠字段豁免。
 
-既有失败获准不阻塞时，receipt_paths 另引用 `{version:1,kind:"failure-disposition",baseline_record,final_record,comparison,comparison_sha256,authorization,authorization_sha256}`。baseline_record/final_record 一并登记，仍是原 Receipt v1；后四项为 execution 下来源比较、真实用户裁决原件的路径与 SHA-256。核验要求同命令、完整仓库范围/输出排除项、来源祖先、baseline/final 同一非零退出码，以及原件 hash；final 仍须适用于交付来源/目标。只接受 final 例外，不豁免组验证。相同退出码或有效 hash 不能证明失败等价性/授权真实性；主线程先用 T00 的实际来源比较失败原因，保存用户裁决，独立审查复核。无裁决、本次回归或新候选不能沿用旧处置，失败记录永不改成 pass。
+既有失败获准不阻塞时，验收期间仍保留 baseline/final 原始非零结果、实际来源比较及用户裁决原件与 hash，独立审查复核；没有裁决、本次回归或新候选不能沿用旧处置，不将失败改成 pass。组验证不适用 final 的既有失败处置。
 
-Git 原件为 `{version:1,kind:"git",source_tip,target_commit,method,operations}`，每个真实 operation 保存 `{argv,cwd,exit_code,stdout,stderr,stdout_sha256,stderr_sha256}`；PR 原件保存实际 API 响应文件及 hash、url、source_tip、target_commit、method。PR 状态不能自证已合并。Receipt 与 Git/PR 回执路径列在 receipt_paths；最终验证用 `verifyDelivery(root,state,feature)`，缺源对象或原件即未验证。
-
-未完成档案中旧 `execution.delivery` 在授权恢复时由主线程一次迁到顶层，旧值及来源提交记 notes；新形禁止双真源。已完成历史只读原形。旧单文件把同一 delivery 事实写入原最终任务的 `json spec-dev-delivery` 块，复选框仍是任务状态。
-
+Git/PR 操作当场核对实际命令、退出码与响应，摘要记录来源/目标 SHA、合并方式及 PR URL（适用时）；原始输出留在当前工具结果，不另存 execution 文件。按交付模板核对来源历史和目标映射，不凭手填状态判断成功，也不宣称旧版 verifyDelivery 已支持清理后的单文件记录。
 
 ## 资源台账总则
 
-台账总则：**清理只遍历本台账、台账外一律不动**（可疑残留只报告不删）；共享缓存（~/.cargo、pnpm store、npm cache 等）默认保留，仅用户显式要求清理时才登记入账；台账限定持久资源（容器、测试库/表、临时目录、后台服务），worktree 内构建产物随 worktree 删除自然回收、不入账。
+**清理只遍历本台账、台账外一律不动**（可疑残留只报告不删）；共享缓存（~/.cargo、pnpm store、npm cache 等）默认保留，仅用户显式要求清理时才登记入账；台账限定持久资源（容器、测试库/表、临时目录、后台服务），worktree 内构建产物随 worktree 删除自然回收、不入账。

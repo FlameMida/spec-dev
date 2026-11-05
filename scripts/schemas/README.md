@@ -11,9 +11,9 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" <schema-name> <json-fil
 - `<schema-name>`：本目录下的文件名（不含 `.json`），如 `review-findings`
 - `<json-file>`：子代理输出落盘的 JSON 文件路径
 - 成功：stdout 输出 `{ok:true, schema, file}`，退出码 0
-- 失败：stderr 输出 `{ok:false, schema, file, errors:[{path, expected, actual}]}`，退出码 1——校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「输出契约与校验」）
+- 失败：stderr 输出 `{ok:false, schema, file, errors:[{path, expected, actual}]}`，退出码 1——校验失败发回补全一次，再失败主线程接管（定义见 [输出契约与校验](../../skills/requirement-analysis/references/output-contracts.md)）
 
-> `${CLAUDE_PLUGIN_ROOT}` 指向插件安装根目录（插件根）；写法约定与未替换时的解析序列见 `skills/requirement-analysis/references/exploration-patterns.md`「插件根解析」节（唯一定义点）。
+> `${CLAUDE_PLUGIN_ROOT}` 指向插件安装根目录（插件根）；写法约定与未替换时的解析序列见 [插件根解析](../../skills/requirement-analysis/references/plugin-root.md)（唯一定义点）。
 
 ## Schema 子集范围
 
@@ -41,7 +41,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" <schema-name> <json-fil
 | `exploration-report` | 探索报告 | code-explorer | requirement-analysis 阶段 2（deep 档 multi-modal sweep） |
 | `review-findings` | 审查发现 | code-reviewer | executing-plans 收尾审查编排 |
 | `acceptance-check-items` | 验收检查项 | acceptance-qa（Tier A 为主，D/X 结论并入） | 验收编排与复核、executing-plans 收尾审查 |
-| `implementation-result` | 实现票结果（结构校验后仍须核对真实 Git） | implementer | executing-plans 主线程 |
+| `implementation-result` | 实现票结果（结构校验后仍须核对真实 Git） | 历史实现票回报 | 历史实现结果结构校验 CLI |
 | `agent-plugin-1.0.0` | Agent Plugins 1.0.0 官方 manifest schema（上游 https://agent-plugins.org/schemas/1.0.0/plugin.schema.json 的 vendored 快照） | —（校验目标） | `node scripts/validate-output.mjs agent-plugin-1.0.0 plugin.json`（验收矩阵官方 schema 校验点） |
 
 每个契约的 `coverage_note` 一律必填且非空——这是「no silent caps」纪律的落点：截断/未覆盖范围必须显式声明，不允许静默缩水。`acceptance-check-items` 还要求非空 check/ops/expected/observed 与布尔 required。pass/fail/warn 必须引用实际非空 evidence_ref 文件及匹配的 evidence_sha256；路径相对 JSON 文件，也可为绝对路径。recheck 同样核验原件。unverified 可无证据，但 observed 说明缺口。历史原件不强制迁移，新记录遵循现行 schema。

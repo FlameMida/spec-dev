@@ -122,7 +122,7 @@ Grok Build 也支持 marketplace 插件条目中的 `source.ref: "dist"`；不�
 
 4. **审查计划并明确授权执行**
 
-   > 使用 executing-plans 执行 .spec-dev/&lt;特性&gt;/plan/index.md。
+   > 使用 executing-plans 执行 .spec-dev/&lt;特性&gt;/plan/&lt;特性&gt;-plan.md。
 
 5. **查看交付证据**。流程会完成任务实施、独立 final、审查、适用的 acceptance-qa、Requirement 对账和交付；不要把“计划已生成”或“部分测试通过”当作已经交付。
 
@@ -173,7 +173,7 @@ Grok Build 也支持 marketplace 插件条目中的 `source.ref: "dist"`；不�
 
 浏览器任务需安装 [ego-lite 及官方 `ego-browser` skill](https://lite.ego.app/document/en/docs/quick-start)。操作前读取该 skill，执行 `ego-browser skill` 并完整读取与当前版本匹配的指南。本插件不内嵌官方 skill，也不注册浏览器 MCP；详见[浏览器接入](skills/acceptance-qa/references/browser-setup.md)。项目已有的 Playwright Test/CLI 测试独立保留。
 
-契约校验器无法运行时，主线程按 schema 人工核对必填键与 `coverage_note`，并在报告中注明“契约校验降级”；定义见 [探索与契约规则](skills/requirement-analysis/references/exploration-patterns.md)。macOS / Linux 的受控审查入口另需 Python 3.9+、已认证的本机 Claude CLI 和 rtk；这不影响其他平台使用原生工作流。
+契约校验器无法运行时，主线程按 schema 人工核对必填键与 `coverage_note`，并在报告中注明“契约校验降级”；定义见 [输出契约与校验](skills/requirement-analysis/references/output-contracts.md)。macOS / Linux 的受控审查入口另需 Python 3.9+、已认证的本机 Claude CLI 和 rtk；这不影响其他平台使用原生工作流。
 
 ---
 
@@ -246,7 +246,7 @@ Grok Build 也支持 marketplace 插件条目中的 `source.ref: "dist"`；不�
 <a id="skill-writing-plans"></a>
 #### `writing-plans` — 把 spec 拆成可验证任务图
 
-**用途：** 将获批 spec 或明确需求拆成 `index.md + tasks/ + progress.yaml`，写清接口、真实依赖、精确写集合、资源归属、TDD 步骤和验证命令。任务按可独立交付和审查的行为切片组织，而不是机械地按技术层排队；计划生成不等于执行授权。
+**用途：** 将获批 spec 或明确需求写入单文件 `plan/<特性>-plan.md`，写清接口、真实依赖、精确写集合、资源归属、TDD 步骤和验证命令。任务按可独立交付和审查的行为切片组织，而不是机械地按技术层排队；计划生成不等于执行授权。
 
 **调用示例：**
 
@@ -259,13 +259,13 @@ Grok Build 也支持 marketplace 插件条目中的 `source.ref: "dist"`；不�
 <a id="skill-executing-plans"></a>
 #### `executing-plans` — 执行、恢复、审查并交付计划
 
-**用途：** 执行已批准的书面计划。默认按依赖图把就绪任务派给独立 worktree 中的 implementer，主线程独占进度和集成；依赖、写集合或资源冲突时顺序推进。支持中断恢复、独立 final、按规模的审查、acceptance-qa、Requirement 对账、合并清理和 `sync_commit` 锚定。
+**用途：** 执行已批准的书面计划。由主线程按真实依赖串行完成任务；支持中断恢复、独立 final、按规模的审查、acceptance-qa、Requirement 对账、合并清理和 `sync_commit` 锚定。
 
 **调用示例：**
 
-> 使用 executing-plans 执行 .spec-dev/&lt;特性&gt;/plan/index.md，从任务 0 开始并按计划完成交付。
+> 使用 executing-plans 执行 .spec-dev/&lt;特性&gt;/plan/&lt;特性&gt;-plan.md，从任务 0 开始并按计划完成交付。
 
-> 使用 executing-plans 恢复上次中断的计划；先核对 progress、工作区和已有证据，不要重做已完成任务。
+> 使用 executing-plans 恢复上次中断的计划；先核对计划进度、工作区和已有证据，不要重做已完成任务。
 
 <a id="skill-using-git-worktrees"></a>
 #### `using-git-worktrees` — 准备隔离且可验证的工作区
@@ -391,9 +391,7 @@ node "<插件绝对目录>/scripts/status.mjs" --repo "/项目路径" --json
 ├── YYYY-MM-DD-NN-<特性>/
 │   ├── spec/                 # 设计、行为规范、验收矩阵、定稿资源
 │   ├── plan/
-│   │   ├── index.md          # 全局约束、接口与任务导航
-│   │   ├── tasks/            # 独立任务、final、验收与交付
-│   │   └── progress.yaml     # 唯一运行状态与资源台账
+│   │   └── <特性>-plan.md    # 头部、导航、任务复选框、执行记录与资源台账
 │   ├── visual/               # 原型会话
 │   └── acceptance/           # 验收报告与证据索引
 ├── explorations/             # 经授权保存的探索 / 澄清笔记
@@ -410,11 +408,11 @@ node "<插件绝对目录>/scripts/status.mjs" --repo "/项目路径" --json
 
 **优点：** 把人的决定保留在方向、范围和重要取舍上，同时避免每个文件操作都打断一次。设计确认、原型局部选择、计划认可与执行许可不会相互冒充。
 
-### 3.4 任务图与隔离执行：默认并行，但不牺牲可恢复性
+### 3.4 任务图与隔离执行：默认串行，按原记录恢复
 
-**机制：** 计划声明真实依赖、精确 writes、共享资源和可独立验证边界。执行时就绪任务默认派给独立 worktree 中的 implementer，主线程统一管理 claim、progress、集成和交付；依赖或资源冲突时自动收敛为串行。`progress.yaml` 是唯一运行状态源，恢复时核对已提交状态、实际工作区与原始证据。
+**机制：** 计划声明真实依赖、精确 writes、共享资源和可独立验证边界。由主线程串行实施，进度与资源台账保存在同一计划文件；恢复时核对复选框、实际提交、工作区与原始证据。
 
-**优点：** 能并行的任务不必排队，不能并行的任务不会互相覆盖；中断后从真实状态续接，而不是凭聊天印象重做。资源台账还使容器、临时目录和测试数据的清理有据可查。
+**优点：** 单文件便于整体审阅，真实依赖保留可验证的任务边界；中断后从实际记录续接。资源台账还使容器、临时目录和测试数据的清理有据可查。
 
 ### 3.5 证据驱动的质量链：测试绿不是终点
 
@@ -441,9 +439,8 @@ node "<插件绝对目录>/scripts/status.mjs" --repo "/项目路径" --json
 | `code-explorer` | 只读代码分析、调用链与影响面调查 | 需求探索、根因调查 |
 | `external-resource-explorer` | 外部资料调研与一手来源证据 | 需求设计与回补探索 |
 | `code-reviewer` | 独立代码审查与 spec 符合性检查 | 收尾审查 |
-| `implementer` | 在独立 worktree 中完成认领任务的 TDD 与自检 | `executing-plans` |
 
-子代理结果按 JSON Schema 契约校验；`validate-output.mjs` 失败时退回补全一次，再失败由主线程接管或明确降级。探索与审查保持只读，implementer 只写已认领范围。
+子代理结果按 JSON Schema 契约校验；`validate-output.mjs` 失败时退回补全一次，再失败由主线程接管或明确降级。子代理仅承担只读探索与审查，主线程负责实现。
 
 **优点：** 并行不会模糊责任边界，结构化回执比散文式“已完成”更容易检查；能力缺失时可以降级，但不能伪造独立审查或不存在的工具结果。
 

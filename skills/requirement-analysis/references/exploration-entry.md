@@ -10,7 +10,7 @@
 准备派发、接管或恢复代理前取得 [派发与恢复](agent-dispatch.md)。
 使用插件内命令前取得 [插件根解析](plugin-root.md)，路径先解析为实值。
 接收需契约校验的结果前取得 [输出契约](output-contracts.md)。
-现行汇总入口 [exploration-patterns.md](exploration-patterns.md) 继续有效。
+需要划分探索主题或执行外部搜索时取得 [探索策略与搜索降级](exploration-patterns.md)。
 
 每个动作只加载适用专题，但必须在动作发生前取得完整定义。
 当前上下文中已有相同有效定义就复用；新 worker 不以主线程曾读代替自己取得。
