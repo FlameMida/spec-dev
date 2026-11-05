@@ -16,11 +16,11 @@ test("特性目录命名规则含同日序号 NN 与重扫防撞", () => {
   assert.match(ra, /grandfather|不改名/);
 });
 
-test("writing-plans 与 executing-plans 引用新命名（executing 保留旧命名读取）", () => {
+test("writing-plans 与 executing-plans 引用新命名并允许指定计划入口", () => {
   assert.match(read("skills/writing-plans/SKILL.md"), /YYYY-MM-DD-NN-/);
   const ep = read("skills/executing-plans/SKILL.md");
   assert.match(ep, /YYYY-MM-DD-NN-/);
-  assert.match(ep, /旧命名.*按原样读取|YYYY-MM-DD-<feature>.*原样/);
+  assert.match(ep, /按实际入口读取用户指定位置/);
 });
 
 test("两个模板标题行使用新命名", () => {

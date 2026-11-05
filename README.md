@@ -41,7 +41,7 @@ The three main entry points are routed by **commitment to delivery** and **desig
 
 - **[Quick start](#quick-start)** — [Install](#install) · [First use](#first-run) · [Platform support](#platform-support) · [Runtime dependencies](#runtime-dependencies)
 - **[Skill guide](#skill-guide)** — [Think and design](#design-skills) · [Plan and execute](#delivery-skills) · [Quality and repair](#quality-skills) · [Search and explain](#utility-skills)
-- **[Mechanisms, benefits, and characteristics](#mechanics)** — artifact contracts, approval boundaries, parallel recovery, quality evidence, drift guards, and cross-platform degradation
+- **[Mechanisms, benefits, and characteristics](#mechanics)** — artifact contracts, approval boundaries, interruption recovery, quality evidence, drift guards, and cross-platform degradation
 - **Reference** — [Utility commands](#commands) · [Maintenance and releases](#maintenance) · [Directory layout](#directory-layout)
 
 ---
@@ -122,7 +122,7 @@ The examples below are **natural-language prompts for your agent**, not shell co
 
 4. **Review the plan and explicitly authorize execution**
 
-   > Use executing-plans to execute .spec-dev/&lt;feature&gt;/plan/index.md.
+   > Use executing-plans to execute .spec-dev/&lt;feature&gt;/plan/&lt;feature&gt;-plan.md.
 
 5. **Inspect the delivery evidence**. The workflow covers implementation, independent final verification, review, applicable acceptance-qa, Requirement reconciliation, and delivery. A generated plan or a partially green test run does not mean the feature has been delivered.
 
@@ -173,7 +173,7 @@ If you are unsure which route to take, start with `/triage <request>`. It only r
 
 For browser work, install [ego-lite and its official `ego-browser` skill](https://lite.ego.app/document/en/docs/quick-start). Read that skill, run `ego-browser skill`, and read the complete version-matched guide before operating the browser. Spec-dev does not bundle the official skill or register browser MCPs; see [browser setup](skills/acceptance-qa/references/browser-setup.md). Existing Playwright Test/CLI suites remain supported independently.
 
-If the contract validator cannot run, the main thread checks required keys and `coverage_note` against the schema manually and reports "contract validation degraded"; see the [exploration and contract rules](skills/requirement-analysis/references/exploration-patterns.md). The controlled review entry point on macOS / Linux additionally requires Python 3.9+, an authenticated local Claude CLI, and rtk. Native workflows remain available on other platforms.
+If the contract validator cannot run, the main thread checks required keys and `coverage_note` against the schema manually and reports "contract validation degraded"; see the [output contract rules](skills/requirement-analysis/references/output-contracts.md). The controlled review entry point on macOS / Linux additionally requires Python 3.9+, an authenticated local Claude CLI, and rtk. Native workflows remain available on other platforms.
 
 ---
 
@@ -246,24 +246,24 @@ Every skill can be invoked independently or reused by the main pipeline. Each ex
 <a id="skill-writing-plans"></a>
 #### `writing-plans` — decompose a spec into a verifiable task graph
 
-**Purpose:** Turn an approved spec or explicit requirement into `index.md + tasks/ + progress.yaml`, with interfaces, real dependencies, exact write scopes, resource ownership, TDD steps, and verification commands. Tasks are vertical, independently deliverable and reviewable behavior slices rather than mechanical technology layers. Generating a plan does not authorize execution.
+**Purpose:** Turn an approved spec or explicit requirement into one `plan/<feature>-plan.md` with task checkboxes, interfaces, real dependencies, exact write scopes, resource ownership, TDD steps, and verification commands. Tasks are vertical, independently deliverable and reviewable behavior slices rather than mechanical technology layers. Generating a plan does not authorize execution.
 
 **Examples:**
 
 > Use writing-plans to create an implementation plan from .spec-dev/&lt;feature&gt;/spec/&lt;feature&gt;-design.md, making task dependencies and per-task write scopes explicit.
 
-> Use writing-plans to revise this plan so independently verifiable slices can run in parallel, while preserving separate final, acceptance, and delivery tasks.
+> Use writing-plans to revise this plan into independently verifiable slices, while preserving separate final, acceptance, and delivery tasks.
 
 After writing, the plan is checked against the [plan review checklist](skills/writing-plans/references/plan-review.md) for granularity, dependencies, contracts, and recovery. You then choose whether to execute it or review it first.
 
 <a id="skill-executing-plans"></a>
 #### `executing-plans` — execute, resume, review, and deliver a plan
 
-**Purpose:** Execute an approved written plan. By default, ready tasks are dispatched to implementers in independent worktrees according to the dependency graph, while the main thread exclusively owns progress and integration. Dependencies, write scopes, or resource conflicts force sequential execution where needed. The workflow supports interruption recovery, independent final verification, scale-appropriate review, acceptance-qa, Requirement reconciliation, merge and cleanup, and `sync_commit` anchoring.
+**Purpose:** Execute an approved written plan. The main thread implements tasks sequentially, respecting their dependencies. The workflow supports interruption recovery, independent final verification, scale-appropriate review, acceptance-qa, Requirement reconciliation, merge and cleanup, and `sync_commit` anchoring.
 
 **Examples:**
 
-> Use executing-plans to execute .spec-dev/&lt;feature&gt;/plan/index.md, starting with task 0 and following the plan through delivery.
+> Use executing-plans to execute .spec-dev/&lt;feature&gt;/plan/&lt;feature&gt;-plan.md, starting with task 0 and following the plan through delivery.
 
 > Use executing-plans to resume the plan interrupted in my previous session. Check progress, the actual worktrees, and existing evidence first; do not redo completed tasks.
 
@@ -391,9 +391,7 @@ A typical artifact layout is:
 ├── YYYY-MM-DD-NN-<feature>/
 │   ├── spec/                 # design, behavior contract, acceptance matrix, approved assets
 │   ├── plan/
-│   │   ├── index.md          # global constraints, interfaces, and task navigation
-│   │   ├── tasks/            # implementation, final, acceptance, and delivery tasks
-│   │   └── progress.yaml     # sole runtime state and resource ledger
+│   │   └── <feature>-plan.md # constraints, navigation, task checkboxes, evidence, resource ledger
 │   ├── visual/               # prototype sessions
 │   └── acceptance/           # acceptance report and evidence index
 ├── explorations/             # exploration / clarification notes saved with authorization
@@ -410,11 +408,11 @@ Legacy `docs/` artifacts remain readable in place and are never migrated automat
 
 **Benefit:** People retain control over direction, scope, and important trade-offs without being interrupted for every file operation. Design confirmation, a local prototype choice, plan approval, and execution permission cannot impersonate one another.
 
-### 3.4 Task graphs and isolated execution: parallel by default, recoverable by design
+### 3.4 Task graphs and isolated execution: serial by default, resumable from evidence
 
-**Mechanism:** Plans declare real dependencies, exact writes, shared resources, and independently verifiable boundaries. During execution, ready tasks are dispatched to implementers in independent worktrees by default, while the main thread owns claims, progress, integration, and delivery. Dependencies or resource conflicts serialize only the affected work. `progress.yaml` is the sole runtime state source; recovery checks committed state, actual worktrees, and original evidence.
+**Mechanism:** Plans declare real dependencies, exact writes, shared resources, and independently verifiable boundaries. The main thread executes serially, with progress and the resource ledger in the same plan file. Recovery checks checkboxes, actual commits, worktrees, and original evidence.
 
-**Benefit:** Independent tasks do not wait unnecessarily, and conflicting tasks do not overwrite each other. Recovery resumes from real state rather than chat impressions. The resource ledger also makes cleanup of containers, temporary directories, and test data auditable.
+**Benefit:** One file supports whole-plan review while real dependencies preserve verifiable task boundaries. Recovery resumes from actual records. The resource ledger also makes cleanup of containers, temporary directories, and test data auditable.
 
 ### 3.5 Evidence-driven quality: green tests are not the finish line
 
@@ -441,9 +439,8 @@ Legacy `docs/` artifacts remain readable in place and are never migrated automat
 | `code-explorer` | Read-only code analysis, call paths, and impact investigation | requirement exploration and root-cause investigation |
 | `external-resource-explorer` | External research with primary-source evidence | requirement design and follow-up exploration |
 | `code-reviewer` | Independent code review and spec-conformance checks | wrap-up review |
-| `implementer` | Single-task TDD and self-check in an isolated worktree | `executing-plans` |
 
-Subagent results are validated against JSON Schema contracts. If `validate-output.mjs` rejects a result, it is returned for completion once; a second failure is handled by the main thread or reported as a documented degradation. Exploration and review remain read-only, and an implementer writes only its claimed scope.
+Subagent results are validated against JSON Schema contracts. If `validate-output.mjs` rejects a result, it is returned for completion once; a second failure is handled by the main thread or reported as a documented degradation. Subagents handle read-only exploration and review; the main thread implements the plan.
 
 **Benefit:** Parallelism does not blur responsibility, and structured receipts are easier to inspect than prose claims of completion. Missing capabilities can degrade safely, but the workflow cannot fabricate an independent review or a nonexistent tool result.
 

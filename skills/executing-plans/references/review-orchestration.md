@@ -1,18 +1,20 @@
 # 收尾审查编排（阶段 4）
 
-> **阅读时机**：executing-plans 的实施票与独立 final 验证票完成后。串并行使用本文件唯一的维度、路数和收口规则。每个编排动作前用一句话说明进度。
+> **阅读时机**：executing-plans 的实施票与独立 final 验证票完成后。各审查入口使用本文件唯一的维度、路数和收口规则。每个编排动作前用一句话说明进度。
 
 ## 受控运行入口
 
 需要程序核验证据和收尾时，使用插件内 `scripts/review-runner.py`。此入口在 macOS/Linux 依赖 Python 3.9+、本机已认证 Claude CLI、Node 和 Git；本仓库命令经 rtk。其他客户端可继续下文原生编排，但不能声称具有受控运行器的证据写入隔离与状态保证。维度、D依据、相关测试命令及原始范围由主线程在预检后固定，不能让运行器替代这些语义裁决。
 
-配置JSON包含 `repo`（被审仓库绝对路径）、`base`、`head`、`spec`、`plan`（后两者是仓库相对路径）、`tier`（small/regular/large）、`capacity`（本次实际worker容量）、`tests`（如 `[{"id":"related","argv":["rtk","proxy","node","--test","test/cart.test.js"]}]`）、`critic`（small/regular 默认 on-findings，可显式 always；large 仅 always，large+on-findings 拒绝）、`evidence`（可选，真实回执引用数组 `{task,phase,feature,record_path}`；feature 为绝对特性目录，提供有效回执时 tests 可为空）。可选 `d_request` 为真实结构摩擦的 `{file,line,quote}` 引用数组；`model`/`effort` 仅沿用户既有选择，省略时继承本机默认。运行目录必须在被审仓库之外，scope需对应干净HEAD。使用：
+配置JSON包含 `repo`（被审仓库绝对路径）、`base`、`head`、`spec`、`plan`（后两者是仓库相对路径）、`tier`（small/regular/large）、`capacity`（本次实际worker容量）、`tests`（如 `[{"id":"related","argv":["rtk","proxy","node","--test","test/cart.test.js"]}]`）、`critic`（small/regular 默认 on-findings，可显式 always；large 仅 always，large+on-findings 拒绝）、`evidence`（可选，真实回执引用数组 `{task,phase,feature,record_path}`；feature 为绝对特性目录，提供有效回执时 tests 可为空）。可选 `d_request` 为真实结构摩擦的 `{file,line,quote}` 引用数组；`model`/`effort` 仅沿用户既有选择，省略时继承本机默认。运行目录必须在被审仓库之外，作为本特性的外置临时产物预登记，验收收口时一并删除；scope需对应干净HEAD。使用：
 
 ```bash
 rtk proxy python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review-runner.py" init --config review-config.json --run /absolute/review-run
 rtk proxy python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review-runner.py" run --run /absolute/review-run
 rtk proxy python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review-runner.py" status --run /absolute/review-run
 ```
+
+受控入口会以配置 head 核验导入回执，`tests: []` 仅在该候选实际通过校验时可用。单文件计划保存 F 记录后，repository 范围的旧回执可能因计划正文变化被拒绝；此时按 [回执映射](../../writing-plans/references/plan-format.md#回执与交付映射唯一定义点) 验原件与候选差异，并使用下文原生编排完成独立审查。不能伪造可导入证据、放宽 strict snapshot，或只为计划记录变化重跑全量。
 
 worker只拥有内嵌stdio提供的context/read_source/run_test/submit_report，无任意Bash/Write/Agent。程序固定执行者和测试定义，原始证据按内容哈希保存，报告引用真实ID；tests 非空时 A/AS 仍须亲自请求测试；tests 为空且提供 evidence 时以该回执为证据。受控入口只对逐成员现行Scenario集合非空且相同、并有独立因果说明的重复候选执行合并；不同Scenario或无Scenario的质量候选保守分列，保留全部来源，不把同一行或一次编辑当同因。程序核查引用原文、实际进程回执、独立反驳依赖、critic覆盖依据及最终未完成项；所有维度的语义判断、严重性与同根因因果仍由独立审查承担。
 
@@ -24,9 +26,13 @@ worker只拥有内嵌stdio提供的context/read_source/run_test/submit_report，
 
 初审各维度仅消费共同事实及自身已封存回执，避免后启动的初审跟随他人结论；D另外取得有来源的结构触发范围。反驳与critic读取实际依赖报告和所引用的测试，补查同时读取原维度报告与critic缺口。分页送达记录绑定当前worker进程，恢复须重新读取；错误响应也分页。需要删除的越界代码，其假设保留后的测试或文档缺口不另算当前独立问题。
 
+已按临时产物规则收口清理的历史，使用已核验摘要、受测版本及本轮补验原件，核对候选差异后复用未受影响的结论；不因原件已按规则删除而重跑 F，不把摘要冒充可机器核验的回执。无可导入原件时使用原生独立审查，或仅运行本轮必要补验；不伪造 evidence 导入。
+
 ## 输入预检
 
-主线程在扇出前从原执行记录核实 base、HEAD、完整 diff、计划入口（index.md 或存量单文件）、关联 spec 和批准变更来源。基线必须属于当前特性；保留 `git diff <base>...HEAD` 范围表达与变更文件清单。固定已核实的审查范围，代码变化则说明新范围并复审受影响维度，不混用前后证据。
+主线程在扇出前从原执行记录核实 base、HEAD、完整 diff、计划入口、关联 spec 和批准变更来源。基线必须属于当前特性；保留 `git diff <base>...HEAD` 范围表达与变更文件清单。固定已核实的审查范围，代码变化则说明新范围并复审受影响维度，不混用前后证据。
+
+计划含「审查关注点」时，将来源、失败条件和负责的任务/断言指针带入相应维度的审查输入；A/AS 核对实际测试或验收证据是否覆盖该条件，S 核对其与现行契约一致。沿既有 coverage_note 记录已核验与缺口，适用 critic 时一并查漏；关注点不取代完整 Scenario 覆盖，不增加审查维度或无条件重跑验证。
 
 错误 ref、不可读 diff、计划显式关联但丢失的 spec 先查记录恢复，无法可靠恢复则说明阻塞，不猜用 HEAD 或其他文件。无 spec 的历史计划可使用其已批准任务/验收标准并声明来源边界；连批准依据也无法恢复时不能做 S 结论。空 diff 明示无代码变更，跳过无效代码扇出，仍按已有实现/证据做必要覆盖核对与交付对账，不自动全部 DELIVERED。
 
@@ -51,7 +57,7 @@ worker只拥有内嵌stdio提供的context/read_source/run_test/submit_report，
 
 ## 派发与复核
 
-每路携带固定范围、聚焦维度、输出契约及证据路径、计划/spec 指针、完成条件和排除项；通用要求沿 requirement-analysis/references/exploration-patterns.md「完成条件与排除项」与时效规则。S 使用现行 Requirement/Scenario、任务及批准变更，逐条排除 Superseded 项；只给必要摘要和锚点，不复制全篇。
+每路携带固定范围、聚焦维度、输出契约及证据路径、计划/spec 指针、完成条件和排除项；通用要求沿 [派发要求与失败隔离](../../requirement-analysis/references/agent-dispatch.md)与时效规则。S 使用现行 Requirement/Scenario、任务及批准变更，逐条排除 Superseded 项；只给必要摘要和锚点，不复制全篇。
 
 ```text
 selected = 按上表确定全部维度
@@ -77,7 +83,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" review-findings <file>
 
 高/中候选的独立反驳必须由独立于候选提出者的 reviewer 实际执行，主线程自查及仅负责覆盖检查的 critic 不能代替。处置记录保留可追溯的派发、复核回执及证据指针；收到独立结果并核实成立后才能记入 confirmed。未派发、无回执或未完成时保留待复核，不能仅用文字宣称“已独立反驳”。此要求同样适用于 critic 或覆盖补查新提出的候选。
 
-校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「输出契约与校验」）；降级也按该单点规则，不静默跳过。失败先缩小范围重试 1 次，再失败主线程接管（定义见 exploration-patterns「派发要求与失败隔离」）；接管以维度为单位，缩小的是批次，总覆盖不缩减，缺口保留可见。
+校验失败发回补全一次，再失败主线程接管（定义见 [输出契约与校验](../../requirement-analysis/references/output-contracts.md)）；降级也按该单点规则，不静默跳过。失败先缩小范围重试 1 次，再失败主线程接管（定义见 [派发要求与失败隔离](../../requirement-analysis/references/agent-dispatch.md)）；接管以维度为单位，缩小的是批次，总覆盖不缩减，缺口保留可见。
 
 ## completeness critic
 
@@ -97,10 +103,4 @@ S 负责判定实现偏差，critic 负责发现覆盖证据缺口。后者交�
 
 ## Codex 降级
 
-spawn_agent/wait_agent 及上下文参数沿 requirement-analysis/references/codex-compat.md；按平台实际容量分批，不硬编码上限。对抗复核可用一个独立 critic 顺序反驳高/中候选，保持独立性。插件根占位符按 exploration-patterns「插件根解析」解析后代入上述双引号命令；不静默跳过校验。
-
-## 并发分支的审查输入
-
-并发模式全票集成后使用本文件完整编排，输入最初 base_commit 到当前集成 HEAD 的完整 diff、spec、progress、research 与 execution 指针。串行切换不把 base 换成切换检查点；implementer 自检不抵销任何审查维度、completeness critic、矩阵验收或最终全量。本地/PR 完成判据继续见 delivery-channels.md。
-
-导入先调用 execution-evidence verify，核对 task/phase、原件与 candidate，再把完整 bytes 封存为本 run 对象；broker 提供实际命令、退出码、输出及对象 ID，拒绝只报哈希。来源原件删除不影响已封存内容；strict snapshot 不放宽，进度或控制器变化仍须新 run。同内容测试回执可重新核验后供新 run 导入，不拼接不同 run 的审查完成结论。
+spawn_agent/wait_agent 及上下文参数沿 requirement-analysis/references/codex-compat.md；按平台实际容量分批，不硬编码上限。对抗复核可用一个独立 critic 顺序反驳高/中候选，保持独立性。插件根占位符按 [插件根解析](../../requirement-analysis/references/plugin-root.md)解析后代入上述双引号命令；不静默跳过校验。

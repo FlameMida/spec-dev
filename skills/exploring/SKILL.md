@@ -48,11 +48,11 @@ description: >-
 
 ## 外部事实研究
 
-核查第三方依赖、服务或标准的能力与版本时（包括本地离线材料），按入口已取得的来源纪律执行；主线程直查和无后台能力时同样适用。外部分类、定义加载和派发细则以 [exploration-patterns.md](../requirement-analysis/references/exploration-patterns.md) 为单点，不把本地外部材料当成内部代码来跳过约束。
+核查第三方依赖、服务或标准的能力与版本时（包括本地离线材料），按入口已取得的来源纪律执行；主线程直查和无后台能力时同样适用。外部分类见 [探索策略](../requirement-analysis/references/exploration-patterns.md)，定义加载和派发细则见 [派发与恢复](../requirement-analysis/references/agent-dispatch.md)，不把本地外部材料当成内部代码来跳过约束。
 
 ## 可选后台调研
 
-独立有界的只读子题可委派后台调查，主线程继续不依赖结果的讨论；依赖该事实前必须回收并核对来源、覆盖与缺口。派发前先实际读取 [exploration-patterns.md](../requirement-analysis/references/exploration-patterns.md) 的定义加载、派发要求与失败隔离；能力缺失、未完成回执和恢复判断按该单点执行，失败先缩小范围重试一次，再失败主线程接管。插件根、工具优先级及离线派发也消费该 reference，外部来源纪律以 agents/external-resource-explorer.md 为准，不另设恢复例外。缺口不伪造已完成。后台不能写实现、自动落盘笔记或代用户裁决。
+独立有界的只读子题可委派后台调查，主线程继续不依赖结果的讨论；依赖该事实前必须回收并核对来源、覆盖与缺口。派发前先实际读取 [派发与恢复](../requirement-analysis/references/agent-dispatch.md) 的定义加载、派发要求与失败隔离；能力缺失、未完成回执和恢复判断按该单点执行，失败先缩小范围重试一次，再失败主线程接管。插件根、工具优先级及离线派发也消费该 reference，外部来源纪律以 agents/external-resource-explorer.md 为准，不另设恢复例外。缺口不伪造已完成。后台不能写实现、自动落盘笔记或代用户裁决。
 
 ## 探索产物（可选，先提议后落盘）
 

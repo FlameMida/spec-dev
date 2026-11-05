@@ -30,6 +30,6 @@
 
 {{工作流主线程填写；独立触发可省略。逐条核对后写 DELIVERED/DEFERRED/DROPPED/SUPERSEDED/ADDED-IN-FLIGHT；延期/放弃附用户决定来源，不默认预填全部 DELIVERED。}}
 
-## Evidence Index / coverage_note
+## Evidence Summary / coverage_note
 
-{{检查 JSON、实际回执、截图/trace/归档 HTML 和适用版本。声明裁剪、复核范围、环境缺件、mock 边界及 manual-pending；校验器 ok 不替代语义和覆盖核对。}}
+{{验收期间引用实际原件；收口前保留受测版本/条件、关键命令与退出码、覆盖结论及缺口摘要，注明 execution 临时原件的实际清理结果。已删路径只作历史定位，不再作可打开的证据。声明裁剪、复核范围、环境缺件、mock 边界及 manual-pending；校验器 ok 不替代语义和覆盖核对。}}

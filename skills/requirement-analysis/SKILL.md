@@ -6,7 +6,7 @@ description: >-
 
 > 输出语言：用户显式指定（含平台语言设置）优先，其次跟随近期对话，否则使用英语。新产物使用创建时语言，增量修改沿用原文语言；固定话术按语义表达。
 
-> **插件根**：`${CLAUDE_PLUGIN_ROOT}`——本 skill 正文与其 references 中的插件根命令以此为准；若上式仍为变量字面量（平台未替换），按 requirement-analysis 的 references/exploration-patterns.md「插件根解析」序列推导。
+> **插件根**：`${CLAUDE_PLUGIN_ROOT}`——本 skill 正文与其 references 中的插件根命令以此为准；若上式仍为变量字面量（平台未替换），按[插件根解析](references/plugin-root.md)序列推导。
 
 > **外部搜索统一入口**：外部检索先用 anysearch；不可用时按[搜索与降级规则](references/exploration-patterns.md)执行。
 
@@ -21,7 +21,7 @@ description: >-
 **首次材料读取前分类**：按共享入口核对事实归属；本地存放的第三方材料仍属外部事实。外部研究前取得来源纪律，派发、插件命令与结果消费前分别取得适用专题。
 
 <HARD-GATE>
-在设计展示给用户并获得批准之前，不得调用任何实施类 skill、不得编写任何代码、不得搭建任何脚手架、不得采取任何实施动作。此门槛适用于所有项目，无论看起来多简单。
+在设计展示给用户并获得批准之前，不得调用实施类 skill、编写生产实现代码、搭建生产脚手架或采取产品实施动作。按[原型契约](../visual-preview/references/ui-prototype-contract.md)在隔离位置生成 HTML/CSS/JS 设计产物属于澄清，可在整体批准前进行；不能据此修改生产代码。此门槛适用于所有项目，无论看起来多简单。
 </HARD-GATE>
 
 ## 反模式："这需求太简单，不需要设计"
@@ -107,11 +107,11 @@ flowchart TD
 - **standard**：按架构层次或功能模块拆 3-5 个 `code-explorer`；阶段 1 标记了外部探索时，同波次加 1-2 个 `external-resource-explorer`
 - **deep**：multi-modal sweep——每个模态一个 `code-explorer` 彼此盲扫，模态主题由项目形态决定，在途代理数受平台容量限制，必要时分批完成；外部按主题拆多个 `external-resource-explorer` 同波次发起
 
-外部研究沿入口的首次材料分类和规则取得要求执行；分类、定义加载与派发细则以 [exploration-patterns.md](references/exploration-patterns.md) 为单点。
+外部研究沿入口的首次材料分类和规则取得要求执行；分类见 [探索策略](references/exploration-patterns.md)，定义加载与派发细则见 [派发与恢复](references/agent-dispatch.md)。
 
-外部探索工具优先级：AnySearch（通用/垂直/批量，插件内嵌）优先 → `WebSearch` / `WebFetch` 兜底；**派发外部探索子代理时须在派发词中主动重申此优先级**（不依赖 agent 定义文件生效，Codex 端尤其如此）；降级链与模态定义、契约校验、失败隔离规则见 [exploration-patterns.md](references/exploration-patterns.md)。
+外部探索工具优先级：AnySearch（通用/垂直/批量，插件内嵌）优先 → `WebSearch` / `WebFetch` 兜底；**派发外部探索子代理时须在派发词中主动重申此优先级**（不依赖 agent 定义文件生效，Codex 端尤其如此）；降级链与模态定义见 [探索策略](references/exploration-patterns.md)；校验结果前读取 [输出契约](references/output-contracts.md)。
 
-**每个子代理必须给定**：有界主题、来源线索、可判定的完成条件、显式排除项、期望输出及适用的工具优先级/文档时效提醒；按 [exploration-patterns.md](references/exploration-patterns.md)「完成条件与排除项」和派发要求校准，不复制定义。失败先缩小范围重试 1 次，再失败主线程接管（定义见 exploration-patterns「派发要求与失败隔离」）。
+**每个子代理必须给定**：有界主题、来源线索、可判定的完成条件、显式排除项、期望输出及适用的工具优先级/文档时效提醒；按 [派发要求与失败隔离](references/agent-dispatch.md) 校准，不复制定义。失败先缩小范围重试 1 次，再失败主线程接管（定义见 [派发要求与失败隔离](references/agent-dispatch.md)）。
 
 ## 阶段 3: 澄清问题
 
@@ -122,7 +122,7 @@ flowchart TD
 - 优先覆盖：目的、约束、成功标准；阶段 1-2 暴露的歧义、约束冲突、隐含假设、边缘场景
 - 术语挑战裁决出的规范术语全程沿用；共享术语及冲突处理遵循 [context-reuse.md](references/context-reuse.md)，特性局部术语留在 spec，完整设计批准后再按该约定保存词汇表。
 
-**通用澄清与原型澄清**：先明确目标、角色、范围、业务规则、约束和成功标准。新增页面、重设计、主要布局或核心交互变化，按 [原型契约](../visual-preview/references/ui-prototype-contract.md) 自动展示 HTML；小改动/用户关闭/已有定稿按其例外与复用规则处理。界面问题沿 [界面澄清](../clarifying/references/ui-clarification.md) 一次一题，业务歧义回通用澄清，已决事项不重问。局部选择只确认当前问题，完整设计确认包含适用的定稿版本；不另加一轮“是否启用”或逐页批准门。
+**通用澄清与原型澄清**：先取得足以讨论当前问题的目标、角色和相关业务约束。新增页面、重设计、主要布局或核心交互变化，按 [原型契约](../visual-preview/references/ui-prototype-contract.md) 自动展示 HTML；不等全部需求澄清完才出粗稿，小改动/用户关闭/已有定稿按其例外处理。界面问题沿 [界面澄清](../clarifying/references/ui-clarification.md) 逐题展示与复述，业务歧义回通用澄清，已决事项不重问。局部决定汇入阶段 5 的完整设计，包含适用定稿版本；不把过程复述变成分章节批准，也不另问是否启用。
 
 **回补探索**：澄清或方案期发现新库/新领域，允许回补一轮外部探索（同样按实际容量尽早派发），回补后继续当前阶段。
 
@@ -160,6 +160,7 @@ standard 档在既有有界探索主题内核对相邻测试、公共行为入�
 
 - **整篇展示、不分章节逐节确认**——一次性给出全文，用户整体反馈
 - 覆盖：架构与组件划分、数据流、关键接口/数据结构、错误处理、测试策略、风险与边缘情况
+- **从调用方式推导接口**：涉及新增或调整的公共接口、跨模块契约或 CLI 时，先用设计示例写出真实调用方的正常用法及相关失败结果，再确定签名、参数和返回语义；复用既有契约，不为示例增加功能或测试 seam。示例属于设计材料，不运行或写入产品实现，不冒称经过实验验证；随本阶段整体批准。普通内部小函数不强制，light 档放进已有「关键决策」。
 - **测试落点声明**：在本次完整设计中一并展示公共接口与签名/协议、覆盖 Scenario、允许替换的外部依赖（无则写无）和来源。按 test-driven-development 的落点规则优先复用、选择仍可稳定观察行为的较高层接口、减少新接口；获批后写入 spec 测试策略，不增加独立 seam 批准门。
 - 篇幅与复杂度匹配：light 档几句话，复杂设计每节最多两三百词——设计文档不是越长越好
 - **面向隔离与清晰设计**：拆成职责单一、接口明确、可独立理解与测试的单元；每个单元能回答"做什么、怎么用、依赖什么"；不读内部实现就能理解一个单元、改内部实现不破坏消费者——做不到就重划边界；整体设计对照 design-principles.md 八条自检

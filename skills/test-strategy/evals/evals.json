@@ -29,7 +29,7 @@
     {
       "id": "plan-decomposition-s12",
       "prompt": "失败不移动已验证基线\nGIVEN 组基线 B 已通过，T06 在当前实现 tip 测试失败。\nWHEN 记录结果。",
-      "expected_output": "T06/组 blocked，成员保持待验，validated_commit 仍为 B；报告失败命令及日志，不派组外任务。"
+      "expected_output": "在单文件计划记录 T06/组阻塞，成员保持待验且组验证项未勾选；已通过基线仍为 B，另记失败实现 SHA、命令及日志，不执行组外任务。"
     },
     {
       "id": "strategy-required-manual",

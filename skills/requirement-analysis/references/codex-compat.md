@@ -53,7 +53,7 @@
 
 阶段 3 的普通澄清遵循 [clarifying 核心纪律](../../clarifying/SKILL.md)，此处只映射提问工具，不重复定义问题数量或形式。
 
-三道门（方案选定 / 设计批准 / spec review）通过当前可用提问工具或普通对话呈现，等待用户明确回复后再继续；不要求用户切换模式。产物 review 的陈述式检查点与一次整体确认沿 [Spec 审查](spec-review.md)；进入阶段 7 的未决事项处置前实际读取其「审查结果分类与集中补问」，普通澄清、审查补问和整体批准各守原边界。本文件不另设批问或逐题规则，也不把读取、推荐或沉默当作批准。集成组 capability/JSON v2 与状态检查定义在 writing-plans 和 integration-groups，不在本表复制。
+三道门（方案选定 / 设计批准 / spec review）通过当前可用提问工具或普通对话呈现，等待用户明确回复后再继续；不要求用户切换模式。产物 review 的陈述式检查点与一次整体确认沿 [Spec 审查](spec-review.md)；进入阶段 7 的未决事项处置前实际读取其「审查结果分类与集中补问」，普通澄清、审查补问和整体批准各守原边界。本文件不另设批问或逐题规则，也不把读取、推荐或沉默当作批准。集成组待验与统一验证定义在 writing-plans 的任务模板，不在本表复制。
 
 ---
 
@@ -62,15 +62,15 @@
 - 使用 `spawn_agent` 并按任务需要继承主会话上下文；输入齐全且独立的主题尽早派发，允许同波次多调用和容量分批，只在需要结果时等待，不丢失待启动主题。
 - 上下文继承参数分版本：新版多代理工具用 `fork_turns`（`"all"` 继承全部、`"none"` 不继承、正整数字符串继承最近 N 轮），旧版用 `fork_context: true/false`。新版已移除 `fork_context` 并会直接报错——参数被拒绝时换用另一套即可
 - 需要结果时使用 `wait_agent` 收集
-- 失败先缩小范围重试 1 次，再失败主线程接管（定义见 exploration-patterns「派发要求与失败隔离」）
+- 失败先缩小范围重试 1 次，再失败主线程接管（定义见 [派发要求与失败隔离](agent-dispatch.md)）
 
 ---
 
 ## 外部探索（阶段 2 外部波次）
 
 - 工具优先级与 Claude Code 端一致：通用外部研究/时效信息/垂直领域/多主题批量检索优先 **AnySearch**（插件内嵌 skill 自带 CLI，无 MCP 依赖）优先；不可用再降级 Codex 内置 web 搜索（托管 `web_search` 工具）
-- **外部 agent 定义加载**：遵循 [exploration-patterns.md](exploration-patterns.md) 的定义加载要求；RA/exploring 派发均传入已解析的定义绝对路径并要求先读，不能假定 spawn_agent 自动加载；来源规则仍只有 agent 文件一个定义点。
-- **派发词必须显式携带 AnySearch 提醒**：Codex 的 `spawn_agent` 不加载 `agents/*.md` 定义文件，子代理对工具优先级零感知——主线程派发外部探索任务时，须在派发 prompt 中写明 AnySearch 第一优先、CLI 调用方式（`python3 "${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py" search "查询词" --max_results 5`；python 缺依赖换同目录零依赖 Node 版 `anysearch_cli.js`，同参数；Codex 下 `${CLAUDE_PLUGIN_ROOT}` 是占位符，按 [exploration-patterns.md](exploration-patterns.md)「插件根解析」序列代入绝对路径）与降级链（AnySearch → 内置 web 搜索），重试与降级纪律以 [exploration-patterns.md](exploration-patterns.md) 为准
+- **外部 agent 定义加载**：遵循 [派发与恢复](agent-dispatch.md) 的定义加载要求；RA/exploring 派发均传入已解析的定义绝对路径并要求先读，不能假定 spawn_agent 自动加载；来源规则仍只有 agent 文件一个定义点。
+- **派发词必须显式携带 AnySearch 提醒**：Codex 的 `spawn_agent` 不加载 `agents/*.md` 定义文件，子代理对工具优先级零感知——主线程派发外部探索任务时，须在派发 prompt 中写明 AnySearch 第一优先、CLI 调用方式（`python3 "${CLAUDE_PLUGIN_ROOT}/skills/anysearch/scripts/anysearch_cli.py" search "查询词" --max_results 5`；python 缺依赖换同目录零依赖 Node 版 `anysearch_cli.js`，同参数；Codex 下 `${CLAUDE_PLUGIN_ROOT}` 是占位符，按 [插件根解析](plugin-root.md)序列代入绝对路径）与降级链（AnySearch → 内置 web 搜索），重试与降级纪律以 [exploration-patterns.md](exploration-patterns.md) 为准
 - 网页搜索兜底：沙箱默认禁网，全部搜索工具不可用时降级为 `rg` + 本地文件阅读并向用户说明
 - 库文档： AnySearch，不可用再降级为网页搜索 + `rg` + 文件阅读
 
@@ -92,10 +92,6 @@ visual-preview 的服务器脚本自动检测 `CODEX_CI` 并切换前台模式�
 
 Codex 沙箱 workspace-write 模式下工作区与 `.git` 常规内容可写，`git commit` 一般可以直接执行；但 `.git/hooks/` 与 `.codex/` 被强制只读。若因沙箱策略（如 read-only 模式）导致 commit 失败，向用户说明并请其授权或自行提交，spec 文件本身照常落盘。
 
-## 并发 implementer（已授权计划的默认编排）
+## 计划实施与旧执行恢复
 
-executing-plans 的 [并发模式](../../executing-plans/references/parallel-execution.md) 可派发有界实施子任务；主线程先读 agents/implementer.md，在 prompt 中提供其绝对路径并要求子代理先读，不能假设 spawn_agent 自动加载 agent 定义。模型声明见同一并发 reference；参数选择仍服从当前工具与用户约束，不硬编码模型、强度或并发上限。
-
-工具没有 cwd/worktree 参数时，主线程先建立并验证独立 worktree，派发绝对路径、branch/base_commit/claim_key 与指针输入，要求每条命令显式指定工作目录。首次写前 implementer 核对实际绑定；父 cwd 不构成隔离证明。不能可靠隔离或工具不允许写码代理时串行降级，不虚构原生 isolation 参数，不自行扩大授权。
-
-按当前工具查询 agent 生命周期并处理返回 ID；回执缺失先查 claim 与平台可见性，空列表不能证明终止。恢复须区分旧编排 owner 与存活 implementer，规则以 [并发恢复协议](../../executing-plans/references/parallel-activation-recovery.md) 为准。通用映射、外部检索和失败隔离沿本文件原定义。
+executing-plans 由主线程串行实现，子代理只承担探索和独立审查；任务恢复核对实际工作区、范围绑定、复选框与执行记录。

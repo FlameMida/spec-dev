@@ -6,7 +6,7 @@ description: >-
 
 > 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
 
-> **外部搜索统一入口**：需要联网检索（资料、库/框架文档、时效信息）时一律先用 anysearch skill（插件内嵌），不可用再降级 WebSearch/WebFetch；降级链与派发词要求见 requirement-analysis 的 references/exploration-patterns.md。
+> **外部搜索统一入口**：需要联网检索（资料、库/框架文档、时效信息）时一律先用 anysearch skill（插件内嵌），不可用再降级 WebSearch/WebFetch；降级链见[搜索规则](../requirement-analysis/references/exploration-patterns.md)，派发前读取[派发要求](../requirement-analysis/references/agent-dispatch.md)。
 
 # 使用 Git Worktrees
 
@@ -112,7 +112,7 @@ git -C "$PROJECT_ROOT" worktree add "$WORKTREE_PATH" -b "$BRANCH_NAME"
 ## Step 3：验证干净基线
 
 运行基线验证：本次隔离服务于某份计划、且该计划头部声明了「相关测试范围」时，按声明范围执行
-（声明为空 → 跳过测试、直接报告就绪并注明"纯文档特性，基线测试跳过"；声明命令报错 → 改跑该计划列出的自有测试文件，注明声明已失效、建议修订计划，不回退全量）；计划无该节 → 跑其任务文件中出现的测试文件；无计划 → 运行项目完整测试命令（`npm test` / `cargo test` /
+（声明为空 → 跳过测试、直接报告就绪并注明"纯文档特性，基线测试跳过"；声明命令报错 → 改跑该计划列出的自有测试文件，注明声明已失效、建议修订计划，不回退全量）；计划无该节 → 跑其任务正文中出现的测试文件；无计划 → 运行项目完整测试命令（`npm test` / `cargo test` /
 `pytest` / `go test ./...`）：
 
 - **测试失败** → 报告失败详情，询问继续还是先排查——基线不干净就无法区分新 bug 与既有问题

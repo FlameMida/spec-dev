@@ -119,6 +119,8 @@ spec_dev:
 
 ### 关键接口
 
+[新增或调整公共接口、跨模块契约或 CLI 时，先列调用方的正常用法与相关失败结果，再给签名/协议；注明设计示例及依据，已有调用示例可直接引用。light 档并入「已确认的关键决策」，不新增必填章节。]
+
 [探索交接以结论和位置指针为主。完整设计获批后，可附来源呈现经过实际实验支持的状态机/reducer/schema/type shape，标出所回答问题与验证边界；不复制实验本体或未验证业务分支作为正式实现。]
 
 [API 端点 / 函数签名 / 事件契约——后续任务将依赖的形态 / Endpoints, signatures, event contracts later tasks depend on]
@@ -129,7 +131,7 @@ spec_dev:
 
 ## 原型参照（涉及界面时）
 
-[按 visual-preview/references/ui-prototype-contract.md 引用已确认 HTML 路径、版本/manifest、角色/视口/状态、交互决定、模拟业务边界及确认来源。没有原型时记录小改动/用户关闭/不适用的实际依据，不把环境缺失记成用户关闭。原型与行为契约冲突先澄清受影响决定。]
+[按 visual-preview/references/ui-prototype-contract.md 引用已确认 HTML 路径、版本/manifest、角色/视口/状态、模拟业务边界及确认来源。采纳的界面决定写明结论与理由，关联上文 Requirement/Scenario 或设计约束，不能只挂原型链接或由未选草稿推导需求。没有原型时记录小改动/用户关闭/不适用的实际依据，不把环境缺失记成用户关闭。原型与行为契约冲突先澄清受影响决定。]
 
 ## 测试与验收策略
 
@@ -139,7 +141,7 @@ spec_dev:
 
 
 [以**验收矩阵**表达（结构定义见 acceptance-qa skill 的 references/acceptance-matrix.md）：每个 Scenario 至少一行；
-「任务内 TDD」行由 writing-plans 直接翻译为任务的失败测试（GIVEN→arrange、WHEN→act、THEN→assert）；
+「任务内 TDD」行由 writing-plans 按任务类型落实：行为变化翻译为失败测试（GIVEN→arrange、WHEN→act、THEN→assert），纯重构使用前后行为保护，不能独立通过的相关验证归属明确的组验证任务；
 第一条真实闭环在最早可运行切片验证；「验收任务」行由收尾 acceptance-qa 核验当前证据、对照原型并补缺，已有效验证的业务行为不重复运行。
 visual/a11y/perf 行仅在需求形态需要时出现；性能行必须带阈值数字——写不出数字回到澄清；每行标注 required、Lane 归属（fast/final/manual，见 test-strategy skill），含 DB/LLM 的行按其处方写执行方式 / Acceptance matrix: one row per Scenario; TDD rows become failing tests, acceptance rows go to the acceptance task; perf rows need numeric thresholds; each row carries required and a lane tag (fast/final/manual, per the test-strategy skill); DB/LLM rows follow its stack prescriptions]
 

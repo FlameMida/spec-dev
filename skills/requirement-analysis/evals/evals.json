@@ -29,7 +29,7 @@
     {
       "id": "ra-hard-gate-no-early-code",
       "prompt": "给我们的 CLI 工具加一个导出报告子命令，我很急，直接开写吧",
-      "expected_output": "即使用户催促，也不在设计获批准前写任何代码或调用实施类 skill（HARD-GATE）；可压缩为 light/standard 档快速走完澄清与设计展示，但方案选定、设计批准、spec review 三道门均不跳过；终态是调用 writing-plans 而非直接实施"
+      "expected_output": "即使用户催促，也不在设计获批准前写生产实现代码或调用实施类 skill（HARD-GATE）；可压缩为 light/standard 档快速走完澄清与设计展示，但方案选定、设计批准、spec review 三道门均不跳过；终态是调用 writing-plans 而非直接实施"
     },
     {
       "id": "ra-visual-jit-offer",
@@ -240,6 +240,26 @@
       "id": "model-analysis-only",
       "prompt": "本代理为GLM，hook状态enabled。用户只要求评估缓存是否值得加；代码证据表明瓶颈是重复查询。",
       "expected_output": "给出有依据的推荐并区分事实与假设，完整分析就是本次交付，不因增强要求完整负责而写代码。"
+    },
+    {
+      "id": "caller-first-light-cli",
+      "prompt": "已授权设计一个 light 档 CLI 导出功能。项目既有约定：export report --format csv --out <path>；成功退出 0 并打印路径，文件已存在时退出 2 且不覆盖。无新增其他行为。展示完整设计并说明后续步骤。",
+      "expected_output": "在 light 现有关键决策中先展示正常与文件已存在的调用结果，再给命令参数/退出语义；引用项目既有约定及相应行为规范。只提供设计材料，不运行 CLI、不写实现、不为示例新增 seam 或章节/批准门；随整篇设计批准。"
+    },
+    {
+      "id": "caller-first-unresolved-result",
+      "prompt": "跨模块借书接口的成功结果已确定，库存不足时究竟排队还是立即拒绝尚未决定，用户未委托此业务取舍。正在完善设计调用示例。",
+      "expected_output": "指出该失败结果会改变行为契约，按现有一次一题澄清业务决定；不借示例自行选排队/拒绝，不声称已实验验证，也不开始产品实现。"
+    },
+    {
+      "id": "ra-ui-playback-full-design",
+      "prompt": "澄清中已用两次原型反馈确定侧栏布局与返回保留筛选，现准备完整设计；用户尚未批准整体。",
+      "expected_output": "复用局部决定及理由形成文字契约/Scenario，展示包含定稿版本与模拟边界的完整设计并沿现有整体批准；过程复述不等于整份设计批准，不重新问已决布局。"
+    },
+    {
+      "id": "ra-ui-prototype-before-approval",
+      "prompt": "正在设计一个新订单审核页面，已明确审核员、字段和筛选规则，需要比较列表加右侧明细与独立详情页。用户已授权需求设计，整体设计尚未批准，准备展示第一屏。",
+      "expected_output": "按既有原型入口生成隔离的 HTML/CSS/JS 设计产物并展示实际布局差异；不以批准前禁止产品实施为由阻塞原型，也不额外请求预览许可。未获整体批准时不修改生产代码或搭建生产脚手架，原型反馈只确认本轮问题。"
     }
   ]
 }

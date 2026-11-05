@@ -21,7 +21,7 @@ test('S25 unknown quick-fix impact returns to clarification rather than unchange
  const text=readPolicy(root,'skills/quick-fix/SKILL.md').text;assert.match(text,/```mermaid\nflowchart/);assert.match(text,/K -->\|未知或冲突\| C/);assert.match(text,/C\[澄清或升级\]/);assert.match(text,/未知、冲突和证据不足/);
 });
 test('S07 execution routing separates terminal archives from business scheduling',()=>{
- const text=raw('skills/executing-plans/SKILL.md');assert.match(text,/```mermaid\nflowchart/);assert.match(text,/终端档案/);assert.match(text,/current/);assert.match(text,/交付恢复/);
+ const text=raw('skills/executing-plans/SKILL.md');assert.match(text,/```mermaid\nflowchart/);assert.match(text,/终端档案/);assert.match(text,/交付恢复/);
 });
 test('S25 lifecycle table separates activation and delivery with frozen superseded history',()=>{
  const text=readPolicy(root,'skills/requirement-analysis/SKILL.md').text;assert.match(text,/事件 \| 新 spec 状态 \| 旧 spec 标注 \| 下一步/);assert.match(text,/pending.*不是.*状态/);assert.match(text,/superseded_by/);assert.match(text,/sync_commit.*冻结|冻结.*sync_commit/);

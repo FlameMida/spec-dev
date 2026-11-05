@@ -6,8 +6,8 @@ description: >-
 
 > 输出语言：用户显式指定优先，其次跟随近期对话，否则使用英语。报告沿对话语言，固定术语按契约。
 
-> **插件根**：`${CLAUDE_PLUGIN_ROOT}`——本 skill 正文与其 references 中的插件根命令以此为准；若上式仍为变量字面量（平台未替换），按 requirement-analysis 的 references/exploration-patterns.md「插件根解析」序列推导。
-> **外部搜索统一入口**：外部检索先用 anysearch；不可用按同一 exploration-patterns 的降级规则。
+> **插件根**：`${CLAUDE_PLUGIN_ROOT}`——本 skill 正文与其 references 中的插件根命令以此为准；若上式仍为变量字面量（平台未替换），按[插件根解析](../requirement-analysis/references/plugin-root.md)序列推导。
+> **外部搜索统一入口**：外部检索先用 anysearch；不可用时按[搜索与降级规则](../requirement-analysis/references/exploration-patterns.md)执行。
 
 # 验收与缺口补验
 
@@ -31,9 +31,11 @@ D/A/X、unit/e2e/visual 等维度、fast/final/manual 时机与 required 必需�
 2. **证据须支持预期**：检查项四态 `pass | warn | fail | unverified`。已操作、元素可见、截图文件存在均不自动证明业务结果。确定性断言能表达的事用实际断言；无证据只能 unverified。
 3. **缺口不能变成整体通过**：矩阵必需项 fail 阻塞；warn/unverified/manual-pending 保持未完成。延期/放弃沿用户明确决定记录，不自行改为 optional。根因只有实际假设验证一致后才确认。
 
+上述原件要求适用于本轮取证；已按临时产物规则收口清理的历史，使用已核验摘要、受测版本及本轮补验原件，核对候选差异后复用未受影响的结论；不因原件已按规则删除而重跑 F，不把摘要冒充可机器核验的回执。详见 [临时产物规则](../writing-plans/references/plan-format.md#execution-临时产物)。
+
 ## 第一步：核对依据与证据
 
-工作流输入包含 spec、验收任务、当前候选/实际运行版本、完整变更范围、有效 F 回执和证据目录；UI 另外取得定稿 HTML、确认来源、适用角色/视口/状态与模拟边界，沿 [原型契约](../visual-preview/references/ui-prototype-contract.md)。核对原型和文字契约是否一致，缺依据时澄清受影响事项，不在验收现场自行重设计。
+工作流输入包含 spec、验收任务、当前候选/实际运行版本、完整变更范围、有效 F 回执和证据目录（已收口清理时使用上述摘要与本轮补验原件）；UI 另外取得定稿 HTML、确认来源、适用角色/视口/状态与模拟边界，沿 [原型契约](../visual-preview/references/ui-prototype-contract.md)。核对原型和文字契约是否一致，缺依据时澄清受影响事项，不在验收现场自行重设计。
 
 存在相关 spec 时定位当前 active 契约；superseded 沿 superseded_by 跳转并记录链，缺失/环报告具体缺口。只排除明确 Superseded 的条款；取代进行中保留未完成事实。没有 spec 时从用户确认的目标和原始场景形成小型清单，不把机械的 3-6 条当覆盖保证。
 
@@ -49,7 +51,7 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/acceptance-qa/scripts/detect-env.mjs" --cwd <
 
 输出含 stacks、projects 和各项目的框架/配置/目录。Go 根加 web 前端按各自 project_root 执行，不在仓库根误装一套工具；suggestions 只处置选中检查需要的项目。浏览器操作统一使用 ego-lite：先读取官方 `ego-browser` skill，执行 `ego-browser skill` 并完整读取当前版本指南，再按指南操作。接入与缺失处理见 [browser-setup.md](references/browser-setup.md)；缺工具/网络/账号标 unverified，不能假装执行成功或自动开启外部业务写入。项目已有 Playwright Test/CLI 等确定性测试继续复用，不作为页面操作的前置依赖。
 
-持久资源沿 [资源台账总则](../writing-plans/references/plan-format.md#资源台账总则)：可隔离则复用并只登记自建隔离单元，无法确认隔离才建自有实例；共享实例不做破坏性操作。计划内登记 progress.resources，独立验收对话记账并在报告保留清理去向。
+持久资源沿 [资源台账总则](../writing-plans/references/plan-format.md#资源台账总则)：可隔离则复用并只登记自建隔离单元，无法确认隔离才建自有实例；共享实例不做破坏性操作。计划内登记单文件最终任务的资源台账，独立验收对话记账并在报告保留清理去向。
 
 ## 第二步：对照实际页面或行为契约
 
@@ -71,9 +73,9 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/acceptance-qa/scripts/detect-env.mjs" --cwd <
 node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" acceptance-check-items <检查记录.json>
 ```
 
-校验检查结构、非空项、证据文件和 SHA-256；reported_result 汇总必需行的自报告状态。`ok:true` 与 `evidence_verified:true` 不证明原件支持结论、来源真实、清单完整或运行版本正确，`semantic_review_required:true` 必须由上述核对完成。校验失败补全一次，再失败将缺失项标记 unverified 并说明（acceptance-qa 变体；通用规则见 exploration-patterns「输出契约与校验」），不能为了格式转绿而填假证据。历史报告原样保留，新产物使用现行契约。
+校验检查结构、非空项、证据文件和 SHA-256；reported_result 汇总必需行的自报告状态。`ok:true` 与 `evidence_verified:true` 不证明原件支持结论、来源真实、清单完整或运行版本正确，`semantic_review_required:true` 必须由上述核对完成。校验失败补全一次，再失败将缺失项标记 unverified 并说明（acceptance-qa 变体；通用规则见 [输出契约与校验](../requirement-analysis/references/output-contracts.md)），不能为了格式转绿而填假证据。历史报告原样保留，新产物使用现行契约。
 
-工作流触发时报告/原件落特性 acceptance/ 并回传路径；直接触发可对话输出。小修用简短结果，不强制整套 JSON/大型报告。acceptance/ 除 acceptance-report.md 外不进 Git，原件仍按台账保留/转存。
+工作流触发时报告落 `acceptance/acceptance-report.md`，临时原件统一落本特性 `execution/acceptance/` 并回传路径；直接触发可对话输出。小修用简短结果，不强制整套 JSON/大型报告。原件不进 Git。全部验收、补验和对账收口后沿 [execution 临时产物规则](../writing-plans/references/plan-format.md#execution-临时产物) 保存摘要并删除本特性整个 execution，不另行归档。工作流内由主线程统一清理，单个 A 不提前删除其他待验项的原件；独立验收在本轮收口时清理。
 
 ## 按需专项能力与档位
 

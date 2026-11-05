@@ -100,6 +100,21 @@
       "id": "model-claude-excluded",
       "prompt": "主代理GPT的历史含enabled规则，当前审查子代理实际是Claude且收到本代理disabled；同时读取clarifying和model-collaboration。",
       "expected_output": "父代理启用状态不能启用本代理增强；继续原有澄清和审查角色规则，不采用非Claude增强去跳过需要用户决定的事项。"
+    },
+    {
+      "id": "cl-ui-progressive-question",
+      "prompt": "requirement-analysis 正在设计订单处理页。目标是连续比较订单并查看明细，已知角色和数据字段；保存失败的重试规则尚未决定，当前只比较列表+侧栏与独立明细页。给出下一步。",
+      "expected_output": "沿已有授权展示同一订单数据下的布局草稿，只讨论保留列表上下文这一题；不等重试规则确定才出图，不擅自实现保存，不询问是否启用，也不新建独立三出口。"
+    },
+    {
+      "id": "cl-playback-no-reapproval",
+      "prompt": "用户已明确选择右侧明细，因为要连续比较订单；本轮补充“切换订单保留列表筛选”。当前只剩窄屏导航未定。",
+      "expected_output": "简短复述采纳决定、理由及新补充，必要时更新原型；只处理窄屏这一真实未知，不重问侧栏或筛选，不把局部决定当整份设计批准。"
+    },
+    {
+      "id": "cl-independent-text-boundary",
+      "prompt": "独立 clarifying 中用户要把订单比较流程问清楚，明确说只聊文字，不需要文件或浏览器。布局已有决定。",
+      "expected_output": "用必要文字或短字符草图解释流程，复用既有布局；不启动预览、不写原型或决策日志；沿独立模式收束，不能用边理解边展示绕过用户边界。"
     }
   ]
 }

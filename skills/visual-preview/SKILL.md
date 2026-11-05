@@ -6,7 +6,7 @@ description: >-
 
 > 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
 
-> **外部搜索统一入口**：需要联网检索（资料、库/框架文档、时效信息）时一律先用 anysearch skill（插件内嵌），不可用再降级 WebSearch/WebFetch；降级链与派发词要求见 requirement-analysis 的 references/exploration-patterns.md。
+> **外部搜索统一入口**：需要联网检索（资料、库/框架文档、时效信息）时一律先用 anysearch skill（插件内嵌），不可用再降级 WebSearch/WebFetch；降级链见[搜索规则](../requirement-analysis/references/exploration-patterns.md)，派发前读取[派发要求](../requirement-analysis/references/agent-dispatch.md)。
 
 # 可视化预览（Visual Preview）
 
@@ -16,7 +16,7 @@ description: >-
 
 首次判断入口或交接时读取 [界面原型与交接契约](references/ui-prototype-contract.md)。新增页面、重新设计、主要布局/导航/信息层级/核心交互变化，在通用澄清已有必要信息时自动启动并展示第一版，无须再问是否启用。局部小改动可跳过原型，修后实际查看/操作验证仍执行；用户明确关闭时消费已有选择；已有适用定稿直接复用。
 
-exploring 先澄清探索目的，实际需要界面比较时再展示；纯概念问题留在对话。预览联动 [界面澄清](../clarifying/references/ui-clarification.md)，一次解决一个实质决策，控制权留在调用方。自动启用不代表设计已获批准。
+exploring 先澄清探索目的，实际需要界面比较时再展示；纯概念问题留在对话。预览联动 [界面澄清](../clarifying/references/ui-clarification.md)，围绕当前未知尽早展示最小草稿，不等整份需求定稿。一次解决一个实质决策，控制权留在调用方。自动启用不代表设计已获批准。
 
 ## 逐题判断：浏览器还是终端
 
@@ -57,9 +57,9 @@ bash "${CLAUDE_SKILL_DIR}/scripts/start-server.sh" --project-dir /path/to/projec
 ## 循环
 
 1. **确认服务器存活**（`$STATE_DIR/server-info` 存在且 `server-stopped` 不存在；已停则用**相同 `--project-dir`** 重启，端口复用、已打开的标签页自动重连），然后**写 HTML fragment** 到 `screen_dir` 的新文件——语义化命名（`layout.html`）、**永不复用文件名**、**区分与检查浅色/深色主题的配色**、用文件创建工具而非 cat/heredoc，服务器自动展示最新文件
-2. **告知用户并结束回合**：重发 URL（每一步都发）、一句话概括屏上内容、请用户看完在终端回复（想选就点击选项）
+2. **展示当前问题并等待反馈**：重发 URL（每一步都发），简述画面和要决定的一件事；有真实选项时给推荐与取舍，请用户在对话回复或使用屏上反馈。当前问题已获明确回答则直接消费，不另问“这一屏是否通过”
 3. **下一回合**：读 `$STATE_DIR/events`（JSON lines，浏览器交互记录）——终端文字是主反馈，events 提供结构化补充；`type:"confirm"` 仅确认当前屏上的问题（含随附备注），核对 `screen_file/screen_sha256/render_sha256/binding_verified`，`click` 带 `selected` 区分选中/取消，`annotate` 是用户点选的"要改的位置"；文件不存在说明用户没和浏览器交互
-4. **迭代或推进**：反馈改当前屏就写新文件（`layout-v2.html`）；当前问题验证完才进下一题
+4. **复述并迭代**：沿界面澄清归纳已采纳决定、理由及未决点；修改当前屏写新文件（`layout-v2.html`）。当前问题已定就推进，未选草稿和模拟结果不成为需求；具体交接沿下方归档契约
 5. **回到终端时卸载**：下一步不需要浏览器时推一张等待屏（`waiting.html`：「继续在终端讨论…」），避免用户盯着已解决的选择题
 6. 重复直至完成
 

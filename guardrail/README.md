@@ -41,19 +41,19 @@ The frontmatter `sync_commit` is the delivery anchor: the commit where code and 
 
 At edit time (`--hook`), "already synced" includes existing working-tree changes (staged + unstaged + untracked): **update the spec first, then touch the covered code, and you pass**; dirty files in the working tree do not expand the trigger set, and editing unrelated files is unaffected by pre-existing drift. The wrap-up audit (`--worktree`) uses the whole working tree as the change set, backstopping files written by tools that bypassed the tool surface within the turn.
 
-Once plan execution is authorized, `executing-plans` dispatches ready tasks to implementers in isolated worktrees by default. Dependencies and write/resource conflicts limit concurrency; an explicit serial preference takes precedence. The coordinator owns progress and integration, and declared task scopes remain mandatory. `Spec: <repo-relative spec path>` is a traceability trailer, not a drift-guard bypass.
+Once plan execution is authorized, `executing-plans` runs tasks serially in the main thread, respecting real dependencies. Task scopes, binding, independent review and delivery checks remain mandatory. `Spec: <repo-relative spec path>` is a traceability trailer, not a drift-guard bypass.
 
 ## Task-scoped authorization
 
-The coordinator commits the spec, plan and exact writes, then commits the task binding in `progress.yaml` to obtain an authority SHA. Legacy single-file plans retain their format and committed scope declaration. Activate the reference inside its assigned worktree:
+The main thread commits the spec, plan and exact writes, using that committed scope version as the single-file authority SHA. Activate the reference inside its assigned worktree:
 
 ```bash
-node scripts/spec-dev/task-binding.mjs bind --plan .spec-dev/<feature>/plan/index.md --task T01 --authority <full-SHA>
+node scripts/spec-dev/task-binding.mjs bind --plan .spec-dev/<feature>/plan/<feature>-plan.md --task T01 --authority <full-SHA>
 node scripts/spec-dev/task-binding.mjs inspect
-node scripts/spec-dev/task-binding.mjs clear --plan .spec-dev/<feature>/plan/index.md --task T01
+node scripts/spec-dev/task-binding.mjs clear --plan .spec-dev/<feature>/plan/<feature>-plan.md --task T01
 ```
 
-The local reference lives in the actual Git dir and grants no authority by itself. Changed specs, tasks, writes, worktrees or claims require revalidation. The guard checks scope; tests and review check behavior. Behavior changes still require a spec update.
+The local reference lives in the actual Git dir and grants no authority by itself. Changed specs, tasks, writes, worktrees require revalidation. The guard checks scope; tests and review check behavior. Behavior changes still require a spec update.
 
 `prepare-commit-msg` adds one `Spec-Task` JSON line from a valid binding. `commit-msg` checks the final message after existing hooks run. History checks use that association and committed views, independently of the current checkout. Missing source Git objects fail verification. Installation includes all required pure modules and needs no plugin cache.
 

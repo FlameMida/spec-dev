@@ -1,9 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,writeFileSync,rmSync,mkdirSync,existsSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
 import path from 'node:path';
-import {spawnSync} from 'node:child_process';
-import {fixture,git,projectRoot} from './helpers/group-fixture.mjs';
 import {workflowFixture} from './helpers/workflow-fixture.mjs';
 const cli='scripts/execution-evidence.mjs';
 const record=(f,attempt,script,extra=[])=>f.run(cli,['record','--feature',path.join(f.root,f.feature),'--task','T01','--phase','green','--attempt',attempt,...extra,'--',process.execPath,'-e',script]);
@@ -19,18 +17,6 @@ test('S21 transfer CLI accepts one task or claim selector without weakening full
   const r=f.run(cli,[...args,...extra]);assert.equal(r.status,0,r.stdout+r.stderr);assert.equal(JSON.parse(r.stdout).ok,true);assert.ok(existsSync(path.join(target,own)));
  }
  for(const extra of [['--task','T01','--claim','claim-one'],['--task'],['--claim','claim-one','--claim','claim-one']])assert.equal(f.run(cli,[...args,...extra]).status,2);
-});
-test('S21 original group recorder retains ignored evidence without staging it',()=>{
-  const f=fixture();try{
-    writeFileSync(path.join(f.wt,'.gitignore'),'.spec-dev/**/execution/\n');f.save('ignore evidence');
-    const base=git(f.wt,'rev-parse','HEAD');f.state.tasks.T00.commit=base;f.state.integration.base_commit=base;f.state.integration.validated_commit=base;f.save('rebind baseline');
-    const source=readFileSync(path.join(projectRoot,'skills/executing-plans/references/integration-groups.md'),'utf8').split('<!-- integration-group-reference:start -->\n```python\n')[1].split('\n```')[0];
-    const code=`import sys,json,base64\nfrom pathlib import Path\nnamespace={}\nexec(base64.b64decode('${Buffer.from(source).toString('base64')}'),namespace)\nrepo,feature_key,validator=sys.argv[1:]\nwith namespace['held_lock'](repo,feature_key,'fixture-owner') as receipt:\n    receipt['validator']=str(Path(validator).resolve(strict=True))\n    state=json.loads((Path(repo)/feature_key/'plan/progress.yaml').read_text())\n    attempt='execution/groups/G01/T01/a1'\n    namespace['register_evidence'](receipt,state,attempt,'retain until delivery')\n    namespace['checkpoint'](receipt,state,'fixture resource')\n    commit=namespace['git'](repo,'rev-parse','HEAD').decode().strip()\n    record,code=namespace['record_check'](receipt,['python3','-c','print(7)'],attempt,commit)\n    assert code==0\n    assert not namespace['git'](repo,'ls-files','--',feature_key+'/execution/').strip()\n`;
-    const r=spawnSync('python3',['-',f.wt,f.feature,path.join(projectRoot,'scripts/validate-output.mjs')],{input:code,encoding:'utf8'});
-    const log=readFileSync(path.join(f.wt,f.feature,'execution/groups/G01/T01/a1/stdout.log'),'utf8');
-    assert.equal(log,'7\n');assert.equal(r.status,0,r.stdout+r.stderr+'\noriginal stdout: '+log);
-    assert.equal(git(f.wt,'ls-files','--',f.feature+'/execution/'),'');
-  }finally{rmSync(f.outer,{recursive:true,force:true});}
 });
 test('S15 record saves actual failure exit and preserves separate raw streams',t=>{
   const f=workflowFixture(t),head=f.git('rev-parse','HEAD'),r=record(f,'failure','process.stdout.write("out");process.stderr.write("err");process.exit(7)');

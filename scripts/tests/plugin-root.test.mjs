@@ -18,7 +18,7 @@ const walk = (rel, out = []) => {
   return out;
 };
 const mdFiles = () => ["skills", "agents", "commands"].flatMap((d) => walk(d)).filter((f) => f.endsWith(".md"));
-const EP = "skills/requirement-analysis/references/exploration-patterns.md";
+const ENTRY = "skills/requirement-analysis/references/exploration-entry.md";
 const RUNTIME = "skills/requirement-analysis/references/plugin-root.md";
 const CONTRACT = "skills/requirement-analysis/references/output-contracts.md";
 const DISPATCH = "skills/requirement-analysis/references/agent-dispatch.md";
@@ -50,11 +50,13 @@ test("Scenario: 三级全失败不静默", () => {
   assert.ok(t.includes("无法定位插件根") && t.includes("不得静默跳过"), "三级失败处置句应存在");
 });
 
-const DECL = "> **插件根**：`${CLAUDE_PLUGIN_ROOT}`——本 skill 正文与其 references 中的插件根命令以此为准；若上式仍为变量字面量（平台未替换），按 requirement-analysis 的 references/exploration-patterns.md「插件根解析」序列推导。";
+const directTargets = (file) => [...read(file).matchAll(/\]\(([^)#]+)(?:#[^)]*)?\)/g)]
+  .filter(([, target]) => !/^(?:[a-z]+:|\$)/i.test(target))
+  .map(([, target]) => path.relative(repoRoot, path.resolve(repoRoot, path.dirname(file), target)));
 
 test("Scenario: 命令调用方都有插件根声明行", () => {
   const withDecl = ["requirement-analysis", "writing-plans", "executing-plans", "acceptance-qa"];
-  for (const s of withDecl) assert.ok(read(`skills/${s}/SKILL.md`).includes(DECL), `${s} 缺声明行或措辞不一致`);
+  for (const s of withDecl) assert.ok(directTargets(`skills/${s}/SKILL.md`).includes(RUNTIME), `${s} 未直达插件根定义`);
   for (const s of readdirSync(path.join(repoRoot, "skills"))) {
     if (withDecl.includes(s) || VENDORED.includes(`skills/${s}`)) continue;
     if (!existsSync(path.join(repoRoot, "skills", s, "SKILL.md"))) continue;
@@ -114,14 +116,15 @@ test("Scenario: 降级说明不再各处复述", () => {
   }
 });
 
-const GIST_FI = "失败先缩小范围重试 1 次，再失败主线程接管（定义见 exploration-patterns「派发要求与失败隔离」）";
-const GIST_CV = "校验失败发回补全一次，再失败主线程接管（定义见 exploration-patterns「输出契约与校验」）";
+const GIST_FI = "失败先缩小范围重试 1 次，再失败主线程接管";
+const GIST_CV = "校验失败发回补全一次，再失败主线程接管";
 
 test("Scenario: 四处 gist 与 canonical 字面一致", () => {
   for (const f of ["skills/requirement-analysis/SKILL.md", "skills/quick-fix/SKILL.md", "skills/requirement-analysis/references/codex-compat.md", "skills/executing-plans/references/review-orchestration.md"]) {
-    assert.ok(read(f).includes(GIST_FI), `${f} 缺失败隔离 gist 或措辞不一致`);
+    assert.ok(read(f).includes(GIST_FI), `${f} 缺失败隔离 gist`);
+    assert.ok(directTargets(f).includes(DISPATCH), `${f} 未直达派发规则`);
   }
-  assert.equal(count(read(DISPATCH), "缩小该主题范围重试 1 次"), 1, "canonical 只在 exploration-patterns 出现一次");
+  assert.equal(count(read(DISPATCH), "缩小该主题范围重试 1 次"), 1, "canonical 只在 agent-dispatch 出现一次");
   for (const f of docFiles()) assert.ok(!read(f).includes("主进程接管"), `${f} 仍有措辞分化"主进程接管"`);
 });
 
@@ -132,14 +135,15 @@ test("Scenario: 契约校验完整陈述唯一（引用侧）", () => {
   for (const f of docFiles()) {
     if (f === CONTRACT) continue;
     for (const line of read(f).split("\n")) {
-      if (line.includes("补全一次")) assert.ok(line.includes("exploration-patterns"), `${f}: "补全一次"同行缺指针 → ${line.trim().slice(0, 100)}`);
+      if (line.includes("补全一次")) assert.ok(line.includes("output-contracts.md"), `${f}: "补全一次"同行缺定义指针 → ${line.trim().slice(0, 100)}`);
     }
   }
 });
 
 test("Scenario: 有意变体被标注", () => {
   const ai = read("skills/acceptance-qa/references/ai-acceptance.md");
-  assert.match(ai, /再失败将缺失项标记 unverified[^\n]*（acceptance-qa 变体；通用规则见 exploration-patterns「输出契约与校验」）/, "ai-acceptance 应保留 unverified 结局并以与 SKILL.md:117 相同的字面量标注变体");
+  assert.match(ai, /再失败将缺失项标记 unverified/);
+  assert.ok(directTargets("skills/acceptance-qa/references/ai-acceptance.md").includes(CONTRACT));
 });
 
 test("Scenario: 通用映射行只在一处", () => {
@@ -179,7 +183,7 @@ test("Scenario: 双语表存在且分级一致", () => {
   for (const t of [en, zh]) {
     assert.match(t, /\| hard \| `git` \|/);
     assert.match(t, /\| hard \| Node\.js ≥ 18 \|/);
-    assert.ok(t.includes("exploration-patterns.md"), "校验器降级应指向定义点");
+    assert.ok(t.includes("output-contracts.md"), "校验器降级应指向定义点");
   }
   for (const l of [...er, ...zr].filter((l) => l.startsWith("| soft |"))) assert.ok(l.split("|")[4].trim().length > 0, `soft 行缺降级链: ${l}`);
 });
@@ -241,7 +245,7 @@ test("Scenario: 变量未替换时按序列推导——skill base directory 上�
 
 test("S42 汇总入口可达且专题的读取条件明确",()=>{
  for(const [file,label] of [[RUNTIME,'插件根解析'],[CONTRACT,'输出契约与校验'],[DISPATCH,'派发要求与失败隔离']]){
-  assert.ok(read(EP).includes(path.basename(file)),label+' 缺导航');
+  assert.ok(directTargets(ENTRY).includes(file),label+' 未从共享入口直达定义');
   assert.match(read(file),/阅读时机/);
  }
 });

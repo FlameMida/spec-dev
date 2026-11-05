@@ -8,7 +8,7 @@
 
 ## 证据与执行范围
 
-1. 先用 execution-evidence verify 核对现有 record、原始输出、命令、候选版本和矩阵范围；仍适用的真实通过结果直接复用，缺失、失效或失败部分才补验。
+1. 已收口清理的历史先沿 [临时产物规则](../../writing-plans/references/plan-format.md#execution-临时产物) 核对摘要、版本差异和本轮补验原件，不要求重建已删回执。其余先核对现有 record、原始输出、命令、候选版本和矩阵范围；该工具生成的回执用 `execution-evidence verify` 核验。单文件计划保存记录后，按 [回执与交付映射](../../writing-plans/references/plan-format.md#回执与交付映射唯一定义点) 先验原受测 SHA，再核对当前候选差异；不把候选校验失败隐藏成通过。仍适用的真实结果直接复用，缺失、失效或失败部分才补验。
 2. 检查实际测试是否执行到目标断言。保存命令、退出码与关键原件；零测试、SKIP、工具保存成功或环境错误不代表业务通过。
 3. 核对必需 Scenario 是否有对应测试及断言来源，不按文件存在或覆盖率数字推断行为已完成。
 4. 首次 final 在计划指定的独立 F 执行；本阶段不无条件追加全量。执行时机、失败归属和影响范围沿 [verification-scope.md](../../test-strategy/references/verification-scope.md)。
