@@ -49,12 +49,16 @@ test('S03 all owners must be covered by the binding',t=>{
   const f=workflowFixture(t);f.put('.spec-dev/other/spec/other-design.md',readFileSync(path.join(f.root,f.spec),'utf8'));f.commit();f.bind();
   f.put('src/app.mjs','export const value=2;\n');f.git('add','src/app.mjs');assert.equal(guard(f,['--staged']).status,1);
 });
-test('S04 hook and worktree fail closed for stale or corrupt binding, including repeated Stop',t=>{
+test('S04 strict guards reject stale or corrupt binding while advisory worktree reports it',t=>{
   const f=workflowFixture(t);f.bind();f.scopes.tasks.T01.writes.push('src/new.mjs');f.setScopes(f.scopes);
   assert.equal(guard(f,['--hook'],{input:JSON.stringify({tool_input:{file_path:'src/new.mjs'}})}).status,2);
   assert.equal(guard(f,['--worktree'],{input:JSON.stringify({stop_hook_active:true})}).status,2);
+  const stale=guard(f,['--worktree','--warn-only']);
+  assert.equal(stale.status,0,stale.stderr);assert.match(JSON.parse(stale.stdout).systemMessage,/spec-dev scope/);
   const p=path.resolve(f.root,f.git('rev-parse','--git-path','spec-dev-task.json'));writeFileSync(p,'{bad');
   assert.equal(guard(f,['--staged']).status,1);
+  const corrupt=guard(f,['--worktree','--warn-only']);
+  assert.equal(corrupt.status,0,corrupt.stderr);assert.match(JSON.parse(corrupt.stdout).systemMessage,/spec-dev scope/);
 });
 test('S04 hook rejects escaping links before a file exists',t=>{
   const f=workflowFixture(t);f.bind();symlinkSync(f.outer,path.join(f.root,'linked'));

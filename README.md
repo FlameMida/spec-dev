@@ -477,6 +477,8 @@ Subagent results are validated against JSON Schema contracts. If `validate-outpu
 
 The repository root is the plugin root, and runtime content has a single source tree. The two READMEs are maintained separately for English and Chinese, with no additional mirror directory. A release synchronizes five versions: `metadata.version` in `.claude-plugin/marketplace.json`, `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, root `plugin.json`, and `package.json`.
 
+With this repository's Git hooks installed, ordinary commits run static package, skill, metadata-sync and staged-diff checks. They do not change versions, amend commits or create tags. Pre-push checks CHANGELOG coverage and remote tag conflicts without creating tags. To release from a clean working tree, run `node scripts/release.mjs <patch|minor|major|X.Y.Z>` (add `--dry-run` to preview): it updates the five versions and CHANGELOG, runs `check-plugin.mjs --codex-validate`, then creates a separate release commit and annotated tag. The installer enables `push.followTags=true` so a later push includes reachable annotated tags. Package installation and hook discovery checks also remain in release CI; run them explicitly after related package/hook changes. The Codex check reports a skip if the CLI is unavailable.
+
 ```bash
 # Manifest versions, skills[] versus disk, and symlink checks
 node scripts/check-plugin.mjs

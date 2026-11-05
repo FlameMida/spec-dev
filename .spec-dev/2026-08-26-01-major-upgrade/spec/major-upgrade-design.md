@@ -119,12 +119,42 @@ spec-dev 现为 Claude Code + Codex 双平台 skill 插件（v7.21.1）。本次
 - **WHEN** 进入任务边界、恢复或准备交付
 - **THEN** 保留原目标及明确变更，继续独立且已授权的部分，不自行缩小范围；最终检查实际使用缺口及尚未兑现的承诺，已授权且可完成的必要工作继续做，分析请求仍以分析作为交付
 
+#### Scenario: 普通回合静默，状态变化重注（2026-11-05）
+- **GIVEN** 本代理已接收协作规则
+- **WHEN** 后续 UserPromptSubmit 的模型、启用状态和规则内容未变，无论 turn ID 是否存在或变化
+- **THEN** 仍检查身份但零 stdout；同家族内模型 ID 变化、规则变化或重新启用时重注完整规则；SessionStart（含 compact/resume）、SubagentStart、PostModelSwitch 仍重放，缺失身份与停用规则保持原义
+
 #### Scenario: 安装与验证边界
 - **GIVEN** 插件或仓库安装器分发规则
 - **WHEN** 两端加载各自事件配置
 - **THEN** 保留原 spec notice 与漂移守卫，规则副本来自唯一原件，重装保留用户 hooks；未知路由不启用，缓存故障不阻断任务；CLI 测试与真实模型效果分别报告
 
 确定性验证：`node --test scripts/tests/model-collaboration.test.mjs`，覆盖实际 hook 命令、模型路由、显式别名、切换停用、压缩、混合子代理、无 spec 场景、安装幂等及损坏输入；分发沿 distribution 测试。真实协作效果保留为行为评测项，不由结构测试推定已改善。
+
+### Requirement: 本仓库普通 Git 操作与显式发布分离（2026-11-05）
+
+用户授权调整既有 hooks。本仓库 pre-commit SHALL 保留插件静态校验、skill 校验、元数据同步与暂存差异检查；Codex 隔离安装及 hooks 发现验证 SHALL 在显式发布与发布 CI 执行，相关包/hook 修改后主动验证。普通提交 SHALL NOT 自动升版、修改 CHANGELOG、amend 或创建 tag；pre-push 保留 CHANGELOG/远端 tag 冲突检查，SHALL NOT 自动补 tag。业务仓库的提交与推送守卫不因本项删除。
+
+#### Scenario: 普通提交和推送
+- **GIVEN** 本仓库 Git hooks 已安装，版本尚无本地或远端 tag
+- **WHEN** 普通 commit 或 push
+- **THEN** 提交保持原内容且无新增版本/tag；推送通过既有检查后只推送请求的引用，不生成 tag
+
+#### Scenario: 显式发布及验证失败
+- **GIVEN** 工作区干净，用户明确执行 `release.mjs <patch|minor|major|X.Y.Z>`
+- **WHEN** 五处版本及 CHANGELOG 更新后进行包验证
+- **THEN** 成功后创建独立 release 提交和附注 tag；包验证失败则恢复原文件，不产生提交或 tag。`--dry-run` 只预览；移除自动 amend 的 `--auto` 路径
+
+确定性验证：`node --test scripts/tests/release-hooks.test.mjs` 使用隔离 Git 仓库及本地 bare 远端运行实际 hooks/release 命令；重型校验的调用边界用替身记录，真实安装发现验证单独运行，不由替身结果推定宿主执行。
+
+#### 本次共享 covers 核对（2026-11-05）
+
+本次行为变化由本节、模型协作场景及 workflow-consistency A02 承接。严格工作区审计仍报告 12 份相交 active spec，不能将该审计记为通过；按实际 diff 核对，以下均为分面共存：
+
+- supersede-lifecycle：共享守卫、会话提示和装机文档；本次修改 Stop 输出方式及提示，状态计数、未知状态告警、取代指针和生命周期规则未变。
+- workflow-slimming：共享 session-context 和 README；本次仅更新 Stop 提示，hooksPath 检查、缺失脚本告警及会话去重未变。
+- skill-instruction-streamlining：共享模板、README 及测试目录；本次增加 hook 行为测试并更新提示，技能分层和按需读取规则未变。
+- plan-single-format、portability-hygiene、concurrent-execution、controlled-review、review-conformance、plan-decomposition、quick-fix-diagnosis、exploring-clarifying、status-overview：命中 README 或装机模板的维护说明；计划格式、插件路径、执行编排、审查、诊断、探索与状态概览契约未变。历史自动发版记载按当时记录保留，当前发布行为以本节为准。
 
 ### Requirement: 根级 Agent plugins 1.0.0 manifest
 

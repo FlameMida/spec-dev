@@ -4,7 +4,7 @@ set -eu
 # pre-push：发布兜底钩子
 # 1. 校验 CHANGELOG.md 已包含 plugin.json 版本的条目，缺失则阻止推送
 # 2. 检查远端 tag 冲突（离线时跳过检查）：远端已有同名 tag 且指向不同提交时给出指引
-# 3. 若版本尚无对应 tag，自动在当前 HEAD 打 tag，随推送一并发布（依赖 push.followTags）
+# 版本 tag 由显式 release 命令创建，本 hook 只检查，不创建 tag。
 
 if [ "${SKIP_RELEASE_HOOK:-}" = "1" ]; then
   echo "Skipping release pre-push hook because SKIP_RELEASE_HOOK=1."
@@ -38,19 +38,6 @@ if [ -n "$remote_sha" ] && [ -n "$local_sha" ] && [ "$remote_sha" != "$local_sha
   echo "本地 tag ${tag}（${local_sha}）与远端（${remote_sha}）指向不同提交，推送会被拒绝。" >&2
   echo "请核对哪边正确：保留远端则 git tag -d ${tag} && git fetch --tags ${remote}；覆盖远端需手动 git push ${remote} -f ${tag}（慎用）。" >&2
   exit 1
-fi
-
-if [ -z "$(git tag -l "$tag")" ]; then
-  # 与 release.mjs --auto 的 main-only 护栏对称：仅在 main 分支自动补发布 tag，
-  # 避免在 feature 分支把发布 tag 钉在错误提交上。非 main 分支给提示、放行推送。
-  branch="$(git rev-parse --abbrev-ref HEAD)"
-  if [ "$branch" != "main" ]; then
-    echo "版本 ${version} 尚无 tag ${tag}，但当前分支为 ${branch}（非 main）——不自动打 tag。" >&2
-    echo "发布请在 main 分支进行（node scripts/release.mjs <patch|minor|major> 或经自动发版）。" >&2
-  else
-    echo "为版本 ${version} 自动创建 tag ${tag}..."
-    git tag -a "$tag" -m "release $tag"
-  fi
 fi
 
 exit 0

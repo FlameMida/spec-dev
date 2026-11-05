@@ -23,7 +23,7 @@ The installer also copies model-scoped collaboration guidance and merges lifecyc
 | Layer | Mechanism | Scope | Bypassable |
 |---|---|---|---|
 | Edit-time interception · Claude | `.claude/settings.json` PreToolUse hook (exit code 2 blocks); passes once the spec is already synced in the working tree | Claude Code sessions | Switch tools to bypass |
-| Wrap-up audit · Claude | Stop hook runs a drift check over the whole working tree — shell writes (`sed -i`, `cat >`, etc.) can't escape it; legacy drift blocks once per turn; invalid task bindings always block | Claude Code sessions | Switch tools to bypass |
+| Wrap-up notice · Claude | Stop runs `--worktree --warn-only` over the whole working tree, including shell writes; drift and invalid bindings produce a `systemMessage` and exit 0 without blocking completion | Claude Code sessions | Advisory only |
 | Edit-time interception · Codex | `.codex/hooks.json` PreToolUse hook (exit code 2 blocks) | Codex sessions | Switch tools to bypass |
 | Commit-time interception | Versioned `.githooks/pre-commit` (enabled via `core.hooksPath`; the package.json `prepare` script auto-configures it on install, so fresh clones carry the gate) | All local commits, any editing tool | `--no-verify` bypasses |
 | Push-time interception | Versioned `.githooks/pre-push` re-checks the whole range to be pushed, catching commits that slipped through `--no-verify` | All local pushes | `--no-verify` bypasses |
@@ -39,7 +39,9 @@ Each spec's frontmatter `spec_dev.covers` (glob) declares the code it owns. A ba
 
 The frontmatter `sync_commit` is the delivery anchor: the commit where code and this spec were last confirmed in sync — written by the executing-plans wrap-up after merge; `git diff <sync_commit>..HEAD -- <covers>` shows code drift since. The guard parses this field but it plays no part in blocking decisions. A superseded spec's `sync_commit` is frozen at the supersede commit and never updated afterwards.
 
-At edit time (`--hook`), "already synced" includes existing working-tree changes (staged + unstaged + untracked): **update the spec first, then touch the covered code, and you pass**; dirty files in the working tree do not expand the trigger set, and editing unrelated files is unaffected by pre-existing drift. The wrap-up audit (`--worktree`) uses the whole working tree as the change set, backstopping files written by tools that bypassed the tool surface within the turn.
+At edit time (`--hook`), "already synced" includes existing working-tree changes (staged + unstaged + untracked): **update the spec first, then touch the covered code, and you pass**; dirty files in the working tree do not expand the trigger set, and editing unrelated files is unaffected by pre-existing drift. Explicit `node scripts/spec-dev/check-spec-drift.mjs --worktree` audits the whole working tree and still exits 2 on drift or invalid bindings. The installed Stop uses `--worktree --warn-only`, returning a visible advisory with exit 0; pre-existing edits therefore do not block a read-only answer. Shell writes missed by PreToolUse may only be blocked at explicit delivery audit or commit time.
+
+After updating the plugin, rerun `node guardrail/install.mjs --repo <target>` to refresh installed copies. The installer replaces its exact legacy blocking Stop command with the advisory command, preserving custom hooks and settings. Business-project pre-push remains installed; only consider removing it when protected branches require the range-check CI job.
 
 Once plan execution is authorized, `executing-plans` runs tasks serially in the main thread, respecting real dependencies. Task scopes, binding, independent review and delivery checks remain mandatory. `Spec: <repo-relative spec path>` is a traceability trailer, not a drift-guard bypass.
 

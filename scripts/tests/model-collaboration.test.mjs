@@ -71,7 +71,7 @@ test('explicit alias mappings resolve gateway labels; endpoint or stale launcher
 test('Claude model switches revoke previous guidance and later turns use the current session model', t => {
   const { run } = fixture(t);
   run({ hook_event_name: 'SessionStart', source: 'startup', model: 'kimi-k2.5' });
-  assert.match(run({ hook_event_name: 'UserPromptSubmit', prompt_id: 'p1' }).stdout, /collaboration: enabled/);
+  assert.equal(run({ hook_event_name: 'UserPromptSubmit', prompt_id: 'p1' }).stdout, '');
   const disabled = run({ hook_event_name: 'PostModelSwitch', to_model: 'claude-opus-5-5' }).stdout;
   assert.match(disabled, /collaboration: disabled/);
   assert.doesNotMatch(disabled, /## 目标|最后答复/);
@@ -86,6 +86,39 @@ test('Codex rechecks the per-turn model instead of caching the initial model', t
   run({ hook_event_name: 'SessionStart', source: 'startup', model: 'gpt-6' }, { host: 'codex' });
   assert.match(run({ hook_event_name: 'UserPromptSubmit', turn_id: 't1', model: 'claude-opus-5-5' }, { host: 'codex' }).stdout, /collaboration: disabled/);
   assert.match(run({ hook_event_name: 'UserPromptSubmit', turn_id: 't2', model: 'gpt-6' }, { host: 'codex' }).stdout, /collaboration: enabled/);
+});
+
+for (const host of ['claude', 'codex']) {
+  test(`${host} unchanged turns stay silent while model and enable-state changes reinject`, t => {
+    const { run } = fixture(t);
+    const event = { hook_event_name: 'UserPromptSubmit', model: 'gpt-6', turn_id: 'same-turn' };
+    assert.match(run(event, { host }).stdout, /最后答复/);
+    for (const turn_id of ['same-turn', 'next-turn', undefined]) {
+      assert.equal(run({ ...event, turn_id }, { host }).stdout, '');
+    }
+    // Same family and same turn ID still require a fresh policy on model changes.
+    assert.match(run({ ...event, model: 'gpt-6-astra' }, { host }).stdout, /最后答复/);
+    assert.match(run(event, { host, extraEnv: { SPEC_DEV_COLLABORATION: 'off' } }).stdout, /collaboration: disabled/);
+    assert.match(run(event, { host }).stdout, /最后答复/);
+    if (host === 'codex') {
+      assert.match(run({ hook_event_name: 'UserPromptSubmit' }, { host }).stdout, /collaboration: disabled/);
+      assert.equal(run({ hook_event_name: 'UserPromptSubmit' }, { host }).stdout, '');
+    }
+  });
+}
+
+test('a changed installed policy is delivered on the next otherwise unchanged turn', t => {
+  const { dir, run } = fixture(t);
+  const entry = path.join(dir, 'model-context.mjs');
+  writeFileSync(entry, readFileSync(script));
+  const installedPolicy = path.join(dir, 'model-collaboration.md');
+  writeFileSync(installedPolicy, 'policy before');
+  const event = { hook_event_name: 'UserPromptSubmit', model: 'glm-4.7' };
+  assert.match(run(event, { entry }).stdout, /policy before/);
+  assert.equal(run(event, { entry }).stdout, '');
+  writeFileSync(installedPolicy, 'policy after');
+  assert.match(run(event, { entry }).stdout, /policy after/);
+  assert.equal(run(event, { entry }).stdout, '');
 });
 
 test('compaction reinjects immediately; missing startup/resume identity clears stale policy', t => {
@@ -104,7 +137,7 @@ test('mixed subagents have independent policy; missing child identity never inhe
   const unknown = run({ hook_event_name: 'SubagentStart', agent_id: 'unknown' }, { host: 'codex' }).stdout;
   assert.match(unknown, /collaboration: disabled/);
   assert.doesNotMatch(unknown, /最后答复/);
-  assert.match(run({ hook_event_name: 'UserPromptSubmit', turn_id: 'parent-next', model: 'gpt-6' }, { host: 'codex' }).stdout, /collaboration: enabled/);
+  assert.equal(run({ hook_event_name: 'UserPromptSubmit', turn_id: 'parent-next', model: 'gpt-6' }, { host: 'codex' }).stdout, '');
   // Claude SubagentStart does not promise a model field; do not guess from an agent name or parent's env.
   assert.match(run({ hook_event_name: 'SubagentStart', agent_id: 'claude-child', agent_type: 'implementer' }, {
     extraEnv: { ANTHROPIC_MODEL: 'glm-4.7' },

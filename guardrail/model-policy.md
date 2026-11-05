@@ -41,6 +41,7 @@ Use exact, launcher-scoped alias mappings for gateways. Hidden routing and unrep
 - 新项目：模型上下文与原 `session-context.mjs` 的 spec 发现独立；没有 Git/spec 也能启用。
 - Claude Code：`SessionStart.model` 建立本代理状态，`PostModelSwitch.to_model` 更新；`UserPromptSubmit` 仅复用同一代理已观察状态。`PostModelSwitch` 需要 2.1.251+，较旧宿主不能保证会话内切换及时生效，应关闭增强或升级后使用。
 - Codex：启动及每次 `UserPromptSubmit` 都按 hook 的 `model` 重新判断；缺失时不沿用旧启用状态。
+- 提示频率：普通回合仍检查模型及规则状态；没有变化时零 stdout，不再重复短提醒。首次启用、模型或规则变化、重新启用时注入完整规则；SessionStart、SubagentStart、PostModelSwitch 保留生命周期重放，不依赖 turn ID 去重。
 - 压缩恢复：重新注入完整规则，不使用原 spec notice 的 60 秒去重窗口。Claude 的 compact 事件缺模型时可消费同一会话已观察状态；startup/resume/clear/fork 缺模型时不推定旧模型仍有效。
 - 停用：切回 Claude 或模型变成未知时发送停用标记。历史文本不能从对话中删除；标记使先前增强失效，不撤销原用户请求和项目约定。
 

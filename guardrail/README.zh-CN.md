@@ -23,7 +23,7 @@ node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
 | 层 | 机制 | 作用域 | 可绕过性 |
 |---|---|---|---|
 | 编辑时拦截 · Claude | `.claude/settings.json` PreToolUse hook（退出码 2 阻断）；spec 已在工作区同步则放行 | Claude Code 会话 | 换工具即绕过 |
-| 收尾审计 · Claude | Stop hook 对整个工作区做漂移检查，shell 写入（`sed -i`、`cat >` 等）也逃不掉；普通漂移同回合只拦一次；无效任务绑定持续拦截 | Claude Code 会话 | 换工具即绕过 |
+| 收尾提醒 · Claude | Stop 运行 `--worktree --warn-only` 检查整个工作区（含 shell 写入）；漂移和无效绑定通过 `systemMessage` 提醒，退出码 0，不阻断结束 | Claude Code 会话 | 仅提示 |
 | 编辑时拦截 · Codex | `.codex/hooks.json` PreToolUse hook（退出码 2 阻断） | Codex 会话 | 换工具即绕过 |
 | 提交时拦截 | 版本化 `.githooks/pre-commit`（`core.hooksPath` 启用；package.json `prepare` 在 install 时自动配置，新 clone 即带闸门） | 所有本地提交，任何编辑工具 | `--no-verify` 可绕过 |
 | 推送时拦截 | 版本化 `.githooks/pre-push` 整段复查待推送区间，捕获 `--no-verify` 落下的提交 | 所有本地推送 | `--no-verify` 可绕过 |
@@ -39,7 +39,9 @@ node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
 
 frontmatter 的 `sync_commit` 是交付锚点：最近一次确认代码与本 spec 同步的提交——由 executing-plans 收尾在合并后写入；`git diff <sync_commit>..HEAD -- <covers>` 即此后的代码变化。守卫解析该字段但不参与拦截判定。superseded spec 的 sync_commit 冻结在取代提交，此后不再更新。
 
-编辑时（`--hook`）的"是否同步"认定包含工作区已有改动（暂存 + 未暂存 + 未跟踪）：**先把 spec 改好，再动覆盖代码即放行**；但工作区脏文件不会扩大触发集，编辑无关文件不受既有漂移影响。收尾审计（`--worktree`）以整个工作区为变更集，对回合内绕过工具面写入的文件兜底。
+编辑时（`--hook`）的"是否同步"认定包含工作区已有改动（暂存 + 未暂存 + 未跟踪）：**先把 spec 改好，再动覆盖代码即放行**；但工作区脏文件不会扩大触发集，编辑无关文件不受既有漂移影响。显式执行 `node scripts/spec-dev/check-spec-drift.mjs --worktree` 仍严格审计整个工作区，漂移或无效绑定返回 2。安装后的 Stop 使用 `--worktree --warn-only`，输出可见提醒并返回 0，旧改动不会阻断本轮只读问答。绕过 PreToolUse 的 shell 写入，可能到显式交付审计或提交时才被阻断。
+
+插件更新后，重新运行 `node guardrail/install.mjs --repo <目标仓库>` 更新已安装副本。安装器只把自身精确匹配的旧阻断 Stop 命令迁移为提醒命令，保留用户自定义 hooks 和配置。业务项目 pre-push 继续保留；只有受保护分支已要求通过区间 CI 检查时，才考虑移除本地这一层。
 
 用户授权执行计划后，`executing-plans` 由主线程按真实依赖串行执行。任务范围、绑定、独立审查与交付核验仍须执行。`Spec: <仓库根相对 spec 路径>` 仅作追溯，不代替 spec 同步或漂移检查。
 
