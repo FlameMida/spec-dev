@@ -488,7 +488,7 @@ node scripts/build-distribution.mjs --output /tmp/spec-dev-git-package --format 
 node --test scripts/tests/distribution.test.mjs
 ```
 
-`package.json.files` is the shared distribution list. `.github/workflows/distribution.yml` builds and updates `dist` after a `v*` tag and produces ZIP, tar.gz, and npm tgz workflow artifacts. Rebuilding identical output is a no-op; older versions or different content at the same version cannot overwrite the distribution.
+`package.json.files` is the shared distribution list. `.github/workflows/distribution.yml` builds and updates `dist` after a `v*` tag and produces ZIP, tar.gz, and npm tgz workflow artifacts, then creates the GitHub Release with those three files attached and the matching CHANGELOG section as its notes (a rerun only refreshes the attachments). Rebuilding identical output is a no-op; older versions or different content at the same version cannot overwrite the distribution.
 
 ### Maturity tiers and release discipline
 

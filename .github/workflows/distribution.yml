@@ -43,7 +43,7 @@ jobs:
             }
           '
           node scripts/check-plugin.mjs --codex-validate
-          node --test scripts/tests/distribution.test.mjs scripts/tests/codex-hook-check.test.mjs scripts/tests/hook-protocol.test.mjs scripts/tests/model-collaboration.test.mjs scripts/tests/release-hooks.test.mjs
+          node --test scripts/tests/distribution.test.mjs scripts/tests/codex-hook-check.test.mjs scripts/tests/hook-protocol.test.mjs scripts/tests/model-collaboration.test.mjs scripts/tests/release-hooks.test.mjs scripts/tests/release-publish.test.mjs
       - name: Build filtered plugin and archives
         run: |
           node scripts/build-distribution.mjs --output "$PACKAGE_DIR"
@@ -95,3 +95,17 @@ jobs:
             ${{ runner.temp }}/spec-dev-${{ env.RELEASE_TAG }}.tar.gz
             ${{ runner.temp }}/spec-dev-${{ env.RELEASE_TAG }}.zip
             ${{ runner.temp }}/flamemida-spec-dev-*.tgz
+      - name: Publish GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          assets=("$RUNNER_TEMP/spec-dev-$RELEASE_TAG.tar.gz" "$RUNNER_TEMP/spec-dev-$RELEASE_TAG.zip" "$RUNNER_TEMP"/flamemida-spec-dev-*.tgz)
+          if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+            # 重跑时只刷新附件，保留已发布的说明。
+            gh release upload "$RELEASE_TAG" "${assets[@]}" --clobber
+          else
+            node scripts/release-notes.mjs "$RELEASE_TAG" > "$RUNNER_TEMP/release-notes.md"
+            gh release create "$RELEASE_TAG" "${assets[@]}" --verify-tag --title "$RELEASE_TAG" --notes-file "$RUNNER_TEMP/release-notes.md"
+          fi

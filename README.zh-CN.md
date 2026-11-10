@@ -488,7 +488,7 @@ node scripts/build-distribution.mjs --output /tmp/spec-dev-git-package --format 
 node --test scripts/tests/distribution.test.mjs
 ```
 
-`package.json.files` 是共享分发清单；`.github/workflows/distribution.yml` 在 `v*` tag 后构建并更新 `dist`，生成 ZIP、tar.gz 和 npm tgz 工作流附件。相同产物重复构建不产生提交，旧版本或同版本不同内容不能覆盖。
+`package.json.files` 是共享分发清单；`.github/workflows/distribution.yml` 在 `v*` tag 后构建并更新 `dist`，生成 ZIP、tar.gz 和 npm tgz 工作流附件，再创建 GitHub Release：附上这三个包，说明取 CHANGELOG 中同版本的一节（重跑只刷新附件）。相同产物重复构建不产生提交，旧版本或同版本不同内容不能覆盖。
 
 ### 成熟度分区与发布纪律
 
