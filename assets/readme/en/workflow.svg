@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="590" viewBox="0 0 1200 590" role="img" aria-labelledby="title desc">
+  <title id="title">How a request flows through spec-dev</title>
+  <desc id="desc">Main lane: 01 Design with requirement-analysis, 02 Plan with writing-plans, 03 Build with executing-plans, 04 Deliver at the ask gate. You approve the design, approve the plan, and choose what runs at the end. Side doors: exploring when you have not decided yet, and quick-fix for a small already-decided fix that goes straight to delivery.</desc>
+
+  <rect width="1200" height="590" rx="24" fill="#FBFAF7"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="588.5" rx="23.5" fill="none" stroke="#E2E8F0" stroke-width="1.5"/>
+
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">
+    <g id="legend">
+      <path d="M1000 64 L1012 76 L1000 88 L988 76 Z" fill="#F59E0B"/>
+      <text x="1022" y="83" font-size="18" fill="#64748B">= you decide</text>
+    </g>
+
+    <g id="exploring">
+      <rect x="54.75" y="40.75" width="358.5" height="108.5" rx="14" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="6 6"/>
+      <text x="78" y="74" font-size="18" fill="#64748B">Not decided yet?</text>
+      <text x="78" y="106" font-size="24" font-weight="700" fill="#0F172A">exploring</text>
+      <text x="78" y="134" font-size="18" fill="#64748B">read code, compare options</text>
+      <line x1="170" y1="150" x2="170" y2="204" stroke="#94A3B8" stroke-width="2"/>
+      <path d="M163 203 L177 203 L170 214 Z" fill="#94A3B8"/>
+      <text x="158" y="188" text-anchor="end" font-size="18" fill="#64748B">decided</text>
+    </g>
+
+    <g id="main-lane">
+      <rect x="54.75" y="214.75" width="238.5" height="134.5" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <rect x="338.75" y="214.75" width="238.5" height="134.5" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <rect x="622.75" y="214.75" width="238.5" height="134.5" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <rect x="906.75" y="214.75" width="238.5" height="134.5" rx="14" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5"/>
+
+      <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" font-weight="700" letter-spacing="1" fill="#2563EB">
+        <text x="74" y="250">01 DESIGN</text>
+        <text x="358" y="250">02 PLAN</text>
+        <text x="642" y="250">03 BUILD</text>
+        <text x="926" y="250" fill="#B45309">04 DELIVER</text>
+      </g>
+      <g font-size="20" font-weight="700" fill="#0F172A">
+        <text x="74" y="286">requirement-analysis</text>
+        <text x="358" y="286">writing-plans</text>
+        <text x="642" y="286">executing-plans</text>
+        <text x="926" y="286">ask gate</text>
+      </g>
+      <g font-size="18" fill="#64748B">
+        <text x="74" y="318">one-page spec</text>
+        <text x="358" y="318">small, testable tasks</text>
+        <text x="642" y="318">TDD, task by task</text>
+        <text x="926" y="318">you pick the checks</text>
+      </g>
+
+      <g stroke="#94A3B8" stroke-width="2">
+        <line x1="294" y1="282" x2="330" y2="282"/>
+        <line x1="578" y1="282" x2="614" y2="282"/>
+        <line x1="862" y1="282" x2="898" y2="282"/>
+      </g>
+      <g fill="#94A3B8">
+        <path d="M328 275 L338 282 L328 289 Z"/>
+        <path d="M612 275 L622 282 L612 289 Z"/>
+        <path d="M896 275 L906 282 L896 289 Z"/>
+      </g>
+    </g>
+
+    <g id="gates">
+      <g stroke="#F59E0B" stroke-width="2" stroke-dasharray="3 5">
+        <line x1="312" y1="204" x2="312" y2="268"/>
+        <line x1="596" y1="204" x2="596" y2="268"/>
+      </g>
+      <g fill="#F59E0B">
+        <path d="M312 270 L324 282 L312 294 L300 282 Z"/>
+        <path d="M596 270 L608 282 L596 294 L584 282 Z"/>
+        <path d="M1026 202 L1038 214 L1026 226 L1014 214 Z"/>
+      </g>
+      <g font-size="18" font-weight="700" fill="#B45309" text-anchor="middle">
+        <text x="312" y="194">approve design</text>
+        <text x="596" y="194">approve plan</text>
+        <text x="1026" y="190">choose what runs</text>
+      </g>
+    </g>
+
+    <g id="quick-fix">
+      <rect x="54.75" y="430.75" width="518.5" height="108.5" rx="14" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="6 6"/>
+      <text x="78" y="464" font-size="18" fill="#64748B">Small, already-decided fix?</text>
+      <text x="78" y="496" font-size="24" font-weight="700" fill="#0F172A">quick-fix</text>
+      <text x="78" y="524" font-size="18" fill="#64748B">root cause → TDD → replay the bug</text>
+      <path d="M574 485 H1026 V362" fill="none" stroke="#94A3B8" stroke-width="2"/>
+      <path d="M1019 361 L1033 361 L1026 350 Z" fill="#94A3B8"/>
+      <text x="800" y="473" text-anchor="middle" font-size="18" fill="#64748B">skips spec and plan</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="580" viewBox="0 0 1200 580" role="img" aria-labelledby="title desc">
+  <title id="title">The 13 spec-dev skills at a glance</title>
+  <desc id="desc">Main workflow: exploring, requirement-analysis, writing-plans, executing-plans, quick-fix. Built-in disciplines: clarifying, visual-preview, using-git-worktrees, test-driven-development, acceptance-qa. Handy extras: ddd-lifecycle, anysearch, wtf. Commands that are not skills: /doctor, /triage, status.</desc>
+
+  <rect width="1200" height="580" rx="24" fill="#FBFAF7"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="578.5" rx="23.5" fill="none" stroke="#E2E8F0" stroke-width="1.5"/>
+
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">
+    <g id="cards" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5">
+      <rect x="48.75" y="48.75" width="350.5" height="482.5" rx="16"/>
+      <rect x="424.75" y="48.75" width="350.5" height="482.5" rx="16"/>
+      <rect x="800.75" y="48.75" width="350.5" height="482.5" rx="16"/>
+    </g>
+
+    <g id="chips">
+      <rect x="68" y="70" width="26" height="26" rx="7" fill="#2563EB"/>
+      <rect x="444" y="70" width="26" height="26" rx="7" fill="#0F172A"/>
+      <rect x="820" y="70" width="26" height="26" rx="7" fill="#F59E0B"/>
+      <g fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M74 83 L79 88 L88 78"/>
+        <path d="M450 83 L455 88 L464 78"/>
+        <path d="M826 83 L831 88 L840 78"/>
+      </g>
+    </g>
+
+    <g id="headers" font-size="24" font-weight="700" fill="#0F172A">
+      <text x="106" y="92">Main workflow</text>
+      <text x="482" y="92">Built-in disciplines</text>
+      <text x="858" y="92">Handy extras</text>
+    </g>
+    <g font-size="18" fill="#64748B">
+      <text x="68" y="124">pick one way in</text>
+      <text x="444" y="124">used inside the flow, or alone</text>
+      <text x="820" y="124">use anytime</text>
+    </g>
+
+    <g id="dividers" stroke="#E2E8F0" stroke-width="1.5">
+      <line x1="49" y1="140" x2="399" y2="140"/>
+      <line x1="49" y1="218" x2="399" y2="218"/>
+      <line x1="49" y1="296" x2="399" y2="296"/>
+      <line x1="49" y1="374" x2="399" y2="374"/>
+      <line x1="49" y1="452" x2="399" y2="452"/>
+      <line x1="425" y1="140" x2="775" y2="140"/>
+      <line x1="425" y1="218" x2="775" y2="218"/>
+      <line x1="425" y1="296" x2="775" y2="296"/>
+      <line x1="425" y1="374" x2="775" y2="374"/>
+      <line x1="425" y1="452" x2="775" y2="452"/>
+      <line x1="801" y1="140" x2="1151" y2="140"/>
+      <line x1="801" y1="218" x2="1151" y2="218"/>
+      <line x1="801" y1="296" x2="1151" y2="296"/>
+      <line x1="801" y1="374" x2="1151" y2="374"/>
+    </g>
+
+    <g id="skill-names" font-size="21" font-weight="700" fill="#0F172A">
+      <text x="68" y="174">exploring</text>
+      <text x="68" y="252">requirement-analysis</text>
+      <text x="68" y="330">writing-plans</text>
+      <text x="68" y="408">executing-plans</text>
+      <text x="68" y="486">quick-fix</text>
+      <text x="444" y="174">clarifying</text>
+      <text x="444" y="252">visual-preview</text>
+      <text x="444" y="330">using-git-worktrees</text>
+      <text x="444" y="408">test-driven-development</text>
+      <text x="444" y="486">acceptance-qa</text>
+      <text x="820" y="174">ddd-lifecycle</text>
+      <text x="820" y="252">anysearch</text>
+      <text x="820" y="330">wtf</text>
+    </g>
+    <g id="skill-roles" font-size="18" fill="#64748B">
+      <text x="68" y="200">think before you commit</text>
+      <text x="68" y="278">request → one-page spec</text>
+      <text x="68" y="356">spec → small, testable tasks</text>
+      <text x="68" y="434">build task by task with TDD</text>
+      <text x="68" y="512">small, decided bug fixes</text>
+      <text x="444" y="200">one question at a time</text>
+      <text x="444" y="278">clickable UI prototypes</text>
+      <text x="444" y="356">isolated workspace</text>
+      <text x="444" y="434">failing test first, then code</text>
+      <text x="444" y="512">expected vs. actual, you judge</text>
+      <text x="820" y="200">domain modeling &amp; architecture</text>
+      <text x="820" y="278">live web search</text>
+      <text x="820" y="356">explain it like I’m 10</text>
+    </g>
+
+    <g id="commands" font-size="18">
+      <text x="820" y="412" font-size="20" font-weight="700" fill="#0F172A">Commands</text>
+      <text x="1131" y="412" text-anchor="end" fill="#64748B">not skills</text>
+      <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-weight="700" fill="#0F172A">
+        <text x="820" y="448">/doctor</text>
+        <text x="820" y="478">/triage</text>
+        <text x="820" y="508">status</text>
+      </g>
+      <g fill="#64748B">
+        <text x="932" y="448">health check</text>
+        <text x="932" y="478">pick the right route</text>
+        <text x="932" y="508">progress snapshot</text>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="480" viewBox="0 0 1200 480" role="img" aria-labelledby="title desc">
+  <title id="title">spec-dev：面向 AI 编程代理的 spec 驱动开发</title>
+  <desc id="desc">spec-dev 把想法变成一页 spec、任务计划和测试先行的代码。右侧展示一条 spec 场景和一份勾选中的计划；两者之间由你批准，之后由 agent 实施。</desc>
+
+  <rect width="1200" height="480" rx="24" fill="#FBFAF7"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="478.5" rx="23.5" fill="none" stroke="#E2E8F0" stroke-width="1.5"/>
+
+  <g id="title-block" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">
+    <text x="64" y="112" font-size="20" font-weight="600" letter-spacing="3" fill="#2563EB">面向 AI 编程代理的 SPEC 驱动开发</text>
+    <text x="58" y="210" font-size="96" font-weight="800" letter-spacing="-2" fill="#0F172A">spec-dev</text>
+    <text x="64" y="268" font-size="32" font-weight="600" fill="#0F172A">想法 → spec → 计划 → 测试通过的代码</text>
+    <text x="64" y="312" font-size="24" fill="#475569">一页 spec，拆成小任务，每个任务测试先行。</text>
+    <text x="64" y="346" font-size="24" fill="#475569">你只拍板三次，其余交给 agent。</text>
+    <text x="64" y="410" font-size="18" fill="#64748B">Claude Code · Codex · Grok Build · Pi · 13 个 skill · MIT</text>
+  </g>
+
+  <g id="spec-card" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">
+    <rect x="700" y="48" width="436" height="190" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <circle cx="728" cy="73" r="5" fill="#2563EB"/>
+    <text x="742" y="79" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#64748B">spec/invite-design.md</text>
+    <text x="1112" y="79" text-anchor="end" font-size="16" font-weight="600" fill="#2563EB">一页 spec</text>
+    <line x1="700" y1="96" x2="1136" y2="96" stroke="#E2E8F0" stroke-width="1.5"/>
+    <text x="724" y="130" font-size="20" font-weight="700" fill="#0F172A">Scenario：邀请链接过期</text>
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="700" fill="#2563EB">
+      <text x="724" y="162">GIVEN</text>
+      <text x="724" y="190">WHEN</text>
+      <text x="724" y="218">THEN</text>
+    </g>
+    <g font-size="18" fill="#0F172A">
+      <text x="796" y="162">邀请已发出超过 7 天</text>
+      <text x="796" y="190">成员打开邀请链接</text>
+      <text x="796" y="218">页面提示“链接已过期”</text>
+    </g>
+  </g>
+
+  <g id="approval-gate" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">
+    <line x1="760" y1="238" x2="760" y2="290" stroke="#F59E0B" stroke-width="2" stroke-dasharray="4 5"/>
+    <path d="M760 251 L773 264 L760 277 L747 264 Z" fill="#F59E0B"/>
+    <text x="788" y="270" font-size="18" font-weight="700" fill="#B45309">你来批准</text>
+    <text x="868" y="270" font-size="18" fill="#64748B">之后由 agent 实施</text>
+  </g>
+
+  <g id="plan-card" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif">
+    <rect x="700" y="290" width="436" height="150" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+    <circle cx="728" cy="315" r="5" fill="#2563EB"/>
+    <text x="742" y="321" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#64748B">plan/invite-plan.md</text>
+    <text x="1112" y="321" text-anchor="end" font-size="16" font-weight="600" fill="#2563EB">每个任务一次提交</text>
+    <line x1="700" y1="338" x2="1136" y2="338" stroke="#E2E8F0" stroke-width="1.5"/>
+
+    <rect x="724" y="355" width="18" height="18" rx="4" fill="#2563EB"/>
+    <path d="M728 364 L732 368 L738 360" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="724" y="383" width="18" height="18" rx="4" fill="#2563EB"/>
+    <path d="M728 392 L732 396 L738 388" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="724.75" y="411.75" width="16.5" height="16.5" rx="3.5" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5"/>
+
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#64748B">
+      <text x="756" y="370">T1</text>
+      <text x="756" y="398">T2</text>
+      <text x="756" y="426">T3</text>
+      <text x="1112" y="370" text-anchor="end">a1c9f2e</text>
+      <text x="1112" y="398" text-anchor="end">7be04d1</text>
+    </g>
+    <g font-size="18" fill="#0F172A">
+      <text x="790" y="370">邀请接口</text>
+      <text x="790" y="398">接受邀请</text>
+      <text x="790" y="426">过期链接处理</text>
+    </g>
+    <text x="1112" y="426" text-anchor="end" font-size="16" font-weight="600" fill="#B45309">红 → 绿…</text>
+  </g>
+</svg>
