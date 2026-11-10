@@ -1,6 +1,6 @@
 # ADR-0001: 取代生效时点双轨制（spec 随交付、ADR 随裁决）
 
-**Status**: Accepted (2026-08-10)
+**Status**: Superseded by [ADR-0013](0013-workflow-simplification.md) (2026-11-10)
 
 ## 背景
 

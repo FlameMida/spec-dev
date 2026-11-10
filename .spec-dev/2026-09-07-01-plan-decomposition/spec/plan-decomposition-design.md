@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: plan-decomposition
-  status: active
+  status: superseded
   covers:
     - "skills/writing-plans/SKILL.md"
     - "skills/writing-plans/agents/openai.yaml"
@@ -44,7 +44,7 @@ spec_dev:
     - ".spec-dev/2026-09-06-01-concurrent-execution/spec/concurrent-execution-design.md"
     - ".spec-dev/2026-09-06-02-tdd-seam/spec/tdd-seam-design.md"
     - ".spec-dev/2026-08-26-01-major-upgrade/spec/major-upgrade-design.md"
-  superseded_by: null
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
 ---
 
 # 计划分解与集成组设计

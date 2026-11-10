@@ -4,7 +4,7 @@
 spec_dev:
   version: 1
   feature: supersede-lifecycle
-  status: active
+  status: superseded
   covers:
     - "skills/requirement-analysis/SKILL.md"
     - "skills/requirement-analysis/assets/spec-template.md"
@@ -26,7 +26,7 @@ spec_dev:
   sync_commit: 8dc5c71c
   supersedes:
     - ".spec-dev/2026-08-09-test-scoping/spec/test-scoping-design.md"
-  superseded_by: null
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
 ---
 
 # spec/ADR 取代生命周期机制（supersede-lifecycle）设计

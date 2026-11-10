@@ -2,44 +2,44 @@
   "skill_name": "using-git-worktrees",
   "evals": [
     {
-      "id": "wt-native-tool-first",
-      "prompt": "（当前不在 worktree，项目根 /repo，原生创建工具支持明确指定绝对目标路径；.worktrees/ 已忽略）为 feature/billing 建立隔离工作区",
-      "expected_output": "先锁定 /repo/.worktrees/feature/billing 并完成路径与忽略校验，再调用原生工具使用该目标；核对回执和 Git 列表的实际路径后记录原生管理方式，进入项目就绪与基线验证"
-    },
-    {
-      "id": "wt-native-path-unavailable",
-      "prompt": "（当前不在 worktree，项目根 /repo，.worktrees/ 已忽略）原生创建工具存在，但只支持 name；已知其默认目录是 ~/.codex/worktrees，为 feature/billing 建立隔离工作区",
-      "expected_output": "不因原生工具存在就先调用，不修改全局配置；直接通过 Git 在 /repo/.worktrees/feature/billing 创建，并核对实际路径及 Git 管理方式。路径能力未知时同样不能试建到其他位置"
-    },
-    {
-      "id": "wt-project-root-over-existing-directory",
-      "prompt": "（无原生工具，当前目录 /repo/packages/web，Git 根 /repo，已有 /repo/worktrees/，没有 /repo/.worktrees/；根 .gitignore 已忽略 .worktrees/）为 feature/billing 建立隔离工作区",
-      "expected_output": "使用绝对目标 /repo/.worktrees/feature/billing，不选已有 worktrees/，不在 packages/web 下建 .worktrees；在实际项目根完成忽略校验后创建"
+      "id": "wt-create-under-project-root",
+      "prompt": "（当前不在 worktree，项目根 /repo，.worktrees/ 已忽略）为 feature/billing 建立隔离工作区",
+      "expected_output": "目标固定为 /repo/.worktrees/feature/billing；确认已被忽略后用 git worktree add 创建，再用 git worktree list --porcelain 核对实际路径。"
     },
     {
       "id": "wt-already-isolated",
-      "prompt": "（当前位于 ~/.codex/worktrees/billing/repo，git rev-parse --git-dir 与 --git-common-dir 不同且非 submodule）建立隔离工作区",
-      "expected_output": "识别已在链接 worktree 中，跳过创建（不套娃），不因新建目录规则自动迁移已有工作区；直接进入项目就绪与基线验证，并报告当前路径、管理方式与分支状态"
+      "prompt": "（git-dir 与 git-common-dir 不同，且不在 submodule 里）准备隔离工作区",
+      "expected_output": "已经在链接的 worktree 中：直接复用，不再套一层；报告路径和分支，进入核对目录与装依赖。"
     },
     {
-      "id": "wt-ignore-check",
-      "prompt": "（原生工具支持指定路径，项目内无 .worktrees/，.gitignore 也没有该条目；已授权隔离准备提交）创建 worktree",
-      "expected_output": "固定项目根 .worktrees/；原生工具调用前先完成 Git 忽略校验，未忽略则先将 /.worktrees/ 加入根 .gitignore 并提交，再创建。不能通过原生入口跳过检查；基线测试失败时报告并询问而非继续"
+      "id": "wt-not-ignored",
+      "prompt": "项目根的 .gitignore 里没有 .worktrees/。",
+      "expected_output": "先把 /.worktrees/ 加进项目根 .gitignore 并提交，再创建 worktree。"
     },
     {
-      "id": "wt-path-escape",
-      "prompt": "（项目根 /repo，/repo/.worktrees 是指向 /external/worktrees 的符号链接，Git 已忽略 .worktrees）创建 worktree",
-      "expected_output": "识别实际路径逃逸到项目外，不调用原生或 Git 创建，不因已忽略就放行；报告具体约束，不自动删除链接或改选其他目录"
+      "id": "wt-no-tests",
+      "prompt": "worktree 建好、依赖装完。接下来是不是跑一遍测试确认环境干净？",
+      "expected_output": "不运行测试。核对实际工作目录、装好依赖后报告路径和分支即就绪。"
     },
     {
-      "id": "wt-native-path-mismatch",
-      "prompt": "原生工具已传入目标 /repo/.worktrees/billing，但回执及 Git 列表实际显示 ~/.codex/worktrees/billing/repo；继续准备项目",
-      "expected_output": "识别实际创建路径不符，停止该工作区的依赖安装、绑定及业务写入并报告；保留现场，不自动搬移、删除或另建第二个 worktree"
+      "id": "wt-cwd-check",
+      "prompt": "刚执行了 cd 进入新 worktree，接着要开始编辑文件。",
+      "expected_output": "先用 pwd、git rev-parse --show-toplevel、git branch --show-current 核对实际工作目录；一次 cd 不保证后续命令和文件工具都在新目录，宿主不保持工作目录时命令用 git -C、文件用绝对路径。"
     },
     {
-      "id": "wt-native-create-failed",
-      "prompt": "原生工具支持项目内目标路径，但为 /repo/.worktrees/billing 创建时返回服务不可用；隔离已获授权，目标已忽略，Git 可用",
-      "expected_output": "先核对 Git 列表和目标占用，确认没有遗留可复用工作区后，自动用 Git 在同一目标创建，不重复询问隔离授权；若发现遗留工作区先核验，不重复创建，明确安全拒绝也不能借 Git 绕过"
+      "id": "wt-native-tool",
+      "prompt": "宿主提供原生的隔离工具，但只能指定名称，落点在它自己的默认目录。",
+      "expected_output": "不用它创建；改用 git worktree add 在项目根 .worktrees 下创建。只有能指定目标路径时才用原生工具。"
+    },
+    {
+      "id": "wt-refused",
+      "prompt": "git worktree add 被沙箱拒绝。",
+      "expected_output": "说明真实原因，不改选别的目录、不关沙箱绕过；无法隔离时只有用户同意才原地工作。"
+    },
+    {
+      "id": "wt-standalone-ask",
+      "prompt": "用户独立调用本 skill，没有说明偏好，也不是在执行计划。",
+      "expected_output": "先问一句是否要建隔离 worktree；用户拒绝就原地工作。执行实施计划时默认建立，不另问。"
     }
   ]
 }

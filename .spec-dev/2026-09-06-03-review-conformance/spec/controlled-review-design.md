@@ -1,7 +1,8 @@
 ---
 spec_dev:
   feature: review-conformance
-  status: active
+  status: superseded
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
   covers:
     - "scripts/review-runner.py"
     - "scripts/lib/review_*.py"

@@ -3,7 +3,8 @@
 spec_dev:
   version: 1
   feature: triage-routing
-  status: active
+  status: superseded
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
   covers:
     - "commands/triage.md"
   sync_commit: "4bd9c86c457ca88eb66aea26502086741a35668f"

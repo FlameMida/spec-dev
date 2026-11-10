@@ -3,7 +3,8 @@
 spec_dev:
   version: 1
   feature: resource-ledger
-  status: active
+  status: superseded
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
   covers:
     - "skills/writing-plans/SKILL.md"
     - "skills/executing-plans/SKILL.md"

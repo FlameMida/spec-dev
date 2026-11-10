@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: quick-fix-diagnosis
-  status: active
+  status: superseded
   covers:
     - "skills/quick-fix/SKILL.md"
     - "skills/quick-fix/agents/openai.yaml"
@@ -11,7 +11,7 @@ spec_dev:
     - "README.zh-CN.md"
   sync_commit: 6dbcec8b6479320443e8ef34a321574958f5f89b
   supersedes: []
-  superseded_by: null
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
 ---
 
 # Quick-fix 轻量诊断与修复收尾设计

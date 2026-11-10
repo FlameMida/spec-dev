@@ -1,6 +1,6 @@
 # ADR-0006: 插件根路径解析——载入即声明 + 单点解析序列，不随守卫分发校验器副本
 
-**Status**: Accepted (2026-09-03)
+**Status**: Superseded by [ADR-0013](0013-workflow-simplification.md) (2026-11-10)
 
 插件内文件（契约校验器、环境检测脚本、anysearch CLI）的路径一律写成 `"${CLAUDE_PLUGIN_ROOT}/<相对插件根路径>"`；含此类命令的 skill 在正文顶部固定一行 `${CLAUDE_PLUGIN_ROOT}` 声明（载入即声明），平台替换后成为该会话的插件根事实来源；references 与派发词中的同名变量是占位符，执行者按 exploration-patterns 单点定义的三级解析序列（正文已替换值 → skill base directory 上两级 → 已安装插件目录）代入。不随 guardrail 安装器向目标仓库分发 `validate-output.mjs` 副本。
 

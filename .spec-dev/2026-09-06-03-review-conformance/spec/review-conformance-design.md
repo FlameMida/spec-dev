@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: review-conformance
-  status: active
+  status: superseded
   covers:
     - "agents/code-reviewer.md"
     - "skills/executing-plans/SKILL.md"
@@ -26,7 +26,7 @@ spec_dev:
     - "README.zh-CN.md"
   sync_commit: 73e881d7cc0577bc6aad7c661b1d31472e4d4b8f
   supersedes: []
-  superseded_by: null
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
 ---
 
 # 收尾审查符合性与共享判据设计

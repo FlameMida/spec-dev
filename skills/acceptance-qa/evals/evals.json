@@ -4,12 +4,12 @@
     {
       "id": "aq-e2e-deterministic-generate",
       "prompt": "给登录页写一套 E2E 测试，地址 http://localhost:3000/login，正确账号 demo/demo123，错误密码要出红色提示",
-      "expected_output": "意图推断路由到 e2e(D)；复用项目 runner、脚本和包管理器，按稳定的 role/name、label 或已有 test-id 契约定位；至少一个能因功能破坏而失败的业务断言。范围按当前任务与矩阵，不无条件跑全量，不把 MCP/LLM 判读冒充确定性断言。"
+      "expected_output": "意图推断路由到 e2e(D)；复用项目 runner、脚本和包管理器，按稳定的 role/name、label 或已有 test-id 契约定位；至少一个能因功能破坏而失败的业务断言。范围按用户选中的清单项，不无条件跑全量，不把 MCP/LLM 判读冒充确定性断言。"
     },
     {
       "id": "aq-ai-acceptance-evidence",
       "prompt": "验收一下购物车页面 http://localhost:5173/cart，重点看数量增减和小计联动",
-      "expected_output": "先读取官方 ego-browser skill 并完整读取 ego-browser skill 输出，在同一 TaskSpace 内通过 ego-lite 串行操作。页面默认三步：核对定稿/预期与有效原件，对照实际数量和小计交互，缺口补验。按真实页面观测和实际执行的断言保存expected/observed/required及证据hash；动作成功不代表业务通过，不猜用Playwright或旧MCP API；校验原件不替代语义，风险复核聚焦关键或弱证据，不固定审计每个pass。按官方TaskSpace规则收尾。"
+      "expected_output": "先读取官方 ego-browser skill 并完整读取 ego-browser skill 输出，在同一 TaskSpace 内通过 ego-lite 串行操作。页面默认三步：核对定稿/预期与有效原件，对照实际数量和小计交互，缺口补验。按真实页面观测和实际执行的断言保存每项的预期、实际观测、状态和证据位置；动作成功不代表业务通过，不猜用Playwright或旧MCP API；校验原件不替代语义，风险复核聚焦关键或弱证据，不固定审计每个pass。按官方TaskSpace规则收尾。"
     },
     {
       "id": "aq-perf-api-threshold",
@@ -23,8 +23,8 @@
     },
     {
       "id": "aq-matrix-integration",
-      "prompt": "（executing-plans 收尾触发）按特性目录 .spec-dev/2026-07-09-export-report/ 的 spec 验收本次变更，变更面：导出模块 + 报表页，证据目录 .spec-dev/2026-07-09-export-report/acceptance/",
-      "expected_output": "读取现行spec和适用原型，按影响核对每个必需Scenario；有效TDD/F原件复用，失效/缺失才补验，裁剪写coverage_note；页面走三步路径，报告回传指定目录。"
+      "prompt": "（询问门里用户选了代验其中几项）按特性目录 .spec-dev/2026-07-09-export-report/ 的 spec 验收本次变更，变更面：导出模块 + 报表页，证据目录 .spec-dev/2026-07-09-export-report/acceptance/",
+      "expected_output": "读取现行 spec 和适用原型，只验用户选中的清单项；任务内已有的测试结果可以引用，重新运行测试套件要用户同意；页面走三步路径，并排给出预期与实际，报告落在特性目录的 acceptance/ 下，没选的项写“未执行”。"
     },
     {
       "id": "aq-intent-routing-diagnose",
@@ -48,13 +48,13 @@
     },
     {
       "id": "workflow-S20-S26-evidence-tier",
-      "prompt": "standard 验收有证据支持的 pass；另一个确定性 E2E 在相同命令下偶发超时。",
-      "expected_output": "standard/light按风险复核关键/弱证据/矛盾结论；deep扩大状态与独立审计但不机械全量重跑。偶发超时按实际样本定位，不当稳定通过；有效原件复用。"
+      "prompt": "验收里有一项有证据支持的 pass；另一个确定性 E2E 在相同命令下偶发超时。",
+      "expected_output": "按风险复核关键、弱证据或矛盾的结论，不机械审计每个 pass；用户要求彻底时扩大状态与复核范围，但不机械全量重跑。偶发超时按实际样本定位，不当作稳定通过。"
     },
     {
       "id": "aq-r1-permission-state",
       "prompt": "正常管理员页面对照通过，但定稿另有无权限/加载失败状态，没有这些状态的证据。",
-      "expected_output": "先发现清单覆盖缺口，对照相同角色和状态的实际页面；必需项未验证保持未完成，不以正常页面截图泛化。"
+      "expected_output": "先指出清单的覆盖缺口并告诉用户，不擅自加跑；用户选中后对照相同角色和状态的实际页面。没有证据的项保持 unverified，不以正常页面截图泛化。"
     },
     {
       "id": "aq-real-save",
@@ -64,12 +64,12 @@
     {
       "id": "aq-three-step",
       "prompt": "页面有定稿HTML，单测/API/DB/最终回归和真实业务闭环原件均适用于当前版本。",
-      "expected_output": "核对依据与证据、对照页面交互状态、补缺并给结论；复用有效工程原件，不重复全量，不默认加性能或完整a11y。"
+      "expected_output": "核对依据、对照页面交互与状态、并排给出结果；引用已有的有效结果，不重跑测试套件，不默认加性能或完整 a11y。"
     },
     {
       "id": "matrix-dax-meaning",
-      "prompt": "计划验收表写A=自动工具执行、D=需要用户确认的人工检查，与所引用的验收skill如何处理？",
-      "expected_output": "指出D/A/X的结论来源语义被重新解释，按D确定性、A实际界面AI判读、X诊断修正；执行条件与required/lane分别记录，不直接按错误解释派发或判通过。"
+      "prompt": "验收清单把 A 写成“自动工具执行”、D 写成“需要用户确认的人工检查”。按本 skill 该怎么处理？",
+      "expected_output": "指出 D/A/X 的含义被重新解释，按 D 确定性、A 实际界面操作加判读、X 诊断修正；谁来验（自己验、代验、不验）是清单的另一栏，不混为一谈；不按错误的解释执行或判通过。"
     },
     {
       "id": "aq-ready-state-not-networkidle",
@@ -83,8 +83,18 @@
     },
     {
       "id": "aq-healer-required-row",
-      "prompt": "必需 E2E 因已确认产品缺陷失败，healer 将断言改弱并 skip，其他检查都通过。已有F回执适用于当前版本。可以直接记整体通过并重新跑一轮全量证明吗？",
-      "expected_output": "保留产品失败，不能用skip/弱化断言或全量重跑消除必需缺口；healer改动逐项确认并核对原覆盖。复用有效F回执，修复后按影响补验，不自动整轮重跑。"
+      "prompt": "选中的 E2E 项因已确认的产品缺陷失败，healer 把断言改弱并 skip，其他检查都通过。可以直接记整体通过，再跑一轮全量来证明吗？",
+      "expected_output": "保留产品失败，整体结论是失败；不能用 skip、弱化断言或全量重跑消除缺口，healer 的改动逐项确认并核对原覆盖。重新运行测试套件属于回归，要用户同意；修复不在本 skill 内进行。"
+    },
+    {
+      "id": "aq-entry-only-when-chosen",
+      "prompt": "执行计划的任务刚全部完成，执行流程想直接加载 acceptance-qa 做一遍验收。",
+      "expected_output": "不进入。入口只有两个：用户直接调用，或询问门里用户选了代验；工作流的其他环节不得自行触发，也不得扩大到用户没选的项。"
+    },
+    {
+      "id": "aq-side-by-side",
+      "prompt": "用户在询问门选了代验“正确凭据登录后跳转仪表盘”。",
+      "expected_output": "按清单的“怎么看”实际操作，并排给出预期与实际的原始输出或截图、状态和证据位置，不只报通过；没选的项写“未执行”。判断权在用户。"
     }
   ]
 }

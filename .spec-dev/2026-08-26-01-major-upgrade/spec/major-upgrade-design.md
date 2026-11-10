@@ -4,7 +4,7 @@
 spec_dev:
   version: 1
   feature: major-upgrade
-  status: active
+  status: superseded
   covers:
     - "plugin.json"
     - "package.json"
@@ -50,7 +50,7 @@ spec_dev:
   sync_commit: 6bb97db47abbf017fd890e439262467c98a74de8
   supersedes:
     - ".spec-dev/2026-08-09-resource-ledger/spec/resource-ledger-design.md"
-  superseded_by: null
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
 ---
 
 # spec-dev 重大升级（多平台适配 · MCP 清零 · 工作流增强）设计

@@ -6,9 +6,9 @@
 
 [更新日志](CHANGELOG.md) · [许可证](LICENSE) · [问题反馈](https://github.com/FlameMida/spec-dev/issues)
 
-**spec-dev** 是一套面向 Claude Code、Codex、Grok Build、Pi 和通用 Agent Plugins 宿主的 spec 驱动开发插件。它把需求打磨为获批的 spec，把 spec 拆成可独立验证的任务图，再在隔离工作区中按 TDD 纪律实施，最后通过独立验证、审查、验收和 Requirement 对账完成交付。
+**spec-dev** 是一套面向 Claude Code、Codex、Grok Build、Pi 和通用 Agent Plugins 宿主的 spec 驱动开发插件。它把需求打磨为获批的一页 spec，把 spec 拆成可独立验证的任务，在隔离工作区中按 TDD 纪律逐任务实施；全部任务完成后先问你，再做回归、验收和交付。
 
-它不是一个只能从头走到尾的刚性流程：14 个 skill 既可组成完整管线，也能单独调用。还没决定是否实施时使用 `exploring`；小 bug 使用 `quick-fix`；已有 spec 可从 `writing-plans` 进入；已有计划可直接交给 `executing-plans`。此外还提供 DDD 建模、浏览器原型、实时搜索和 `wtf` 终端图解。
+它不是一个只能从头走到尾的刚性流程：13 个 skill 既可组成完整管线，也能单独调用。还没决定是否实施时使用 `exploring`；小 bug 使用 `quick-fix`；已有 spec 可从 `writing-plans` 进入；已有计划可直接交给 `executing-plans`。skill 只依赖 `skills/` 目录里的文件，只装 skills 也能完整走完流程。此外还提供 DDD 建模、浏览器原型、实时搜索和 `wtf` 终端图解。
 
 <a id="overview"></a>
 ## 项目概览与整体工作流
@@ -22,19 +22,19 @@ flowchart TD
     E -->|"没有：小修"| F["quick-fix<br/>诊断、TDD、原症状回放"]
     F --> Z["结果与证据"]
     E -->|"有：功能或行为变更"| D
-    D --> G["clarifying + 内外部探索<br/>对抗验证与方案选择"]
+    D --> G["理解与探索 + clarifying<br/>设计提案一次批准"]
     G -.-> H["visual-preview<br/>适用 UI 自动联动"]
     H -.-> G
-    G --> I["获批 spec<br/>Requirement + Scenario + 验收矩阵"]
-    I --> J["writing-plans<br/>任务图、写集合、TDD 步骤"]
+    G --> I["一页 spec<br/>Requirement + Scenario"]
+    I --> J["writing-plans<br/>任务、接口、TDD 步骤"]
     J --> K{"用户授权执行"}
-    K --> L["executing-plans<br/>worktree、任务图、TDD"]
-    L --> M["独立 final 验证<br/>审查 + acceptance-qa"]
-    M --> N["Requirement 对账<br/>合并、清理、sync_commit"]
+    K --> L["executing-plans<br/>worktree、任务循环、轻量审查"]
+    L --> M["询问门<br/>回归 / 验收 / 交付由你选"]
+    M --> N["按选择执行<br/>Requirement 对账与总结"]
     N --> Z
 ```
 
-三条主入口按“**是否已承诺实施**”和“**是否存在设计空间**”分流。`using-git-worktrees`、`test-driven-development`、`test-strategy` 等纪律由主流程复用；`anysearch`、`ddd-lifecycle` 和 `wtf` 也能独立使用。设计获批、计划获批和执行授权是不同决定，阅读文档或生成计划都不会自动开始实施。
+三条主入口按“**是否已承诺实施**”和“**是否存在设计空间**”分流。`using-git-worktrees`、`test-driven-development` 等纪律由主流程复用；`anysearch`、`ddd-lifecycle` 和 `wtf` 也能独立使用。设计获批和计划获批是不同决定，阅读文档或生成计划都不会自动开始实施；回归测试和验收只在你选择后执行。
 
 <a id="navigation"></a>
 ## 快速导航
@@ -110,7 +110,7 @@ Grok Build 也支持 marketplace 插件条目中的 `source.ref: "dist"`；不�
 
    > 使用 requirement-analysis 为当前项目设计“团队成员邀请”功能，覆盖权限、失败路径和验收标准。
 
-2. **审查并批准设计**。agent 会调查现状、逐题澄清、比较方案；只有你批准后才会写入 spec。典型位置为：
+2. **审查并批准设计**。agent 会调查现状、逐题澄清，然后用一条消息给出推荐方案、备选和一页 spec 草稿；你批准后才写入 spec 并接着写计划。典型位置为：
 
    ```text
    .spec-dev/<日期-序号-特性>/spec/<特性>-design.md
@@ -124,7 +124,7 @@ Grok Build 也支持 marketplace 插件条目中的 `source.ref: "dist"`；不�
 
    > 使用 executing-plans 执行 .spec-dev/&lt;特性&gt;/plan/&lt;特性&gt;-plan.md。
 
-5. **查看交付证据**。流程会完成任务实施、独立 final、审查、适用的 acceptance-qa、Requirement 对账和交付；不要把“计划已生成”或“部分测试通过”当作已经交付。
+5. **在询问门做选择**。全部任务完成并经过轻量审查后，流程会给出摘要和 Requirement 对账，然后一次问清：回归跑不跑（不跑 / 受影响范围 / 全量）、验收清单逐项怎么验（自己验 / 代验 / 不验）、怎么交付（本地合并 / PR / 保留分支）。没选的项不会执行，并在总结里如实标注。
 
 #### 路线 B：还没决定是否要做
 
@@ -153,18 +153,21 @@ Grok Build 也支持 marketplace 插件条目中的 `source.ref: "dist"`；不�
 
 | 平台 | Skills | Agents（子代理） | Hooks | 清单 / 发现方式 |
 |---|---|---|---|---|
-| Claude Code | ✅ marketplace `skills[]` | ✅ `agents/*.md` | ✅ 插件注入；guardrail 可安装 | `.claude-plugin/` |
-| Codex | ✅ 目录自动发现 | ⚠️ 通过派发提示词；`spawn_agent` 不读取 `agents/*.md` | ✅ codex-hooks，需信任 | `.codex-plugin/` |
-| Grok Build | ✅ Claude 兼容（官方声明） | ✅ 同 Claude Code；字段行为以实际验收为准 | ⚠️ hook 支持有差异；SessionStart 不注入模型上下文，不支持 PostModelSwitch | 复用 `.claude-plugin/` |
-| Pi | ✅ `package.json` 的 `pi.skills` | ⚠️ 需 `pi-subagents` 扩展 | ❌ 需另行适配 TS extension | `package.json` |
+| Claude Code | ✅ marketplace `skills[]` | ✅ 通用子代理 + skill 内的 brief | ✅ 插件注入；guardrail 可安装 | `.claude-plugin/` |
+| Codex | ✅ 目录自动发现 | ✅ 通用子代理 + skill 内的 brief | ✅ codex-hooks，需信任 | `.codex-plugin/` |
+| Grok Build | ✅ Claude 兼容（官方声明） | ✅ 同 Claude Code；行为以实际验收为准 | ⚠️ hook 支持有差异；SessionStart 不注入模型上下文，不支持 PostModelSwitch | 复用 `.claude-plugin/` |
+| Pi | ✅ `package.json` 的 `pi.skills` | ⚠️ 需 `pi-subagents` 扩展；没有则由主线程完成并注明 | ❌ 需另行适配 TS extension | `package.json` |
 | Agent Plugins 1.0.0 | ✅ 根级 `plugin.json` + `skills/` | — 不在便携标准内 | — 不在便携标准内 | `plugin.json` |
+| 只装 skills（复制或同步 `skills/` 目录） | ✅ 流程完整可用 | 取决于宿主；没有则由主线程完成并注明 | — 无 hooks、命令与守卫脚本 | 宿主自己的 skills 目录 |
+
+各 skill 正文按能力描述（提问、子代理、进度工具、隔离工作区），不写宿主专有的工具名；具体映射见 [宿主适配](skills/requirement-analysis/references/host-compat.md)。
 
 <a id="runtime-dependencies"></a>
 ### 运行时依赖
 
 | 分级 | 依赖 | 用途 | 缺失时 |
 |---|---|---|---|
-| hard | `git` | 漂移守卫、worktree、每任务提交、`sync_commit` 锚定 | 主流程不可用 |
+| hard | `git` | 漂移守卫、worktree、每任务提交 | 主流程不可用 |
 | hard | Node.js ≥ 18 | 契约校验、guardrail、doctor、visual-preview、`node --test` | 相关校验与预览不可用，按约定降级并报告 |
 | soft | `python3` | anysearch Python CLI | 降级到零依赖 Node CLI，再到 WebSearch / WebFetch |
 | soft | ego-lite + 官方 `ego-browser` skill | 浏览器预览、页面验收和诊断 | 按官方指引接入；受影响的浏览器项标为 `unverified` |
@@ -173,7 +176,7 @@ Grok Build 也支持 marketplace 插件条目中的 `source.ref: "dist"`；不�
 
 浏览器任务需安装 [ego-lite 及官方 `ego-browser` skill](https://lite.ego.app/document/en/docs/quick-start)。操作前读取该 skill，执行 `ego-browser skill` 并完整读取与当前版本匹配的指南。本插件不内嵌官方 skill，也不注册浏览器 MCP；详见[浏览器接入](skills/acceptance-qa/references/browser-setup.md)。项目已有的 Playwright Test/CLI 测试独立保留。
 
-契约校验器无法运行时，主线程按 schema 人工核对必填键与 `coverage_note`，并在报告中注明“契约校验降级”；定义见 [输出契约与校验](skills/requirement-analysis/references/output-contracts.md)。macOS / Linux 的受控审查入口另需 Python 3.9+、已认证的本机 Claude CLI 和 rtk；这不影响其他平台使用原生工作流。
+审查与探索的子代理按 skill 内的 brief 用 Markdown 回报，由主线程核实，不依赖校验脚本；没有子代理能力的宿主由主线程完成并注明不是独立执行。
 
 ---
 
@@ -210,7 +213,7 @@ Grok Build 也支持 marketplace 插件条目中的 `source.ref: "dist"`；不�
 <a id="skill-requirement-analysis"></a>
 #### `requirement-analysis` — 把已承诺需求变成获批 spec
 
-**用途：** 适用于新功能、API、数据设计和有方案取舍的行为变更。按 light / standard / deep 调整调查深度，完成现状探索、逐题澄清、对抗验证、方案比较、完整设计批准、spec 落盘与审查，再交接 `writing-plans`。所有档位都保留设计批准 HARD-GATE。
+**用途：** 适用于新功能、API、数据设计和有方案取舍的行为变更。四步：理解与探索、逐题澄清、设计提案、落盘 spec。light / standard / deep 只调节探索深度；你只需要批准一次设计，批准后直接交接 `writing-plans`。spec 是一页契约（目标、非目标、关键决策、Requirement 与 Scenario），默认不带 frontmatter，需要漂移守卫时才加。
 
 **调用示例：**
 
@@ -244,37 +247,37 @@ Grok Build 也支持 marketplace 插件条目中的 `source.ref: "dist"`；不�
 ### 2.2 计划、隔离与执行
 
 <a id="skill-writing-plans"></a>
-#### `writing-plans` — 把 spec 拆成可验证任务图
+#### `writing-plans` — 把 spec 拆成可验证的任务
 
-**用途：** 将获批 spec 或明确需求写入单文件 `plan/<特性>-plan.md`，写清接口、真实依赖、精确写集合、资源归属、TDD 步骤和验证命令。任务按可独立交付和审查的行为切片组织，而不是机械地按技术层排队；计划生成不等于执行授权。
+**用途：** 将获批 spec 或明确需求写入单文件 `plan/<特性>-plan.md`：头部（目标、非目标与全局约束、测试命令、收尾预先决定）、任务导航、各任务的接口与五步 TDD、执行记录。任务按可独立交付的行为切片组织，Scenario 直接成为测试名；隔离工作区、回归、验收和合并不写进任务。批准计划即授权执行。
 
 **调用示例：**
 
-> 使用 writing-plans 根据 .spec-dev/&lt;特性&gt;/spec/&lt;特性&gt;-design.md 编写实施计划，明确任务依赖和每票写集合。
+> 使用 writing-plans 根据 .spec-dev/&lt;特性&gt;/spec/&lt;特性&gt;-design.md 编写实施计划，写清任务依赖和每个任务的接口。
 
-> 使用 writing-plans 修订这份计划，把可以并行验证的切片拆开，并保留独立 final、验收和交付任务。
+> 使用 writing-plans 修订这份计划，把第一条真实用户闭环提到最前面；收尾我想只跑受影响范围、不做验收、走 PR。
 
-计划完成后会按[计划自检清单](skills/writing-plans/references/plan-review.md)检查粒度、依赖、契约和恢复信息，再由你决定开始执行还是先 review。
+计划完成后会按 skill 里的五条自检核对覆盖、可执行性、接口一致、依赖最小和闭环，模板见[计划模板](skills/writing-plans/references/plan-template.md)，再由你决定开始执行还是先改计划。
 
 <a id="skill-executing-plans"></a>
-#### `executing-plans` — 执行、恢复、审查并交付计划
+#### `executing-plans` — 执行、恢复并经询问门交付
 
-**用途：** 执行已批准的书面计划。由主线程按真实依赖串行完成任务；支持中断恢复、独立 final、按规模的审查、acceptance-qa、Requirement 对账、合并清理和 `sync_commit` 锚定。
+**用途：** 执行已批准的书面计划。建隔离工作区（开工前不运行任何测试），由主线程按真实依赖逐任务 TDD、提交并自检；每个任务开工重读计划头部，只做任务写明的事，已提交的测试断言不为转绿而改。全部任务完成后做一次轻量独立审查，然后停在询问门：回归、验收和交付都先问你。恢复只认计划文件和 git 记录。
 
 **调用示例：**
 
-> 使用 executing-plans 执行 .spec-dev/&lt;特性&gt;/plan/&lt;特性&gt;-plan.md，从任务 0 开始并按计划完成交付。
+> 使用 executing-plans 执行 .spec-dev/&lt;特性&gt;/plan/&lt;特性&gt;-plan.md，做完先问我再跑回归和验收。
 
-> 使用 executing-plans 恢复上次中断的计划；先核对计划进度、工作区和已有证据，不要重做已完成任务。
+> 使用 executing-plans 恢复上次中断的计划；先核对复选框、工作区和最近的提交，不要重做已完成任务。
 
 <a id="skill-using-git-worktrees"></a>
-#### `using-git-worktrees` — 准备隔离且可验证的工作区
+#### `using-git-worktrees` — 准备隔离工作区
 
-**用途：** 先检测现有隔离；新建 worktree 始终放在项目根 `.worktrees/`，宿主原生工具能遵守目标路径时才优先，否则使用 `git worktree`。已有工作区保留原位置。负责目录安全检查、依赖就绪和基线测试，避免嵌套 worktree、污染当前分支或把既有测试失败误认为本次回归。
+**用途：** 先检测现有隔离；新建 worktree 始终放在项目根 `.worktrees/`，用 `git worktree add` 创建，宿主原生工具能指定这个路径时也可以用。已有工作区保留原位置。核对实际工作目录并装好依赖即就绪，不运行测试。
 
 **调用示例：**
 
-> 使用 using-git-worktrees 为账单功能准备隔离工作区，安装必要依赖并验证测试基线。
+> 使用 using-git-worktrees 为账单功能准备隔离工作区并安装必要依赖。
 
 > 使用 using-git-worktrees 检查我当前是否已经处于隔离环境，不要重复创建 worktree。
 
@@ -303,21 +306,10 @@ Grok Build 也支持 marketplace 插件条目中的 `source.ref: "dist"`；不�
 
 > 使用 test-driven-development 修复这个校验 bug，保留有效红、最小实现和相关检查转绿的实际命令与结果。
 
-<a id="skill-test-strategy"></a>
-#### `test-strategy` — 把测试放到正确的执行时点
-
-**用途：** 设计 fast / final / manual 三 Lane 测试策略，连接 spec 验收矩阵、计划任务和验收执行。强调先治理 flaky、再优化时长、最后考虑选择系统；区分替身测试与真实集成信心，并为 AI Agent 提供模型边界和分层测试骨架。
-
-**调用示例：**
-
-> 使用 test-strategy 为这份 spec 设计 fast、final、manual 三 Lane，并标明每条验收矩阵行的执行时机。
-
-> 使用 test-strategy 检查当前测试方案：减少每任务重复全量运行，同时保留真实数据库集成和最终完整验证。
-
 <a id="skill-acceptance-qa"></a>
-#### `acceptance-qa` — 对照契约验收并补足证据
+#### `acceptance-qa` — 按清单验收，由你判断
 
-**用途：** 对功能、页面或 API 做验收与故障诊断。页面默认经过“核对依据与证据 → 对照实际页面 → 补验缺口并给结论”；后端按行为契约。支持 unit / integration / E2E / visual / a11y / perf-web / perf-api / diagnose / all，复用仍有效的工程证据，缺工具或缺条件时标 `unverified`，不把缺口变成通过。
+**用途：** 对功能、页面或 API 做验收与故障诊断。只在你直接调用、或在执行计划的询问门选中后进行。验收清单在需要验收的那一刻从 Scenario 和实际改动生成，每项并排给出预期与实际的原始结果，由你判断；支持 unit / integration / E2E / visual / a11y / perf-web / perf-api / diagnose / all，缺工具或缺条件时标 `unverified`，不把缺口变成通过。
 
 **调用示例：**
 
@@ -351,7 +343,7 @@ Grok Build 也支持 marketplace 插件条目中的 `source.ref: "dist"`；不�
 > 使用 wtf 阅读这个请求处理模块，用少量文字和几张图画出一次请求从入口到响应的全过程。
 
 <a id="commands"></a>
-### 2.5 实用命令（不属于上述 14 个 skill）
+### 2.5 实用命令（不属于上述 13 个 skill）
 
 | 入口 | 用途 | 示例 |
 |---|---|---|
@@ -380,20 +372,20 @@ node "<插件绝对目录>/scripts/status.mjs" --repo "/项目路径" --json
 
 ### 3.2 Spec 契约：让设计、代码、测试与验收说同一种语言
 
-**机制：** spec 使用 **Requirement + Scenario（GIVEN / WHEN / THEN）** 描述可观察行为，验收矩阵记录必需程度、D / A / X 执行性质和 fast / final / manual 时机。`writing-plans` 把 Scenario 翻译为验证步骤，`executing-plans` 与 `acceptance-qa` 再按同一份契约核对结果。spec frontmatter 的 `covers`、`status`、`superseded_by` 和 `sync_commit` 管理覆盖范围与生命周期。
+**机制：** spec 是一页契约：目标与成功标准、非目标、关键决策，以及用 **Requirement + Scenario（GIVEN / WHEN / THEN）** 描述的可观察行为。`writing-plans` 把 Scenario 直接翻译成测试步骤，测试名沿用 Scenario 名；收尾的对账和验收清单按同一份契约核对。spec 是本次变更的契约，交付后冻结成历史，长期有效的行为由这些测试守护；只有需要漂移守卫的特性才加 frontmatter（`covers`、`status`、`superseded_by`）。
 
-**优点：** 降低“需求写的是 A、实现做成 B、测试却验证 C”的翻译损耗；变更、取代、延期和放弃都有可追踪记录，而不是只存在于对话里。
+**优点：** 降低“需求写的是 A、实现做成 B、测试却验证 C”的翻译损耗；一页的篇幅让批准变便宜，也不会留下一堆没人维护却仍标着现行的文档。
 
 典型产物结构：
 
 ```text
 .spec-dev/
 ├── YYYY-MM-DD-NN-<特性>/
-│   ├── spec/                 # 设计、行为规范、验收矩阵、定稿资源
+│   ├── spec/                 # 一页 spec 与定稿资源
 │   ├── plan/
-│   │   └── <特性>-plan.md    # 头部、导航、任务复选框、执行记录与资源台账
+│   │   └── <特性>-plan.md    # 头部、导航、任务复选框、执行记录
 │   ├── visual/               # 原型会话
-│   └── acceptance/           # 验收报告与证据索引
+│   └── acceptance/           # 验收报告与证据（按需）
 ├── explorations/             # 经授权保存的探索 / 澄清笔记
 ├── roadmaps/                 # 多子项目路线与续接状态
 ├── glossary.md               # 跨特性领域术语
@@ -404,55 +396,56 @@ node "<插件绝对目录>/scripts/status.mjs" --repo "/项目路径" --json
 
 ### 3.3 审批与授权边界：自动化不等于替用户做决定
 
-**机制：** 探索与设计阶段默认不写生产代码；完整设计获批后才生成 spec，计划编写需要明确同意，执行计划还需执行授权。契约级偏差、范围扩大、延期或放弃会回到用户裁决；普通可逆实现细节则由 agent 在既定范围内处理。
+**机制：** 探索与设计阶段默认不写生产代码；设计提案获批后才生成 spec 并编写计划，批准计划才开始执行；全部任务完成后的回归、验收和交付再问一次。契约级偏差、范围扩大、延期或放弃会回到用户裁决；普通可逆的实现细节由 agent 在既定范围内处理。
 
-**优点：** 把人的决定保留在方向、范围和重要取舍上，同时避免每个文件操作都打断一次。设计确认、原型局部选择、计划认可与执行许可不会相互冒充。
+**优点：** 把人的决定保留在方向、范围和重要取舍上：一个功能从需求到交付只停三次（批准设计、批准计划、询问门），执行期间不打断。
 
-### 3.4 任务图与隔离执行：默认串行，按原记录恢复
+### 3.4 计划即事实源：串行执行，按记录恢复
 
-**机制：** 计划声明真实依赖、精确 writes、共享资源和可独立验证边界。由主线程串行实施，进度与资源台账保存在同一计划文件；恢复时核对复选框、实际提交、工作区与原始证据。
+**机制：** 计划写明真实依赖、每个任务的接口和可独立验证的边界，由主线程在隔离工作区串行实施。进度就是计划文件里的复选框，偏差、任务外发现和交付方式记在同一文件的执行记录里；恢复时只核对复选框、实际提交和工作区。
 
-**优点：** 单文件便于整体审阅，真实依赖保留可验证的任务边界；中断后从实际记录续接。资源台账还使容器、临时目录和测试数据的清理有据可查。
+**优点：** 单文件便于整体审阅；没有额外的进度文件、绑定命令或回执需要维护，每个任务一次提交，中断后从实际记录续接。
 
-### 3.5 证据驱动的质量链：测试绿不是终点
+### 3.5 验证前移：任务内自证，收尾先问
 
 **机制：**
 
-- `test-driven-development` 要求有效红、最小实现和真实绿，区分行为测试、重构保护与补测证据；
-- `test-strategy` 将每任务快检、独立 final 全量和需特殊条件的 manual 检查分开；
-- 实施完成后先取得独立 final，再按规模组织 1 / 2 / 5 路审查，必要时追加 completeness critic；
-- `acceptance-qa` 使用确定性 D、AI 自主 A 和诊断 X 检查，结论可为 `pass / warn / fail / unverified`；
-- 交付前逐条 Requirement 对账为 DELIVERED / DEFERRED / DROPPED / SUPERSEDED，并记录执行中获批新增的 ADDED-IN-FLIGHT。
+- `test-driven-development` 要求有效红、最小实现和真实绿：每个 Scenario 在公共边界先写成失败测试，红必须是目标断言失败；
+- 任务内只跑目标测试和项目已有的 typecheck、lint；已提交的测试断言不为转绿而修改，确需改动先问；
+- 每个任务开工重读计划头部，只做任务写明的事，任务外的发现记入执行记录；
+- 全部任务完成后派一个只读子代理按 brief 审查（大变更两个），高、中发现由主线程核实后再修；
+- 询问门：回归可选不跑 / 受影响范围 / 全量，验收清单逐项选自己验 / 代验 / 不验；`acceptance-qa` 并排给出预期与实际，结论为 `pass / warn / fail / unverified`；
+- 交付前逐条 Requirement 对账，未交付的由你裁决补做、延后或放弃。
 
-**优点：** 测试、审查和验收各自回答不同问题；失败、未验证和未覆盖不会被“总体看起来没问题”吞掉。修复后只按影响补验并复用仍有效证据，同时保留新候选所需的复审。
+**优点：** 跑偏在一个任务内暴露，而不是等到收尾；回归和验收花多少成本由你决定，没执行的项如实标注，不会被“总体看起来没问题”吞掉。
 
 ### 3.6 原型到运行的视觉闭环
 
-**机制：** `visual-preview` 用本地服务展示版本化 HTML，浏览器事件带屏幕版本回流；采用的定稿与资源归档进 `spec/assets/`。实施形成第一条真实用户闭环时即对照原型，验收时再按相同角色、数据、操作、视口和状态检查实际页面。
+**机制：** `visual-preview` 用本地服务展示版本化 HTML，浏览器事件带屏幕版本回流；采用的定稿与资源归档进 `spec/assets/`。改了页面时，询问门会推荐“对照定稿看页面”；选中后按相同角色、数据、操作、视口和状态检查实际页面。
 
 **优点：** 设计阶段看到的不只是文字想象，交付阶段也不会只凭一张截图宣布成功。模拟在原型里的保存、价格和权限结果，仍需真实业务证据支撑。
 
-### 3.7 契约化多代理协作：角色清楚，输出可校验
+### 3.7 只读子代理与 brief：角色清楚，随 skill 分发
 
-| Agent | 职责 | 主要使用位置 |
+| brief | 职责 | 位置 |
 |---|---|---|
-| `code-explorer` | 只读代码分析、调用链与影响面调查 | 需求探索、根因调查 |
-| `external-resource-explorer` | 外部资料调研与一手来源证据 | 需求设计与回补探索 |
-| `code-reviewer` | 独立代码审查与 spec 符合性检查 | 收尾审查 |
+| 探索 brief | 只读代码分析、调用链与影响面调查 | `skills/requirement-analysis/references/explorer-brief.md` |
+| 外部研究 brief | 外部资料调研与一手来源证据 | `skills/requirement-analysis/references/external-research-brief.md` |
+| 审查 brief | 独立代码审查与 spec 符合性检查 | `skills/executing-plans/references/reviewer-brief.md` |
 
-子代理结果按 JSON Schema 契约校验；`validate-output.mjs` 失败时退回补全一次，再失败由主线程接管或明确降级。子代理仅承担只读探索与审查，主线程负责实现。
+主线程派通用子代理，并在派发词里给出 brief 的绝对路径；子代理只做只读的探索与审查，用 Markdown 回报，主线程核实后才采信。没有子代理能力时由主线程按同一份 brief 完成，并注明不是独立执行。
 
-**优点：** 并行不会模糊责任边界，结构化回执比散文式“已完成”更容易检查；能力缺失时可以降级，但不能伪造独立审查或不存在的工具结果。
+**优点：** brief 跟着 skill 走，不依赖某个宿主的 agent 定义目录；能力缺失时可以降级，但不能伪造独立审查或不存在的工具结果。
 
 ### 3.8 Spec 漂移守卫：把同步义务变成分层防线
 
-**机制：** active spec 的 `covers` 声明它拥有的代码。变更命中覆盖范围却未同步对应 spec 时，guardrail 可在编辑、收尾、提交、推送和 CI 层拦截；任务绑定进一步核对当前任务、spec、写集合与工作区。`sync_commit` 是交付后的同步锚点，不替代测试或行为审查。
+**机制：** 带 frontmatter 的 active spec 用 `covers` 声明它拥有的代码。变更命中覆盖范围却未同步对应 spec 时，guardrail 可在编辑、收尾、提交、推送和 CI 层拦截。按计划实施某份 spec 期间，它在特性分支上保持 `draft`，交付提交里才翻 `active`，所以任务提交不会被拦。默认的一页 spec 不带 frontmatter，不参与守卫。
 
 **优点：** 文档不再只靠开发者记得更新，换编辑工具也有 Git 和 CI 防线；守卫检查范围与同步事实，测试和审查继续负责行为是否正确。完整安装方式与临时放行边界见 [guardrail 文档](guardrail/README.zh-CN.md)。
 
 ### 3.9 薄壳 Skill 与渐进加载：规则只有一份，需要时才展开
 
-**机制：** 编排 skill 只负责流程，澄清、TDD、测试策略、计划格式、资源台账等纪律各有一个权威定义点；详细模板、恢复协议和平台适配在动作发生前按需加载。所有发现方式都指向同一个 `skills/` 目录。
+**机制：** 编排 skill 只负责流程，澄清、TDD、计划模板、宿主适配等各有一个定义点；模板、brief 和专项处方在动作发生前按需加载。所有发现方式都指向同一个 `skills/` 目录，skill 不依赖这个目录之外的文件。
 
 **优点：** 避免多个流程复制规则后彼此漂移，减少无关上下文占用；单个 skill 可独立复用，完整管线又共享一致约束。文件变短或结构校验通过只证明结构，不会被当作真实模型效果提升的证据。
 
@@ -503,7 +496,7 @@ node --test scripts/tests/distribution.test.mjs
 
 - 实验 skill 放在 `skills-in-progress/<name>/`，不进入任何插件清单，也不承诺稳定。
 - 毕业时需要移入 `skills/`、登记 marketplace、补充 `agents/openai.yaml` 与 evals、更新双语 README 和 CHANGELOG。
-- 编排层遵循“薄壳委托”：纪律引用权威定义，不复制出第二套规则；共享入口包括 clarifying、计划格式、探索契约、验收矩阵与测试 Lane。
+- 编排层遵循“薄壳委托”：纪律引用权威定义，不复制出第二套规则；共享入口包括 clarifying、计划模板、探索与审查 brief、宿主适配。
 
 ### evals 定位
 
@@ -533,7 +526,6 @@ spec-dev/                            # 仓库根即插件根
 ├── .codex-plugin/plugin.json        # Codex 插件清单
 ├── .agents/plugins/marketplace.json # Codex marketplace 配置
 ├── .githooks/                       # 提交校验与发布 hooks
-├── agents/                          # 4 个专门化 agents
 ├── commands/                        # doctor / triage / status
 ├── guardrail/                       # 可安装到目标仓库的 spec 漂移守卫
 ├── hooks/                           # Claude / Codex 生命周期 hooks
@@ -547,15 +539,14 @@ spec-dev/                            # 仓库根即插件根
 │   ├── executing-plans/             # 执行、恢复、审查与交付
 │   ├── using-git-worktrees/         # 隔离工作区纪律
 │   ├── test-driven-development/     # 有效红绿与重构保护
-│   ├── test-strategy/               # fast / final / manual 测试策略
 │   ├── quick-fix/                   # 轻量诊断与修复
 │   ├── acceptance-qa/               # 验收、专项测试与诊断
 │   ├── anysearch/                   # 实时搜索与正文抽取 CLI
 │   └── wtf/                         # 大白话终端图解
 ├── scripts/
 │   ├── check-plugin.mjs             # 清单、目录与 Codex 安装校验
-│   ├── validate-output.mjs          # 输出契约与 plan-index 校验
-│   ├── schemas/                     # 4 类输出契约 schema + 1 个 vendored manifest schema
+│   ├── validate-output.mjs          # 通用 JSON schema 校验
+│   ├── schemas/                     # vendored manifest schema
 │   ├── validate-skills.mjs          # skill 结构与体积校验
 │   ├── check-openai-sync.mjs        # openai.yaml 同步检查
 │   ├── doctor.mjs                   # 健康诊断
@@ -573,4 +564,4 @@ spec-dev/                            # 仓库根即插件根
 
 **作者：** [FlameMida](https://github.com/FlameMida) · **许可证：** [MIT](LICENSE) · **详细历史：** [CHANGELOG.md](CHANGELOG.md)
 
-欢迎提交 Issue 和 Pull Request。行为变更请同时更新所属 spec 的需求与验收矩阵，并遵循仓库的测试和发布校验。
+欢迎提交 Issue 和 Pull Request。行为变更请同时更新所属 spec 的行为规范，并遵循仓库的测试和发布校验。

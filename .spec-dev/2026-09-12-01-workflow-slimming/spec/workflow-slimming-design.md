@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: workflow-slimming
-  status: active
+  status: superseded
   covers:
     - ".gitignore"
     - "skills/writing-plans/SKILL.md"
@@ -44,7 +44,7 @@ spec_dev:
     - ".spec-dev/2026-09-06-03-review-conformance/spec/review-conformance-design.md"
     - ".spec-dev/2026-09-06-03-review-conformance/spec/controlled-review-design.md"
     - ".spec-dev/2026-08-26-01-major-upgrade/spec/major-upgrade-design.md"
-  superseded_by: null
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
 ---
 
 # 工作流瘦身设计

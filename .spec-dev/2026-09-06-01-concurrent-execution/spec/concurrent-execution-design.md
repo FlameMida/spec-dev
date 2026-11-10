@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: concurrent-execution
-  status: active
+  status: superseded
   covers:
     - "agents/implementer.md"
     - "skills/executing-plans/SKILL.md"
@@ -38,7 +38,7 @@ spec_dev:
   supersedes:
     - ".spec-dev/2026-08-27-01-plan-single-format/spec/plan-single-format-design.md"
     - ".spec-dev/2026-09-03-02-portability-hygiene/spec/portability-hygiene-design.md"
-  superseded_by: null
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
 ---
 
 # 可选并发执行（concurrent-execution）设计

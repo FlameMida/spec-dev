@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: workflow-consistency
-  status: active
+  status: superseded
   sync_commit: 4b53335528e3baa41fdddd525d7870addcf92d2f
   covers:
     - "guardrail/check-spec-drift.mjs"
@@ -39,7 +39,7 @@ spec_dev:
     - ".spec-dev/2026-08-09-test-scoping/spec/test-scoping-design.md"
     - ".spec-dev/2026-08-10-supersede-lifecycle/spec/supersede-lifecycle-design.md"
     - ".spec-dev/2026-09-06-03-review-conformance/spec/controlled-review-design.md"
-  superseded_by: null
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
 ---
 
 # 工作流执行、证据与说明一致性设计

@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: skill-instruction-streamlining
-  status: active
+  status: superseded
   covers:
     - "skills/requirement-analysis/**"
     - "skills/exploring/**"
@@ -25,7 +25,7 @@ spec_dev:
     - "README.zh-CN.md"
   sync_commit: 6176db254755a5f33823c61a80ad8fe3be3159ce
   supersedes: []
-  superseded_by: null
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
 ---
 
 # 技能指令精简、按需分层与文档规范统一设计

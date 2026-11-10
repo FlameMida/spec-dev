@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: status-overview
-  status: active
+  status: superseded
   covers:
     - "scripts/status.mjs"
     - "scripts/lib/status.mjs"
@@ -14,7 +14,7 @@ spec_dev:
     - "README.zh-CN.md"
   sync_commit: 693475b337348b02883da70a060ab274450972ec
   supersedes: []
-  superseded_by: null
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
 ---
 
 # 多 worktree 状态概览设计

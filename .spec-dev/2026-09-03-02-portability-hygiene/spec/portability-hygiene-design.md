@@ -3,7 +3,7 @@
 spec_dev:
   version: 1
   feature: portability-hygiene
-  status: active
+  status: superseded
   covers:
     - "skills/requirement-analysis/SKILL.md"
     - "skills/requirement-analysis/references/exploration-patterns.md"
@@ -30,7 +30,7 @@ spec_dev:
   sync_commit: b03bc452d22d2b99b20a1eb19e4799a9496b1b99
   supersedes:
     - ".spec-dev/2026-08-26-01-major-upgrade/spec/major-upgrade-design.md"
-  superseded_by: null
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
 ---
 
 # 便携性修复与工程卫生（portability-hygiene）设计

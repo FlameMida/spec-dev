@@ -3,7 +3,8 @@
 spec_dev:
   version: 1
   feature: clarifying-skill
-  status: active
+  status: superseded
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
   covers:
     - "skills/clarifying/**"
   sync_commit: "c234049c446c614579ea6288e88593239d0a3c9b"

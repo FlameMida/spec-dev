@@ -4,12 +4,12 @@
     {
       "id": "ra-light-add-field",
       "prompt": "帮我给 src/models/user.ts 的 User 实体加一个 nickname 字段，可空，最长 30 字符，顺便把 src/api/user.ts 的更新接口带上这个字段",
-      "expected_output": "判定为 light 档并向用户声明（允许覆盖）；探索由主线程直查或 1 个子代理完成；方案可收敛为 1 个但说明为何无分歧；设计仍必须展示并获用户批准（HARD-GATE 不豁免）；spec 几句话级写入 .spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md 并提交；终态交接 writing-plans，不直接写实现代码"
+      "expected_output": "判定为 light 档并向用户声明（允许覆盖）；探索由主线程直查；方案可收敛为 1 个但说明为何无分歧；设计仍必须展示并获用户批准（HARD-GATE 不豁免）；spec 几句话级写入 .spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md 并提交；终态交接 writing-plans，不直接写实现代码"
     },
     {
       "id": "ra-standard-notification",
       "prompt": "我们的 Express 项目要加站内通知功能：用户被 @ 时收到通知，通知列表分页展示，未读数实时角标。帮我设计",
-      "expected_output": "判定为 standard 档；阶段 2 内部 3-5 个 code-explorer 与外部 external-resource-explorer 按实际容量尽早派发，允许同波次多调用和分批，不无故逐个启动后立即等待；阶段 3 一次一个问题澄清；阶段 4 主线程先对承重信息做对抗验证再给 2-3 方案（推荐项放首位）；用户选定后整篇展示完整设计；批准后写 spec（行为需求用 Requirement + Scenario/GIVEN-WHEN-THEN 结构，每条 Requirement 一个 SHALL 且可观察）并提交、self-review + 审查子代理、用户 review 通过后交接 writing-plans"
+      "expected_output": "判定为 standard 档并告知用户；第 1 步主线程直查为主，必要时派 1 到 2 个只读子代理并带上探索 brief 的路径；第 2 步一次一个问题澄清；第 3 步用一条消息给出承重事实及来源、推荐方案与备选、一页 spec 草稿（行为用 Requirement + Scenario，每条 Requirement 一个 SHALL 且可观察），用户批准一次；第 4 步落盘并提交 spec，随后直接进入 writing-plans。"
     },
     {
       "id": "ra-delta-modify-existing",
@@ -19,7 +19,7 @@
     {
       "id": "ra-vague-clarify",
       "prompt": "把我们的搜索做得好用一点",
-      "expected_output": "阶段 1-2 后识别出多处歧义（好用的定义/搜索范围/性能 vs 相关性取舍），阶段 3 逐题澄清且每个问题对应真实疑点（一次只问一个，不编造问题）；不带着关键未知项进入方案设计"
+      "expected_output": "第 1 步后识别出多处歧义（好用的定义、搜索范围、性能与相关性的取舍），第 2 步逐题澄清且每个问题对应真实疑点（一次只问一个，不编造问题）；不带着关键未知项给设计提案。"
     },
     {
       "id": "ra-clear-no-fake-questions",
@@ -29,7 +29,7 @@
     {
       "id": "ra-hard-gate-no-early-code",
       "prompt": "给我们的 CLI 工具加一个导出报告子命令，我很急，直接开写吧",
-      "expected_output": "即使用户催促，也不在设计获批准前写生产实现代码或调用实施类 skill（HARD-GATE）；可压缩为 light/standard 档快速走完澄清与设计展示，但方案选定、设计批准、spec review 三道门均不跳过；终态是调用 writing-plans 而非直接实施"
+      "expected_output": "即使用户催促，也不在设计获批准前写生产实现代码或调用实施类 skill（HARD-GATE）；可压缩为 light/standard 档快速走完澄清与设计展示，但设计批准这道门不跳过；终态是调用 writing-plans 而非直接实施"
     },
     {
       "id": "ra-visual-jit-offer",
@@ -39,17 +39,17 @@
     {
       "id": "ra-adversarial-info-check",
       "prompt": "我看网上都说我们该用 XX 库做实时推送，帮我设计接入方案",
-      "expected_output": "阶段 4 对\"该用 XX 库\"这类承重结论做对抗验证：核对来源权威性与版本时效、与代码库现有推送/连接模式对照，冲突未消解不进入方案设计；方案对比中如实呈现 XX 库与现有模式方案的取舍而非直接采纳网上说法"
+      "expected_output": "在设计提案里把“该用 XX 库”作为承重事实核对：来源是否权威、版本是否过时、与代码库现有推送和连接模式是否矛盾；冲突没消解不给方案。提案如实呈现 XX 库与现有模式方案的取舍，而不是直接采纳网上说法。"
     },
     {
       "id": "ra-non-dev-report-lane",
       "prompt": "调研一下 Kafka 和 RabbitMQ 哪个更适合我们的场景，给我结论就行",
-      "expected_output": "阶段 1 任务类型检查命中非开发交付：建议走报告通道——不建特性目录、不写 spec/plan、不硬拉八阶段；需要时按 clarifying 纪律澄清关注点；产出结论后问一次是否落盘 .spec-dev/reports/YYYY-MM-DD-NN-<topic>.md，婉拒则零落盘；结论要落地成代码时回归正常分诊"
+      "expected_output": "入口判断命中非开发交付：建议走报告通道，不建特性目录、不写 spec 和计划；需要时按 clarifying 纪律澄清关注点；产出结论后问一次是否落盘 .spec-dev/reports/YYYY-MM-DD-NN-<topic>.md，婉拒则零落盘；结论要落地成代码时回到正常入口。"
     },
     {
       "id": "ra-roadmap-capsule-continuation",
       "prompt": "用户说：继续 roadmap 里的第二个子项目。该 roadmap 含原始需求全文节与 #2 的上下文胶囊（关键裁决、探索指针、已扫范围）",
-      "expected_output": "不要求用户重新提供原始需求；读取胶囊指针指向的前置 spec 与验收报告作为输入；阶段 2 只对胶囊未登记的探索缺口派发子代理，已扫范围不重扫"
+      "expected_output": "不要求用户重新提供原始需求；读取胶囊指针指向的前置 spec 与验收报告作为输入；第 1 步只对胶囊未登记的探索缺口做探索，已扫范围不重扫。"
     },
     {
       "id": "ra-same-day-numbering",
@@ -78,8 +78,8 @@
     },
     {
       "id": "plan-decomposition-s21",
-      "prompt": "检查点不变成多重授权\nGIVEN spec 有参与者和约束两处值得用户重点审阅。\nWHEN 呈现 review 门。",
-      "expected_output": "陈述两处检查点并只问是否确认并开始计划；用户仅认可内容时不冒充执行授权。若审查暴露真实未决决策，先按 spec-review 的分类与补问边界处理，不把陈述式检查点变成多重批准。"
+      "prompt": "检查点不变成多重授权\nGIVEN spec 有参与者和约束两处值得用户重点审阅。\nWHEN 呈现设计批准门。",
+      "expected_output": "陈述两处检查点并只问是否批准设计并开始写计划；用户仅认可内容时不冒充执行授权。若审查暴露真实未决决策，按发现三分类处理，只把会改变交付的决定带给用户，不把陈述式检查点变成多重批准。"
     },
     {
       "id": "plan-decomposition-s22",
@@ -153,8 +153,8 @@
     },
     {
       "id": "ec-s16",
-      "prompt": "二手材料声称某接口支持一种行为，并链接官方文档或源码；RA 或 exploring 在不自动加载 agent 定义的环境派发调研；该行为将影响方案",
-      "expected_output": "实际派发携带已解析 agent 路径并要求读取，子代理取得规则后实际读取相应一手材料并核对支持范围，返回结论与出处的对应关系；事实、引用和推断分开。"
+      "prompt": "二手材料声称某接口支持一种行为，并链接官方文档或源码；RA 或 exploring 在不会自动加载角色定义的环境派发调研；该行为将影响方案",
+      "expected_output": "派发词带上外部研究 brief 的绝对路径并要求先读，子代理取得规则后实际读取相应一手材料并核对支持范围，返回结论与出处的对应关系；事实、引用和推断分开。"
     },
     {
       "id": "ec-s17",
@@ -169,12 +169,12 @@
     {
       "id": "workflow-S25-explicit-entry",
       "prompt": "已有获批计划正在实施，我说“继续”；另一次请求只要求写一份调研报告。如何分诊？",
-      "expected_output": "先消费明确入口与恢复记录，不重启设计或重做 T00；独立报告按最终交付目标判断并建议报告通道，不把当前仅写 spec 的功能开发误当报告。"
+      "expected_output": "先消费明确入口与恢复记录，不重启设计或重建工作区；独立报告按最终交付目标判断并建议报告通道，不把当前仅写 spec 的功能开发误当报告。"
     },
     {
       "id": "ra-builder-review-triage",
-      "prompt": "standard 设计独立审查后：React 已由项目及用户确定；按钮间距有现成设计系统默认值；保留期限30/90天与是否允许访客导出尚未决定，两项互不依赖。处置审查结果。",
-      "expected_output": "复用 React；采用并注明界面既有默认值；只将两个会改变计划的业务决策按影响集中在一条消息补问，给建议和后果，不新增审查者或默认为用户同意。"
+      "prompt": "deep 档设计草稿经独立审查后：React 已由项目及用户确定；按钮间距有现成设计系统默认值；保留期限30/90天与是否允许访客导出尚未决定，两项互不依赖。处置审查结果。",
+      "expected_output": "复用 React；采用并注明界面既有默认值；只把两个会改变交付的业务决策按影响排序写进设计提案，给出建议和后果；不新增审查者，不默认用户同意。"
     },
     {
       "id": "ra-review-dependent-questions",
@@ -188,18 +188,18 @@
     },
     {
       "id": "ra-review-unanswered-not-approved",
-      "prompt": "设计审查后已集中提出保留期限、访客权限两题，用户仅回答保留90天，未回答权限。",
+      "prompt": "设计提案里提出了保留期限、访客权限两个待定决定，用户仅回答保留90天，未回答权限。",
       "expected_output": "保存已答决定，访客权限保持未决；只补问该阻塞，不重复整批、不自动采纳推荐、不进入依赖该决策的实施。"
     },
     {
       "id": "ra-codex-review-combined-context",
-      "prompt": "Codex standard 设计已完成独立审查。必须同时读取当前 requirement-analysis/SKILL.md、references/spec-review.md、references/codex-compat.md 和 clarifying/SKILL.md（分别以适配文件先读、后读复测）。React和间距已有依据；保留30/90天及访客导出两项独立业务决定未答。生成下一条用户消息。",
-      "expected_output": "两个读取顺序均只把真正独立的审查决策放在同一条消息补问；不重问既有事实、不增加审查、不以平台映射覆盖本阶段纪律、不把推荐当批准。"
+      "prompt": "Codex 上 deep 档设计草稿已完成独立审查。同时读了 requirement-analysis/SKILL.md、references/spec-reviewer-prompt.md、references/host-compat.md 和 clarifying/SKILL.md（适配文件先读、后读各测一次）。React 和间距已有依据；保留 30/90 天及访客导出两项独立业务决定未答。生成下一条用户消息。",
+      "expected_output": "两种读取顺序下都只把这两项会改变交付的决定写进设计提案并给出建议；不重问既有事实、不增加审查、不以宿主映射覆盖本步骤的纪律、不把推荐当批准。"
     },
     {
       "id": "ra-codex-ordinary-clarification",
-      "prompt": "同时加载 Codex 适配、spec-review 和 clarifying。当前处在普通需求澄清，未经过设计审查，有鉴权、存储和部署三个独立未决点。",
-      "expected_output": "仍只问一个问题，按依赖和影响选择；已读到审查例外不使普通澄清变成批问。"
+      "prompt": "同时读了宿主适配、spec 审查提示词和 clarifying。当前处在普通需求澄清，有鉴权、存储和部署三个独立未决点。",
+      "expected_output": "仍只问一个问题，按依赖和影响选择；宿主适配和审查材料不改变一次一题的纪律。"
     },
     {
       "id": "ra-skill-loading-without-native-tool",
@@ -260,6 +260,26 @@
       "id": "ra-ui-prototype-before-approval",
       "prompt": "正在设计一个新订单审核页面，已明确审核员、字段和筛选规则，需要比较列表加右侧明细与独立详情页。用户已授权需求设计，整体设计尚未批准，准备展示第一屏。",
       "expected_output": "按既有原型入口生成隔离的 HTML/CSS/JS 设计产物并展示实际布局差异；不以批准前禁止产品实施为由阻塞原型，也不额外请求预览许可。未获整体批准时不修改生产代码或搭建生产脚手架，原型反馈只确认本轮问题。"
+    },
+    {
+      "id": "ra-one-approval",
+      "prompt": "standard 档需求，澄清已完成。接下来要用户确认几次？",
+      "expected_output": "一次。设计提案用一条消息给出推荐方案、备选和一页 spec 草稿，用户批准即同意落盘 spec 并编写计划；不再单独选方案、单独确认 spec。有修改意见就修订后整篇重发。"
+    },
+    {
+      "id": "ra-one-page-spec-no-frontmatter",
+      "prompt": "设计已批准，准备落盘 spec。用户没有提漂移守卫。",
+      "expected_output": "按模板写四个固定小节（目标与成功标准、非目标、关键决策、行为规范），默认不加 frontmatter；它是本次变更的契约，交付后冻结成历史。只在用户要求这块代码以后的改动必须同步 spec 时才加 frontmatter 和 covers。"
+    },
+    {
+      "id": "ra-guarded-spec-draft",
+      "prompt": "用户要求启用漂移守卫，新 spec 会完全取代一份旧的 active spec。",
+      "expected_output": "加 frontmatter 并填 covers 与 supersedes，status 写 draft；实施期间保持 draft，交付提交里翻 active；旧 spec 由特性分支的第一次提交置为 superseded 并填 superseded_by。落盘时不提前激活。"
+    },
+    {
+      "id": "ra-deep-spec-review",
+      "prompt": "deep 档，spec 草稿已写好，还没展示给用户。",
+      "expected_output": "展示前派一个不继承主会话上下文的子代理按 spec 审查提示词审一遍；发现分三类处理，只有会改变交付或重要取舍的才带给用户。没有子代理能力时主线程自审并注明不是独立审查。"
     }
   ]
 }

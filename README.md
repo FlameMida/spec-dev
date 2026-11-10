@@ -6,9 +6,9 @@
 
 [Changelog](CHANGELOG.md) · [License](LICENSE) · [Issues](https://github.com/FlameMida/spec-dev/issues)
 
-**spec-dev** is a spec-driven development plugin for Claude Code, Codex, Grok Build, Pi, and generic Agent Plugins hosts. It turns a request into an approved spec, decomposes the spec into an independently verifiable task graph, implements it with TDD discipline in isolated workspaces, and finishes with independent verification, review, acceptance, and Requirement reconciliation.
+**spec-dev** is a spec-driven development plugin for Claude Code, Codex, Grok Build, Pi, and generic Agent Plugins hosts. It turns a request into an approved one-page spec, decomposes the spec into independently verifiable tasks, and implements them one by one with TDD in an isolated workspace. When all tasks are done it asks you before running regression tests, acceptance, or delivery.
 
-It is not a rigid pipeline that must always start at the beginning: its 14 skills work together or independently. Use `exploring` before committing to implementation, `quick-fix` for a small bug, `writing-plans` when a spec already exists, or `executing-plans` when a plan is ready. DDD modeling, browser prototypes, real-time search, and `wtf` terminal explanations are included as well.
+It is not a rigid pipeline that must always start at the beginning: its 13 skills work together or independently. Use `exploring` before committing to implementation, `quick-fix` for small bugs, `writing-plans` when a spec already exists, and `executing-plans` when a plan already exists. Skills depend only on files inside `skills/`, so a skills-only install runs the whole workflow. DDD modeling, browser prototypes, live search, and `wtf` terminal diagrams are also included.
 
 <a id="overview"></a>
 ## Overview and end-to-end workflow
@@ -22,19 +22,19 @@ flowchart TD
     E -->|"No: small fix"| F["quick-fix<br/>Diagnose, TDD, replay original symptom"]
     F --> Z["Outcome and evidence"]
     E -->|"Yes: feature or behavior change"| D
-    D --> G["clarifying + internal / external exploration<br/>Adversarial validation and option comparison"]
+    D --> G["Explore + clarifying<br/>One design proposal, one approval"]
     G -.-> H["visual-preview<br/>Automatic for qualifying UI changes"]
     H -.-> G
-    G --> I["Approved spec<br/>Requirements + Scenarios + acceptance matrix"]
-    I --> J["writing-plans<br/>Task graph, write scopes, TDD steps"]
+    G --> I["One-page spec<br/>Requirements + Scenarios"]
+    I --> J["writing-plans<br/>Tasks, interfaces, TDD steps"]
     J --> K{"Execution authorized by user"}
-    K --> L["executing-plans<br/>Worktrees, task graph, TDD"]
-    L --> M["Independent final verification<br/>Review + acceptance-qa"]
-    M --> N["Requirement reconciliation<br/>Merge, cleanup, sync_commit"]
+    K --> L["executing-plans<br/>Worktree, task loop, light review"]
+    L --> M["Ask gate<br/>You choose regression / acceptance / delivery"]
+    M --> N["Run what you chose<br/>Requirement reconciliation and summary"]
     N --> Z
 ```
 
-The three main entry points are routed by **commitment to delivery** and **design space**. The main workflow reuses disciplines such as `using-git-worktrees`, `test-driven-development`, and `test-strategy`; `anysearch`, `ddd-lifecycle`, and `wtf` also work on their own. Design approval, plan approval, and execution authorization are separate decisions: reading a document or generating a plan never implicitly starts implementation.
+The three main entry points are routed by **commitment to delivery** and **design space**. The main workflow reuses disciplines such as `using-git-worktrees` and `test-driven-development`; `anysearch`, `ddd-lifecycle`, and `wtf` also work on their own. Approving a design and approving a plan are separate decisions, and reading documents or generating a plan never starts implementation. Regression tests and acceptance run only after you choose them.
 
 <a id="navigation"></a>
 ## Quick navigation
@@ -110,7 +110,7 @@ The examples below are **natural-language prompts for your agent**, not shell co
 
    > Use requirement-analysis to design team-member invitations for this project, including permissions, failure paths, and acceptance criteria.
 
-2. **Review and approve the design**. The agent investigates the current system, clarifies one decision at a time, and compares options. It writes the spec only after your approval. A typical path is:
+2. **Review and approve the design**. The agent investigates the current system, clarifies one decision at a time, then presents the recommended approach, alternatives, and a one-page spec draft in a single message. Only after your approval does it write the spec and continue to the plan. A typical location is:
 
    ```text
    .spec-dev/<date-sequence-feature>/spec/<feature>-design.md
@@ -124,7 +124,7 @@ The examples below are **natural-language prompts for your agent**, not shell co
 
    > Use executing-plans to execute .spec-dev/&lt;feature&gt;/plan/&lt;feature&gt;-plan.md.
 
-5. **Inspect the delivery evidence**. The workflow covers implementation, independent final verification, review, applicable acceptance-qa, Requirement reconciliation, and delivery. A generated plan or a partially green test run does not mean the feature has been delivered.
+5. **Choose at the ask gate**. After all tasks and a light review, the workflow shows a summary and the Requirement reconciliation, then asks once: regression (none / affected scope / full suite), how to check each acceptance item (you / the agent / skip), and delivery (local merge / PR / keep the branch). Anything you do not choose is not run and is reported as such.
 
 #### Route B: you have not decided whether to build it
 
@@ -153,18 +153,21 @@ If you are unsure which route to take, start with `/triage <request>`. It only r
 
 | Platform | Skills | Agents (subagents) | Hooks | Manifest / discovery |
 |---|---|---|---|---|
-| Claude Code | ✅ marketplace `skills[]` | ✅ `agents/*.md` | ✅ plugin injection; guardrail install available | `.claude-plugin/` |
-| Codex | ✅ directory auto-discovery | ⚠️ via dispatch prompts; `spawn_agent` does not read `agents/*.md` | ✅ codex-hooks; trust required | `.codex-plugin/` |
-| Grok Build | ✅ Claude-compatible (official claim) | ✅ same as Claude Code; field behavior subject to actual acceptance | ⚠️ hook support differs; SessionStart does not inject model context, PostModelSwitch is unsupported | reuses `.claude-plugin/` |
-| Pi | ✅ `package.json` `pi.skills` | ⚠️ requires the `pi-subagents` extension | ❌ requires a separate TS extension adaptation | `package.json` |
+| Claude Code | ✅ marketplace `skills[]` | ✅ generic subagents + briefs inside skills | ✅ plugin injection; guardrail install available | `.claude-plugin/` |
+| Codex | ✅ directory auto-discovery | ✅ generic subagents + briefs inside skills | ✅ codex-hooks; trust required | `.codex-plugin/` |
+| Grok Build | ✅ Claude-compatible (official claim) | ✅ same as Claude Code; behavior subject to actual acceptance | ⚠️ hook support differs; SessionStart does not inject model context, PostModelSwitch is unsupported | reuses `.claude-plugin/` |
+| Pi | ✅ `package.json` `pi.skills` | ⚠️ requires the `pi-subagents` extension; otherwise the main thread does the work and says so | ❌ requires a separate TS extension adaptation | `package.json` |
 | Agent Plugins 1.0.0 | ✅ root `plugin.json` + `skills/` | — outside the portable standard | — outside the portable standard | `plugin.json` |
+| Skills only (copy or sync the `skills/` directory) | ✅ full workflow | depends on the host; otherwise the main thread does the work and says so | — no hooks, commands, or guard scripts | the host's own skills directory |
+
+Skill text describes capabilities (asking the user, subagents, progress tools, isolated workspaces) and never host-specific tool names; the mapping lives in [host compatibility](skills/requirement-analysis/references/host-compat.md).
 
 <a id="runtime-dependencies"></a>
 ### Runtime dependencies
 
 | Tier | Dependency | Used by | When missing |
 |---|---|---|---|
-| hard | `git` | drift guard, worktrees, per-task commits, `sync_commit` anchoring | main workflows unavailable |
+| hard | `git` | drift guard, worktrees, per-task commits | main workflows unavailable |
 | hard | Node.js ≥ 18 | contract validation, guardrail scripts, doctor, visual-preview, `node --test` | related validation and preview unavailable; degrade and report as documented |
 | soft | `python3` | anysearch Python CLI | falls back to the zero-dependency Node CLI, then WebSearch / WebFetch |
 | soft | ego-lite + official `ego-browser` skill | browser previews, page acceptance, and diagnosis | follow the official setup guide; affected browser checks remain `unverified` |
@@ -173,7 +176,7 @@ If you are unsure which route to take, start with `/triage <request>`. It only r
 
 For browser work, install [ego-lite and its official `ego-browser` skill](https://lite.ego.app/document/en/docs/quick-start). Read that skill, run `ego-browser skill`, and read the complete version-matched guide before operating the browser. Spec-dev does not bundle the official skill or register browser MCPs; see [browser setup](skills/acceptance-qa/references/browser-setup.md). Existing Playwright Test/CLI suites remain supported independently.
 
-If the contract validator cannot run, the main thread checks required keys and `coverage_note` against the schema manually and reports "contract validation degraded"; see the [output contract rules](skills/requirement-analysis/references/output-contracts.md). The controlled review entry point on macOS / Linux additionally requires Python 3.9+, an authenticated local Claude CLI, and rtk. Native workflows remain available on other platforms.
+Review and exploration subagents report in Markdown following the briefs inside the skills, and the main thread verifies their findings; no validation script is involved. On hosts without subagents the main thread does the work and states that it was not independent.
 
 ---
 
@@ -210,7 +213,7 @@ Every skill can be invoked independently or reused by the main pipeline. Each ex
 <a id="skill-requirement-analysis"></a>
 #### `requirement-analysis` — turn a committed request into an approved spec
 
-**Purpose:** Designed for new features, APIs, data design, and behavior changes with meaningful design choices. Light / standard / deep tiers scale the investigation. The workflow covers current-state exploration, one-question clarification, adversarial validation, option comparison, complete-design approval, spec writing and review, then hands off to `writing-plans`. Every tier preserves the design-approval HARD-GATE.
+**Purpose:** Designed for new features, APIs, data design, and behavior changes with meaningful trade-offs. Four steps: explore, clarify, propose the design, write the spec. light / standard / deep only adjust exploration depth; you approve the design once, and it hands off to `writing-plans`. The spec is a one-page contract (goal, non-goals, key decisions, Requirements and Scenarios) without frontmatter by default; add frontmatter only when you want the drift guard.
 
 **Examples:**
 
@@ -244,37 +247,37 @@ Every skill can be invoked independently or reused by the main pipeline. Each ex
 ### 2.2 Plan, isolate, and execute
 
 <a id="skill-writing-plans"></a>
-#### `writing-plans` — decompose a spec into a verifiable task graph
+#### `writing-plans` — decompose a spec into verifiable tasks
 
-**Purpose:** Turn an approved spec or explicit requirement into one `plan/<feature>-plan.md` with task checkboxes, interfaces, real dependencies, exact write scopes, resource ownership, TDD steps, and verification commands. Tasks are vertical, independently deliverable and reviewable behavior slices rather than mechanical technology layers. Generating a plan does not authorize execution.
+**Purpose:** Turn an approved spec or explicit requirement into one `plan/<feature>-plan.md` file: a header (goal, non-goals and global constraints, test commands, pre-decided wrap-up), task navigation, each task's interfaces and five TDD steps, and an execution record. Tasks are behavior slices that can be delivered independently, and Scenario names become test names. Workspace isolation, regression, acceptance, and merging are not plan tasks. Approving the plan authorizes execution.
 
 **Examples:**
 
-> Use writing-plans to create an implementation plan from .spec-dev/&lt;feature&gt;/spec/&lt;feature&gt;-design.md, making task dependencies and per-task write scopes explicit.
+> Use writing-plans to create an implementation plan from .spec-dev/&lt;feature&gt;/spec/&lt;feature&gt;-design.md, with task dependencies and each task's interfaces spelled out.
 
-> Use writing-plans to revise this plan into independently verifiable slices, while preserving separate final, acceptance, and delivery tasks.
+> Use writing-plans to revise this plan so the first real user flow comes first. For wrap-up I want the affected-scope regression only, no acceptance, and a PR.
 
-After writing, the plan is checked against the [plan review checklist](skills/writing-plans/references/plan-review.md) for granularity, dependencies, contracts, and recovery. You then choose whether to execute it or review it first.
+After writing, the plan is checked with the five self-checks in the skill (coverage, executability, interface consistency, minimal dependencies, a real first loop); see the [plan template](skills/writing-plans/references/plan-template.md). You then decide whether to execute or revise.
 
 <a id="skill-executing-plans"></a>
-#### `executing-plans` — execute, resume, review, and deliver a plan
+#### `executing-plans` — execute, resume, and deliver through the ask gate
 
-**Purpose:** Execute an approved written plan. The main thread implements tasks sequentially, respecting their dependencies. The workflow supports interruption recovery, independent final verification, scale-appropriate review, acceptance-qa, Requirement reconciliation, merge and cleanup, and `sync_commit` anchoring.
+**Purpose:** Execute an approved written plan. It sets up an isolated workspace (no tests run before work starts), then the main thread implements tasks in dependency order with TDD, one commit and a self-check per task. Each task starts by rereading the plan header, does only what the task says, and never edits committed test assertions to get green. After the last task it runs one light independent review, then stops at the ask gate: regression, acceptance, and delivery all wait for your choice. Recovery relies only on the plan file and Git history.
 
 **Examples:**
 
-> Use executing-plans to execute .spec-dev/&lt;feature&gt;/plan/&lt;feature&gt;-plan.md, starting with task 0 and following the plan through delivery.
+> Use executing-plans to execute .spec-dev/&lt;feature&gt;/plan/&lt;feature&gt;-plan.md, and ask me before running regression or acceptance.
 
-> Use executing-plans to resume the plan interrupted in my previous session. Check progress, the actual worktrees, and existing evidence first; do not redo completed tasks.
+> Use executing-plans to resume the plan interrupted in my previous session. Check the checkboxes, the workspace, and the latest commits first; do not redo finished tasks.
 
 <a id="skill-using-git-worktrees"></a>
-#### `using-git-worktrees` — prepare an isolated, verifiable workspace
+#### `using-git-worktrees` — prepare an isolated workspace
 
-**Purpose:** Detect existing isolation first. Always create new worktrees under the project root's `.worktrees/`; prefer the host's native tool only when it can use the required path, otherwise use `git worktree`. Existing worktrees stay in place. It handles directory safety, dependency readiness, and baseline verification, preventing nested worktrees, current-branch pollution, and confusion between pre-existing failures and new regressions.
+**Purpose:** Detect existing isolation first. Always create new worktrees under the project root's `.worktrees/` with `git worktree add`; a host's native tool is fine when it can target that path. Existing workspaces stay where they are. The workspace is ready once the actual working directory is confirmed and dependencies are installed; no tests are run.
 
 **Examples:**
 
-> Use using-git-worktrees to prepare an isolated workspace for the billing feature, install the necessary dependencies, and verify the test baseline.
+> Use using-git-worktrees to prepare an isolated workspace for the billing feature and install the necessary dependencies.
 
 > Use using-git-worktrees to check whether I am already in an isolated environment; do not create another worktree if one is active.
 
@@ -303,21 +306,10 @@ After writing, the plan is checked against the [plan review checklist](skills/wr
 
 > Use test-driven-development to fix this validation bug, preserving the actual commands and results for valid red, minimal implementation, and the relevant checks turning green.
 
-<a id="skill-test-strategy"></a>
-#### `test-strategy` — put each test in the right execution window
-
-**Purpose:** Design fast / final / manual lanes that connect the spec acceptance matrix, planned tasks, and acceptance execution. It enforces the governance order flaky → duration → selection, distinguishes substitute-based tests from real integration confidence, and supplies model boundaries and layered test skeletons for AI agents.
-
-**Examples:**
-
-> Use test-strategy to design fast, final, and manual lanes for this spec, labeling the execution window of every acceptance-matrix row.
-
-> Use test-strategy to review our current test approach: remove repeated full-suite runs from every task while preserving real database integration and final full verification.
-
 <a id="skill-acceptance-qa"></a>
-#### `acceptance-qa` — verify against contracts and fill evidence gaps
+#### `acceptance-qa` — check against a list, you judge
 
-**Purpose:** Accept features, pages, or APIs and diagnose failures. Pages follow verify basis and evidence → compare the actual page → fill gaps and conclude; backends follow their behavior contracts. It supports unit / integration / E2E / visual / a11y / perf-web / perf-api / diagnose / all, reuses valid engineering evidence, and records `unverified` when tools or conditions are missing instead of turning gaps into passes.
+**Purpose:** Accept features, pages, or APIs and diagnose failures. It runs only when you call it directly or select it at the ask gate of a plan. The acceptance checklist is generated at that moment from the Scenarios and the actual changes; every item shows the expected and the observed raw result side by side, and you judge. It supports unit / integration / E2E / visual / a11y / perf-web / perf-api / diagnose / all, and marks items `unverified` when tools or conditions are missing instead of turning gaps into passes.
 
 **Examples:**
 
@@ -351,7 +343,7 @@ After writing, the plan is checked against the [plan review checklist](skills/wr
 > Use wtf to read this request-handling module and draw the complete path from entry to response with a few diagrams and very little text.
 
 <a id="commands"></a>
-### 2.5 Utility commands (not part of the 14 skills above)
+### 2.5 Utility commands (not part of the 13 skills above)
 
 | Entry | Purpose | Example |
 |---|---|---|
@@ -380,20 +372,20 @@ Omit `--repo` to detect the current repository, or omit `--json` for human-reada
 
 ### 3.2 Spec contracts: one language for design, code, tests, and acceptance
 
-**Mechanism:** Specs express observable behavior as **Requirement + Scenario (GIVEN / WHEN / THEN)**. Acceptance matrices record requiredness, D / A / X execution nature, and fast / final / manual timing. `writing-plans` translates Scenarios into verification steps; `executing-plans` and `acceptance-qa` check outcomes against the same contract. Spec frontmatter fields `covers`, `status`, `superseded_by`, and `sync_commit` manage ownership and lifecycle.
+**Mechanism:** A spec is a one-page contract: goal and success criteria, non-goals, key decisions, and observable behavior expressed as **Requirement + Scenario (GIVEN / WHEN / THEN)**. `writing-plans` translates Scenarios directly into test steps and reuses their names as test names; the final reconciliation and the acceptance checklist are checked against the same contract. A spec is the contract for one change and is frozen as history after delivery; long-lived behavior is protected by those tests. Only features that want the drift guard add frontmatter (`covers`, `status`, `superseded_by`).
 
-**Benefit:** This reduces translation loss where the requirement says A, the implementation delivers B, and the tests verify C. Changes, supersession, deferral, and dropping all leave traceable records instead of surviving only in chat.
+**Benefit:** This reduces translation loss where the requirement says A, the implementation does B, and the tests verify C. One page keeps approval cheap and avoids a pile of unmaintained documents that still claim to be current.
 
 A typical artifact layout is:
 
 ```text
 .spec-dev/
 ├── YYYY-MM-DD-NN-<feature>/
-│   ├── spec/                 # design, behavior contract, acceptance matrix, approved assets
+│   ├── spec/                 # one-page spec and approved assets
 │   ├── plan/
-│   │   └── <feature>-plan.md # constraints, navigation, task checkboxes, evidence, resource ledger
+│   │   └── <feature>-plan.md # header, navigation, task checkboxes, execution record
 │   ├── visual/               # prototype sessions
-│   └── acceptance/           # acceptance report and evidence index
+│   └── acceptance/           # acceptance report and evidence (when used)
 ├── explorations/             # exploration / clarification notes saved with authorization
 ├── roadmaps/                 # multi-project routes and continuation state
 ├── glossary.md               # cross-feature domain terminology
@@ -404,55 +396,56 @@ Legacy `docs/` artifacts remain readable in place and are never migrated automat
 
 ### 3.3 Approval and authorization boundaries: automation does not decide for the user
 
-**Mechanism:** Exploration and design do not write production code by default. The spec is generated only after the complete design is approved; plan writing requires explicit consent, and executing a plan requires execution authorization. Contract-level deviations, expanded scope, deferral, or dropping return to the user for a decision, while ordinary reversible implementation details stay within the agent's authorized scope.
+**Mechanism:** Exploration and design do not write production code by default. The spec and the plan are written only after the design proposal is approved, execution starts only after the plan is approved, and regression, acceptance, and delivery are asked about once more after the last task. Contract-level deviations, scope growth, deferral, or dropping work go back to the user; ordinary reversible implementation details stay with the agent.
 
-**Benefit:** People retain control over direction, scope, and important trade-offs without being interrupted for every file operation. Design confirmation, a local prototype choice, plan approval, and execution permission cannot impersonate one another.
+**Benefit:** People retain control over direction, scope, and important trade-offs: a feature stops only three times between request and delivery (design approval, plan approval, ask gate), and execution is not interrupted in between.
 
-### 3.4 Task graphs and isolated execution: serial by default, resumable from evidence
+### 3.4 The plan is the source of truth: serial execution, recovery from records
 
-**Mechanism:** Plans declare real dependencies, exact writes, shared resources, and independently verifiable boundaries. The main thread executes serially, with progress and the resource ledger in the same plan file. Recovery checks checkboxes, actual commits, worktrees, and original evidence.
+**Mechanism:** A plan states real dependencies, each task's interfaces, and independently verifiable boundaries, and the main thread implements it serially in an isolated workspace. Progress is the checkboxes in the plan file; deviations, out-of-task findings, and the delivery method go into the execution record in the same file. Recovery checks only the checkboxes, the actual commits, and the workspace.
 
-**Benefit:** One file supports whole-plan review while real dependencies preserve verifiable task boundaries. Recovery resumes from actual records. The resource ledger also makes cleanup of containers, temporary directories, and test data auditable.
+**Benefit:** One file supports whole-plan review. There is no separate progress file, binding command, or receipt to maintain; each task is one commit, and interrupted work resumes from actual records.
 
-### 3.5 Evidence-driven quality: green tests are not the finish line
+### 3.5 Verification moves forward: tasks prove themselves, wrap-up asks first
 
 **Mechanism:**
 
-- `test-driven-development` requires valid red, minimal implementation, and real green, distinguishing behavior tests, refactor protection, and retrospective-test evidence;
-- `test-strategy` separates per-task fast checks, independent final full verification, and manual checks with special conditions;
-- implementation finishes with independent final verification, followed by 1 / 2 / 5 review routes according to scale and a completeness critic when triggered;
-- `acceptance-qa` uses deterministic D, AI-autonomous A, and diagnostic X checks, with `pass / warn / fail / unverified` outcomes;
-- before delivery, every Requirement is reconciled as DELIVERED / DEFERRED / DROPPED / SUPERSEDED, with ADDED-IN-FLIGHT recording approved additions during execution.
+- `test-driven-development` requires valid red, minimal implementation, and real green: every Scenario becomes a failing test at a public boundary first, and red must be the target assertion failing;
+- inside a task only the target tests and the project's existing typecheck and lint run; committed test assertions are never edited to get green without asking first;
+- every task starts by rereading the plan header and does only what the task says, recording out-of-task findings instead of fixing them;
+- after the last task one read-only subagent reviews the change against a brief (two for large changes), and the main thread verifies high and medium findings before fixing;
+- the ask gate offers regression as none / affected scope / full suite, and each acceptance item as you / the agent / skip; `acceptance-qa` shows expected and observed results side by side with `pass / warn / fail / unverified`;
+- before delivery every Requirement is reconciled, and undelivered ones go to you to finish, defer, or drop.
 
-**Benefit:** Tests, review, and acceptance answer different questions. Failures, unverified checks, and missing coverage cannot disappear inside a broad "looks good." Fixes rerun only affected checks and reuse evidence that remains valid, while new candidates still receive the necessary re-review.
+**Benefit:** Drift shows up within one task rather than at the end. You decide how much regression and acceptance cost to pay, and anything not run is reported as not run instead of being absorbed into "looks fine overall".
 
 ### 3.6 A visual loop from prototype to running software
 
-**Mechanism:** `visual-preview` serves versioned HTML locally, and browser events return with their screen version. Approved finals and assets are archived under `spec/assets/`. The first real user journey is compared with the prototype as soon as it exists; acceptance later checks the actual page using the same roles, data, operations, viewports, and states.
+**Mechanism:** `visual-preview` serves versioned HTML locally, and browser events return with the screen version; adopted prototypes and assets are archived under `spec/assets/`. When pages changed, the ask gate recommends checking them against the approved prototype; if selected, the real page is checked with the same roles, data, actions, viewports, and states.
 
 **Benefit:** Design feedback concerns something visible rather than imagined prose, and delivery is not declared from a screenshot alone. Save, price, and permission outcomes mocked in a prototype still require real business evidence.
 
-### 3.7 Contract-driven multi-agent collaboration: clear roles, validatable output
+### 3.7 Read-only subagents and briefs: clear roles that ship with the skills
 
-| Agent | Responsibility | Main use |
+| Brief | Responsibility | Location |
 |---|---|---|
-| `code-explorer` | Read-only code analysis, call paths, and impact investigation | requirement exploration and root-cause investigation |
-| `external-resource-explorer` | External research with primary-source evidence | requirement design and follow-up exploration |
-| `code-reviewer` | Independent code review and spec-conformance checks | wrap-up review |
+| Explorer brief | Read-only code analysis, call paths, and impact investigation | `skills/requirement-analysis/references/explorer-brief.md` |
+| External research brief | External research with primary-source evidence | `skills/requirement-analysis/references/external-research-brief.md` |
+| Reviewer brief | Independent code review and spec-conformance checks | `skills/executing-plans/references/reviewer-brief.md` |
 
-Subagent results are validated against JSON Schema contracts. If `validate-output.mjs` rejects a result, it is returned for completion once; a second failure is handled by the main thread or reported as a documented degradation. Subagents handle read-only exploration and review; the main thread implements the plan.
+The main thread dispatches a generic subagent and passes the absolute path of the brief in the prompt. Subagents only explore and review, read-only, and report in Markdown; the main thread verifies before relying on them. Without subagent support the main thread follows the same brief and states that the work was not independent.
 
-**Benefit:** Parallelism does not blur responsibility, and structured receipts are easier to inspect than prose claims of completion. Missing capabilities can degrade safely, but the workflow cannot fabricate an independent review or a nonexistent tool result.
+**Benefit:** Briefs travel with the skills and do not depend on any host's agent-definition directory. Missing capabilities degrade gracefully, but independent review and tool results are never faked.
 
 ### 3.8 Spec drift guards: layered defenses for synchronization
 
-**Mechanism:** An active spec's `covers` field declares the code it owns. When a change hits those paths without synchronizing the corresponding spec, the guardrail can block at edit, stop, commit, push, and CI layers. Task binding additionally checks the current task, spec, write scope, and worktree. `sync_commit` anchors the delivered synchronization point; it does not replace tests or behavioral review.
+**Mechanism:** An active spec with frontmatter declares the code it owns in `covers`. When a change hits those paths without synchronizing the corresponding spec, the guardrail can block it at edit time, wrap-up, commit, push, and CI. While a plan is implementing a spec, the spec stays `draft` on the feature branch and turns `active` in the delivery commit, so task commits are not blocked. The default one-page spec has no frontmatter and does not take part in the guard.
 
 **Benefit:** Documentation freshness no longer depends only on someone remembering to update it, and Git plus CI provide defenses across editing tools. The guard checks scope and synchronization facts, while tests and review remain responsible for behavioral correctness. See the [guardrail guide](guardrail/README.md) for installation and exception boundaries.
 
 ### 3.9 Thin skills and progressive loading: one definition, loaded when needed
 
-**Mechanism:** Orchestration skills own flow, while clarification, TDD, test strategy, plan format, resource ledgers, and other disciplines each have one authoritative definition. Detailed templates, recovery protocols, and host adaptations load before the action that needs them. Every discovery mechanism points to the same `skills/` directory.
+**Mechanism:** Orchestration skills own flow, while clarification, TDD, the plan template, and host compatibility each have one definition point; templates, briefs, and specialist guidance are loaded right before the action that needs them. Every discovery path points to the same `skills/` directory, and skills depend on nothing outside it.
 
 **Benefit:** Workflows do not drift through copied rules, and irrelevant context stays unloaded. Individual skills remain reusable while the complete pipeline shares consistent constraints. Shorter files or valid structure are never presented as evidence of improved real-model behavior.
 
@@ -503,7 +496,7 @@ Stable skills live under `skills/`. Claude Code reads the explicit `skills[]` li
 
 - Experimental skills live in `skills-in-progress/<name>/`, are absent from every plugin manifest, and promise no stability.
 - Graduation requires moving into `skills/`, registering the marketplace entry, adding `agents/openai.yaml` and evals, and updating both READMEs plus CHANGELOG.
-- Orchestration follows the thin-shell convention: disciplines reference their authoritative definition instead of creating a second copy. Shared entry points include clarifying, plan format, exploration contracts, the acceptance matrix, and test lanes.
+- Orchestration follows the thin-shell convention: disciplines reference their authoritative definition instead of creating a second copy. Shared entry points include clarifying, the plan template, the explorer and reviewer briefs, and host compatibility.
 
 ### About evals
 
@@ -533,7 +526,6 @@ spec-dev/                            # repository root = plugin root
 ├── .codex-plugin/plugin.json        # Codex plugin manifest
 ├── .agents/plugins/marketplace.json # Codex marketplace configuration
 ├── .githooks/                       # commit checks and release hooks
-├── agents/                          # 4 specialized agents
 ├── commands/                        # doctor / triage / status
 ├── guardrail/                       # spec drift guard installable into target repositories
 ├── hooks/                           # Claude / Codex lifecycle hooks
@@ -543,19 +535,18 @@ spec-dev/                            # repository root = plugin root
 │   ├── requirement-analysis/        # requirement design and specs
 │   ├── visual-preview/              # browser HTML prototypes and approved archives
 │   ├── ddd-lifecycle/               # DDD modeling, architecture, and ADRs
-│   ├── writing-plans/               # verifiable task graphs and implementation plans
+│   ├── writing-plans/               # verifiable tasks and implementation plans
 │   ├── executing-plans/             # execution, recovery, review, and delivery
 │   ├── using-git-worktrees/         # isolated-workspace discipline
 │   ├── test-driven-development/     # valid red-green and refactor protection
-│   ├── test-strategy/               # fast / final / manual test strategy
 │   ├── quick-fix/                   # lightweight diagnosis and repair
 │   ├── acceptance-qa/               # acceptance, specialist testing, and diagnosis
 │   ├── anysearch/                   # real-time search and page-extraction CLI
 │   └── wtf/                         # plain-language terminal diagrams
 ├── scripts/
 │   ├── check-plugin.mjs             # manifest, directory, and Codex installation checks
-│   ├── validate-output.mjs          # output-contract and plan-index validation
-│   ├── schemas/                     # 4 output contract schemas + 1 vendored manifest schema
+│   ├── validate-output.mjs          # generic JSON schema validation
+│   ├── schemas/                     # vendored manifest schema
 │   ├── validate-skills.mjs          # skill structure and size validation
 │   ├── check-openai-sync.mjs        # openai.yaml synchronization check
 │   ├── doctor.mjs                   # health diagnostics
@@ -573,4 +564,4 @@ spec-dev/                            # repository root = plugin root
 
 **Author:** [FlameMida](https://github.com/FlameMida) · **License:** [MIT](LICENSE) · **Detailed history:** [CHANGELOG.md](CHANGELOG.md)
 
-Issues and pull requests are welcome. For behavior changes, update the owning spec's requirements and acceptance matrix in the same change, and follow the repository's test and release checks.
+Issues and pull requests are welcome. For behavior changes, update the owning spec's requirements in the same change, and follow the repository's tests and release checks.

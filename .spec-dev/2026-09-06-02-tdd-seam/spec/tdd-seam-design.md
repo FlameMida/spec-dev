@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: tdd-seam
-  status: active
+  status: superseded
   covers:
     - "skills/test-driven-development/**"
     - "skills/test-strategy/SKILL.md"
@@ -31,7 +31,7 @@ spec_dev:
   sync_commit: 721eb23d77dc6bff4a2cd04becdb4d74818e1f77
   supersedes:
     - ".spec-dev/2026-09-03-02-portability-hygiene/spec/portability-hygiene-design.md"
-  superseded_by: null
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
 ---
 
 # 公共测试落点与红绿纪律（tdd-seam）设计

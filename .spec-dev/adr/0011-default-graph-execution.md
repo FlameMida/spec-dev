@@ -1,6 +1,6 @@
 # ADR-0011: 统一执行入口默认按依赖图并发编排
 
-**Status**: Accepted (2026-10-10)
+**Status**: Superseded by [ADR-0013](0013-workflow-simplification.md) (2026-11-10)
 **Supersedes**: ADR-0007, ADR-0010
 
 用户在对照上游 implement-spec 后明确要求本项目同样默认并行。本决定完整承接 ADR-0007 与 ADR-0010 的有效结论，替换其独立执行 skill、默认串行与额外并发选择门；既有正文作为历史保留。

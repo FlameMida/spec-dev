@@ -2,7 +2,7 @@
 spec_dev:
   version: 1
   feature: exploring-clarifying
-  status: active
+  status: superseded
   covers:
     - "skills/exploring/SKILL.md"
     - "skills/exploring/agents/openai.yaml"
@@ -29,7 +29,7 @@ spec_dev:
   sync_commit: 87cf3e8cf9324cec7480094f7db6e8ed50453253
   supersedes:
     - ".spec-dev/2026-08-26-01-major-upgrade/spec/major-upgrade-design.md"
-  superseded_by: null
+  superseded_by: .spec-dev/2026-11-10-01-workflow-simplification/spec/workflow-simplification-design.md
 ---
 
 # 探索、澄清与上下文复用设计

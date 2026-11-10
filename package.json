@@ -7,7 +7,6 @@
     ".agents/",
     ".claude-plugin/",
     ".codex-plugin/",
-    "agents/",
     "commands/",
     "guardrail/",
     "hooks/",

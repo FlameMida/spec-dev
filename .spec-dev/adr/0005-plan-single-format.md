@@ -1,6 +1,6 @@
 # ADR-0005: plan 单一形态(写收敛、读宽容)
 
-**Status**: Accepted (2026-08-27)
+**Status**: Superseded by [ADR-0013](0013-workflow-simplification.md) (2026-11-10)
 **Supersedes**: ADR-0004
 
 writing-plans 产物收敛为**唯一分文件形态**(index.md + tasks/TNN.md + progress.yaml),删除阈值门控与单文件生成能力;executing-plans 保留格式嗅探读分支,存量单文件计划按原样读取执行(写收敛、读宽容)。任务文件步骤用「**步骤 N:**」标题式、不再使用复选框——progress.yaml 是唯一状态源。

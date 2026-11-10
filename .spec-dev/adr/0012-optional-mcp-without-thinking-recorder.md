@@ -1,6 +1,6 @@
 # ADR-0012: 外部 MCP 按需配置与推理记录器退役
 
-**Status**: Accepted (2026-10-23)
+**Status**: Superseded by [ADR-0013](0013-workflow-simplification.md) (2026-11-10)
 **Supersedes**: ADR-0003
 
 ## 背景
