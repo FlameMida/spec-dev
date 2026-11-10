@@ -508,7 +508,7 @@ Stable skills live under `skills/`. Claude Code reads the explicit `skills[]` li
 ### About evals
 
 - `evals.json` is a **design-intent document** covering expected HARD-GATE, handoff, and degradation behavior for human review and future evaluation harnesses. The repository has no general runner for it, so it is not an automated regression line.
-- `trigger-evals.json` contains cold-startable, decidable trigger-surface cases (should-trigger / should-not-trigger and near-miss negatives), currently covering `acceptance-qa`, `clarifying`, `exploring`, `quick-fix`, `requirement-analysis`, `test-strategy`, `executing-plans`; connect them to an evaluation harness to run the verdicts.
+- `trigger-evals.json` contains cold-startable, decidable trigger-surface cases (should-trigger / should-not-trigger and near-miss negatives), currently covering `acceptance-qa`, `clarifying`, `exploring`, `quick-fix`, `requirement-analysis`, `executing-plans`; connect them to an evaluation harness to run the verdicts.
 
 Structural checks, document contracts, and real-model behavior evaluations are different forms of evidence and cannot substitute for one another.
 

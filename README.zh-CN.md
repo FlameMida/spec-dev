@@ -508,7 +508,7 @@ node --test scripts/tests/distribution.test.mjs
 ### evals 定位
 
 - `evals.json` 是**设计意图文档**，记录 HARD-GATE、交接门和降级路径等预期行为，供人工审查与未来评测 harness 使用；仓库没有通用运行器，它不构成自动化回归防线。
-- `trigger-evals.json` 是可冷启动、可判定的触发面用例（should-trigger / should-not-trigger 与 near-miss 负例），目前覆盖 `acceptance-qa`、`clarifying`、`exploring`、`quick-fix`、`requirement-analysis`、`test-strategy`、`executing-plans` 七个 skill，可接入评测 harness 运行。
+- `trigger-evals.json` 是可冷启动、可判定的触发面用例（should-trigger / should-not-trigger 与 near-miss 负例），目前覆盖 `acceptance-qa`、`clarifying`、`exploring`、`quick-fix`、`requirement-analysis`、`executing-plans` 六个 skill，可接入评测 harness 运行。
 
 结构检查、文档契约与真实模型行为评测是不同证据，不能互相替代。
 

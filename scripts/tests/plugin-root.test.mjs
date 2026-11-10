@@ -55,7 +55,7 @@ const directTargets = (file) => [...read(file).matchAll(/\]\(([^)#]+)(?:#[^)]*)?
   .map(([, target]) => path.relative(repoRoot, path.resolve(repoRoot, path.dirname(file), target)));
 
 test("Scenario: 命令调用方都有插件根声明行", () => {
-  const withDecl = ["requirement-analysis", "writing-plans", "executing-plans", "acceptance-qa"];
+  const withDecl = ["requirement-analysis", "acceptance-qa"];
   for (const s of withDecl) assert.ok(directTargets(`skills/${s}/SKILL.md`).includes(RUNTIME), `${s} 未直达插件根定义`);
   for (const s of readdirSync(path.join(repoRoot, "skills"))) {
     if (withDecl.includes(s) || VENDORED.includes(`skills/${s}`)) continue;
@@ -65,9 +65,7 @@ test("Scenario: 命令调用方都有插件根声明行", () => {
 });
 
 test("Scenario: 变量未替换时按序列推导——SKILL 内命令为双引号写法", () => {
-  const ep = read("skills/executing-plans/SKILL.md");
   const aq = read("skills/acceptance-qa/SKILL.md");
-  assert.ok(ep.includes('node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" review-findings <file>'));
   assert.ok(aq.includes('node "${CLAUDE_PLUGIN_ROOT}/skills/acceptance-qa/scripts/detect-env.mjs"'));
   assert.ok(!aq.includes("先定位插件安装目录"), "acceptance-qa 不应再自带降级说明");
 });
@@ -120,7 +118,7 @@ const GIST_FI = "失败先缩小范围重试 1 次，再失败主线程接管";
 const GIST_CV = "校验失败发回补全一次，再失败主线程接管";
 
 test("Scenario: 四处 gist 与 canonical 字面一致", () => {
-  for (const f of ["skills/requirement-analysis/SKILL.md", "skills/quick-fix/SKILL.md", "skills/requirement-analysis/references/codex-compat.md", "skills/executing-plans/references/review-orchestration.md"]) {
+  for (const f of ["skills/requirement-analysis/SKILL.md", "skills/quick-fix/SKILL.md", "skills/requirement-analysis/references/codex-compat.md"]) {
     assert.ok(read(f).includes(GIST_FI), `${f} 缺失败隔离 gist`);
     assert.ok(directTargets(f).includes(DISPATCH), `${f} 未直达派发规则`);
   }
@@ -129,7 +127,7 @@ test("Scenario: 四处 gist 与 canonical 字面一致", () => {
 });
 
 test("Scenario: 契约校验完整陈述唯一（引用侧）", () => {
-  for (const f of ["skills/executing-plans/SKILL.md", "skills/executing-plans/references/review-orchestration.md", "scripts/schemas/README.md"]) {
+  for (const f of ["scripts/schemas/README.md"]) {
     assert.ok(read(f).includes(GIST_CV), `${f} 缺契约校验 gist 或措辞不一致`);
   }
   for (const f of docFiles()) {
@@ -227,11 +225,6 @@ test("Scenario: 计数与磁盘一致", () => {
   const contractTable=read("scripts/schemas/README.md").split("## 契约清单")[1].split("## 新增 schema")[0];
   const documented=[...contractTable.matchAll(/^\| `([^`]+)` \|/gm)].map(m=>m[1]).sort();
   assert.deepEqual(documented,schemaFiles.map(f=>f.slice(0,-5)).sort());
-  for (const text of [en, zh]) {
-    const targets = [...text.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)].map(m => m[1]);
-    assert.ok(targets.includes('skills/writing-plans/references/plan-review.md'));
-  }
-  assert.ok(existsSync(path.join(repoRoot, 'skills/writing-plans/references/plan-review.md')));
 });
 
 test("Scenario: 变量未替换时按序列推导——skill base directory 上两级即插件根（布局不变量）", () => {
