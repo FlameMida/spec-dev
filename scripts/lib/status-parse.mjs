@@ -1,5 +1,5 @@
-import {parseRecord,parseUniqueJson,fault} from '../../guardrail/lib/record-data.mjs';
-export {parseRecord,fault} from '../../guardrail/lib/record-data.mjs';
+import {parseRecord,parseUniqueJson,fault} from './record-data.mjs';
+export {parseRecord,fault} from './record-data.mjs';
 const need=(ok,message,code='invalid_format')=>{if(!ok)throw fault(code,message);};
 const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
 export function outsideFences(text){
@@ -38,118 +38,67 @@ export function parseRoadmap(text){
  }return {meta,rows};
 }
 
-
-import {readNavigation,validateStateShape} from './integration-plan.mjs';
-import {parseParallelBlock} from './parallel-plan.mjs';
-import {validateDeliveryShape} from './delivery-proof.mjs';
+// 导航表每行：| TNN 标题 | 依赖 | … |；依赖可写单个 ID 或闭区间 TNN-TMM。
+function readNavigation(markdown){
+  const rows=[];
+  for(const line of markdown.split('\n')){
+    const m=line.match(/^\|\s*(T\d\d)\b[^|]*\|\s*([^|]*)\|/);if(!m)continue;
+    const deps=[];need(!/T\d\d\s*[—–]\s*T\d\d|T\d\d\s*-\s*T\d\d\s*-\s*T\d\d/.test(m[2]),m[1]+': ASCII hyphen range TNN-TMM');
+    for(const d of m[2].matchAll(/T(\d\d)(?:\s*-\s*T(\d\d))?/g)){
+      const lo=Number(d[1]),hi=Number(d[2]??d[1]);need(lo<=hi,m[1]+': ascending range');
+      for(let n=lo;n<=hi;n++)deps.push('T'+String(n).padStart(2,'0'));
+    }
+    rows.push({id:m[1],deps:[...new Set(deps)]});
+  }
+  return rows;
+}
 const own=(x,k)=>Object.hasOwn(x,k);
-const keys=(x,required,optional=[],label='object')=>{
- need(object(x),label+': expected object');
- for(const k of required)need(own(x,k),label+': missing '+k);
- for(const k of Object.keys(x))need([...required,...optional].includes(k),label+': unknown '+k);
-};
-function acyclic(rows){
-  const map=new Map(rows.map(r=>[r.id,r.deps])),done=new Set(),active=new Set();
-  function walk(id){need(map.has(id),'dangling '+id);if(done.has(id))return;need(!active.has(id),'cycle via '+id);active.add(id);for(const d of map.get(id))walk(d);active.delete(id);done.add(id);}
-  for(const id of map.keys())walk(id);
-}
-function groupContext(index,progress,taskNames){
-  const text=index;
-  const lines=text.replace(/\r\n/g,'\n').split('\n');
-  const markers=lines.flatMap((line,i)=>line.includes('spec-dev-integration') && line.startsWith('```')?[i]:[]);
-  if(!markers.length){
-    if(progress!==null){
-      const s=progress;
-      if(s.trim().startsWith('{'))need(parseUniqueJson(s).format_version!==2,'v2 requires integration declaration');
-      else need(!/^format_version:\s*2\s*$/m.test(s),'v2 requires JSON integration declaration');
-    }return null;
+const STATUSES=['pending','in_progress','completed','blocked','awaiting_verification'];
+
+// 现行计划是单个 Markdown 文件，进度就是任务节里的复选框。
+function singleFilePlan(file,text){
+  const tasks=[];let current=null;
+  for(const line of outsideFences(text).split('\n')){
+    const h=/^###\s+(?:任务|Task)\s+(\d+)\s*(?:[:：]\s*)?(.*)$/i.exec(line);
+    if(h){need(!tasks.some(t=>Number(t.id)===Number(h[1])),'duplicate task heading','inconsistent');current={id:h[1],title:h[2],checked:0,total:0};tasks.push(current);continue;}
+    if(/^ {0,3}#{1,3}(?:\s|$)/.test(line)){current=null;continue;}
+    const box=/^\s*-\s+\[([ xX])\]\s/.exec(line);if(box&&current){current.total++;if(box[1]!==' ')current.checked++;}
   }
-  need(markers.length===1,'duplicate integration block');const start=markers[0];
-  need(lines[start]==='```json spec-dev-integration','integration block must be json');
-  const end=lines.findIndex((l,i)=>i>start && l==='```');need(end>=0,'unterminated integration block');
-  const declaration=parseUniqueJson(lines.slice(start+1,end).join('\n'));
-  keys(declaration,['protocol_version','task_roles','groups'],[],'integration');
-  need(declaration.protocol_version===1,'unsupported protocol');
-  const rows=readNavigation(outsideFences(text)),ids=rows.map(r=>r.id),byId=new Map(rows.map(r=>[r.id,r]));
-  need(ids.length && new Set(ids).size===ids.length,'unique navigation IDs required');acyclic(rows);
-  const files=taskNames.filter(f=>/^T\d\d.*\.md$/.test(f));
-  need(files.length===ids.length && ids.every(id=>files.includes(id+'.md')),'navigation/task files mismatch');
-  const roles=declaration.task_roles;need(object(roles),'task_roles object');
-  for(const [id,role] of Object.entries(roles))need(ids.includes(id)&&['isolation','acceptance','delivery'].includes(role),'invalid role '+id);
-  need(roles.T00==='isolation','T00 isolation required');
-  need(Object.values(roles).filter(r=>r==='isolation').length===1,'one isolation required');
-  need(Object.values(roles).filter(r=>r==='delivery').length===1 && roles[[...ids].sort().at(-1)]==='delivery','maximum task must be delivery');
-  const groups=declaration.groups;need(object(groups)&&Object.keys(groups).length,'nonempty groups required');
-  const membership=new Map(),verification=new Map();
-  for(const [gid,g] of Object.entries(groups)){
-    need(/^G\d\d$/.test(gid),'invalid group id');keys(g,['members','verify','reason'],[],gid);
-    need(Array.isArray(g.members)&&g.members.length>=2&&new Set(g.members).size===g.members.length,'members need two unique task IDs');
-    need(typeof g.reason==='string'&&g.reason.trim(),gid+': reason required');
-    need(typeof g.verify==='string' && ids.includes(g.verify) && !own(roles,g.verify),'invalid verifier');
-    need(!g.members.includes(g.verify)&&!verification.has(g.verify),'duplicate verifier');verification.set(g.verify,gid);
-    for(const id of g.members){need(typeof id==='string'&&ids.includes(id)&&!own(roles,id)&&!membership.has(id),'invalid/duplicate member '+id);membership.set(id,gid);}
-  }
-  for(const id of membership.keys())need(!verification.has(id),'verifier cannot also be member');
-  const owner=id=>membership.get(id)??verification.get(id)??id;
-  for(const [gid,g] of Object.entries(groups)){
-    const pos=new Map(g.members.map((id,i)=>[id,i]));
-    for(const id of g.members)for(const d of byId.get(id).deps)if(pos.has(d))need(pos.get(d)<pos.get(id),'member order conflicts with deps');
-    need(g.members.every(id=>byId.get(g.verify).deps.includes(id)),'verifier must depend on every member');
-  }
-  for(const r of rows)for(const d of r.deps)if(membership.has(d))need(owner(r.id)===membership.get(d),'external member dependency: '+r.id+' -> '+d);
-  const collapsed=new Map();for(const id of ids)collapsed.set(owner(id),new Set());
-  for(const r of rows)for(const d of r.deps)if(owner(r.id)!==owner(d))collapsed.get(owner(r.id)).add(owner(d));
-  acyclic([...collapsed].map(([id,deps])=>({id,deps:[...deps]})));
-  const parallel=parseParallelBlock(text,ids);
-  for(const id of Object.keys(parallel?.tasks??{}))need(!membership.has(id)&&!verification.has(id),'group task cannot be parallel: '+id);
-  const state=parseUniqueJson(progress);
-  need(state.format_version===2,'groups require format_version 2');
-  return {planDir:'snapshot',rows,ids,byId,declaration,membership,verification,parallel,state};
+  need(tasks.length,'task headings not recognized','unsupported_syntax');
+  tasks.sort((a,b)=>Number(a.id)-Number(b.id));
+  for(const t of tasks)t.status=t.total===0?'unknown':t.checked===t.total?'checked':'unchecked';
+  const unknown=tasks.filter(t=>t.status==='unknown').length;
+  return {format:'single',file,mode:null,current:null,groups:[],tasks,counts:unknown?null:{total:tasks.length,checked:tasks.filter(t=>t.status==='checked').length,unchecked:tasks.filter(t=>t.status==='unchecked').length,unknown},diagnostics:unknown?[{code:'invalid_format',message:'task has no checkboxes'}]:[]};
 }
 
-function parsePlanInput(files){
- const {index=null,progress=null,taskNames=null,legacy=[]}=files;
- if(index!==null||progress!==null||taskNames!==null){
-  need(index!==null&&progress!==null&&taskNames!==null,'incomplete split plan','missing');
-  need(legacy.length===0,'conflicting legacy and split plan','inconsistent');
+// 早期版本的分文件计划（index.md + progress.yaml + tasks/）只读取进度，不再校验其执行协议。
+function splitPlan(index,progress,taskNames){
   const rows=readNavigation(outsideFences(index)),ids=rows.map(r=>r.id);
-  need(ids.length&&new Set(ids).size===ids.length,'invalid navigation','inconsistent');acyclic(rows);
+  need(ids.length&&new Set(ids).size===ids.length,'invalid navigation','inconsistent');
   const named=taskNames.filter(n=>/^T\d\d.*\.md$/.test(n));
   need(named.length===ids.length&&ids.every(id=>named.includes(id+'.md')),'task files differ from navigation','missing');
   const state=parseRecord(progress);need(object(state),'progress object required');
-  need(!(state.delivery&&state.execution?.delivery),'duplicate delivery authority','inconsistent');if(state.delivery)validateDeliveryShape(state.delivery);
   need([1,2].includes(state.format_version),'unsupported progress version','unsupported_version');
-  need(object(state.tasks)&&Array.isArray(state.resources)&&Array.isArray(state.notes),'progress tasks/resources/notes required');
+  need(object(state.tasks),'progress tasks required');
   need(Object.keys(state.tasks).length===ids.length&&ids.every(id=>own(state.tasks,id)),'progress/navigation mismatch','inconsistent');
-  need(state.current===null||ids.includes(state.current),'unknown current','inconsistent');
-  for(const [id,t] of Object.entries(state.tasks))need(object(t)&&['pending','in_progress','completed','blocked',...(state.format_version===2?['awaiting_verification']:[])].includes(t.status),'invalid task status '+id,'inconsistent');
-  if(!state.execution)need(Object.values(state.tasks).filter(t=>t.status==='in_progress').length<=1,'multiple serial tasks in_progress','inconsistent');
-  if(state.format_version===2){
-   need(progress.trim().startsWith('{'),'v2 requires JSON','unsupported_syntax');
-   const group=groupContext(index,progress,taskNames);need(group,'missing integration declaration','missing');validateStateShape(group);
-  }else{
-   need(!own(state,'integration')&&!index.includes('spec-dev-integration'),'v1 cannot declare integration','inconsistent');
-   parseParallelBlock(index,ids);
-   if(state.execution)need(state.execution.mode==='parallel','invalid execution mode','inconsistent');
-  }
+  need(state.current==null||ids.includes(state.current),'unknown current','inconsistent');
+  for(const [id,t] of Object.entries(state.tasks))need(object(t)&&STATUSES.includes(t.status),'invalid task status '+id,'inconsistent');
   const titles=new Map(outsideFences(index).split('\n').flatMap(l=>{const m=/^\|\s*(T\d\d)\b([^|]*)\|/.exec(l);return m?[[m[1],m[2].trim()]]:[];}));
   const tasks=ids.map(id=>({id,title:titles.get(id)||id,status:state.tasks[id].status,commit:state.tasks[id].commit??null,tests:state.tasks[id].tests??null})).sort((a,b)=>Number(a.id.slice(1))-Number(b.id.slice(1)));
   const counts={total:ids.length,completed:0,pending:0,in_progress:0,blocked:0,awaiting_verification:0};for(const t of tasks)counts[t.status]++;
-  return {format:'v'+state.format_version,mode:state.execution?.mode??'serial',tasks,counts,current:state.current,groups:Object.entries(state.integration?.groups??{}).sort(([a],[b])=>a<b?-1:a>b?1:0).map(([id,g])=>({id,status:g.status}))};
+  const groups=object(state.integration?.groups)?Object.entries(state.integration.groups).sort(([a],[b])=>a<b?-1:a>b?1:0).map(([id,g])=>({id,status:g?.status??null})):[];
+  return {format:'v'+state.format_version,mode:state.execution?.mode??'serial',tasks,counts,current:state.current??null,groups};
+}
+
+function parsePlanInput(files){
+ const {index=null,progress=null,taskNames=null,single=[]}=files;
+ if(index!==null||progress!==null||taskNames!==null){
+  need(index!==null&&progress!==null&&taskNames!==null,'incomplete split plan','missing');
+  need(single.length===0,'conflicting single-file and split plan','inconsistent');
+  return splitPlan(index,progress,taskNames);
  }
- if(legacy.length===0)return null;
- need(legacy.length===1,'multiple legacy plans','inconsistent');
- const [file,text]=legacy[0],tasks=[];let current=null;
- for(const line of outsideFences(text).split('\n')){
-  const h=/^###\s+(?:任务|Task)\s+(\d+)\s*(?:[:：]\s*)?(.*)$/i.exec(line);
-  if(h){need(!tasks.some(t=>Number(t.id)===Number(h[1])),'duplicate legacy task','inconsistent');current={id:h[1],title:h[2],checked:0,total:0};tasks.push(current);continue;}
-  if(/^ {0,3}#{1,3}(?:\s|$)/.test(line)){current=null;continue;}
-  const box=/^\s*-\s+\[([ xX])\]\s/.exec(line);if(box&&current){current.total++;if(box[1]!==' ')current.checked++;}
- }
- need(tasks.length,'legacy task headings not recognized','unsupported_syntax');
- tasks.sort((a,b)=>Number(a.id)-Number(b.id));
- for(const t of tasks)t.status=t.total===0?'unknown':t.checked===t.total?'checked':'unchecked';
- const unknown=tasks.filter(t=>t.status==='unknown').length;
- return {format:'legacy',file,mode:null,current:null,groups:[],tasks,counts:unknown?null:{total:tasks.length,checked:tasks.filter(t=>t.status==='checked').length,unchecked:tasks.filter(t=>t.status==='unchecked').length,unknown},diagnostics:unknown?[{code:'invalid_format',message:'legacy task has no checkboxes'}]:[]};
+ if(single.length===0)return null;
+ need(single.length===1,'multiple plan files','inconsistent');
+ return singleFilePlan(...single[0]);
 }
 export function parsePlanFiles(files){try{return parsePlanInput(files);}catch(e){throw fault(e.code??'invalid_format',e.message);}}

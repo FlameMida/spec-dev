@@ -32,7 +32,7 @@ export function parseWorktrees(raw){
 function project(source){
  return {specs:source.specs.map(s=>({path:s.path,status:s.status})),plan:source.plan?{
   format:source.plan.format,mode:source.plan.mode,current:source.plan.current,counts:source.plan.counts,
-  tasks:source.plan.tasks.map(t=>({id:t.id,status:t.status,...(source.plan.format==='legacy'?{checked:t.checked,total:t.total}:{})})),groups:source.plan.groups
+  tasks:source.plan.tasks.map(t=>({id:t.id,status:t.status,...(source.plan.format==='single'?{checked:t.checked,total:t.total}:{})})),groups:source.plan.groups
  }:null,roadmaps:source.roadmaps.map(r=>({path:r.path,id:r.id,status:r.status,roadmap_status:r.roadmap_status}))};
 }
 export function groupSources(sources){
@@ -89,19 +89,21 @@ export async function collectStatus(repoPath,overrides={}){
    let source={key,worktree:wt.path,files:[],specs:[],plan:null,roadmaps:[],read_status:'ok',worktree_residue:null};
    try{
     const captured=await bounded(key,async({probe,directory,read})=>{
-     const specs=[],files=[];let index=null,progress=null,taskNames=null,legacy=[];
+     const specs=[],files=[];let index=null,progress=null,taskNames=null,single=[];
      const names=specOnly?[specOnly]:[...(await directory(key)??[]).filter(n=>n.endsWith('-design.md')).map(n=>key+'/'+n),...(await directory(key+'/spec')??[]).filter(n=>n.endsWith('-design.md')).map(n=>key+'/spec/'+n)];
      for(const name of names.sort(sort)){const text=await read(name);if(text!==null){specs.push([name,text]);files.push(name);}}
      if(!specOnly){
       const plan=key+'/plan';index=await read(plan+'/index.md');progress=await read(plan+'/progress.yaml');taskNames=await directory(plan+'/tasks');
       if(index!==null)files.push(plan+'/index.md');if(progress!==null)files.push(plan+'/progress.yaml');
       if(taskNames!==null){files.push(plan+'/tasks/');for(const n of taskNames.filter(n=>/^T\d\d.*\.md$/.test(n))){const s=await probe(plan+'/tasks/'+n);if(!s?.isFile())throw fault('missing','task is not a file: '+n);}}
-      for(const n of(await directory(plan)??[]).filter(n=>n.endsWith('-plan.md'))){const text=await read(plan+'/'+n);legacy.push([plan+'/'+n,text]);files.push(plan+'/'+n);}
+      for(const n of(await directory(plan)??[]).filter(n=>n.endsWith('-plan.md'))){const text=await read(plan+'/'+n);single.push([plan+'/'+n,text]);files.push(plan+'/'+n);}
      }
-     return {specs,files,index,progress,taskNames,legacy,found:specs.length>0||index!==null||progress!==null||taskNames!==null||legacy.length>0};
+     return {specs,files,index,progress,taskNames,single,found:specs.length>0||index!==null||progress!==null||taskNames!==null||single.length>0};
     });
     if(!captured.found)return;source.files=captured.files;
     for(const [file,text]of captured.specs){
+     // 一页 spec 默认没有 frontmatter：它不进入生命周期，也不参与漂移守卫。
+     if(!/^---\r?\n/.test(text)){source.specs.push({path:file,feature:null,status:null});continue;}
      try{const meta=parseMeta(text,'spec');source.specs.push({path:file,feature:meta.feature??null,status:meta.status??null});if(!['draft','active','superseded'].includes(meta.status))throw fault('invalid_format','unknown spec status: '+meta.status);}
      catch(e){source.read_status='partial';diagnostic(wt.path,file,e);}
     }
@@ -156,7 +158,7 @@ export async function collectStatus(repoPath,overrides={}){
   // A copied historical progress file does not establish ownership of this worktree.
   const owners=[state?.execution?.integration_worktree,state?.integration?.worktree,...Object.values(state?.tasks??{}).flatMap(t=>[t.claim?.worktree,t.binding?.worktree])].filter(x=>typeof x==='string');
   if(owners.length&&!owners.includes(source.worktree))continue;
-  const terminal=p.counts.total>0&&(p.format==='legacy'?p.counts.checked:p.counts.completed)===p.counts.total;
+  const terminal=p.counts.total>0&&(p.format==='single'?p.counts.checked:p.counts.completed)===p.counts.total;
   const associated=roadmaps.filter(r=>r.worktree===source.worktree&&r.rows.some(row=>row.feature_key===source.key));
   const dropped=source.roadmaps.length>0&&source.roadmaps.every(r=>r.status==='dropped')&&associated.every(r=>r.read_status==='ok');
   if(terminal||dropped)source.worktree_residue={reason:terminal?'terminal_plan':'dropped_plan',ownership:owners.length?'recorded':'unbound'};
@@ -184,9 +186,9 @@ export function renderStatus(snapshot){
   for(const s of f.sources){
    const p=s.plan;let summary='无计划记录';
    if(s.read_status!=='ok')summary='记录不完整；比例未知';
-   else if(p?.format==='legacy')summary=p.counts?`复选框记录：全勾选 ${p.counts.checked}/${p.counts.total}`:'复选框记录：比例未知';
+   else if(p?.format==='single')summary=p.counts?`复选框记录：全勾选 ${p.counts.checked}/${p.counts.total}`:'复选框记录：比例未知';
    else if(p)summary=p.counts?`已完成记录 ${p.counts.completed}/${p.counts.total}；进行中 ${p.counts.in_progress}；待验 ${p.counts.awaiting_verification}；阻塞 ${p.counts.blocked}`:'比例未知';
-   lines.push(`${display(f.key)} | ${display(s.worktree)} | ${s.specs.map(x=>display(x.status)).join(', ')||'无 spec 记录'} | ${summary}`);
+   lines.push(`${display(f.key)} | ${display(s.worktree)} | ${s.specs.map(x=>x.status===null?'无生命周期':display(x.status)).join(', ')||'无 spec 记录'} | ${summary}`);
    if(s.worktree_residue)lines.push(`  可疑残留：${s.worktree_residue.reason==='terminal_plan'?'终态计划记录':'关联 roadmap 已废弃'}；${s.worktree_residue.ownership==='recorded'?'记录绑定本工作区':'归属未绑定，仅为候选'}；路径 ${display(s.worktree)}；未核验删除条件。`);
    for(const file of s.files)lines.push('  文件：'+display(file));
    if(p){lines.push('  记录中的当前票：'+display(p.current));for(const t of p.tasks)lines.push(`  ${display(t.id)} ${display(t.title)} | ${display(t.status)}`);for(const g of p.groups)lines.push(`  组 ${display(g.id)} | ${display(g.status)}`);}

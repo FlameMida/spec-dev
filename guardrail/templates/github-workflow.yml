@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Spec-Task authority and scope commits must exist locally; missing objects fail verification.
+          fetch-depth: 0 # The range check reads every commit in the range; missing objects fail verification.
       - uses: actions/setup-node@v4
         with:
           node-version: "20"

@@ -129,7 +129,7 @@ if (EXPLAIN) {
 
 const context = `[spec-dev workflow notice / spec-dev 流程提示] This repository uses spec-driven development / 本仓库采用 spec 驱动开发（spec-dev 工作流）:
 - Existing spec/plan artifacts live under .spec-dev/ (${specs.length} spec(s): ${statusCount.active} active, ${statusCount.superseded} superseded); legacy ones under docs/ remain readable in place; migrate only under explicit authorization. / 现有 spec/plan 产物位于 .spec-dev/<日期-特性>/ 目录（共 ${specs.length} 份 spec：${statusCount.active} active, ${statusCount.superseded} superseded）；docs/ 历史位置的产物按原位读取；迁移须有明确授权。
-- Before changing code, check the owning feature's spec; behavior changes must update the spec (requirements + acceptance matrix) in the same commit. / 修改代码前，先查看其所属特性的 spec；行为变更必须同步更新 spec 的行为规范与验收矩阵，并与代码同一提交。
+- Before changing code, check the owning feature's spec; behavior changes must update the spec's requirements in the same commit. / 修改代码前，先查看其所属特性的 spec；行为变更必须同步更新 spec 的行为规范，并与代码同一提交。
 - The drift guard (PreToolUse / pre-commit / pre-push / CI) blocks code changes that skip spec sync; update the spec first, then the code. Claude Stop only warns; explicit --worktree audits remain strict. / 漂移守卫（PreToolUse / pre-commit / pre-push / CI）会拦截"改代码不同步 spec"的操作；先改 spec 再改代码即放行。Claude Stop 仅提醒，显式 --worktree 审计仍严格检查。
 - With the spec-dev plugin installed, use requirement-analysis / writing-plans / executing-plans; otherwise honor the sync obligations above. / 若安装了 spec-dev 插件，请用 requirement-analysis / writing-plans / executing-plans 工作流开展开发；未安装时，至少遵守上述同步义务。${health}`;
 
