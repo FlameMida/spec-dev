@@ -6,7 +6,7 @@ description: >-
 
 > 语言协议：以对话语言输出——用户显式指定（含平台 `language` 设置）优先，其次跟随用户近期消息语言；均无法判定时默认英语。落盘产物以创建时对话语言为准，增量修改保持产物既有语言。本 skill 中的固定话术是语义模板，用对话语言表达其意，不逐字照搬。
 
-> **外部搜索统一入口**：需要联网检索（资料、库/框架文档、时效信息）时一律先用 anysearch skill（插件内嵌），不可用再降级 WebSearch/WebFetch；降级链见[搜索规则](../requirement-analysis/references/exploration-patterns.md)，派发前读取[派发要求](../requirement-analysis/references/agent-dispatch.md)。
+> **外部搜索统一入口**：外部检索先加载 anysearch skill；不可用再用宿主自带的搜索工具。
 
 # 可视化预览（Visual Preview）
 
