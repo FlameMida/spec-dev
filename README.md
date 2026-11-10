@@ -224,7 +224,7 @@ Every skill can be invoked independently or reused by the main pipeline. Each ex
 <a id="skill-visual-preview"></a>
 #### `visual-preview` — interactive HTML prototypes in the browser
 
-**Purpose:** Present mockups, layout comparisons, diagrams, and important interface states, with clicks and choices flowing back into the session. It activates automatically under its contract for new pages, redesigns, major layout changes, and core interaction changes. Small changes may skip it, and an explicit opt-out is preserved. Visual questions go to the browser; ordinary text trade-offs stay in the conversation.
+**Purpose:** Present mockups, layout comparisons, diagrams, and important interface states, with clicks and choices flowing back into the session. It activates automatically under its contract for new pages, redesigns, major layout changes, and core interaction changes. Small changes may skip it, and an explicit opt-out is preserved. Visual questions go to the browser; ordinary text trade-offs stay in the conversation. Before drawing, it inventories the project's stack, shared wrapper components, and layout; the approved prototype is drawn with them and ships with a component mapping table. When the project has no frontend yet, it first asks about and recommends a stack. Prototypes are opened in front of the user, who reviews the approved prototype as a whole before design approval is requested.
 
 **Examples:**
 
@@ -421,7 +421,7 @@ Legacy `docs/` artifacts remain readable in place and are never migrated automat
 
 ### 3.6 A visual loop from prototype to running software
 
-**Mechanism:** `visual-preview` serves versioned HTML locally, and browser events return with the screen version; adopted prototypes and assets are archived under `spec/assets/`. When pages changed, the ask gate recommends checking them against the approved prototype; if selected, the real page is checked with the same roles, data, actions, viewports, and states.
+**Mechanism:** `visual-preview` first inventories the project's UI conventions (stack, component library, design tokens, shared wrapper components, layout shell); the approved prototype follows them and carries a component mapping table. It serves versioned HTML locally and opens it for the user, and browser events return with the screen version; adopted prototypes and assets are archived under `spec/assets/`. UI tasks in the plan carry their prototype screens, mapping rows, and a restoration self-check step, so execution compares the page with the prototype side by side once the task turns green. When pages changed, the ask gate still recommends checking them against the approved prototype; if selected, the real page is checked with the same roles, data, actions, viewports, and states.
 
 **Benefit:** Design feedback concerns something visible rather than imagined prose, and delivery is not declared from a screenshot alone. Save, price, and permission outcomes mocked in a prototype still require real business evidence.
 
