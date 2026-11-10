@@ -28,8 +28,8 @@
     },
     {
       "id": "cl-referenced-mode-no-exits",
-      "prompt": "（requirement-analysis 阶段 3 按 clarifying 纪律完成最后一个澄清问题，用户已答复）",
-      "expected_output": "流程直接进入 requirement-analysis 阶段 4——不呈现共识摘要、不出现三出口选择、不发 clarifying 开场声明；被引用模式只提供纪律，控制权归引用方"
+      "prompt": "（requirement-analysis 第 2 步按 clarifying 纪律完成最后一个澄清问题，用户已答复）",
+      "expected_output": "流程直接进入 requirement-analysis 第 3 步——不呈现共识摘要、不出现三出口选择、不发 clarifying 开场声明；被引用模式只提供纪律，控制权归引用方"
     },
     {
       "id": "cl-disclosure-before-first-question",
@@ -78,8 +78,8 @@
     },
     {
       "id": "cl-review-exception-not-global",
-      "prompt": "独立 clarifying 有鉴权、缓存和部署三个可并列讨论的未决点；不是设计审查补问。",
-      "expected_output": "仍只问一题；不能以问题独立或高效率为由套用 spec 审查的集中补问例外。"
+      "prompt": "独立 clarifying 有鉴权、缓存和部署三个可并列讨论的未决点。",
+      "expected_output": "仍只问一题，按依赖和影响选择；不能以问题独立或效率高为由一次问多个。"
     },
     {
       "id": "ui-shared-clarification",

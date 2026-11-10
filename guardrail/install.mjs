@@ -22,7 +22,7 @@
 // 幂等：可重复运行；软提示段与 hook 条目按标记/键去重，不重复堆叠。
 
 import { execFileSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync, chmodSync, statSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync, chmodSync, statSync, rmSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -41,21 +41,20 @@ const repo = path.resolve(val("--repo") || detectRepo());
 log(`Target repo / 目标仓库：${repo}`);
 
 const done = [];
-// Reject unsupported message-hook interpreters before copying files.
-if (!opt("--no-git-hook")) preflightMessageHooks(repo);
 
 // 1) 脚本
 const scriptsDir = path.join(repo, "scripts", "spec-dev");
 mkdirSync(scriptsDir, { recursive: true });
 copyFileSync(path.join(HERE, "check-spec-drift.mjs"), path.join(scriptsDir, "check-spec-drift.mjs"));
-copyFileSync(path.join(HERE, "task-binding.mjs"), path.join(scriptsDir, "task-binding.mjs"));
 mkdirSync(path.join(scriptsDir,"lib"),{recursive:true});
-for(const name of ['record-data','write-paths','task-scopes','task-binding','git-view','spec-data'])copyFileSync(path.join(HERE,'lib',name+'.mjs'),path.join(scriptsDir,'lib',name+'.mjs'));
+for(const name of ['git-view','spec-data'])copyFileSync(path.join(HERE,'lib',name+'.mjs'),path.join(scriptsDir,'lib',name+'.mjs'));
+// Task binding was removed: drop the copies an earlier install left behind.
+for(const stale of ['task-binding.mjs','lib/task-binding.mjs','lib/task-scopes.mjs','lib/record-data.mjs','lib/write-paths.mjs'])rmSync(path.join(scriptsDir,stale),{force:true});
 copyFileSync(path.join(HERE, "session-context.mjs"), path.join(scriptsDir, "session-context.mjs"));
 copyFileSync(path.join(HERE, "model-context.mjs"), path.join(scriptsDir, "model-context.mjs"));
 copyFileSync(path.resolve(HERE, "../skills/requirement-analysis/references/model-collaboration.md"), path.join(scriptsDir, "model-collaboration.md"));
 copyFileSync(path.join(HERE, "migrate-to-spec-dev.mjs"), path.join(scriptsDir, "migrate-to-spec-dev.mjs"));
-done.push("scripts/spec-dev/{check-spec-drift,task-binding,session-context,model-context,migrate-to-spec-dev}.mjs + model-collaboration.md + lib/");
+done.push("scripts/spec-dev/{check-spec-drift,session-context,model-context,migrate-to-spec-dev}.mjs + model-collaboration.md + lib/");
 
 // 2) Claude settings.json —— 深合并 hooks
 mergeJsonHooks(
@@ -79,7 +78,7 @@ if (mergeSnippet(path.join(repo, "AGENTS.md"), readFileSync(path.join(TPL, "AGEN
 if (!opt("--no-git-hook")) {
   const res = installGitHooks(repo);
   if (res) {
-    done.push(`${res.hooksDir}/{pre-commit,prepare-commit-msg,commit-msg,pre-push} (guard installed / 守卫已安装)`);
+    done.push(`${res.hooksDir}/{pre-commit,pre-push} (guard installed / 守卫已安装)`);
     if (res.configured) done.push("git config core.hooksPath .githooks (set / 已设置)");
     if (installPrepareScript(repo, res)) done.push("package.json prepare script (auto-enables hooksPath on install / install 时自动启用 hooksPath)");
   }
@@ -167,37 +166,6 @@ function mergeSnippet(file, snippet) {
 
 // 版本化 git hooks：尊重既有 core.hooksPath（写入该目录，不动配置）；
 // 未设置时启用仓库内 .githooks/ 并写入本地 git config。模板 hook 会串联 .git/hooks 里的历史 hook。
-function preflightMessageHooks(repo) {
-  try {
-    execFileSync("git", ["-C", repo, "rev-parse", "--git-dir"], { stdio: "ignore" });
-  } catch { return; }
-  let hooksPath = ".githooks";
-  try {
-    hooksPath = execFileSync("git", ["-C", repo, "config", "--get", "core.hooksPath"], {
-      encoding: "utf8", stdio: ["ignore", "pipe", "pipe"],
-    }).trim() || hooksPath;
-  } catch { /* No custom hooks directory. */ }
-  const dir = path.resolve(repo, hooksPath);
-  for (const name of ["prepare-commit-msg", "commit-msg"]) {
-    const target = path.join(dir, name);
-    if (!existsSync(target)) continue;
-    const body = readFileSync(target, "utf8"), shebang = body.split("\n", 1)[0];
-    if (shebang.startsWith("#!") && !isShellShebang(shebang)) {
-      throw new Error(`cannot inject into a non-shell ${name} hook: ${target}; preserve it and configure a shell wrapper before installing`);
-    }
-  }
-}
-
-function isShellShebang(shebang) {
-  const words = shebang.slice(2).trim().split(/\s+/);
-  let interpreter = path.basename(words.shift() || "");
-  if (interpreter === "env") {
-    if (words[0] === "-S") words.shift();
-    interpreter = path.basename(words.shift() || "");
-  }
-  return ["sh", "bash", "dash", "zsh"].includes(interpreter);
-}
-
 function installGitHooks(repo) {
   try {
     execFileSync("git", ["-C", repo, "rev-parse", "--git-dir"], { encoding: "utf8" });
@@ -217,7 +185,7 @@ function installGitHooks(repo) {
   if (own) hooksPath = ".githooks";
   const dir = path.isAbsolute(hooksPath) ? hooksPath : path.join(repo, hooksPath);
   mkdirSync(dir, { recursive: true });
-  for (const name of ["pre-commit", "prepare-commit-msg", "commit-msg", "pre-push"]) {
+  for (const name of ["pre-commit", "pre-push"]) {
     const target = path.join(dir, name);
     const mode=existsSync(target)?statSync(target).mode&0o777:0o755;
     if (existsSync(target)) {
@@ -228,16 +196,10 @@ function installGitHooks(repo) {
         const a=cur.indexOf(start),b=cur.indexOf(end);
         if(a<0||b<a||cur.indexOf(start,a+start.length)!==-1||cur.indexOf(end,b+end.length)!==-1)throw new Error('invalid guard markers: '+target);
         writeFileSync(target,cur.slice(0,a)+guard.trimEnd()+cur.slice(b+end.length));
-      }else if (!cur.includes(name==='commit-msg'||name==='prepare-commit-msg'?'task-binding.mjs':'check-spec-drift.mjs')) {
+      }else if (!cur.includes('check-spec-drift.mjs')) {
         // 守卫行注入到 shebang 之后而非文件末尾：legacy hook 若以 exit 0 结尾，尾部追加的守卫永远执行不到
         let next;
-        if(name==='commit-msg'){
-          const nl=cur.indexOf('\n'),shebang=cur.startsWith('#!')?cur.slice(0,nl<0?undefined:nl):'#!/bin/sh';
-          if(!isShellShebang(shebang))throw new Error('cannot inject into a non-shell commit-msg hook: '+target);
-          const body=cur.startsWith('#!')?(nl<0?'':cur.slice(nl+1)):cur;
-          // A subshell preserves legacy exit codes, then validates its final message.
-          next=shebang+'\n(\n'+body+'\n) || exit $?\n'+guard;
-        }else if (cur.startsWith("#!")) {
+        if (cur.startsWith("#!")) {
           const nl = cur.indexOf("\n");
           next = nl === -1 ? cur + guard : cur.slice(0, nl + 1) + guard + cur.slice(nl + 1);
         } else {
@@ -249,6 +211,12 @@ function installGitHooks(repo) {
       copyFileSync(path.join(TPL, name), target);
     }
     chmodSync(target, mode|0o111);
+  }
+  // 早先的安装可能写在默认的 .githooks 里，而 core.hooksPath 后来指向了别处：两处都清理。
+  const defaultDir = path.join(repo, ".githooks");
+  const messageDirs = path.resolve(defaultDir) === path.resolve(dir) || !existsSync(defaultDir) ? [dir] : [dir, defaultDir];
+  for (const d of messageDirs) for (const file of removeLegacyMessageGuards(d)) {
+    log(`  ! ${path.relative(repo, file)} still calls task-binding.mjs, which is no longer installed; remove that call or commits will fail. / 仍在调用已不再安装的 task-binding.mjs，请手工删除该调用，否则提交会失败`);
   }
   let configured = false;
   if (own) {
@@ -262,14 +230,53 @@ function installGitHooks(repo) {
   return { hooksDir: hooksPath.replace(/\/+$/, ""), own, configured };
 }
 
+// 任务绑定已移除：早先安装写进消息 hook 的守卫段只调用 task-binding.mjs，这里把它摘掉。
+// 只删本安装器自己写的内容：成对的标记块；标记残缺时，逐字相同的两行生成代码。用户的其余内容原样保留。
+// 摘掉后只剩本安装器模板外壳的文件整份删除。绑定脚本已不再安装，残留的调用会让每次提交失败，
+// 所以删不干净的文件（用户改写过调用）要返回给调用方点名提示。
+function removeLegacyMessageGuards(dir) {
+  // 块内不允许再出现起始标记：否则残缺的起始标记会连同后面的用户内容一起被吞到下一个结束标记。
+  const block=/# spec-dev:guard:start\r?\n(?:(?!# spec-dev:guard:start)[\s\S])*?# spec-dev:guard:end\r?\n?/g,leftover=[];
+  for (const name of ["prepare-commit-msg", "commit-msg"]) {
+    const target = path.join(dir, name);
+    if (!existsSync(target)) continue;
+    const cur = readFileSync(target, "utf8");
+    if (!cur.includes('task-binding.mjs')) continue;
+    let next=cur.replace(block,found=>found.includes('task-binding.mjs')?'':found);
+    if (next.includes('task-binding.mjs')) {
+      const generated=new Set([
+        'spec_dev_binding="$(git rev-parse --show-toplevel)/scripts/spec-dev/task-binding.mjs"',
+        `node "$spec_dev_binding" ${name==='prepare-commit-msg'?'prepare-message':'check-message'} --file "$1" || exit $?`,
+      ]);
+      next=next.split('\n').filter(line=>!generated.has(line)).join('\n');
+    }
+    if (next.includes('task-binding.mjs')) leftover.push(target);
+    if (next===cur) continue;
+    if(isTemplateShell(next,name))rmSync(target);
+    else writeFileSync(target,next);
+  }
+  return leftover;
+}
+
+// 本安装器旧模板去掉守卫段后剩下的外壳：shebang、串联 .git/hooks 历史 hook 的固定几行、exit 0。
+function isTemplateShell(text,name) {
+  const shell=[
+    '#!/usr/bin/env sh',
+    'legacy_dir="$(git rev-parse --git-common-dir)/hooks"',
+    'self_dir="$(cd "$(dirname "$0")" && pwd)"',
+    `if [ -x "$legacy_dir/${name}" ] && [ "$(cd "$legacy_dir" 2>/dev/null && pwd)" != "$self_dir" ]; then`,
+    `  "$legacy_dir/${name}" "$@" || exit $?`,
+    'fi',
+    'exit 0',
+  ];
+  const lines=text.split('\n').filter(l=>l.trim());
+  return lines.length===shell.length&&lines.every((l,i)=>l===shell[i]);
+}
+
 // 注入进既有 hook 的守卫段：与模板 hook 同等健壮——node 缺失或守卫脚本缺失时静默跳过，
 // 不让守卫自身故障阻断宿主 hook。pre-push 先整段捕获 stdin 喂给守卫，再用 exec heredoc
 // 还原给宿主 hook 的后续内容，避免守卫吃掉 refs 导致宿主脚本读到空 stdin。
 function guardLine(name) {
-  if(name==='prepare-commit-msg'||name==='commit-msg')return [
-    'spec_dev_binding="$(git rev-parse --show-toplevel)/scripts/spec-dev/task-binding.mjs"',
-    `node "$spec_dev_binding" ${name==='prepare-commit-msg'?'prepare-message':'check-message'} --file "$1" || exit $?`,
-  ].join('\n');
   const resolve = 'spec_dev_guard="$(git rev-parse --show-toplevel)/scripts/spec-dev/check-spec-drift.mjs"';
   if (name === "pre-push") {
     return [

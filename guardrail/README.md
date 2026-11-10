@@ -23,7 +23,7 @@ The installer also copies model-scoped collaboration guidance and merges lifecyc
 | Layer | Mechanism | Scope | Bypassable |
 |---|---|---|---|
 | Edit-time interception · Claude | `.claude/settings.json` PreToolUse hook (exit code 2 blocks); passes once the spec is already synced in the working tree | Claude Code sessions | Switch tools to bypass |
-| Wrap-up notice · Claude | Stop runs `--worktree --warn-only` over the whole working tree, including shell writes; drift and invalid bindings produce a `systemMessage` and exit 0 without blocking completion | Claude Code sessions | Advisory only |
+| Wrap-up notice · Claude | Stop runs `--worktree --warn-only` over the whole working tree, including shell writes; drift produces a `systemMessage` and exit 0 without blocking completion | Claude Code sessions | Advisory only |
 | Edit-time interception · Codex | `.codex/hooks.json` PreToolUse hook (exit code 2 blocks) | Codex sessions | Switch tools to bypass |
 | Commit-time interception | Versioned `.githooks/pre-commit` (enabled via `core.hooksPath`; the package.json `prepare` script auto-configures it on install, so fresh clones carry the gate) | All local commits, any editing tool | `--no-verify` bypasses |
 | Push-time interception | Versioned `.githooks/pre-push` re-checks the whole range to be pushed, catching commits that slipped through `--no-verify` | All local pushes | `--no-verify` bypasses |
@@ -31,39 +31,31 @@ The installer also copies model-scoped collaboration guidance and merges lifecyc
 | Session self-heal | SessionStart hook → `session-context.mjs`: injects workflow obligations + guard health self-check (when it finds e.g. `core.hooksPath` disabled, it asks the in-session agent to fix it on the spot) | Claude / Codex sessions | Advisory only |
 | Soft reminder | Guard sections in `CLAUDE.md` / `AGENTS.md` | Each AI tool | Advisory only |
 
-`check-spec-drift.mjs` checks each Git view; `task-binding.mjs` manages local references and commit associations. Drift entry modes are (`--staged` / `--range` / `--push` / `--hook` / `--worktree`).
+`check-spec-drift.mjs` is the only validator. Its entry modes are (`--staged` / `--range` / `--push` / `--hook` / `--worktree`).
 
 ## Detection logic
 
 Each spec's frontmatter `spec_dev.covers` (glob) declares the code it owns. A batch of changes that hits the `covers` of a `status: active` spec without also touching that spec is judged as drift. When a spec is superseded its covers leave the blocking set — the successor spec must take over the still-existing paths, or those paths fall into an unguarded vacuum; the supersede write-back is enforced by spec-dev's executing-plans wrap-up.
 
-The frontmatter `sync_commit` is the delivery anchor: the commit where code and this spec were last confirmed in sync — written by the executing-plans wrap-up after merge; `git diff <sync_commit>..HEAD -- <covers>` shows code drift since. The guard parses this field but it plays no part in blocking decisions. A superseded spec's `sync_commit` is frozen at the supersede commit and never updated afterwards.
+Only specs that have frontmatter and `status: active` take part. The default one-page spec has no frontmatter and is not guarded; a `draft` spec does not block either.
 
-At edit time (`--hook`), "already synced" includes existing working-tree changes (staged + unstaged + untracked): **update the spec first, then touch the covered code, and you pass**; dirty files in the working tree do not expand the trigger set, and editing unrelated files is unaffected by pre-existing drift. Explicit `node scripts/spec-dev/check-spec-drift.mjs --worktree` audits the whole working tree and still exits 2 on drift or invalid bindings. The installed Stop uses `--worktree --warn-only`, returning a visible advisory with exit 0; pre-existing edits therefore do not block a read-only answer. Shell writes missed by PreToolUse may only be blocked at explicit delivery audit or commit time.
+At edit time (`--hook`), "already synced" includes existing working-tree changes (staged + unstaged + untracked): **update the spec first, then touch the covered code, and you pass**; dirty files in the working tree do not expand the trigger set, and editing unrelated files is unaffected by pre-existing drift. Explicit `node scripts/spec-dev/check-spec-drift.mjs --worktree` audits the whole working tree and still exits 2 on drift. The installed Stop uses `--worktree --warn-only`, returning a visible advisory with exit 0; pre-existing edits therefore do not block a read-only answer. Shell writes missed by PreToolUse may only be blocked at explicit delivery audit or commit time.
 
 After updating the plugin, rerun `node guardrail/install.mjs --repo <target>` to refresh installed copies. The installer replaces its exact legacy blocking Stop command with the advisory command, preserving custom hooks and settings. Business-project pre-push remains installed; only consider removing it when protected branches require the range-check CI job.
 
-Once plan execution is authorized, `executing-plans` runs tasks serially in the main thread, respecting real dependencies. Task scopes, binding, independent review and delivery checks remain mandatory. `Spec: <repo-relative spec path>` is a traceability trailer, not a drift-guard bypass.
+## While a plan is being implemented
 
-## Task-scoped authorization
+Implementing or revising a guarded spec through a plan needs no per-commit waiver:
 
-The main thread commits the spec, plan and exact writes, using that committed scope version as the single-file authority SHA. Activate the reference inside its assigned worktree:
+- The spec stays `draft` on the feature branch during implementation. The guard only looks at `active` specs, so task commits pass.
+- When revising a spec that is already `active`, the first commit on the feature branch returns it to `draft`; a fully replaced spec is set to `superseded` with `superseded_by` in that same commit.
+- The delivery commit turns the spec `active`, and later changes are guarded again.
 
-```bash
-node scripts/spec-dev/task-binding.mjs bind --plan .spec-dev/<feature>/plan/<feature>-plan.md --task T01 --authority <full-SHA>
-node scripts/spec-dev/task-binding.mjs inspect
-node scripts/spec-dev/task-binding.mjs clear --plan .spec-dev/<feature>/plan/<feature>-plan.md --task T01
-```
+These status changes live only on the feature branch; the main branch stays as it was until the merge. When a task commit touches code owned by another feature's active spec, the guard still blocks it: sync that spec if behavior changed, or use the temporary bypass below if it did not.
 
-The local reference lives in the actual Git dir and grants no authority by itself. Changed specs, tasks, writes, worktrees require revalidation. The guard checks scope; tests and review check behavior. Behavior changes still require a spec update.
+Commits that task binding stamped with a `Spec-Task` trailer in the past pass range checks with a notice and are no longer verified. Rerunning the installer after updating the plugin removes the guard blocks it once added to `prepare-commit-msg` and `commit-msg`, and the `task-binding` script copies; hook content you wrote stays untouched. If a hook still contains a `task-binding` call you customized, the installer names the file; remove that call by hand, or commits will fail.
 
-`prepare-commit-msg` adds one `Spec-Task` JSON line from a valid binding. `commit-msg` checks the final message after existing hooks run. History checks use that association and committed views, independently of the current checkout. Missing source Git objects fail verification. Installation includes all required pure modules and needs no plugin cache.
-
-Existing non-shell message hooks in the managed hooks directory are rejected before installation writes any files. Preserve the original script and configure a shell wrapper before retrying; the installer never injects shell code into Python or Node scripts.
-
-A task association cannot coexist with `Spec-Guard: off` or `SPEC_DEV_GUARD=off`. Clear its local reference before using an authorized legacy exception. An ordinary `Spec:` trailer remains traceability only.
-
-## Temporary bypass (no task association)
+## Temporary bypass
 
 - Recommended: leave a `Spec-Guard: off <reason>` trailer in the commit message — the range checks in pre-push and CI recognize it and let the commit through (printing a count for human review), consistent across the chain.
 - One-off command: `SPEC_DEV_GUARD=off git commit …` (warns then passes; leaving the trailer as well is recommended, otherwise push/CI range checks still block).
@@ -78,7 +70,6 @@ A task association cannot coexist with `Spec-Guard: off` or `SPEC_DEV_GUARD=off`
 ```
 guardrail/
 ├── check-spec-drift.mjs      # core validator (zero dependencies)
-├── task-binding.mjs          # bind / inspect / clear / message hooks
 ├── lib/                      # installed shared parsers and Git views
 ├── session-context.mjs       # SessionStart context injection + guard health self-check
 ├── install.mjs               # installer
@@ -86,8 +77,6 @@ guardrail/
     ├── claude-settings.json  # Claude hooks fragment (PreToolUse + Stop + SessionStart)
     ├── codex-hooks.json      # Codex hooks fragment
     ├── pre-commit            # versioned git hook (chains legacy .git/hooks)
-    ├── prepare-commit-msg    # Spec-Task association
-    ├── commit-msg            # final message validation
     ├── pre-push              # versioned git hook (second gate)
     ├── github-workflow.yml   # CI
     ├── CLAUDE.md.snippet     # Claude soft reminder

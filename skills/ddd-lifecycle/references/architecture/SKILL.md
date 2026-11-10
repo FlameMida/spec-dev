@@ -36,7 +36,7 @@ A repository must not independently commit when its writes belong to one use-cas
 | Inbound adapter | Actual input/output/error translation at the protocol boundary |
 | User flow | Required real composition of entry, authorization, state changes and visible outcome |
 
-Fakes prove the local behavior they implement; they do not prove production storage or delivery semantics. Testing discipline and verification scope come from test-driven-development and test-strategy rather than a second architecture-specific test workflow.
+Fakes prove the local behavior they implement; they do not prove production storage or delivery semantics. Testing discipline comes from test-driven-development rather than a second architecture-specific test workflow.
 
 ## Migration Playbook
 

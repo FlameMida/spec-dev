@@ -6,23 +6,22 @@ This repository follows the [spec-dev](https://github.com/FlameMida/spec-dev) wo
 
 ### Where artifacts live
 
-- **spec / plan**: `.spec-dev/YYYY-MM-DD-NN-<feature>/` (NN = same-day two-digit sequence; legacy `YYYY-MM-DD-<feature>/` dirs are read as-is) — `spec/<feature>-design.md` is the behavior contract and acceptance matrix. **plan**: new plans use one `plan/<feature>-plan.md` file containing global constraints, the task navigation table, task checkboxes and the final task resource ledger. Read legacy artifacts under `docs/` in place. Migration is a separate authorized operation (`node scripts/spec-dev/migrate-to-spec-dev.mjs`), not an installation or task prerequisite.
-- **execution**: temporary local artifacts only. Ignore `.spec-dev/**/execution/` before generating them and keep them out of Git. Once acceptance, necessary rechecks and reconciliation conclude, keep a concise result in the plan/report and delete that feature’s entire execution directory; do not archive or transfer it.
+- **spec / plan**: `.spec-dev/YYYY-MM-DD-NN-<feature>/` (NN = same-day two-digit sequence; legacy `YYYY-MM-DD-<feature>/` dirs are read as-is) — `spec/<feature>-design.md` is the behavior contract (requirements and scenarios). **plan**: one `plan/<feature>-plan.md` file containing the header, the task navigation table, task checkboxes and the execution record. Read legacy artifacts under `docs/` in place. Migration is a separate authorized operation (`node scripts/spec-dev/migrate-to-spec-dev.mjs`), not an installation or task prerequisite.
 - The `spec_dev.covers` frontmatter at the top of each spec declares the code paths it covers.
 
 ### Obligations when changing code (plugin installed or not)
 
 1. Before touching code, find the owning feature and what its spec says about the behavior.
-2. **When behavior changes, update that spec in the same commit** (behavior requirements + acceptance matrix).
-3. The drift guard blocks changes that touch code covered by an active spec without syncing it: at edit time (PreToolUse hook in Codex `.codex/hooks.json`), commit (pre-commit), push (pre-push) and CI. Claude Stop only reports working-tree issues without blocking completion; explicit `--worktree` audits remain strict. Update the spec first (working-tree changes count), then touch the covered code.
+2. **When behavior changes, update that spec in the same commit** (its behavior requirements).
+3. The drift guard blocks changes that touch code covered by an active spec without syncing it: at edit time (PreToolUse hook in Codex `.codex/hooks.json`), commit (pre-commit), push (pre-push) and CI. Claude Stop only reports working-tree issues without blocking completion; explicit `--worktree` audits remain strict. Update the spec first (working-tree changes count), then touch the covered code. While a plan is implementing a spec, the spec stays `draft` on the feature branch and turns `active` in the delivery commit, so task commits are not blocked.
 4. For changes genuinely unrelated to the behavior contract, leave a `Spec-Guard: off <reason>` trailer in the commit message (range checks pass it through), or set `SPEC_DEV_GUARD=off` temporarily.
-5. `superseded` is a lifecycle terminal state, not an escape hatch. Mark a spec superseded only together with `superseded_by` pointing to its successor spec (repo-root-relative path, same change); the successor's `covers` must take over the old spec's still-existing paths (no guard vacuum), and the old spec's `sync_commit` freezes at that point. When you land on a superseded spec, follow `superseded_by` to the successor — never base new work on it (it stays readable as history). If a feature is simply deleted with no successor behavior, write a lightweight REMOVED-only spec as the successor to record the reason.
+5. `superseded` is a lifecycle terminal state, not an escape hatch. Mark a spec superseded only together with `superseded_by` pointing to its successor spec (repo-root-relative path, same change); the successor's `covers` must take over the old spec's still-existing paths (no guard vacuum). When you land on a superseded spec, follow `superseded_by` to the successor — never base new work on it (it stays readable as history). If a feature is simply deleted with no successor behavior, write a lightweight REMOVED-only spec as the successor to record the reason.
 
 ### With the spec-dev plugin installed
 
-Drive work with the `requirement-analysis` (requirement→spec), `writing-plans` (spec→plan) and `executing-plans` (TDD task-by-task execution + wrap-up acceptance) skills; do not bypass the workflow and edit code directly.
+Drive work with the `requirement-analysis` (requirement→spec), `writing-plans` (spec→plan) and `executing-plans` (TDD task-by-task execution) skills; do not bypass the workflow and edit code directly.
 
-Once plan execution is authorized, `executing-plans` runs tasks serially in the main thread, respecting real dependencies. Task scopes, binding, independent review and delivery checks remain mandatory. `Spec: <repo-relative spec path>` is a traceability trailer, not a drift-guard bypass.
+Once plan execution is authorized, `executing-plans` runs tasks serially in the main thread, respecting real dependencies. After all tasks it asks before running regression tests, acceptance or delivery; none of them run without the user's choice. `Spec: <repo-relative spec path>` is a traceability trailer, not a drift-guard bypass.
 
 ## 本仓库采用 spec 驱动开发（spec-dev）
 
@@ -30,23 +29,22 @@ Once plan execution is authorized, `executing-plans` runs tasks serially in the 
 
 ### 产物位置
 
-- **spec / plan**：`.spec-dev/YYYY-MM-DD-NN-<特性>/`（NN 为当日两位序号；存量旧命名 `YYYY-MM-DD-<特性>/` 目录按原样读取），其中 `spec/<特性>-design.md` 是行为契约与验收矩阵。**plan**：新计划使用单文件 `plan/<特性>-plan.md`，包含全局约束、任务导航表、任务复选框及最终任务资源台账。`docs/` 历史位置的产物按原位读取。迁移是另行授权的操作（`node scripts/spec-dev/migrate-to-spec-dev.mjs`），不作为安装或当前任务的前置条件。
-- **execution**：仅作本地临时产物；生成前忽略 `.spec-dev/**/execution/`，不纳入 Git。验收、必要补验和对账收口后，在计划/报告保留简短结论，统一删除本特性整个 execution，不归档或转存。
+- **spec / plan**：`.spec-dev/YYYY-MM-DD-NN-<特性>/`（NN 为当日两位序号；存量旧命名 `YYYY-MM-DD-<特性>/` 目录按原样读取），其中 `spec/<特性>-design.md` 是行为契约（Requirement 与 Scenario）。**plan**：单文件 `plan/<特性>-plan.md`，包含头部、任务导航表、任务复选框和执行记录。`docs/` 历史位置的产物按原位读取。迁移是另行授权的操作（`node scripts/spec-dev/migrate-to-spec-dev.mjs`），不作为安装或当前任务的前置条件。
 - 每份 spec 顶部 frontmatter 的 `spec_dev.covers` 声明它覆盖的代码路径。
 
 ### 改代码的义务（无论是否安装插件）
 
 1. 动某块代码前，先看它属于哪个特性、对应 spec 怎么规定的行为。
-2. **行为发生变化时，必须同步更新该 spec**（行为规范 + 验收矩阵），并与代码放在同一次提交。
-3. 漂移守卫会拦截"改了 `covers` 覆盖的代码却没同步 spec"的操作：编辑时（Codex `.codex/hooks.json` 的 PreToolUse hook）、提交时（pre-commit）、推送时（pre-push）与 CI。Claude Stop 仅报告工作区问题，不阻断结束；显式 `--worktree` 审计仍严格检查。先把 spec 改好（工作区改动即可），再动覆盖代码即放行。
+2. **行为发生变化时，必须同步更新该 spec** 的行为规范，并与代码放在同一次提交。
+3. 漂移守卫会拦截"改了 `covers` 覆盖的代码却没同步 spec"的操作：编辑时（Codex `.codex/hooks.json` 的 PreToolUse hook）、提交时（pre-commit）、推送时（pre-push）与 CI。Claude Stop 仅报告工作区问题，不阻断结束；显式 `--worktree` 审计仍严格检查。先把 spec 改好（工作区改动即可），再动覆盖代码即放行。按计划实施某份 spec 期间，它在特性分支上保持 `draft`，交付提交里才翻 `active`，所以任务提交不会被拦。
 4. 确实与行为契约无关的改动，在提交信息留 `Spec-Guard: off <原因>` trailer（提交区间检查会放行），或临时设 `SPEC_DEV_GUARD=off`。
-5. `superseded` 是生命周期终态，不是逃生舱。把 spec 置为 superseded 必须在同一变更内填写 `superseded_by` 指向后继 spec（仓库根相对路径）；后继 spec 的 `covers` 须接管旧 spec 中仍存在的路径（不留守卫真空），旧 spec 的 `sync_commit` 自此冻结。读到 superseded spec 时沿 `superseded_by` 跳转后继——不得依据其行为规范开展新工作（它仅作历史可读）。特性纯删除、无后继行为时，写一份仅含 REMOVED 的轻量 spec 作为后继以记录原因。
+5. `superseded` 是生命周期终态，不是逃生舱。把 spec 置为 superseded 必须在同一变更内填写 `superseded_by` 指向后继 spec（仓库根相对路径）；后继 spec 的 `covers` 须接管旧 spec 中仍存在的路径（不留守卫真空）。读到 superseded spec 时沿 `superseded_by` 跳转后继——不得依据其行为规范开展新工作（它仅作历史可读）。特性纯删除、无后继行为时，写一份仅含 REMOVED 的轻量 spec 作为后继以记录原因。
 
 ### 装了 spec-dev 插件时
 
-用 `requirement-analysis`（需求→spec）、`writing-plans`（spec→plan）、`executing-plans`（TDD 逐任务执行 + 收尾验收）三个 skill 推进，不要绕过流程直接改代码。
+用 `requirement-analysis`（需求→spec）、`writing-plans`（spec→plan）、`executing-plans`（TDD 逐任务执行）三个 skill 推进，不要绕过流程直接改代码。
 
-用户授权执行计划后，`executing-plans` 由主线程按真实依赖串行执行。任务范围、绑定、独立审查与交付核验仍须执行。`Spec: <仓库根相对 spec 路径>` 仅作追溯，不代替 spec 同步或漂移检查。
+用户授权执行计划后，`executing-plans` 由主线程按真实依赖串行执行。全部任务完成后先问用户，再做回归测试、验收和交付；用户没选的不执行。`Spec: <仓库根相对 spec 路径>` 仅作追溯，不代替 spec 同步或漂移检查。
 
 ### 联网检索约定
 

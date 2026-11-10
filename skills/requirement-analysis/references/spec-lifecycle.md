@@ -1,40 +1,38 @@
-# Spec 生成与生命周期
+# Spec 落盘与生命周期
 
-> 阅读时机：完整设计获批后、生成 spec 或变更状态之前。
+> 阅读时机：设计获批后、写 spec 文件之前；要启用漂移守卫或涉及取代旧 spec 时。
 
-## 生命周期事件
+## 落盘
 
-| 事件 | 新 spec 状态 | 旧 spec 标注 | 下一步 |
-|---|---|---|---|
-| 完整设计获批并落盘 | draft | 原样保留 | 完成适用 spec 审查 |
-| 定稿并取得计划编写授权 | active | 同提交写 Superseded-pending（如有） | writing-plans |
-| 实施与验证中 | active | pending 保留，现行/待取代边界仍可见 | 按获批计划推进 |
-| 真实交付完全取代 | active | 旧 spec superseded，superseded_by 指向后继 | 接管仍存在的 covers，旧 sync_commit 冻结 |
-| 真实交付部分取代 | active | 只标被取代的 Requirement；旧 spec 仍 active | 其余契约继续有效 |
-| 废弃未交付计划 | 按裁决记录 | 回收本次 pending | 保留已有历史与裁决 |
+- **特性目录**：`.spec-dev/YYYY-MM-DD-NN-<feature>/`，所有产物统一收在项目根的 `.spec-dev/` 下。NN 是当日两位序号：扫描当日已有的日期前缀产物（特性目录，以及 `reports/`、`roadmaps/` 下的文件名）取最大加一，从 01 起步；落盘前重扫一次，发现同号已被占用就顺延。feature 取需求主题的短语义名。存量的旧命名目录不改名（grandfather）。
+- **文件**：把批准的设计写入 `spec/<feature>-design.md`，结构按 [spec 模板](../assets/spec-template.md)。后续的计划放在同一特性目录的 `plan/` 下。用户对位置有偏好时以用户为准。
+- **行为需求**用 Requirement 加 Scenario 表达，它们是后续测试和验收的直接来源；修改既有功能时改用差量三节。
+- **共享术语**：本次获批的跨特性术语按 [context-reuse.md](context-reuse.md) 与 spec 同次保存；没有就不创建空词汇表。
+- **ADR**：满足三条件的决策按 [跨技能文档规范](document-conventions.md) 另存为 ADR，spec 里留一行摘要和链接。
+- **roadmap**：本特性是某个 roadmap 的子项目时，把特性目录回填到对应行，状态置为 `in-progress`。
+- **提交**：只提交本次实际写入的文件；非 git 仓库跳过并告诉用户。
 
-Superseded-pending 只是正文标注，不是 status 状态枚举。激活发生在计划交接，取代回写随真实交付生效；读到 superseded 必须沿 superseded_by 找可达后继，缺失或成环不能猜当前契约。完整标注形制沿 spec 模板，不在表中另造格式。
+## 默认：一次性契约
 
-## 阶段 6: 写 spec 并提交
+spec 默认不带 frontmatter。它是本次变更的契约：实施期间是判断跑偏的参照，交付后冻结成历史，不要求持续维护成"现行文档"。长期有效的行为由以 Scenario 命名的测试守护。没有 frontmatter 的 spec 不参与漂移守卫。
 
-- 为本需求创建特性目录 `.spec-dev/YYYY-MM-DD-NN-<feature>/`（所有 spec-dev 产物统一收纳在项目根目录 `.spec-dev/` 下；NN 为当日两位序号——扫描 `.spec-dev/` 下当日已有的日期前缀产物（特性目录，及 `reports/`、`roadmaps/` 下的文件名）取最大加一、01 起步，**落盘前重扫一次防并发撞号**：发现同号已被占则顺延并同步修正自引路径；feature 取需求主题的短语义名，跟随项目语言；存量旧命名 `YYYY-MM-DD-<feature>` 目录不改名（grandfather）；同一 NN 序列由全部 `.spec-dev/` 日期前缀产物共用），将批准的设计写入其 `spec/<feature>-design.md`（用户对 spec 位置的偏好优先于此默认值）
-- 按 [context-reuse.md](context-reuse.md) 将本次获批共享术语与 spec 同次保存和范围提交；无共享术语不创建空 glossary，特性局部术语只留 spec。
-- spec 与后续 writing-plans 的计划（同目录单文件 `plan/<feature>-plan.md`）共用这一个特性目录——一个需求的全部产物收纳在一处
-- **决策分流（ADR）**：按 [跨技能文档规范](document-conventions.md) 的三条件、统一编号和生命周期处理；满足条件时在实际写入前读取全文，缺一不建。
-- **取代分流（supersede triage）**：对阶段 2 探索命中的每份行为相交 active spec 做三分类判定并写入 spec——**完全取代**（新 spec 整体替换旧特性）与**部分取代**（替换旧 spec 的部分 Requirement）登记进 frontmatter `supersedes`（仓库根相对路径）与正文「取代与共存」节（部分取代必须列出被取代的具体 Requirement 标题清单，每条附一句取代理由）；**分面共存**（同文件不同行为切面、无冲突）不登记 supersedes，记一行判定理由并各自声明 covers。节模板与标注形制见 [spec-template.md](../assets/spec-template.md)。用户要求删除整个特性且无新行为承接时，产出仅含 REMOVED Requirements 的轻量 spec 作为后继（记录删除理由，交付时按完全取代回写旧 spec）。spec 的取代回写随交付生效（executing-plans 最终任务），与 ADR 的即时回写构成双轨
-- 结构参考 [spec-template.md](../assets/spec-template.md)，按需增删节；**行为需求必须用 Requirement + Scenario 结构表达**（`### Requirement:` 一条一个 SHALL 且可观察，`#### Scenario:` 用 GIVEN/WHEN/THEN——它们是后续 TDD 测试与验收的直接锚点）；修改既有功能时行为部分改用差量三节（ADDED/MODIFIED/REMOVED Requirements，见模板）
-- **漂移守卫锚点（必填）**：落盘时保留模板顶部的 `spec_dev` frontmatter，填写 `feature` 与 `covers`（本特性拥有的代码路径 glob；纯文档特性留空数组 `[]`）——此阶段 `status` 保持 `draft`。该 frontmatter 是 pre-commit / CI 漂移守卫的锚点，缺失或永停 draft 意味着该特性代码不受"改了代码却没同步 spec"的拦截保护
-- 新建/本次更新胶囊指针时使用一句用途/适用边界摘要 + 精确来源路径；摘要不能替代续接读取原文，旧胶囊没有摘要仍正常读，不全库回填。
-- **roadmap 回填（仅当本特性是某 active roadmap 的子项目）**：把特性目录路径回填至 roadmap 对应子项目行、状态置 `in-progress`；不属于任何 roadmap 则无此步
-- git commit 该 spec、本次按获批设计更新的 glossary、新增 ADR 与 roadmap 回填（仅本次实际修改的这些文件；非 git 仓库则跳过并向用户说明）
+## 可选：启用漂移守卫
 
+用户要求这块代码以后的改动必须同步 spec，且项目装了守卫时，按模板加上 frontmatter 并填 `covers`。此时按下表管理状态：
 
-## 阶段 8: 交接 writing-plans
+| 时点 | 本 spec | 受影响的旧 spec |
+|---|---|---|
+| 设计获批并落盘 | `draft` | 不动 |
+| 实施期间（特性分支） | 保持 `draft` | 特性分支的第一次提交处理，见下 |
+| 交付 | 交付提交里翻 `active` | 暂时改回 draft 的一并翻回 `active` |
+| 计划被放弃 | 保持 `draft` 或删除 | 特性分支上的改动随分支丢弃 |
 
-- **前置确认**：须持有用户对「开始编写实施计划」的明确同意——阶段 7 的确认话术已包含此询问；用户仅认可 spec、未表态是否继续时，先问「现在开始编写实施计划吗？」，同意后才交接
-- **激活漂移守卫**：交接前把 spec frontmatter 的 `status: draft` 翻为 `active` 并 commit（仅 `active` 参与漂移拦截——不翻转则守卫对本特性静默失效）
-- **打取代预告（仅当 spec 的 `supersedes` 非空）**：翻 active 的同一提交内，向每份被指向的旧 spec H1 标题下写入 Superseded-pending 标注（形制见 spec-template「取代标注形制」节；部分取代写明将被取代的 Requirement 标题）——窗口期的双 active 状态由此对全部消费方显式可判定；后续该计划若被废弃，由 executing-plans 意图级偏差收尾回收此标注
-- 调用 writing-plans skill，基于已批准的 spec 生成实施计划
-- **不得调用任何其他 skill**——writing-plans 是本流程唯一的下一步；实施纪律（worktree 隔离、TDD、审查编排）由 writing-plans → executing-plans 链路承接
+守卫只对 `active` 生效，所以实施期间的任务提交不会被拦；这些状态改动都在特性分支上，主分支在合并前保持原样。
 
----
+特性分支的第一次提交这样处理旧 spec：
+
+- **完全取代**：旧 spec 置为 `superseded`，同一提交填 `superseded_by` 指向本 spec；本 spec 的 `covers` 要接管旧 spec 里仍然存在的路径。
+- **部分取代或直接修订**：旧 spec 暂时改回 `draft`，在每条被取代的 Requirement 标题下加标注 `> **Superseded (YYYY-MM-DD)** — by <本 spec 的仓库根相对路径>；原文保留仅作历史参考。`
+- **分面共存**（同一批文件的不同行为切面，互不冲突）：不动旧 spec，各自声明 covers。
+
+取代关系在设计时判断，写进 spec 的「关键决策」和 frontmatter 的 `supersedes`。`superseded` 是终态，不是绕过守卫的手段：读到 superseded 的 spec 要沿 `superseded_by` 找后继，指针缺失或成环时报告，不猜现行契约。特性被整体删除且没有新行为承接时，写一份只含 REMOVED Requirements 的轻量 spec 作为后继。

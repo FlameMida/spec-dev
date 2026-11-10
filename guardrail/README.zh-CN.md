@@ -23,7 +23,7 @@ node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
 | 层 | 机制 | 作用域 | 可绕过性 |
 |---|---|---|---|
 | 编辑时拦截 · Claude | `.claude/settings.json` PreToolUse hook（退出码 2 阻断）；spec 已在工作区同步则放行 | Claude Code 会话 | 换工具即绕过 |
-| 收尾提醒 · Claude | Stop 运行 `--worktree --warn-only` 检查整个工作区（含 shell 写入）；漂移和无效绑定通过 `systemMessage` 提醒，退出码 0，不阻断结束 | Claude Code 会话 | 仅提示 |
+| 收尾提醒 · Claude | Stop 运行 `--worktree --warn-only` 检查整个工作区（含 shell 写入）；漂移通过 `systemMessage` 提醒，退出码 0，不阻断结束 | Claude Code 会话 | 仅提示 |
 | 编辑时拦截 · Codex | `.codex/hooks.json` PreToolUse hook（退出码 2 阻断） | Codex 会话 | 换工具即绕过 |
 | 提交时拦截 | 版本化 `.githooks/pre-commit`（`core.hooksPath` 启用；package.json `prepare` 在 install 时自动配置，新 clone 即带闸门） | 所有本地提交，任何编辑工具 | `--no-verify` 可绕过 |
 | 推送时拦截 | 版本化 `.githooks/pre-push` 整段复查待推送区间，捕获 `--no-verify` 落下的提交 | 所有本地推送 | `--no-verify` 可绕过 |
@@ -31,39 +31,31 @@ node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
 | 会话自愈 | SessionStart hook → `session-context.mjs`：注入流程义务 + 守卫健康自检（发现 `core.hooksPath` 未启用等问题时要求 agent 当场修复） | Claude / Codex 会话 | 仅提示 |
 | 软提示 | `CLAUDE.md` / `AGENTS.md` 守卫段 | 各自 AI 工具 | 仅提示 |
 
-`check-spec-drift.mjs` 负责各视图的范围判定；`task-binding.mjs` 负责本地绑定与提交消息关联。漂移入口的模式为（`--staged` / `--range` / `--push` / `--hook` / `--worktree`）。
+`check-spec-drift.mjs` 是唯一的校验器，入口模式为（`--staged` / `--range` / `--push` / `--hook` / `--worktree`）。
 
 ## 判定逻辑
 
 每份 spec 的 frontmatter `spec_dev.covers`（glob）声明它拥有的代码。一批变更命中某 `status: active` spec 的 `covers`、却没同时改动该 spec，即判为漂移。spec 被取代（superseded）时其 covers 退出拦截——后继 spec 必须接管仍存在的路径，否则出现无人守护的真空；取代回写由 spec-dev 的 executing-plans 收尾强制执行。
 
-frontmatter 的 `sync_commit` 是交付锚点：最近一次确认代码与本 spec 同步的提交——由 executing-plans 收尾在合并后写入；`git diff <sync_commit>..HEAD -- <covers>` 即此后的代码变化。守卫解析该字段但不参与拦截判定。superseded spec 的 sync_commit 冻结在取代提交，此后不再更新。
+只有带 frontmatter 且 `status: active` 的 spec 参与判定。默认的一页 spec 不带 frontmatter，不受守卫约束；`draft` 的 spec 也不拦截。
 
-编辑时（`--hook`）的"是否同步"认定包含工作区已有改动（暂存 + 未暂存 + 未跟踪）：**先把 spec 改好，再动覆盖代码即放行**；但工作区脏文件不会扩大触发集，编辑无关文件不受既有漂移影响。显式执行 `node scripts/spec-dev/check-spec-drift.mjs --worktree` 仍严格审计整个工作区，漂移或无效绑定返回 2。安装后的 Stop 使用 `--worktree --warn-only`，输出可见提醒并返回 0，旧改动不会阻断本轮只读问答。绕过 PreToolUse 的 shell 写入，可能到显式交付审计或提交时才被阻断。
+编辑时（`--hook`）的"是否同步"认定包含工作区已有改动（暂存 + 未暂存 + 未跟踪）：**先把 spec 改好，再动覆盖代码即放行**；但工作区脏文件不会扩大触发集，编辑无关文件不受既有漂移影响。显式执行 `node scripts/spec-dev/check-spec-drift.mjs --worktree` 仍严格审计整个工作区，发现漂移返回 2。安装后的 Stop 使用 `--worktree --warn-only`，输出可见提醒并返回 0，旧改动不会阻断本轮只读问答。绕过 PreToolUse 的 shell 写入，可能到显式交付审计或提交时才被阻断。
 
 插件更新后，重新运行 `node guardrail/install.mjs --repo <目标仓库>` 更新已安装副本。安装器只把自身精确匹配的旧阻断 Stop 命令迁移为提醒命令，保留用户自定义 hooks 和配置。业务项目 pre-push 继续保留；只有受保护分支已要求通过区间 CI 检查时，才考虑移除本地这一层。
 
-用户授权执行计划后，`executing-plans` 由主线程按真实依赖串行执行。任务范围、绑定、独立审查与交付核验仍须执行。`Spec: <仓库根相对 spec 路径>` 仅作追溯，不代替 spec 同步或漂移检查。
+## 按计划实施时
 
-## 任务范围放行
+按计划实施或修订某份带守卫的 spec 时，不需要逐个提交放行：
 
-主线程先提交 spec、计划和精确写集合，单文件使用该已提交范围版本作为 authority SHA。随后在对应工作区激活：
+- 实施期间该 spec 在特性分支上保持 `draft`，守卫只看 `active`，任务提交不会被拦。
+- 修订一份已经 `active` 的 spec 时，特性分支的第一次提交把它改回 `draft`；被完全取代的旧 spec 在这次提交置为 `superseded` 并填 `superseded_by`。
+- 交付提交把 spec 翻为 `active`，此后的改动重新受守卫保护。
 
-```bash
-node scripts/spec-dev/task-binding.mjs bind --plan .spec-dev/<feature>/plan/<feature>-plan.md --task T01 --authority <完整SHA>
-node scripts/spec-dev/task-binding.mjs inspect
-node scripts/spec-dev/task-binding.mjs clear --plan .spec-dev/<feature>/plan/<feature>-plan.md --task T01
-```
+这些状态改动只在特性分支上，主分支在合并前保持原样。任务提交触及的是另一个特性的 active spec 时，守卫照常拦截：行为变了就同步那份 spec，没变就用下面的临时放行。
 
-本地引用位于实际 Git dir，不能自行授权。任务、spec、写集合、工作区 过期时必须重新核验。守卫核对范围；行为符合性仍由测试与审查负责，行为变更必须同步 spec。
+历史上由任务绑定打过 `Spec-Task` 标记的提交，区间检查会告警放行，不再核验。更新插件后重跑安装器，会移除早先装进 `prepare-commit-msg`、`commit-msg` 的守卫段和 `task-binding` 脚本副本；你自己写的 hook 内容原样保留。hook 里若还有你改写过的 `task-binding` 调用，安装器会点名提示，需要手工删除，否则提交会失败。
 
-`prepare-commit-msg` 从有效绑定补充单行 `Spec-Task` JSON；`commit-msg` 在原 hook 执行后核对最终消息。历史检查使用该关联及提交内的视图，不读取当前工作区的授权引用。缺少源 Git 对象会拒绝核验。守卫脚本及其纯模块一起安装，无需插件缓存。
-
-受管理的 hooks 目录若已有非 shell 消息 hook，安装器在写入任何文件前拒绝安装。保留原脚本并配置 shell 包装器后再重试；安装器不会向 Python 或 Node 脚本注入 shell 代码。
-
-任务关联不能与 `Spec-Guard: off` 或 `SPEC_DEV_GUARD=off` 混用。使用已授权的旧例外前，先 clear 当前任务引用；普通 `Spec:` 仍只作追溯。
-
-## 临时放行（无任务关联）
+## 临时放行
 
 - 推荐：提交信息留 `Spec-Guard: off <原因>` trailer——pre-push 与 CI 的区间检查会识别并放行该提交（打印计数供人工复核），全链路一致。
 - 单次命令：`SPEC_DEV_GUARD=off git commit …`（打印告警后放行；建议同时留 trailer，否则推送/CI 区间检查仍会拦）。
@@ -78,7 +70,6 @@ node scripts/spec-dev/task-binding.mjs clear --plan .spec-dev/<feature>/plan/<fe
 ```
 guardrail/
 ├── check-spec-drift.mjs      # 核心校验器（零依赖）
-├── task-binding.mjs          # bind / inspect / clear / message hooks
 ├── lib/                      # installed shared parsers and Git views
 ├── session-context.mjs       # SessionStart 上下文注入 + 守卫健康自检
 ├── install.mjs               # 安装器
@@ -86,8 +77,6 @@ guardrail/
     ├── claude-settings.json  # Claude hooks 片段（PreToolUse + Stop + SessionStart）
     ├── codex-hooks.json      # Codex hooks 片段
     ├── pre-commit            # 版本化 git hook（串联 .git/hooks 历史 hook）
-    ├── prepare-commit-msg    # Spec-Task association
-    ├── commit-msg            # final message validation
     ├── pre-push              # 版本化 git hook（第二道闸）
     ├── github-workflow.yml   # CI
     ├── CLAUDE.md.snippet     # Claude 软提示

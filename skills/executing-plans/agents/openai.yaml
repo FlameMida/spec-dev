@@ -1,7 +1,7 @@
 interface:
   display_name: "Executing Plans"
-  short_description: "主线程串行执行获批计划，支持断点恢复、独立审查、验收与交付。"
-  default_prompt: "用 $executing-plans 由主线程串行执行获批计划，核对并恢复已有状态，完成审查与交付。"
+  short_description: "在隔离工作区逐任务 TDD 执行获批计划，界面任务按组件映射实现并对照定稿自查，支持断点恢复；回归、验收和交付先问后做。"
+  default_prompt: "用 $executing-plans 执行获批计划：逐任务 TDD 并提交，全部完成后先问我，再做回归、验收和交付。"
 
 policy:
   allow_implicit_invocation: true

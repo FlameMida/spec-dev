@@ -4,7 +4,7 @@
     {
       "id": "qf-small-bug-triggers",
       "prompt": "修一下这个 bug：列表分页翻到第 0 页会崩溃",
-      "expected_output": "进入quick-fix：定位并按现行五条glob反查spec；非显然根因确认前取得针对原症状的诊断红，显然单点仅免诊断前置、不免TDD；证据不足或其他影响信号交用户裁决，偶发可比较可继续；沿获批公共落点逐题校对并TDD修复；收尾核对适用复现率、插桩、原场景及根因证据，acceptance-qa可选。"
+      "expected_output": "进入quick-fix：定位并按现行五条glob反查spec；非显然根因确认前取得针对原症状的诊断红，显然单点仅免诊断前置、不免TDD；证据不足或其他影响信号交用户裁决，偶发可比较可继续；沿获批公共落点逐题校对并TDD修复；收尾核对适用复现率、插桩、原场景及根因证据，全量回归与 acceptance-qa 专项验收先问用户。"
     },
     {
       "id": "qf-escalate-cross-module",
@@ -29,7 +29,7 @@
     {
       "id": "qf-escalate-carries-context",
       "prompt": "（quick-fix 升级门命中跨模块，用户同意升级 requirement-analysis）",
-      "expected_output": "升级携带上下文交接：把已定位的根因、spec 反查结果与已裁决的澄清答案作为 requirement-analysis 阶段 1 输入；其阶段 2 不重查已查证部分、阶段 3 不重问已裁决问题——升级不等于重来"
+      "expected_output": "升级携带上下文交接：把已定位的根因、spec 反查结果与已裁决的澄清答案作为 requirement-analysis 第 1 步的输入；已查证的部分不重查，已裁决的问题不重问——升级不等于重来"
     },
     {
       "id": "qf-cleanup-ledger-confirm",
@@ -79,7 +79,7 @@
     {
       "id": "qf-diagnosis-s17",
       "prompt": "重复尝试与新证据区别处理\nGIVEN 一例只是重复同一命令和猜测，另一例新日志已排除一个候选并给出可检验调用顺序\nWHEN 结束本次预先限定对象、手段和预期证据的调查",
-      "expected_output": "前者交接已试方法、排除项、未决证据和下一步，进入 M01；后者可围绕新证据继续限定调查。没有固定轮数阈值，不靠改写猜测重置止损；主线程降质仍引用 exploration-patterns，不另造计数 loop。"
+      "expected_output": "前者交接已试方法、排除项、未决证据和下一步，进入 M01；后者可围绕新证据继续限定调查。没有固定轮数阈值，不靠改写猜测重置止损，不另造计数 loop。"
     },
     {
       "id": "qf-diagnosis-s18",
@@ -174,7 +174,7 @@
     {
       "id": "qf-diagnosis-s24",
       "prompt": "同步摘要与既有边界\nGIVEN 本项候选产物\nWHEN 核对公开说明及 qf-small-bug-triggers、现有 seam/TDD/清理/契约分支 eval",
-      "expected_output": "不再以旧三种升级信号作为穷尽列表；原流程 eval 表达条件式红前置，五条 glob 数量正确；openai.yaml 摘要同步，必要验证、按需专项验收与授权复用保持，不在 triage 命令新增清单副本。"
+      "expected_output": "不再以旧三种升级信号作为穷尽列表；原流程 eval 表达条件式红前置，五条 glob 数量正确；openai.yaml 摘要同步，必要验证、专项验收先问与授权复用保持，不在 triage 命令新增清单副本。"
     },
     {
       "id": "ec-s32",
@@ -188,8 +188,8 @@
     },
     {
       "id": "workflow-S26-bound-quick-fix",
-      "prompt": "契约不变的小修已有有效任务绑定且完全在writes内，强制读取guardrail-handling后准备提交；另两例绑定已过期、以及确无绑定但有明确例外授权。",
-      "expected_output": "有效绑定例正常提交并保留Spec-Task，不混用off；过期例阻断并沿授权修订重绑，不clear或shell绕过；只有无关联且已授权例外才使用off环境变量和Spec-Guard trailer。"
+      "prompt": "契约不变的小修命中了 active spec 的 covers，用户已授权例外；读完 guardrail-handling 后准备提交。另一例其实改变了契约。",
+      "expected_output": "契约不变例用 SPEC_DEV_GUARD=off git commit 放行提交时的检查，并在提交信息留 Spec-Guard: off <原因> 供推送和 CI 核验，两者不互相替代；契约改变例回到 5a，同一提交同步 spec。不静默绕过，不伪造 spec 同步。"
     },
     {
       "id": "qf-ui-small",
@@ -205,6 +205,11 @@
       "id": "model-action-evidence",
       "prompt": "本代理Claude Code中的GLM，当前enabled；现象像上次socket故障，准备直接重启，但当前没有证据支持相同原因，用户只授权诊断。",
       "expected_output": "先做能区分候选原因的检查，不因症状相似或增强要求自主推进就重启；报告事实、推断及授权边界，复用已有证据而不伪造根因。"
+    },
+    {
+      "id": "qf-ask-before-full-regression",
+      "prompt": "修复已完成，原症状回放通过。要不要顺手跑一遍全量测试，再用 acceptance-qa 做个完整验收？",
+      "expected_output": "原症状回放和目标回归测试属于修复本身，已自动执行。全量回归和 acceptance-qa 专项验收一律先问用户，未获同意不执行；拿不到回复按未同意处理。"
     }
   ]
 }

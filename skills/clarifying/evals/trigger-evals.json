@@ -17,5 +17,5 @@
     { "id": "n5", "prompt": "这个函数在哪里定义的？" },
     { "id": "n6", "prompt": "help me think through whether a plugin system is worth building" }
   ],
-  "notes": "t1-t6 的共同信号：用户主动要求被逐题审问/磨清楚（'逐题问清楚''grill''审我一轮''磨到能拍板''一个问题一个问题'），对象是一个已有雏形的想法/计划/决定。n1/n2/n6 是发散式思考陪伴（'帮我想想''聊聊思路'——exploring 领地，clarifying 是收敛不是发散）；n3 已承诺交付的功能开发（requirement-analysis 领地，其阶段 3 会以被引用模式使用本纪律）；n4 已决定的无设计空间小修（quick-fix 领地）；n5 单点事实问答。近失负例检验 description 中'收敛式逐题 vs 发散式陪伴'的双向互斥边界。"
+  "notes": "t1-t6 的共同信号：用户主动要求被逐题审问/磨清楚（'逐题问清楚''grill''审我一轮''磨到能拍板''一个问题一个问题'），对象是一个已有雏形的想法/计划/决定。n1/n2/n6 是发散式思考陪伴（'帮我想想''聊聊思路'——exploring 领地，clarifying 是收敛不是发散）；n3 已承诺交付的功能开发（requirement-analysis 领地，其第 2 步会以被引用模式使用本纪律）；n4 已决定的无设计空间小修（quick-fix 领地）；n5 单点事实问答。近失负例检验 description 中'收敛式逐题 vs 发散式陪伴'的双向互斥边界。"
 }

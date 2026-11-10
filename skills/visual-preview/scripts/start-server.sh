@@ -20,8 +20,9 @@
 #   --idle-timeout-minutes <n>  Shut down after n minutes idle (default 240 = 4h).
 #   --theme-css <file>    Inject a project CSS file (design tokens / variable
 #                         overrides) into framed screens.
-#   --open                Auto-open the browser on the first screen (use only
-#                         after the user approves the visual preview).
+#   --open                Auto-open the user's browser when the first screen is
+#                         ready. Default for local interactive sessions; omit
+#                         when remote, headless, or the user turned preview off.
 #   --foreground          Run server in the current terminal (no backgrounding).
 #   --background          Force background mode (overrides Codex auto-foreground).
 

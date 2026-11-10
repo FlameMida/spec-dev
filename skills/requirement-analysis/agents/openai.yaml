@@ -1,7 +1,7 @@
 interface:
   display_name: "Requirement Analysis"
-  short_description: "将已承诺且有设计空间的开发需求转化为获批 spec，再交接计划编写。适用于新功能、API、数据及行为设计；未定想法用 exploring，无设计空间小修用 quick-fix，纯问答或日常测试不适用。"
-  default_prompt: "用 $requirement-analysis 走 8 阶段工作流设计这个功能并产出 spec。"
+  short_description: "将已承诺且有设计空间的开发需求转化为获批的一页 spec，再交接计划编写。适用于新功能、API、数据及行为设计；涉及界面时按项目界面约定出原型，用户审查定稿后再批准；未定想法用 exploring，无设计空间小修用 quick-fix，纯问答或日常测试不适用。"
+  default_prompt: "用 $requirement-analysis 设计这个功能：探索、逐题澄清、给出设计提案，批准后产出一页 spec。"
 
 policy:
   allow_implicit_invocation: true

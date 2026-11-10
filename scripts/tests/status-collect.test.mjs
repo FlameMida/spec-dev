@@ -56,7 +56,13 @@ test('S05 深层验收夹具排除 / S14 tasks-only / S18 单分支特性',()=>f
 }));
 test('S06 历史位置与符号链接 / S12 旧任务',()=>fixture(async(root,dir)=>{
  await write(root,'docs/2020-01-01-old/plan/old-plan.md','### 任务 0：one\n- [x] done');await fs.mkdir(path.join(root,'.spec-dev'));await fs.symlink(dir,path.join(root,'.spec-dev/link'));
- const r=await collectStatus(root);assert.ok(r.features.length>0);assert.equal(r.features[0].sources[0].plan.format,'legacy');assert.ok(r.diagnostics.some(d=>d.code==='symlink_skipped'));
+ const r=await collectStatus(root);assert.ok(r.features.length>0);assert.equal(r.features[0].sources[0].plan.format,'single');assert.ok(r.diagnostics.some(d=>d.code==='symlink_skipped'));
+}));
+test('一页 spec 没有 frontmatter 时不算读取错误',()=>fixture(async(root)=>{
+ await write(root,'.spec-dev/P/spec/p-design.md','# P 设计\n\n## 目标与成功标准\n');await write(root,'.spec-dev/P/plan/p-plan.md','### 任务 1：a\n- [x] done\n');
+ const r=await collectStatus(root),source=r.features.find(f=>f.key==='.spec-dev/P').sources[0];
+ assert.equal(source.read_status,'ok');assert.deepEqual(source.specs.map(s=>s.status),[null]);assert.equal(source.plan.format,'single');
+ assert.ok(!r.diagnostics.some(d=>d.path.includes('p-design.md')));
 }));
 test('S07 active spec 没有计划 / S08 未知状态与缺失关联',()=>fixture(async(root)=>{
  await write(root,'.spec-dev/F/spec/f-design.md',spec);await write(root,'.spec-dev/G/spec/g-design.md',spec.replace('active','delivered'));

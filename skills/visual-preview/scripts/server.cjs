@@ -146,7 +146,9 @@ let COOKIE_NAME = 'brainstorm-key-' + PORT; // refined to the actual bound port 
 const MIME_TYPES = {
   '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript',
   '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg',
-  '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.svg': 'image/svg+xml'
+  '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.svg': 'image/svg+xml',
+  '.mjs': 'application/javascript', '.webp': 'image/webp', '.ico': 'image/x-icon',
+  '.woff': 'font/woff', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.otf': 'font/otf'
 };
 
 // ========== Templates and Constants ==========
@@ -353,6 +355,26 @@ function isRegularFileInsideContentDir(filePath) {
   return realFilePath.startsWith(realContentDir + path.sep);
 }
 
+function decodedPathSegments(requestPath) {
+  try {
+    return decodeURIComponent(requestPath).split('/').filter(Boolean);
+  } catch (e) {
+    return [];
+  }
+}
+
+function resolveContentFile(requestPath) {
+  const segments = decodedPathSegments(requestPath);
+  if (segments.length > 0 && segments.every(s => !s.startsWith('.') && !/[\\\0]/.test(s))) {
+    const nested = path.join(CONTENT_DIR, ...segments);
+    if (isRegularFileInsideContentDir(nested)) return nested;
+  }
+  const fileName = path.basename(requestPath);
+  if (!fileName || fileName.startsWith('.')) return null;
+  const flat = path.join(CONTENT_DIR, fileName);
+  return isRegularFileInsideContentDir(flat) ? flat : null;
+}
+
 // ========== Authentication ==========
 
 function timingSafeEqualStr(a, b) {
@@ -516,11 +538,10 @@ function handleRequest(req, res) {
     }));
     res.end(body);
   } else if (req.method === 'GET' && pathname.startsWith('/files/')) {
-    const fileName = path.basename(pathname.slice(7));
-    const filePath = path.join(CONTENT_DIR, fileName);
+    const filePath = resolveContentFile(pathname.slice(7));
     // Reject empty/dotfile names and anything that isn't a regular file —
     // `/files/` would otherwise resolve to CONTENT_DIR and crash readFileSync (EISDIR).
-    if (!fileName || fileName.startsWith('.') || !isRegularFileInsideContentDir(filePath)) {
+    if (!filePath) {
       res.writeHead(404, securityHeaders());
       res.end('Not found');
       return;
@@ -644,7 +665,7 @@ let browserOpened = false;
 function maybeOpenBrowser() {
   if (browserOpened) return;
   browserOpened = true;
-  if (!process.env.BRAINSTORM_OPEN) return; // opt-in: only after the user approves the preview
+  if (!process.env.BRAINSTORM_OPEN) return; // opt-in via start-server.sh --open
   if (HOST !== '127.0.0.1' && HOST !== 'localhost') return;
   if (clients.size > 0) return; // the user already opened it
   const url = previewUrl(); // must carry the key or the gate 403s it

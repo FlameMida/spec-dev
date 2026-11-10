@@ -13,9 +13,7 @@ const SKILLS = [
   "acceptance-qa",
   "clarifying",
   "test-driven-development",
-  "using-git-worktrees",
   "visual-preview",
-  "test-strategy", // T20 新增；requirement-analysis 是条款定义点、不列入
 ];
 
 for (const s of SKILLS) {

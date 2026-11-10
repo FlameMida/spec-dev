@@ -8,6 +8,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash, randomBytes} from 'node:crypto';
 import {createConnection} from 'node:net';
+import {get as httpGet} from 'node:http';
 
 const server = fileURLToPath(new URL('../../skills/visual-preview/scripts/server.cjs', import.meta.url));
 const helper = readFileSync(new URL('../../skills/visual-preview/scripts/helper.js', import.meta.url), 'utf8');
@@ -172,6 +173,33 @@ test('archive refuses remote required assets instead of claiming an offline arti
     `http://127.0.0.1:${page.info.port}/screen/remote.html?key=${page.token}`, '--out', path.join(page.dir, 'archive')], {encoding: 'utf8'});
   assert.equal(result.status, 1);
   assert.match(result.stderr, /External assets/);
+});
+
+test('预览服务提供子目录资源与字体类型且不越出内容目录', async t => {
+  const page = await preview(t);
+  mkdirSync(path.join(page.contentDir, 'lib/ui/fonts'), {recursive: true});
+  writeFileSync(path.join(page.contentDir, 'lib/ui/ui.css'), '.nested{}');
+  writeFileSync(path.join(page.contentDir, 'lib/ui/fonts/icon.woff2'), 'font');
+  writeFileSync(path.join(page.contentDir, 'lib/ui/.hidden'), 'hidden');
+  writeFileSync(path.join(page.contentDir, 'ui.css'), '.flat{}');
+  writeFileSync(path.join(page.contentDir, 'app.mjs'), 'export default 1');
+  const request = unnormalizedPath => new Promise((resolve, reject) => {
+    httpGet({host: '127.0.0.1', port: page.info.port, path: unnormalizedPath,
+      headers: {cookie: `brainstorm-key-${page.info.port}=${page.token}`}}, response => {
+      let body = '';
+      response.on('data', chunk => { body += chunk; });
+      response.on('end', () => resolve({status: response.statusCode, type: response.headers['content-type'], body}));
+    }).on('error', reject);
+  });
+  const nested = await request('/files/lib/ui/ui.css');
+  assert.deepEqual(nested, {status: 200, type: 'text/css', body: '.nested{}'});
+  assert.equal((await request('/files/lib/ui/fonts/icon.woff2')).type, 'font/woff2');
+  assert.equal((await request('/files/app.mjs')).type, 'application/javascript');
+  assert.equal((await request('/files/ui.css')).body, '.flat{}');
+  assert.equal((await request('/files/old/layout/ui.css')).body, '.flat{}', '只写文件名的旧引用仍然可用');
+  for (const route of ['/files/../state/server-info', '/files/%2e%2e/state/server-info',
+    '/files/lib%2f..%2f..%2fstate%2fserver-info', '/files/lib/ui/.hidden', '/files/lib/ui', '/files/'])
+    assert.equal((await request(route)).status, 404, route);
 });
 
 test('archive rejects malformed options before any network or filesystem operation', () => {

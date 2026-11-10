@@ -1,35 +1,25 @@
 # Acceptance Report: {{target-feature}}
 
-> 报告内容沿对话语言。小修可用对话中的同等简短结果，不强制生成本模板全部章节。
-> Time: {{time}} | Trigger: {{workflow / direct}} | Scope: {{实际验收范围}}
-> Spec: {{实际 active spec 或无 spec 的已确认依据；取代跳转链如适用}}
-> Prototype: {{定稿 HTML 路径、版本/manifest、确认来源；或不适用/用户关闭/小改动依据}}
-> Runtime: {{实际 URL/入口、候选源码或构建、账号角色、数据与视口条件}}
+> 报告内容沿对话语言。范围小时可以只在对话里给同等的简短结果，不强制生成本模板的全部章节。
+> Time: {{time}} | Trigger: {{询问门 / 直接调用}} | Scope: {{用户选中并实际执行的范围}}
+> Spec: {{实际使用的 spec，或没有 spec 时已确认的依据；取代跳转链如适用}}
+> Prototype: {{定稿 HTML 路径、版本、确认来源；或不适用 / 用户关闭 / 小改动的依据}}
+> Runtime: {{实际 URL 或入口、候选提交或构建、账号角色、数据与视口条件}}
 
 ## Result
 
-{{通过 / 未完成 / 失败；必需项 fail 阻塞，warn/unverified/manual-pending 或遗漏保持未完成。说明结论实际覆盖的范围。}}
+{{通过 / 未完成 / 失败。有 fail 即失败，有 warn 或 unverified 即未完成。写明结论实际覆盖的范围。}}
 
-## Prototype / Behavior Comparison
+## Checklist
 
-| Scenario / State | Required | Expected | Observed | Status | Evidence |
+| 行为 / 检查项 | 怎么看 | 预期 | 实际 | 状态 | 证据 |
 |---|---|---|---|---|---|
-| {{场景与角色/状态}} | {{true/false}} | {{原型或行为预期}} | {{实际观察}} | {{pass/warn/fail/unverified}} | {{真实原件引用}} |
-
-## Business Evidence
-
-| Check | Reused / New | Candidate / Conditions | Evidence / Result |
-|---|---|---|---|
-| {{保存后重读等真实结果}} | {{复用/新增}} | {{版本与条件适用性}} | {{record/日志/断言原件及实际结果}} |
+| {{场景与角色/状态}} | {{命令或操作步骤}} | {{原型或行为预期}} | {{原始输出或观察}} | {{pass/warn/fail/unverified/未执行}} | {{原件位置}} |
 
 ## Gaps / Findings
 
-{{实际差异、未验证项、原因、需补验证；经验证的根因与仍为候选的解释分开。修复后说明哪些证据失效、补验范围及理由。}}
+{{实际差异、未验证项及原因、需要补验的内容。经验证的根因与仍是候选的解释分开写。}}
 
-## Requirement Reconciliation
+## Not Covered
 
-{{工作流主线程填写；独立触发可省略。逐条核对后写 DELIVERED/DEFERRED/DROPPED/SUPERSEDED/ADDED-IN-FLIGHT；延期/放弃附用户决定来源，不默认预填全部 DELIVERED。}}
-
-## Evidence Summary / coverage_note
-
-{{验收期间引用实际原件；收口前保留受测版本/条件、关键命令与退出码、覆盖结论及缺口摘要，注明 execution 临时原件的实际清理结果。已删路径只作历史定位，不再作可打开的证据。声明裁剪、复核范围、环境缺件、mock 边界及 manual-pending；校验器 ok 不替代语义和覆盖核对。}}
+{{没纳入的维度与理由、用户选择自己验或不验的项、环境缺件、mock 边界。}}
