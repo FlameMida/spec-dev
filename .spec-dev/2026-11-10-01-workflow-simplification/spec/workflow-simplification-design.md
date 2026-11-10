@@ -65,7 +65,7 @@ skill SHALL 只依赖 `skills/` 目录里的文件，并按能力而不是按宿
 
 #### Scenario: skill 不依赖 skills/ 之外的插件文件
 
-- **GIVEN** 只同步了 `skills/` 目录 **WHEN** 检查各 skill 的链接与命令 **THEN** 没有指向 `scripts/`、`agents/`、`guardrail/` 的引用，站内链接都能解析。
+- **GIVEN** 只同步了 `skills/` 目录 **WHEN** 检查各 skill 的链接与命令 **THEN** 没有指向插件 `scripts/`、`agents/`、`guardrail/` 的引用，站内链接都能解析；目标仓库里由守卫安装器写入的 `scripts/spec-dev/` 副本不算插件依赖。
 
 #### Scenario: agents 目录已删除，brief 随 skill 分发
 

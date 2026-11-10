@@ -42,3 +42,12 @@ test('S15 未知版本与未知状态',()=>{
   const f=basic();f.progress=JSON.stringify({...JSON.parse(f.progress),...patch});assert.throws(()=>parsePlanFiles(f));
  }
 });
+test('计划模板里的示例计划能被 status 正确计数', async () => {
+ const {readFileSync}=await import('node:fs');
+ const template=readFileSync(new URL('../../skills/writing-plans/references/plan-template.md',import.meta.url),'utf8');
+ const example=/^````markdown\n([\s\S]*?)\n````$/m.exec(template);assert.ok(example,'template keeps one fenced example plan');
+ const r=parsePlanFiles({single:[['example-plan.md',example[1]]]});
+ assert.equal(r.format,'single');assert.deepEqual(r.counts,{total:1,checked:0,unchecked:1,unknown:0});assert.equal(r.tasks[0].total,5);
+ // 对照：模板一旦不用复选框写步骤，status 就无法计数。
+ assert.equal(parsePlanFiles({single:[['x-plan.md',example[1].replace(/^- \[ \] /gm,'- ')]]}).counts,null);
+});

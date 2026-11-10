@@ -53,7 +53,7 @@ node guardrail/install.mjs [--repo <path>] [--no-git-hook] [--no-ci]
 
 这些状态改动只在特性分支上，主分支在合并前保持原样。任务提交触及的是另一个特性的 active spec 时，守卫照常拦截：行为变了就同步那份 spec，没变就用下面的临时放行。
 
-历史上由任务绑定打过 `Spec-Task` 标记的提交，区间检查会告警放行，不再核验。更新插件后重跑安装器，会移除早先装进 `prepare-commit-msg`、`commit-msg` 的守卫段和 `task-binding` 脚本副本；你自己写的 hook 内容原样保留。
+历史上由任务绑定打过 `Spec-Task` 标记的提交，区间检查会告警放行，不再核验。更新插件后重跑安装器，会移除早先装进 `prepare-commit-msg`、`commit-msg` 的守卫段和 `task-binding` 脚本副本；你自己写的 hook 内容原样保留。hook 里若还有你改写过的 `task-binding` 调用，安装器会点名提示，需要手工删除，否则提交会失败。
 
 ## 临时放行
 

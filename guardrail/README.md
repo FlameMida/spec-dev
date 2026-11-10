@@ -53,7 +53,7 @@ Implementing or revising a guarded spec through a plan needs no per-commit waive
 
 These status changes live only on the feature branch; the main branch stays as it was until the merge. When a task commit touches code owned by another feature's active spec, the guard still blocks it: sync that spec if behavior changed, or use the temporary bypass below if it did not.
 
-Commits that task binding stamped with a `Spec-Task` trailer in the past pass range checks with a notice and are no longer verified. Rerunning the installer after updating the plugin removes the guard blocks it once added to `prepare-commit-msg` and `commit-msg`, and the `task-binding` script copies; hook content you wrote stays untouched.
+Commits that task binding stamped with a `Spec-Task` trailer in the past pass range checks with a notice and are no longer verified. Rerunning the installer after updating the plugin removes the guard blocks it once added to `prepare-commit-msg` and `commit-msg`, and the `task-binding` script copies; hook content you wrote stays untouched. If a hook still contains a `task-binding` call you customized, the installer names the file; remove that call by hand, or commits will fail.
 
 ## Temporary bypass
 

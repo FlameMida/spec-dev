@@ -62,6 +62,35 @@ test('reinstall removes the message guards and scripts left by task binding',t=>
   assert.equal(install(f).status,0,'a second run is a no-op');
   assert.equal(readFileSync(path.join(f.root,'.custom-hooks/commit-msg'),'utf8'),'#!/bin/sh\necho user-check\nexit 0\n');
 });
+const BINDING='spec_dev_binding="$(git rev-parse --show-toplevel)/scripts/spec-dev/task-binding.mjs"';
+const call=verb=>'node "$spec_dev_binding" '+verb+' --file "$1" || exit $?';
+test('reinstall cleans damaged or repeated binding guards, so commits keep working',t=>{
+  const f=workflowFixture(t,{status:'draft'});f.git('config','core.hooksPath','.custom-hooks');
+  // An orphan start marker (its end was deleted) followed by user content and a complete block.
+  f.put('.custom-hooks/commit-msg',['#!/bin/sh','echo user-check',START,BINDING,call('check-message'),'echo keep-me',START,BINDING,call('check-message'),END,'exit 0',''].join('\n'));
+  f.put('.custom-hooks/prepare-commit-msg',['#!/bin/sh',START,BINDING,call('prepare-message'),END,'echo between',START,BINDING,call('prepare-message'),END,'exit 0',''].join('\n'));
+  for(const name of ['commit-msg','prepare-commit-msg'])chmodSync(path.join(f.root,'.custom-hooks',name),0o755);
+  const r=install(f);assert.equal(r.status,0,r.stderr);
+  const msg=readFileSync(path.join(f.root,'.custom-hooks/commit-msg'),'utf8'),prepare=readFileSync(path.join(f.root,'.custom-hooks/prepare-commit-msg'),'utf8');
+  for(const text of [msg,prepare])assert.doesNotMatch(text,/task-binding|spec_dev_binding/);
+  assert.match(msg,/echo user-check\n/);assert.match(msg,/echo keep-me\n/,'content after an orphan marker is not swallowed');
+  assert.equal(prepare,'#!/bin/sh\necho between\nexit 0\n');
+  f.put('notes.txt','after reinstall\n');f.git('add','notes.txt');f.git('commit','-qm','commit still works');
+});
+test('a customized call into task-binding is reported instead of silently left behind',t=>{
+  const f=workflowFixture(t);f.git('config','core.hooksPath','.custom-hooks');
+  const body='#!/bin/sh\nnode scripts/spec-dev/task-binding.mjs check-message --file "$1" || true\n';
+  f.put('.custom-hooks/commit-msg',body);
+  const r=install(f);assert.equal(r.status,0,r.stderr);
+  assert.equal(readFileSync(path.join(f.root,'.custom-hooks/commit-msg'),'utf8'),body,'user-written lines are not rewritten');
+  assert.match(r.stdout+r.stderr,/commit-msg[^\n]*task-binding\.mjs/);
+});
+test('the default .githooks is cleaned even when core.hooksPath points elsewhere',t=>{
+  const f=workflowFixture(t);f.git('config','core.hooksPath','.custom-hooks');
+  f.put('.githooks/commit-msg',oldTemplate('commit-msg'));f.put('.githooks/prepare-commit-msg',oldTemplate('prepare-commit-msg'));
+  const r=install(f);assert.equal(r.status,0,r.stderr);
+  for(const name of ['commit-msg','prepare-commit-msg'])assert.ok(!existsSync(path.join(f.root,'.githooks',name)),name);
+});
 test('reinstall preserves and executes a custom pre-commit hook exactly once',t=>{
   const f=workflowFixture(t,{status:'draft'});f.git('config','core.hooksPath','.custom-hooks');
   f.put('.custom-hooks/pre-commit','#!/bin/sh\nprintf "pre-commit\\n" >> "$(git rev-parse --git-path sentinel.log)"\nexit 0\n');chmodSync(path.join(f.root,'.custom-hooks/pre-commit'),0o755);

@@ -49,6 +49,11 @@ skill 只依赖 `skills/` 目录里的文件。brief、模板和脚本都随 ski
 - Grok Build 复用 Claude 的清单；它的 SessionStart 不向模型注入上下文，所以流程规则不能依赖 hook 提示。
 - Pi 只分发 skills，没有 hooks；子代理需要扩展。
 
+### skill 自己的脚本与其他 skill 的文件
+
+- skill 运行自己目录下的脚本时写 `${CLAUDE_SKILL_DIR}`。Claude Code 会把它替换成该 skill 的绝对目录；其他宿主不替换，取宿主加载该 skill 时给出的目录。用到它的地方都带着这句兜底，不需要先读本文件。
+- 引用其他 skill 的单个文件（模板、brief、契约）时直接给相对路径；需要另一个 skill 的整套流程时按名称加载。
+
 ### 插件命令
 
 `/doctor`、`/status` 这类插件命令要定位插件安装目录，规则见 [插件根解析](plugin-root.md)。skill 本身不需要它。

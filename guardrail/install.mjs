@@ -212,7 +212,12 @@ function installGitHooks(repo) {
     }
     chmodSync(target, mode|0o111);
   }
-  removeLegacyMessageGuards(dir);
+  // 早先的安装可能写在默认的 .githooks 里，而 core.hooksPath 后来指向了别处：两处都清理。
+  const defaultDir = path.join(repo, ".githooks");
+  const messageDirs = path.resolve(defaultDir) === path.resolve(dir) || !existsSync(defaultDir) ? [dir] : [dir, defaultDir];
+  for (const d of messageDirs) for (const file of removeLegacyMessageGuards(d)) {
+    log(`  ! ${path.relative(repo, file)} still calls task-binding.mjs, which is no longer installed; remove that call or commits will fail. / 仍在调用已不再安装的 task-binding.mjs，请手工删除该调用，否则提交会失败`);
+  }
   let configured = false;
   if (own) {
     try {
@@ -226,19 +231,31 @@ function installGitHooks(repo) {
 }
 
 // 任务绑定已移除：早先安装写进消息 hook 的守卫段只调用 task-binding.mjs，这里把它摘掉。
-// 只删本安装器自己的标记块；用户的其余内容原样保留。摘掉后只剩本安装器模板外壳的文件整份删除。
+// 只删本安装器自己写的内容：成对的标记块；标记残缺时，逐字相同的两行生成代码。用户的其余内容原样保留。
+// 摘掉后只剩本安装器模板外壳的文件整份删除。绑定脚本已不再安装，残留的调用会让每次提交失败，
+// 所以删不干净的文件（用户改写过调用）要返回给调用方点名提示。
 function removeLegacyMessageGuards(dir) {
-  const start='# spec-dev:guard:start',end='# spec-dev:guard:end';
+  // 块内不允许再出现起始标记：否则残缺的起始标记会连同后面的用户内容一起被吞到下一个结束标记。
+  const block=/# spec-dev:guard:start\r?\n(?:(?!# spec-dev:guard:start)[\s\S])*?# spec-dev:guard:end\r?\n?/g,leftover=[];
   for (const name of ["prepare-commit-msg", "commit-msg"]) {
     const target = path.join(dir, name);
     if (!existsSync(target)) continue;
     const cur = readFileSync(target, "utf8");
-    const a=cur.indexOf(start),b=cur.indexOf(end);
-    if(a<0||b<a||!cur.slice(a,b).includes('task-binding.mjs'))continue;
-    const next=cur.slice(0,a)+cur.slice(b+end.length).replace(/^\n/,'');
+    if (!cur.includes('task-binding.mjs')) continue;
+    let next=cur.replace(block,found=>found.includes('task-binding.mjs')?'':found);
+    if (next.includes('task-binding.mjs')) {
+      const generated=new Set([
+        'spec_dev_binding="$(git rev-parse --show-toplevel)/scripts/spec-dev/task-binding.mjs"',
+        `node "$spec_dev_binding" ${name==='prepare-commit-msg'?'prepare-message':'check-message'} --file "$1" || exit $?`,
+      ]);
+      next=next.split('\n').filter(line=>!generated.has(line)).join('\n');
+    }
+    if (next.includes('task-binding.mjs')) leftover.push(target);
+    if (next===cur) continue;
     if(isTemplateShell(next,name))rmSync(target);
     else writeFileSync(target,next);
   }
+  return leftover;
 }
 
 // 本安装器旧模板去掉守卫段后剩下的外壳：shebang、串联 .git/hooks 历史 hook 的固定几行、exit 0。

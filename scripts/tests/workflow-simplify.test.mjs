@@ -55,6 +55,28 @@ test('防跑偏规则与测试锁定写在执行入口', () => {
   for (const pattern of [/测试锁定/, /重读/, /任务外/, /红转绿记录/, /连续执行/]) assert.match(e, pattern);
 });
 
+test('恢复时勾选与提交对不上要重新验证，定位不了就报告', () => {
+  const e = raw('skills/executing-plans/SKILL.md');
+  assert.match(e, /勾选与提交对不上[\s\S]{0,80}重跑该任务的目标测试/);
+  assert.match(e, /未提交的改动[\s\S]{0,40}不丢弃/);
+  assert.match(e, /无法确定进行到哪个任务[\s\S]{0,30}报告[\s\S]{0,20}不猜/);
+});
+
+test('没有 spec 的计划按头部的验收标准执行', () => {
+  assert.match(raw('skills/executing-plans/SKILL.md'), /没有 spec[\s\S]{0,60}验收标准[\s\S]{0,60}Requirement/);
+});
+
+test('停下时把命令和关键输出写进执行记录', () => {
+  assert.match(raw('skills/executing-plans/SKILL.md'), /停下时[\s\S]{0,40}命令[\s\S]{0,20}输出[\s\S]{0,20}执行记录/);
+});
+
+test('被拒绝的操作不换个方式偷偷执行', () => {
+  const w = raw('skills/using-git-worktrees/SKILL.md');
+  assert.match(w, /被拒绝[\s\S]{0,60}(改名|换解释器)[\s\S]{0,60}(放宽安全设置|换会话)/);
+  assert.match(w, /文件(不存在|找不到)[\s\S]{0,80}(文件名|项目根)/);
+  assert.match(w, /EACCES|EPERM/);
+});
+
 test('test-strategy 已删除，测试处方随 TDD 分发', () => {
   assert.ok(!has('skills/test-strategy'));
   for (const name of ['db-testing', 'frontend-testing', 'ai-agent-testing'])

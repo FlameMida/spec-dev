@@ -107,3 +107,14 @@ test('外部搜索条款按 skill 名称引用 anysearch', () => {
     assert.doesNotMatch(text, /exploration-patterns\.md|agent-dispatch\.md/, skill);
   }
 });
+
+test('skill 自己的脚本目录变量在 host-compat 有定义，用到的地方带兜底', () => {
+  const compat = raw(HOST_COMPAT);
+  assert.match(compat, /\$\{CLAUDE_SKILL_DIR\}/);
+  assert.match(compat, /单个文件[\s\S]{0,40}相对路径[\s\S]{0,60}按名称加载/);
+  for (const skill of skills) for (const file of docs(skill)) {
+    const text = readFileSync(file, 'utf8');
+    if (rel(file) === HOST_COMPAT || rel(file) === PLUGIN_ROOT || !text.includes('${CLAUDE_SKILL_DIR}')) continue;
+    assert.match(text, /(未替换|没有替换)时/, rel(file));
+  }
+});
