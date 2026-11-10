@@ -1,197 +1,99 @@
-# Spec 模板（`.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md`；NN 为当日两位序号，见 requirement-analysis 阶段 6 命名规则）
+# Spec 模板（`.spec-dev/YYYY-MM-DD-NN-<feature>/spec/<feature>-design.md`）
 
-> **Language / 语言**: Fill in the conversation language — all narrative content (background, requirements, scenarios, decisions) follows the conversation language at creation; keep structural labels (Requirement / Scenario / GIVEN / WHEN / THEN, frontmatter keys) in English. / 以对话语言填写——叙述性内容（背景、需求、场景、决策）跟随创建时对话语言；结构标签（Requirement/Scenario/GIVEN/WHEN/THEN、frontmatter 键）保持英文。
+> **Language / 语言**：叙述性内容跟随创建时的对话语言；结构标签（Requirement、Scenario、GIVEN、WHEN、THEN、frontmatter 键）保持英文。
 
-> 按需增删节：light 档几句话 + 关键决策 + 1-2 条 Requirement 即可；节的篇幅与其复杂度匹配，不为凑结构而注水。
->
-> **档位裁剪**（requirement-analysis 阶段 1 判定）：
->
-> | 档位 | 保留小节 |
-> |---|---|
-> | light | 背景与目标、非目标、已确认的关键决策、行为规范（Requirements 或差量三节）、测试与验收策略 |
-> | standard | light 全部 + 术语表、参与者与适用行为、影响面、约束归属与拒绝的解读、取代与共存、方案设计、风险与边缘情况 |
-> | deep | 全部小节 |
->
-> 有相交 active spec 时任何档位都保留「取代与共存」节；frontmatter 任何档位必填。
->
-> **顶部 frontmatter 是漂移守卫锚点，必须保留**：它把本 spec 与其覆盖的代码路径绑定，供 pre-commit / CI / Claude·Codex 的 PreToolUse hook 校验"改了代码却没同步 spec"。填 `feature` 与 `covers`，spec 定稿转 `status: active`；无守卫需求（如纯文档特性）可将 `covers` 留空数组，守卫即跳过。取代关系走生命周期：`supersedes` 在设计期声明、交付时由取代回写把旧 spec 翻 `superseded` 并填 `superseded_by`——`superseded` 是有正式后继指向的终态，不是绕过守卫的手段。
+> 篇幅以一页为宜。简单需求几句话加 1 到 2 条 Requirement 就够，不为凑结构而注水。
+
+## 四个固定小节
 
 ```markdown
----
-# —— spec-dev 漂移守卫锚点（机器可校验，勿删）——
-# covers: 本 spec 声称覆盖的代码路径 glob；这些路径被改动而本 spec 未同步时，
-#         守卫（pre-commit / CI / Claude·Codex 的 PreToolUse hook）会拦截并提示。
-spec_dev:
-  version: 1
-  feature: <feature-name>
-  status: draft            # draft | active | superseded —— 仅 active 参与漂移拦截
-  covers:                  # 该特性拥有的代码 glob；无代码产物时留空数组 []
-    - "src/<feature>/**"
-  sync_commit: null        # 最近一次"代码与本 spec 已同步"的提交 SHA；由 executing-plans
-                           # 收尾在合并后写入（计划最终任务的锚定步骤）。
-                           # git diff <sync_commit>..HEAD -- <covers> = 此后的代码变化
-  supersedes: []           # 本 spec 取代的旧 spec 路径列表（仓库根相对），设计期由阶段 6 取代分流
-                           # 填写；部分取代同样登记于此，粒度细节写正文「取代与共存」节；无取代留空数组。
-  superseded_by: null      # 本 spec 被取代时由交付回写填入后继 spec 路径（仓库根相对），
-                           # 与 status: superseded 必须成对出现；消费方读到后沿此指针跳转后继。
----
-
 # [主题] 设计
 
-## 背景与目标
+## 目标与成功标准
 
-[要解决什么问题、为什么现在做；1-3 句 / What problem, why now; 1-3 sentences]
+[要解决什么问题、为什么现在做；1 到 3 句]
 
-**成功标准 / Success criteria**：[做到什么算完成 / What counts as done]
+**成功标准**：[做到什么算完成]
 
 ## 非目标
 
-[明确不做的事——防止范围蔓延；没有可写"无" / What we explicitly will not do; write "none" if empty]
+[明确不做的事，防止范围蔓延；没有就写"无"。存在"即使功能完成也不可接受"的结果时写在这里，并落到下面的 Scenario]
 
-[若存在“即使功能完成也不可接受”的结果，在此说明并落到可验证的约束或 Scenario，例如不得新增常驻服务。没有则省略，不机械增加栏目；它与暂不实现的功能范围不同。]
+## 关键决策
 
-## 术语表
+[澄清结论与方案选择，每条一行，带理由和来源：用户明确决定、项目既有约束，或授权范围内的代理选择。代理的默认值不能写成用户原话。]
 
-[共享术语引用仓库 .spec-dev/glossary.md 的规范名、适用域与来源；局部术语定义在本 spec。冲突与保存规则以 requirement-analysis/references/context-reuse.md 为准；不因模板存在此节创建空词汇表。]
+- [决策]：[选择] —— [理由]
+- [接口]：[调用方的正常用法与失败结果；签名或协议]
+- [界面]：[采纳的定稿 HTML 路径与版本、适用的角色和状态、哪些结果是模拟的]
 
-[阶段 3 澄清中确定的规范术语；全篇（含 Requirement/Scenario）统一使用规范名。定义只说它"是什么"，一两句为限。无术语分歧时删除本节 / Canonical terms from clarification; one-line definitions; delete this section if no ambiguity]
-
-- **[规范术语 / canonical term]**：[一句话定义 / one-line definition]。_Avoid_：[别名 1、别名 2 / aliases]
-
-## 参与者与适用行为
-
-[列实际用户角色、调用系统和自主触发者及适用行为/错误路径；不存在的类别不填。用命名 Scenario 验证真实差异，不为每个 actor 机械复制所有场景。]
-
-## 影响面
-
-[受影响的代码模块、公开 API、依赖、外部系统——为后续审查与验收划定范围；无跨模块影响可写"仅限本特性涉及的模块" / Affected modules, public APIs, dependencies, external systems]
-
-## 已确认的关键决策
-
-[阶段 3 澄清结论与阶段 4 方案选择：每条一行，含取舍理由及来源：用户明确决定、已有项目约束，或授权范围内的代理选择。代理默认值不得写成用户原话；仍需用户决定的事项留在未决区，不混入已确认项。
-同时满足"难以逆转、缺上下文会费解、真实取舍"三判据的决策，额外沉淀为仓库级 `.spec-dev/adr/NNNN-<slug>.md`（全项目统一目录与编号），此处保留一行摘要并链接对应 ADR / One line per decision with rationale; decisions meeting the ADR bar also land in .spec-dev/adr/ with a link here]
-
-- [决策 1]：[选择] —— [理由]
-- [决策 2]：[选择] —— [理由]（详见 `../../adr/0007-<slug>.md`）
-
-## 约束归属与拒绝的解读
-
-[将可独立违反的约束映射到负责边界、验证位置及 Scenario；原则沿共享 design-principles，不复制其定义。真实歧义已有裁决时记录：原表达、排除理解、理由/来源、采用理解。没有则写无；不发明否决项，不替代 ADR 资格判断。]
-
-## 取代与共存
-
-[阶段 6 取代分流结论：对探索命中的每份行为相交 active spec 三分类，逐份一行；无相交时写"无相交 active spec"。
-完全取代登记 frontmatter supersedes + 一句理由；部分取代登记 supersedes + 列出被取代的具体 Requirement 标题，每条附一句取代理由；分面共存不登记 supersedes，记一行判定理由并各自声明 covers（改单面时对另一份用 Spec-Guard: off trailer 放行）。删除整个特性且无新行为承接时，本 spec 应为仅含 REMOVED Requirements 的轻量后继（记录删除理由），交付时按完全取代回写旧 spec。 / Supersede triage: full / partial / facet-coexist, one line per overlapping active spec]
-
-- [完全取代] `<旧spec仓库根路径>`：[一句理由]
-- [部分取代] `<旧spec仓库根路径>`：Requirement「[标题]」——[一句取代理由]
-- [分面共存] `<旧spec仓库根路径>`：[一行判定理由]
-
-## 行为规范（Requirements）
-
-[系统"做什么"，用任何人都能检验的措辞表达——不写实现方式（怎么建留给方案设计节与代码）。
-全新功能按下例罗列；**修改既有功能时，把本节替换为文末的"行为差量三节"**。 / Observable behaviors only, no implementation; for changes to existing behavior use the delta sections at the end]
-
-[交付对账后，未交付的 Requirement 由 executing-plans 在其标题下原位标注（DELIVERED 不标，只标偏差），后续续作与审查一眼看清缺口 / After delivery reconciliation, executing-plans marks non-delivered Requirements in place under their title; DELIVERED stays unmarked：
-`> **Delivery: DEFERRED (YYYY-MM-DD)** — 一句原因 / one-line reason；详见 ../acceptance/acceptance-report.md`]
+## 行为规范
 
 ### Requirement: [一句话命名一个行为]
 
-[一条陈述、一个 SHALL/MUST。RFC 2119 关键词：MUST/SHALL=硬性要求；SHOULD=强建议、允许有正当理由的例外；MAY=真正可选。默认用 SHALL。行为必须**可观察**——没读过代码的测试者也能判定通过与否（"上传超过 10 MB 时 SHALL 显示错误横幅"可观察，"SHALL 优雅处理大文件"不可观察）。一条 Requirement 只说一个行为，出现三个"并且"就拆成三条。 / One statement, one SHALL; behavior must be observable to a tester who has not read the code]
+[一条陈述、一个 SHALL。行为必须可观察：没读过代码的测试者也能判定通过与否。]
 
-#### Scenario: [具体案例名，如"拒绝过期 token"——不写"场景 2" / Concrete case name, not "scenario 2"]
+#### Scenario: [具体案例名，如"拒绝过期 token"]
 
-- **GIVEN** [前置状态 / precondition]
-- **WHEN** [触发动作 / action]
-- **THEN** [可观察的结果 / observable result]
-
-[每条 Requirement 至少 1 个真正检验它的 Scenario（复述一遍需求的 Scenario 不算数）；重点覆盖边缘与错误场景——空输入、过期凭证、重复点击、并发——不只写 happy path。定稿前自问："哪个场景坏了我最难受？"确保它有一个命名的 Scenario。 / At least one real test per Requirement; cover edge and error cases, not just the happy path]
-
-## 方案设计
-
-### 架构与组件
-
-[组件划分、各自职责与接口；每个单元能回答：做什么、怎么用、依赖什么 / Components, responsibilities, interfaces]
-
-### 数据流
-
-[数据如何在组件间流动；关键数据结构/实体定义 / Data flow and key structures]
-
-### 关键接口
-
-[新增或调整公共接口、跨模块契约或 CLI 时，先列调用方的正常用法与相关失败结果，再给签名/协议；注明设计示例及依据，已有调用示例可直接引用。light 档并入「已确认的关键决策」，不新增必填章节。]
-
-[探索交接以结论和位置指针为主。完整设计获批后，可附来源呈现经过实际实验支持的状态机/reducer/schema/type shape，标出所回答问题与验证边界；不复制实验本体或未验证业务分支作为正式实现。]
-
-[API 端点 / 函数签名 / 事件契约——后续任务将依赖的形态 / Endpoints, signatures, event contracts later tasks depend on]
-
-### 错误处理
-
-[异常路径、降级策略 / Failure paths and degradation]
-
-## 原型参照（涉及界面时）
-
-[按 visual-preview/references/ui-prototype-contract.md 引用已确认 HTML 路径、版本/manifest、角色/视口/状态、模拟业务边界及确认来源。采纳的界面决定写明结论与理由，关联上文 Requirement/Scenario 或设计约束，不能只挂原型链接或由未选草稿推导需求。没有原型时记录小改动/用户关闭/不适用的实际依据，不把环境缺失记成用户关闭。原型与行为契约冲突先澄清受影响决定。]
-
-## 测试与验收策略
-
-### 测试落点声明
-
-随完整设计批准的声明，记录公共接口与签名/协议、覆盖的 Scenario、允许替换的依赖边界（没有则写无）及来源。优先复用既有、足以观察目标行为的较高层接口，不逐私有函数创建测试；一个 seam 可覆盖多个 Scenario。后续计划接口块引用此声明。
-
-
-[以**验收矩阵**表达（结构定义见 acceptance-qa skill 的 references/acceptance-matrix.md）：每个 Scenario 至少一行；
-「任务内 TDD」行由 writing-plans 按任务类型落实：行为变化翻译为失败测试（GIVEN→arrange、WHEN→act、THEN→assert），纯重构使用前后行为保护，不能独立通过的相关验证归属明确的组验证任务；
-第一条真实闭环在最早可运行切片验证；「验收任务」行由收尾 acceptance-qa 核验当前证据、对照原型并补缺，已有效验证的业务行为不重复运行。
-visual/a11y/perf 行仅在需求形态需要时出现；性能行必须带阈值数字——写不出数字回到澄清；每行标注 required、Lane 归属（fast/final/manual，见 test-strategy skill），含 DB/LLM 的行按其处方写执行方式 / Acceptance matrix: one row per Scenario; TDD rows become failing tests, acceptance rows go to the acceptance task; perf rows need numeric thresholds; each row carries required and a lane tag (fast/final/manual, per the test-strategy skill); DB/LLM rows follow its stack prescriptions]
-
-| Scenario / 检查项 | 维度 | 执行方式 | required | Lane | 验收证据 |
-|-------------------|------|---------|----------|------|----------|
-| [Scenario 名] | unit/integration | 任务内 TDD | true | fast | 测试原件 |
-| [关键用户流程] | e2e | 验收任务 (D) | true | final | 真实闭环原件 |
-| [页面 LCP ≤ 2.5s（lab, 中位数）] | perf-web | 验收任务 (D) | true | manual | trace 报告 |
-
-## 风险与边缘情况
-
-[已识别的风险、防守措施、未上升为 Scenario 的边缘观察 / Known risks, defenses, edge observations]
-
-## 开放问题
-
-[留给实施阶段裁决的小问题；重大未知项不允许留在这里——回到澄清 / Small questions for implementation; big unknowns go back to clarification]
+- **GIVEN** [前置状态]
+- **WHEN** [触发动作]
+- **THEN** [可观察的结果]
 ```
 
-## 行为差量三节（仅修改既有功能时，替换「行为规范」节）
+写法要求：
 
-改既有功能不重写全量规范，只写差量——审查者一眼看清"什么变了"：
+- **Requirement**：系统做什么，用任何人都能检验的措辞，不写实现方式。"上传超过 10 MB 时 SHALL 显示错误横幅"可观察，"SHALL 优雅处理大文件"不可观察。一条只说一个行为，出现三个"并且"就拆成三条。MUST 和 SHALL 是硬性要求，SHOULD 允许有正当理由的例外，MAY 是真正可选；默认用 SHALL。
+- **Scenario**：每条 Requirement 至少一个真正检验它的 Scenario，复述一遍需求的不算。重点覆盖边缘与错误场景（空输入、过期凭证、重复点击、并发），不只写正常路径。定稿前问自己：哪个场景坏了最难受？它要有一个命名的 Scenario。
+- Scenario 的名字会直接成为测试名，起具体的名字，不写"场景 2"。
+- 满足 ADR 三条件（难以逆转、缺上下文会费解、存在真实取舍）的决策另存到 `.spec-dev/adr/`，这里保留一行摘要和链接。
+
+## 需要时才加的小节
+
+下面的小节只在确实有内容时添加，标题自拟：术语（澄清中确定的规范名和要避免的别名）、参与者与适用行为、影响面、方案设计（架构与组件、数据流、关键接口、错误处理）、风险与边缘情况、开放问题。重大的未知项不留在开放问题里，回到澄清。
+
+## 行为差量三节（修改既有功能时，替换「行为规范」）
+
+改既有功能不重写全量规范，只写差量，让审查者一眼看清什么变了：
 
 ```markdown
 ## ADDED Requirements
 
-[全新行为，此前不存在——格式同上：### Requirement: + #### Scenario: / Brand-new behavior that did not exist before]
+[全新行为，此前不存在。格式同上]
 
 ## MODIFIED Requirements
 
-[已存在且正在变化的行为：给出**完整的新版本**（不是只写差异），
-Requirement 标题后括注一句"改了什么"帮助审查 / Existing behavior that changes: give the complete new version, note what changed]
+[已存在且正在变化的行为：给出完整的新版本，标题后括注一句"改了什么"]
 
 ## REMOVED Requirements
 
-[移除的行为：Requirement 标题 + 一行移除原因 / Removed behavior: title + one-line reason]
+[移除的行为：Requirement 标题加一行移除原因]
 ```
 
-**分类判据**：拿不准时先看当前实现的行为——行为已存在就是 MODIFIED（把真实变更标成 ADDED 会留下两条竞争的需求），行为不存在就是 ADDED（把新行为标成 MODIFIED 则无物可替换）。只写用到的节。
+拿不准时先看当前实现：行为已存在就是 MODIFIED，不存在就是 ADDED。只写用到的节。
 
-## 取代标注形制（供取代流程引用，非 spec 正文节）/ Supersede marker formats (referenced by the supersede workflow; not a spec body section)
+## 可选 frontmatter（仅在需要漂移守卫时）
 
-- **窗口期** / pending window（新 spec 激活时打在旧 spec H1 标题下一行 / written under the old spec's H1 when the new spec activates）：
-  `> **Superseded-pending (YYYY-MM-DD)** — 本 spec 的「Requirement: [标题]」将被 <新spec仓库根路径> 部分取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。`
-  完全取代的完整文本：`> **Superseded-pending (YYYY-MM-DD)** — 本 spec 将被 <新spec仓库根路径> 完全取代（待其交付）；新工作以新 spec 为准，本 spec 仍描述当前已实现行为。`
-- **完全取代**（交付回写）/ full supersede (delivery write-back)：frontmatter `status: superseded` + `superseded_by: <后继仓库根路径>`；pending 行替换为
-  `> **Superseded (YYYY-MM-DD)** — 本 spec 已被 <后继仓库根路径> 取代，本文仅作历史参考，现行契约以取代方为准。`
-  此后 sync_commit 冻结不再更新；covers 保留原值供考古（守卫因 status 自然忽略）。
-- **部分取代**（交付回写）/ partial supersede (delivery write-back; old spec stays active, marker goes under each superseded Requirement)：旧 spec 保持 `active`，每条被取代 `### Requirement:` 标题下插入
-  `> **Superseded (YYYY-MM-DD)** — by <新spec仓库根路径>#<requirement 锚>；原文保留仅作历史参考。`
-  H1 下的 pending 行移除。`<requirement 锚>` 取新 spec 中对应 Requirement 标题**主名**（去掉"改了什么"等括注）的 slug 形式——它是供 Grep/人工定位的定位符，不保证在所有渲染器中可点击。
-- **路径风格**：以上标注与 frontmatter 字段中的路径一律仓库根相对；正文 markdown 超链接沿用相对当前文件路径；ADR 互指用同目录文件名相对链接。（既有 DEFERRED 标注指向同特性目录内的验收报告，沿用相对当前文件路径，属例外、不适用本条。）
-- **语言**：标注字面量跟随所在 spec 的语言表达其意（上文为中文示例；英文 spec 用等义英文，如 `> **Superseded (YYYY-MM-DD)** — superseded by <repo-root path>; kept for historical reference only.`）；结构标签（`Superseded` / `Superseded-pending`、日期、`by ` + 路径的形态）保持稳定，供 Grep 与消费方跨语言匹配。
-- **指针的机器提取**：完全取代的权威指针在 frontmatter `superseded_by`（消费方读字段、不解析句子）；部分取代的指针在标注行 `by ` 之后的路径。标注中的路径一律裸文本，不加反引号或链接包装（保证 Grep 稳定匹配）。
+默认不加 frontmatter。用户要求这块代码以后的改动必须同步 spec 时，在文件最顶部加上：
+
+```yaml
+---
+spec_dev:
+  version: 1
+  feature: <feature-name>
+  status: draft            # draft | active | superseded；实施期间保持 draft，交付时翻 active
+  covers:                  # 本 spec 拥有的代码路径 glob
+    - "src/<feature>/**"
+  supersedes: []           # 本 spec 取代的旧 spec 路径（仓库根相对）；没有留空数组
+  superseded_by: null      # 本 spec 被取代时填后继 spec 路径，与 status: superseded 成对出现
+---
+```
+
+状态怎么流转见 requirement-analysis 的 `references/spec-lifecycle.md`。
+
+## 交付后的标注
+
+交付对账时没有交付的 Requirement，在其标题下标注一行（已交付的不标）：
+
+`> **Delivery: DEFERRED (YYYY-MM-DD)** — 一句原因`
+
+延后写 DEFERRED，放弃写 DROPPED。标注里的路径用裸文本，不加反引号或链接，方便检索。

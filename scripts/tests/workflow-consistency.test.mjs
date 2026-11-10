@@ -21,8 +21,8 @@ test('S25 unknown quick-fix impact returns to clarification rather than unchange
 test('S07 recovery relies only on the plan file and git history',()=>{
  const text=raw('skills/executing-plans/SKILL.md');assert.match(text,/恢复只认计划文件和 git log/);assert.match(text,/不重做/);
 });
-test('S25 lifecycle table separates activation and delivery with frozen superseded history',()=>{
- const text=readPolicy(root,'skills/requirement-analysis/SKILL.md').text;assert.match(text,/事件 \| 新 spec 状态 \| 旧 spec 标注 \| 下一步/);assert.match(text,/pending.*不是.*状态/);assert.match(text,/superseded_by/);assert.match(text,/sync_commit.*冻结|冻结.*sync_commit/);
+test('S25 lifecycle table keeps specs draft during implementation and activates on delivery',()=>{
+ const text=readPolicy(root,'skills/requirement-analysis/SKILL.md').text;assert.match(text,/时点 \| 本 spec \| 受影响的旧 spec/);assert.match(text,/守卫只对 `active` 生效/);assert.match(text,/superseded_by/);assert.match(text,/默认不带 frontmatter/);
 });
 test('S27 plan entry reaches its template and task boundary rules',()=>{
  const files=readPolicy(root,'skills/writing-plans/SKILL.md').documents.map(d=>d.file);

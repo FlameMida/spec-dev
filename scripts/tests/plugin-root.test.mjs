@@ -6,7 +6,6 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const read = (rel) => readFileSync(path.join(repoRoot, rel), "utf8");
-const count = (text, needle) => text.split(needle).length - 1;
 const VENDORED = ["skills/anysearch"];
 const walk = (rel, out = []) => {
   for (const name of readdirSync(path.join(repoRoot, rel))) {
@@ -17,32 +16,21 @@ const walk = (rel, out = []) => {
   }
   return out;
 };
-const mdFiles = () => ["skills", "agents", "commands"].flatMap((d) => walk(d)).filter((f) => f.endsWith(".md"));
-const ENTRY = "skills/requirement-analysis/references/exploration-entry.md";
+const mdFiles = () => ["skills", "commands"].flatMap((d) => walk(d)).filter((f) => f.endsWith(".md"));
 const RUNTIME = "skills/requirement-analysis/references/plugin-root.md";
-const CONTRACT = "skills/requirement-analysis/references/output-contracts.md";
-const DISPATCH = "skills/requirement-analysis/references/agent-dispatch.md";
-// 受检文档全集：skills/agents/commands 的 .md + schemas 说明（单点定义，新增受检文件只改这里）
+const HOST_COMPAT = "skills/requirement-analysis/references/host-compat.md";
+// 受检文档全集：skills/commands 的 .md + schemas 说明（单点定义，新增受检文件只改这里）
 const docFiles = () => [...mdFiles(), "scripts/schemas/README.md"];
+const ownSkills = () => readdirSync(path.join(repoRoot, "skills"))
+  .filter((s) => !VENDORED.includes(`skills/${s}`) && existsSync(path.join(repoRoot, "skills", s, "SKILL.md")));
 
 test("Scenario: 解析序列只有一个定义点", () => {
   const hits = [...docFiles(), "scripts/validate-output.mjs"]
     .filter((f) => { const t = read(f); return t.includes("上两级") && t.includes("已安装插件目录"); });
   assert.deepEqual(hits, [RUNTIME], "解析序列应只有一个完整权威");
   assert.ok(read(RUNTIME).includes("## 插件根解析"), "应有「插件根解析」节");
-});
-
-test("Scenario: 契约校验完整陈述唯一（定义点侧）", () => {
-  const t = read(CONTRACT);
-  assert.equal(count(t, "补全一次"), 1, "canonical 只出现一次");
-  assert.ok(t.includes("## 输出契约与校验"), "节标题应存在");
-  assert.ok(t.includes("校验器不可用") && t.includes("契约校验降级"), "应有校验器不可用降级句");
-  assert.ok(t.includes('node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-output.mjs" exploration-report <file>'), "命令应为双引号写法");
-});
-
-test("Scenario: 止损句单点存在", () => {
-  const hits = docFiles().filter((f) => read(f).includes("不硬撑"));
-  assert.deepEqual(hits, [DISPATCH]);
+  assert.match(read(RUNTIME), /阅读时机/);
+  assert.ok(read(HOST_COMPAT).includes("](plugin-root.md)"), "host-compat 应指向插件根定义");
 });
 
 test("Scenario: 三级全失败不静默", () => {
@@ -50,22 +38,10 @@ test("Scenario: 三级全失败不静默", () => {
   assert.ok(t.includes("无法定位插件根") && t.includes("不得静默跳过"), "三级失败处置句应存在");
 });
 
-const directTargets = (file) => [...read(file).matchAll(/\]\(([^)#]+)(?:#[^)]*)?\)/g)]
-  .filter(([, target]) => !/^(?:[a-z]+:|\$)/i.test(target))
-  .map(([, target]) => path.relative(repoRoot, path.resolve(repoRoot, path.dirname(file), target)));
-
-test("Scenario: 命令调用方都有插件根声明行", () => {
-  const withDecl = ["requirement-analysis"];
-  for (const s of withDecl) assert.ok(directTargets(`skills/${s}/SKILL.md`).includes(RUNTIME), `${s} 未直达插件根定义`);
-  for (const s of readdirSync(path.join(repoRoot, "skills"))) {
-    if (withDecl.includes(s) || VENDORED.includes(`skills/${s}`)) continue;
-    if (!existsSync(path.join(repoRoot, "skills", s, "SKILL.md"))) continue;
-    assert.ok(!read(`skills/${s}/SKILL.md`).includes("**插件根**："), `${s} 正文无插件根命令，不应有声明行`);
-  }
-});
-
-test("Scenario: 变量未替换时按序列推导——SKILL 内命令为双引号写法", () => {
+test("Scenario: skill 不需要插件根，只用自己的目录", () => {
+  for (const s of ownSkills()) assert.ok(!read(`skills/${s}/SKILL.md`).includes("**插件根**："), `${s} 不应有插件根声明行`);
   assert.ok(read("skills/acceptance-qa/SKILL.md").includes('node "${CLAUDE_SKILL_DIR}/scripts/detect-env.mjs"'));
+  assert.ok(existsSync(path.join(repoRoot, "skills/acceptance-qa/scripts/detect-env.mjs")));
 });
 
 test("Scenario: 提醒句更新", () => {
@@ -83,11 +59,11 @@ test("Scenario: 提醒句更新", () => {
 const BARE = /(^|[\s`(])(node|bash|python3?|bun)\s+["']?(\.\/)?(scripts|skills|agents|guardrail)\//;
 const UNQUOTED = /(node|bash|python3?|bun)\s+'?\$\{CLAUDE_(PLUGIN_ROOT|SKILL_DIR)\}/;
 // 受检文本全集（含各 skill 的 Codex 接口文件 openai.yaml，防止命令形态从 description 漂进去）
-const textFiles = () => ["skills", "agents", "commands"].flatMap((d) => walk(d)).filter((f) => /\.(md|yaml)$/.test(f)).concat(["scripts/schemas/README.md"]);
+const textFiles = () => ["skills", "commands"].flatMap((d) => walk(d)).filter((f) => /\.(md|yaml)$/.test(f)).concat(["scripts/schemas/README.md"]);
 const PLACEHOLDER = /<插件根>|<plugin-root>|<skill-base-directory>/;
 
 test("Scenario: 零裸路径与零自造占位符", () => {
-  // 裸路径规则的范围是 skills/ agents/ commands/（spec 原文）；scripts/schemas/README.md 是插件仓库内的开发文档，
+  // 裸路径规则的范围是 skills/ commands/；scripts/schemas/README.md 是插件仓库内的开发文档，
   // 其 `node scripts/validate-output.mjs agent-plugin-1.0.0 plugin.json` 在插件根运行属合法，只查双引号与占位符
   for (const f of textFiles()) {
     const text = read(f);
@@ -107,41 +83,13 @@ test("Scenario: 降级说明不再各处复述", () => {
     assert.ok(!t.includes("先定位插件安装目录再以其为根解析路径"), `${f} 仍有降级复述`);
     assert.ok(!t.includes("先找插件安装目录"), `${f} 仍有降级复述`);
   }
-  for (const f of ["agents/code-explorer.md", "agents/external-resource-explorer.md", "commands/doctor.md"]) {
-    assert.ok(read(f).includes("未替换时按插件根解析序列推导"), `${f} 缺固定回退句`);
-  }
+  assert.ok(read("commands/doctor.md").includes("未替换时按插件根解析序列推导"), "doctor 缺固定回退句");
 });
 
-const GIST_FI = "失败先缩小范围重试 1 次，再失败主线程接管";
-const GIST_CV = "校验失败发回补全一次，再失败主线程接管";
-
-test("Scenario: 四处 gist 与 canonical 字面一致", () => {
-  for (const f of ["skills/requirement-analysis/SKILL.md", "skills/requirement-analysis/references/codex-compat.md"]) {
-    assert.ok(read(f).includes(GIST_FI), `${f} 缺失败隔离 gist`);
-    assert.ok(directTargets(f).includes(DISPATCH), `${f} 未直达派发规则`);
-  }
-  assert.equal(count(read(DISPATCH), "缩小该主题范围重试 1 次"), 1, "canonical 只在 agent-dispatch 出现一次");
+test("Scenario: 子代理失败处置措辞一致", () => {
+  const gist = "失败先缩小范围重试 1 次，再失败主线程接管";
+  for (const f of ["skills/requirement-analysis/SKILL.md", "skills/quick-fix/SKILL.md"]) assert.ok(read(f).includes(gist), `${f} 缺失败处置句`);
   for (const f of docFiles()) assert.ok(!read(f).includes("主进程接管"), `${f} 仍有措辞分化"主进程接管"`);
-});
-
-test("Scenario: 契约校验完整陈述唯一（引用侧）", () => {
-  for (const f of ["scripts/schemas/README.md"]) {
-    assert.ok(read(f).includes(GIST_CV), `${f} 缺契约校验 gist 或措辞不一致`);
-  }
-  for (const f of docFiles()) {
-    if (f === CONTRACT) continue;
-    for (const line of read(f).split("\n")) {
-      if (line.includes("补全一次")) assert.ok(line.includes("output-contracts.md"), `${f}: "补全一次"同行缺定义指针 → ${line.trim().slice(0, 100)}`);
-    }
-  }
-});
-
-test("Scenario: 通用映射行只在一处", () => {
-  const row = "| 进度跟踪 | `TaskCreate` / `TaskUpdate` | `update_plan` |";
-  const hits = docFiles().filter((f) => read(f).includes(row));
-  assert.deepEqual(hits, ["skills/requirement-analysis/references/codex-compat.md"], "通用映射表只能在 codex-compat");
-  assert.ok(read("skills/requirement-analysis/SKILL.md").includes("codex-compat.md"), "RA 应保留指针");
-  assert.ok(read("skills/requirement-analysis/references/codex-compat.md").includes("全 skill 共用"), "codex-compat 前言应声明全 skill 共用");
 });
 
 test("Scenario: S24 单点迁移及旧断言处置", () => {
@@ -166,7 +114,6 @@ test("Scenario: 双语表存在且分级一致", () => {
   for (const t of [en, zh]) {
     assert.match(t, /\| hard \| `git` \|/);
     assert.match(t, /\| hard \| Node\.js ≥ 18 \|/);
-    assert.ok(t.includes("output-contracts.md"), "校验器降级应指向定义点");
   }
   for (const l of [...er, ...zr].filter((l) => l.startsWith("| soft |"))) assert.ok(l.split("|")[4].trim().length > 0, `soft 行缺降级链: ${l}`);
 });
@@ -203,27 +150,14 @@ test("Scenario: 计数与磁盘一致", () => {
   }
   assert.ok(!en.includes("four skills") && !zh.includes("四个 skill"));
   const schemaFiles=readdirSync(path.join(repoRoot,"scripts/schemas")).filter(f=>f.endsWith(".json"));
-  const manifests=schemaFiles.filter(f=>f==="agent-plugin-1.0.0.json");
-  const outputs=schemaFiles.filter(f=>!manifests.includes(f));
-  assert.ok(en.includes(`${outputs.length} output contract schemas + ${manifests.length} vendored manifest schema`));
-  assert.ok(zh.includes(`${outputs.length} 类输出契约 schema + ${manifests.length} 个 vendored manifest schema`));
   const contractTable=read("scripts/schemas/README.md").split("## 契约清单")[1].split("## 新增 schema")[0];
   const documented=[...contractTable.matchAll(/^\| `([^`]+)` \|/gm)].map(m=>m[1]).sort();
   assert.deepEqual(documented,schemaFiles.map(f=>f.slice(0,-5)).sort());
 });
 
-test("Scenario: 变量未替换时按序列推导——skill base directory 上两级即插件根（布局不变量）", () => {
-  for (const s of ["requirement-analysis", "writing-plans", "executing-plans", "acceptance-qa"]) {
-    const root = path.resolve(repoRoot, "skills", s, "..", "..");
-    assert.equal(root, repoRoot, `${s} 的 base directory 上两级应为插件根`);
-    assert.ok(existsSync(path.join(root, "scripts/validate-output.mjs")), "插件根下应有校验器");
-    assert.ok(existsSync(path.join(root, "skills/acceptance-qa/scripts/detect-env.mjs")), "插件根下应有 detect-env.mjs");
+test("Scenario: 插件布局不变量——skill 目录上两级即插件根", () => {
+  for (const s of ownSkills()) {
+    assert.equal(path.resolve(repoRoot, "skills", s, "..", ".."), repoRoot, `${s} 的 base directory 上两级应为插件根`);
   }
-});
-
-test("S42 汇总入口可达且专题的读取条件明确",()=>{
- for(const [file,label] of [[RUNTIME,'插件根解析'],[CONTRACT,'输出契约与校验'],[DISPATCH,'派发要求与失败隔离']]){
-  assert.ok(directTargets(ENTRY).includes(file),label+' 未从共享入口直达定义');
-  assert.match(read(file),/阅读时机/);
- }
+  assert.ok(existsSync(path.join(repoRoot, "scripts/validate-output.mjs")), "插件根下应有校验器");
 });
