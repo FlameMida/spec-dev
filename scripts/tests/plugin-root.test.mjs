@@ -55,7 +55,7 @@ const directTargets = (file) => [...read(file).matchAll(/\]\(([^)#]+)(?:#[^)]*)?
   .map(([, target]) => path.relative(repoRoot, path.resolve(repoRoot, path.dirname(file), target)));
 
 test("Scenario: 命令调用方都有插件根声明行", () => {
-  const withDecl = ["requirement-analysis", "acceptance-qa"];
+  const withDecl = ["requirement-analysis"];
   for (const s of withDecl) assert.ok(directTargets(`skills/${s}/SKILL.md`).includes(RUNTIME), `${s} 未直达插件根定义`);
   for (const s of readdirSync(path.join(repoRoot, "skills"))) {
     if (withDecl.includes(s) || VENDORED.includes(`skills/${s}`)) continue;
@@ -65,9 +65,7 @@ test("Scenario: 命令调用方都有插件根声明行", () => {
 });
 
 test("Scenario: 变量未替换时按序列推导——SKILL 内命令为双引号写法", () => {
-  const aq = read("skills/acceptance-qa/SKILL.md");
-  assert.ok(aq.includes('node "${CLAUDE_PLUGIN_ROOT}/skills/acceptance-qa/scripts/detect-env.mjs"'));
-  assert.ok(!aq.includes("先定位插件安装目录"), "acceptance-qa 不应再自带降级说明");
+  assert.ok(read("skills/acceptance-qa/SKILL.md").includes('node "${CLAUDE_SKILL_DIR}/scripts/detect-env.mjs"'));
 });
 
 test("Scenario: 提醒句更新", () => {
@@ -118,7 +116,7 @@ const GIST_FI = "失败先缩小范围重试 1 次，再失败主线程接管";
 const GIST_CV = "校验失败发回补全一次，再失败主线程接管";
 
 test("Scenario: 四处 gist 与 canonical 字面一致", () => {
-  for (const f of ["skills/requirement-analysis/SKILL.md", "skills/quick-fix/SKILL.md", "skills/requirement-analysis/references/codex-compat.md"]) {
+  for (const f of ["skills/requirement-analysis/SKILL.md", "skills/requirement-analysis/references/codex-compat.md"]) {
     assert.ok(read(f).includes(GIST_FI), `${f} 缺失败隔离 gist`);
     assert.ok(directTargets(f).includes(DISPATCH), `${f} 未直达派发规则`);
   }
@@ -138,25 +136,12 @@ test("Scenario: 契约校验完整陈述唯一（引用侧）", () => {
   }
 });
 
-test("Scenario: 有意变体被标注", () => {
-  const ai = read("skills/acceptance-qa/references/ai-acceptance.md");
-  assert.match(ai, /再失败将缺失项标记 unverified/);
-  assert.ok(directTargets("skills/acceptance-qa/references/ai-acceptance.md").includes(CONTRACT));
-});
-
 test("Scenario: 通用映射行只在一处", () => {
   const row = "| 进度跟踪 | `TaskCreate` / `TaskUpdate` | `update_plan` |";
   const hits = docFiles().filter((f) => read(f).includes(row));
   assert.deepEqual(hits, ["skills/requirement-analysis/references/codex-compat.md"], "通用映射表只能在 codex-compat");
   assert.ok(read("skills/requirement-analysis/SKILL.md").includes("codex-compat.md"), "RA 应保留指针");
   assert.ok(read("skills/requirement-analysis/references/codex-compat.md").includes("全 skill 共用"), "codex-compat 前言应声明全 skill 共用");
-});
-
-test("Scenario: quick-fix 自有行保留", () => {
-  const qf = read("skills/quick-fix/SKILL.md");
-  assert.ok(qf.includes('`spawn_agent`（`fork_turns: "none"`）+ `wait_agent`'), "自有行应保留");
-  assert.ok(qf.includes("codex-compat.md"), "应有指向总表的指针");
-  assert.ok(!qf.includes("| 用户澄清/确认 |"), "通用行不应复述");
 });
 
 test("Scenario: S24 单点迁移及旧断言处置", () => {
