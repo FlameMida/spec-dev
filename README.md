@@ -178,7 +178,7 @@ Run `status` from any project folder:
 node "<absolute-plugin-directory>/scripts/status.mjs" --repo "/project/path" --json
 ```
 
-Leave out `--repo` to use the current repository, or `--json` to get human-readable text. It runs offline and never re-runs acceptance.
+Leave out `--repo` to use the current repository, or `--json` to get human-readable text. It runs offline and never re-runs acceptance. Add `--metrics` to also read git history and show when the spec and plan were committed, and how many times the spec changed after the plan's first commit.
 
 ## Optional: spec drift guard
 
@@ -281,9 +281,14 @@ node scripts/validate-skills.mjs
 node scripts/build-distribution.mjs --output /tmp/spec-dev-package
 node scripts/build-distribution.mjs --output /tmp/spec-dev-git-package --format git
 node --test scripts/tests/distribution.test.mjs
+
+# Full test suite (about 15 seconds)
+npm test
 ```
 
 `package.json.files` is the shared distribution list. After a `v*` tag, `.github/workflows/distribution.yml` builds and updates `dist`, produces ZIP, tar.gz, and npm tgz artifacts, and creates the GitHub Release with those files attached and the matching CHANGELOG section as notes. Rebuilding identical output is a no-op; older versions or different content at the same version cannot overwrite the distribution.
+
+`.github/workflows/test.yml` runs the static checks above and `npm test` on every push to `main` and on pull requests. Repository guidance for agents lives in the root `AGENTS.md` (`CLAUDE.md` only imports it). Codex does not load `commands/`: there, each skill's own entry check covers what `/triage` does, and `status` is used through the plugin prompt or by running the script directly.
 
 ### Maturity tiers and release discipline
 
@@ -320,6 +325,7 @@ spec-dev/                            # repository root = plugin root
 ├── .codex-plugin/plugin.json        # Codex plugin manifest
 ├── .agents/plugins/marketplace.json # Codex marketplace configuration
 ├── .githooks/                       # commit checks and release hooks
+├── .github/workflows/               # tests (push / PR) and distribution (tag)
 ├── assets/readme/                   # README images (en / zh)
 ├── commands/                        # doctor / triage / status
 ├── guardrail/                       # spec drift guard installable into target repositories
@@ -349,6 +355,8 @@ spec-dev/                            # repository root = plugin root
 │   ├── update-vendored-skill.mjs    # sync vendored skills from upstream
 │   ├── build-distribution.mjs       # build portable / Git distributions
 │   └── release.mjs                  # release script
+├── AGENTS.md                        # repository guide for AI agents
+├── CLAUDE.md                        # imports AGENTS.md
 ├── CHANGELOG.md
 ├── README.md                        # English
 ├── README.zh-CN.md                  # Simplified Chinese

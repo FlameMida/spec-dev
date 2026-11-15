@@ -120,7 +120,7 @@ agent 会先读代码，一次只问一个问题，然后给出设计和一页 s
 ### 工程纪律（流程里复用，也能单独用）
 
 **`clarifying`：一次一题，把决定磨清楚**<br>
-能自己查的事实自己查，只问真正需要你拍板的事，一次一个，并附推荐答案。单独使用时以共识摘要收尾，再让你选：转入主流程、就此结束，或写成笔记。
+能自己查的事实自己查，只问真正需要你拍板的事，一次一个，并附推荐答案。单独使用时先给一段总结，再让你选：转入主流程、就此结束，或写成笔记。
 
 > 使用 clarifying 逐题追问我的离线同步方案，直到目标和冲突规则都明确。
 
@@ -178,7 +178,7 @@ agent 会先读代码，一次只问一个问题，然后给出设计和一页 s
 node "<插件绝对目录>/scripts/status.mjs" --repo "/项目路径" --json
 ```
 
-省略 `--repo` 会自动识别当前仓库，省略 `--json` 则输出人类可读文本。它离线运行，不会重新验收。
+省略 `--repo` 会自动识别当前仓库，省略 `--json` 则输出人类可读文本。它离线运行，不会重新验收。加 `--metrics` 会另外读取 git 历史，给出 spec 与计划的提交时间，以及计划首次提交后 spec 又改了几次。
 
 ## 可选：spec 漂移守卫
 
@@ -281,9 +281,14 @@ node scripts/validate-skills.mjs
 node scripts/build-distribution.mjs --output /tmp/spec-dev-package
 node scripts/build-distribution.mjs --output /tmp/spec-dev-git-package --format git
 node --test scripts/tests/distribution.test.mjs
+
+# 全量测试（约 15 秒）
+npm test
 ```
 
 `package.json.files` 是共享分发清单。`.github/workflows/distribution.yml` 在 `v*` tag 后构建并更新 `dist`，生成 ZIP、tar.gz 和 npm tgz，再创建 GitHub Release：附上这三个包，说明取 CHANGELOG 中同版本的一节。相同产物重复构建不产生提交，旧版本或同版本不同内容不能覆盖。
+
+`.github/workflows/test.yml` 在推送到 `main` 和 PR 时运行上面的静态校验和 `npm test`。给代理的仓库说明在根目录的 `AGENTS.md`（`CLAUDE.md` 只导入它）。Codex 不加载 `commands/`：在 Codex 里，`/triage` 的判断由各 skill 自己的入口判断承担，`status` 通过插件提示或直接运行脚本使用。
 
 ### 成熟度分区与发布纪律
 
@@ -320,6 +325,7 @@ spec-dev/                            # 仓库根即插件根
 ├── .codex-plugin/plugin.json        # Codex 插件清单
 ├── .agents/plugins/marketplace.json # Codex marketplace 配置
 ├── .githooks/                       # 提交校验与发布 hooks
+├── .github/workflows/               # 测试（push / PR）与分发（tag）
 ├── assets/readme/                   # README 配图（en / zh）
 ├── commands/                        # doctor / triage / status
 ├── guardrail/                       # 可安装到目标仓库的 spec 漂移守卫
@@ -349,6 +355,8 @@ spec-dev/                            # 仓库根即插件根
 │   ├── update-vendored-skill.mjs    # 同步上游 vendored skill
 │   ├── build-distribution.mjs       # 构建便携 / Git 分发包
 │   └── release.mjs                  # 发布脚本
+├── AGENTS.md                        # 给 AI 代理的仓库说明
+├── CLAUDE.md                        # 导入 AGENTS.md
 ├── CHANGELOG.md
 ├── README.md                        # English
 ├── README.zh-CN.md                  # 简体中文
