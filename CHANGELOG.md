@@ -7,6 +7,28 @@
 
 ---
 
+## [9.4.0] - 2026-11-15
+
+### ✨ 新增 (Added)
+
+- **templates**：spec 逐字记录原始需求，计划头部标注格式版本，审查 brief 增加安全项
+- **status**：新增 --metrics，从 git 历史给出 spec 与计划的提交时间和计划后 spec 改动次数
+
+### ♻️ 重构 (Changed)
+
+- **skills**：改写提示词，去掉防御性重复、自造术语和复述正文的 Red Flags
+
+### 📝 文档 (Docs)
+
+- **readme**：补充 npm test、测试 CI、AGENTS.md 与 status --metrics
+- **readme**：用 beautify-github-readme 重写双语 README，首屏更直观，13 个 skill 逐一介绍
+
+### 🧹 其他 (Misc)
+
+- 推送与 PR 时跑全量测试，补充给代理的仓库说明
+- **release**：tag 推送后自动创建 GitHub Release
+
+
 ## [9.3.0] - 2026-11-10
 
 本版包含两件事：工作流简化（ADR-0013），以及界面原型的保真与还原（ADR-0014）。

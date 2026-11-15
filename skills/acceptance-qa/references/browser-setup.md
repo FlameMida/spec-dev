@@ -1,6 +1,6 @@
 # 浏览器接入：ego-lite 与官方 ego-browser
 
-页面预览、实际验收、视觉走查和浏览器诊断统一使用 **ego-lite 浏览器及其官方 `ego-browser` skill**。本插件只定义验收目标和证据纪律，不复制或维护官方 skill，也不安装、注册或依赖 Chrome DevTools MCP / Playwright MCP。
+页面预览、实际验收、视觉走查和浏览器诊断统一使用 **ego-lite 浏览器及其官方 `ego-browser` skill**。本插件只定义验收目标和证据纪律；浏览器怎么操作以官方 skill 为准。
 
 ## 操作入口
 

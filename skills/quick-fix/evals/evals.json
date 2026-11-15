@@ -24,7 +24,7 @@
     {
       "id": "qf-new-feature-routes-away",
       "prompt": "用 quick-fix 给导出功能加一个 PDF 格式选项",
-      "expected_output": "入口分诊自检判定该请求有设计空间（新功能），建议改用 requirement-analysis，不进入根因定位"
+      "expected_output": "步骤 1 的小修确认判定该请求有设计空间（新功能），建议改用 requirement-analysis，不进入根因定位"
     },
     {
       "id": "qf-escalate-carries-context",
@@ -153,7 +153,7 @@
     },
     {
       "id": "qf-diagnosis-s11",
-      "prompt": "不按标识删除用户工作或持久资源\nGIVEN 工作区另有用户原有日志，且本次复现创建了台账中的测试表\nWHEN 清理诊断插桩",
+      "prompt": "不按标识删除用户工作或持久资源\nGIVEN 工作区另有用户原有日志，且本次复现创建了记录中的测试表\nWHEN 清理诊断插桩",
       "expected_output": "仅处置已确认归属的临时源码改动，不删除用户日志；测试表继续走既有清单与授权，不以“清插桩”隐式执行资源删除。"
     },
     {
@@ -178,7 +178,7 @@
     },
     {
       "id": "ec-s32",
-      "prompt": "quick-fix 双查完成且仍为当前症状的小修；继续定位与修复",
+      "prompt": "quick-fix 两项检查完成且仍为当前症状的小修；继续定位与修复",
       "expected_output": "按原真实红信号、契约检查、TDD 和收场规则推进，历史记录不代替原症状证据。"
     },
     {
