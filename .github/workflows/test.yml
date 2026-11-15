@@ -1,0 +1,29 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Static checks
+        run: |
+          node scripts/check-plugin.mjs
+          node scripts/validate-skills.mjs --size-only
+          node scripts/check-openai-sync.mjs
+      - name: Tests
+        run: npm test
