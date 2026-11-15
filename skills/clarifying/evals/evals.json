@@ -23,18 +23,18 @@
     },
     {
       "id": "cl-three-exits-no-forced-output",
-      "prompt": "（共识摘要已呈现）就这样吧，先不做了",
-      "expected_output": "用户选择'就此结束'——会话收束，工作区零新增文件；不自动落盘笔记（三出口是提议制，写入 md 须用户选择，落盘位置为 .spec-dev/explorations/<topic>.md）"
+      "prompt": "（总结已呈现）就这样吧，先不做了",
+      "expected_output": "用户选择'就此结束'——会话收束，工作区零新增文件；不自动落盘笔记（三个下一步选项是提议制，写入 md 须用户选择，落盘位置为 .spec-dev/explorations/<topic>.md）"
     },
     {
       "id": "cl-referenced-mode-no-exits",
       "prompt": "（requirement-analysis 第 2 步按 clarifying 纪律完成最后一个澄清问题，用户已答复）",
-      "expected_output": "流程直接进入 requirement-analysis 第 3 步——不呈现共识摘要、不出现三出口选择、不发 clarifying 开场声明；被引用模式只提供纪律，控制权归引用方"
+      "expected_output": "流程直接进入 requirement-analysis 第 3 步——不呈现总结、不出现三个下一步选项选择、不发 clarifying 开场声明；被引用时的用法只提供纪律，控制权归引用方"
     },
     {
       "id": "cl-disclosure-before-first-question",
-      "prompt": "quick-fix 步骤 3 以被引用模式进入澄清，存在两个待确认点",
-      "expected_output": "先读已有上下文，简要披露与本次决策相关的假设、会改变方案的信息缺口及具体风险；不强制三段，不编造空缺项，随后一次一题；被引用模式不呈现三出口。"
+      "prompt": "quick-fix 步骤 3 以被引用时的用法进入澄清，存在两个待确认点",
+      "expected_output": "先读已有上下文，简要披露与本次决策相关的假设、会改变方案的信息缺口及具体风险；不强制三段，不编造空缺项，随后一次一题；被引用时的用法不呈现三个下一步选项。"
     },
     {
       "id": "ec-s09",
@@ -48,8 +48,8 @@
     },
     {
       "id": "ec-s11",
-      "prompt": "exploring 在关键分岔以被引用模式澄清，或 RA/quick-fix 引用纪律；当前澄清范围已裁决或显式挂起",
-      "expected_output": "控制权回引用方，无独立共识摘要与三出口；exploring 回到发散，无关键分岔时不持续维护审讯式清单。"
+      "prompt": "exploring 在关键分岔以被引用时的用法澄清，或 RA/quick-fix 引用纪律；当前澄清范围已裁决或显式挂起",
+      "expected_output": "控制权回引用方，无独立总结与三个下一步选项；exploring 回到发散，无关键分岔时不持续维护审讯式清单。"
     },
     {
       "id": "ec-s12",
@@ -89,7 +89,7 @@
     {
       "id": "ui-local-confirm",
       "prompt": "用户在布局A/B屏点击确认A。",
-      "expected_output": "仅记录该版本当前布局决定，回调用方继续；不宣称完整设计或实施获批，不出现独立三出口。"
+      "expected_output": "仅记录该版本当前布局决定，回调用方继续；不宣称完整设计或实施获批，不出现独立三个下一步选项。"
     },
     {
       "id": "model-reversible-choice",
@@ -104,7 +104,7 @@
     {
       "id": "cl-ui-progressive-question",
       "prompt": "requirement-analysis 正在设计订单处理页。目标是连续比较订单并查看明细，已知角色和数据字段；保存失败的重试规则尚未决定，当前只比较列表+侧栏与独立明细页。给出下一步。",
-      "expected_output": "沿已有授权展示同一订单数据下的布局草稿，只讨论保留列表上下文这一题；不等重试规则确定才出图，不擅自实现保存，不询问是否启用，也不新建独立三出口。"
+      "expected_output": "沿已有授权展示同一订单数据下的布局草稿，只讨论保留列表上下文这一题；不等重试规则确定才出图，不擅自实现保存，不询问是否启用，也不新建独立三个下一步选项。"
     },
     {
       "id": "cl-playback-no-reapproval",

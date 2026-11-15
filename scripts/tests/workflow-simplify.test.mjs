@@ -106,3 +106,8 @@ test('quick-fix：全量回归与专项验收先问，不再使用任务绑定',
   assert.match(raw('skills/quick-fix/SKILL.md'), /全量回归和 acceptance-qa 专项验收一律先问/);
   assert.doesNotMatch(policy('skills/quick-fix/SKILL.md'), /task-binding|Spec-Task/);
 });
+
+test('计划头部带格式标记，执行入口据此识别早期计划', () => {
+  assert.match(raw('skills/writing-plans/references/plan-template.md'), /^> \*\*计划格式\*\*：\d+\.\d+$/m);
+  assert.match(raw('skills/executing-plans/SKILL.md'), /^## 旧格式计划\n\n[^\n]*「计划格式」/m);
+});

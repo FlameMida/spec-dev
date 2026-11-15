@@ -9,7 +9,7 @@
     {
       "id": "ra-standard-notification",
       "prompt": "我们的 Express 项目要加站内通知功能：用户被 @ 时收到通知，通知列表分页展示，未读数实时角标。帮我设计",
-      "expected_output": "判定为 standard 档并告知用户；第 1 步主线程直查为主，必要时派 1 到 2 个只读子代理并带上探索 brief 的路径；第 2 步一次一个问题澄清；第 3 步用一条消息给出承重事实及来源、推荐方案与备选、一页 spec 草稿（行为用 Requirement + Scenario，每条 Requirement 一个 SHALL 且可观察），用户批准一次；第 4 步落盘并提交 spec，随后直接进入 writing-plans。"
+      "expected_output": "判定为 standard 档并告知用户；第 1 步主线程直查为主，必要时派 1 到 2 个只读子代理并带上探索 brief 的路径；第 2 步一次一个问题澄清；第 3 步用一条消息给出关键事实及来源、推荐方案与备选、一页 spec 草稿（行为用 Requirement + Scenario，每条 Requirement 一个 SHALL 且可观察），用户批准一次；第 4 步落盘并提交 spec，随后直接进入 writing-plans。"
     },
     {
       "id": "ra-delta-modify-existing",
@@ -39,7 +39,7 @@
     {
       "id": "ra-adversarial-info-check",
       "prompt": "我看网上都说我们该用 XX 库做实时推送，帮我设计接入方案",
-      "expected_output": "在设计提案里把“该用 XX 库”作为承重事实核对：来源是否权威、版本是否过时、与代码库现有推送和连接模式是否矛盾；冲突没消解不给方案。提案如实呈现 XX 库与现有模式方案的取舍，而不是直接采纳网上说法。"
+      "expected_output": "在设计提案里把“该用 XX 库”作为关键事实核对：来源是否权威、版本是否过时、与代码库现有推送和连接模式是否矛盾；冲突没消解不给方案。提案如实呈现 XX 库与现有模式方案的取舍，而不是直接采纳网上说法。"
     },
     {
       "id": "ra-non-dev-report-lane",
@@ -59,7 +59,7 @@
     {
       "id": "tdd-seam-s01",
       "prompt": "S01 复用一个公共接口覆盖多个行为：\nGIVEN 现有 `Cart.total()` 可观察优惠和空购物车两个 Scenario，内部有三个辅助函数\nWHEN 展示设计及写入 spec",
-      "expected_output": "声明 `Cart.total()`、两个 Scenario 和依赖替换边界；不因辅助函数数量另造三个落点，也不额外开独立 seam 批准门。"
+      "expected_output": "声明 `Cart.total()`、两个 Scenario 和依赖替换边界；不因辅助函数数量另造三个落点，也不额外开独立的测试入口批准门。"
     },
     {
       "id": "review-conformance-s27",
@@ -84,7 +84,7 @@
     {
       "id": "plan-decomposition-s22",
       "prompt": "存在与不存在测试均如实报告\nGIVEN 两个 standard 夹具分别有可复用公共入口测试、没有相邻测试。\nWHEN 完成探索。",
-      "expected_output": "前者提供来源与复用建议，后者明确缺口；不将 standard 改成 deep 多模态盲扫，不凭没有先例发明私有测试 seam。"
+      "expected_output": "前者提供来源与复用建议，后者明确缺口；不将 standard 改成 deep 多模态盲扫，不凭没有先例发明私有测试入口。"
     },
     {
       "id": "plan-decomposition-s23",
@@ -119,17 +119,17 @@
     {
       "id": "ec-s24",
       "prompt": "独立澄清中用户决定一个新术语，但未选择写入 md 或授权更新 glossary；共识收束",
-      "expected_output": "术语留在对话，沿原三出口处理，glossary 不自动创建或改动。"
+      "expected_output": "术语留在对话，沿原三个下一步选项处理，glossary 不自动创建或改动。"
     },
     {
       "id": "ec-s25",
       "prompt": "glossary 与一个 active spec 或 Accepted ADR 的现行定义矛盾；后续设计消费术语",
-      "expected_output": "点明来源冲突并按现有契约姿态/取代流程处理；不依据词汇表自动改写旧契约或推断旧契约失效。"
+      "expected_output": "点明来源冲突并按现有旧 spec 是否必须遵守的约定/取代流程处理；不依据词汇表自动改写旧契约或推断旧契约失效。"
     },
     {
       "id": "ec-s29",
       "prompt": "Codex 不加载 commands/triage.md；RA 或 quick-fix 直接进入",
-      "expected_output": "仍能沿入口指针获得双查；glossary/否决规则无各入口竞争副本，澄清纪律无固定七条枚举。"
+      "expected_output": "仍能沿入口指针获得两项检查；glossary/否决规则无各入口竞争副本，澄清纪律无固定七条枚举。"
     },
     {
       "id": "ec-s27",
@@ -204,7 +204,7 @@
     {
       "id": "ra-skill-loading-without-native-tool",
       "prompt": "当前宿主没有 Skill 工具，但会话技能目录给出了 clarifying 的实际可读 SKILL.md 路径；RA 正进入被引用澄清。下一步怎么做？",
-      "expected_output": "按目录指向读取该技能当前正文及适用参考，消费被引用模式；不虚构 Skill 调用、不把缺工具说成缺技能、不转入独立会话或三出口。"
+      "expected_output": "按目录指向读取该技能当前正文及适用参考，消费被引用时的用法；不虚构 Skill 调用、不把缺工具说成缺技能、不转入独立会话或三个下一步选项。"
     },
     {
       "id": "ra-skill-routing-is-not-execution",
@@ -244,7 +244,7 @@
     {
       "id": "caller-first-light-cli",
       "prompt": "已授权设计一个 light 档 CLI 导出功能。项目既有约定：export report --format csv --out <path>；成功退出 0 并打印路径，文件已存在时退出 2 且不覆盖。无新增其他行为。展示完整设计并说明后续步骤。",
-      "expected_output": "在 light 现有关键决策中先展示正常与文件已存在的调用结果，再给命令参数/退出语义；引用项目既有约定及相应行为规范。只提供设计材料，不运行 CLI、不写实现、不为示例新增 seam 或章节/批准门；随整篇设计批准。"
+      "expected_output": "在 light 现有关键决策中先展示正常与文件已存在的调用结果，再给命令参数/退出语义；引用项目既有约定及相应行为规范。只提供设计材料，不运行 CLI、不写实现、不为示例新增测试入口或章节/批准门；随整篇设计批准。"
     },
     {
       "id": "caller-first-unresolved-result",

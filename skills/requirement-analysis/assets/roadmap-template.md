@@ -1,10 +1,12 @@
-# Roadmap 模板（`.spec-dev/roadmaps/YYYY-MM-DD-NN-<project>.md`；NN 为当日两位序号，同一 NN 序列全 `.spec-dev/` 日期前缀产物共用，见 requirement-analysis 的 spec 落盘规则）
+# Roadmap 模板（`.spec-dev/roadmaps/YYYY-MM-DD-NN-<project>.md`）
 
-> **Language / 语言**: Fill in the conversation language — all narrative content follows the conversation language at creation; keep structural labels (frontmatter keys, status enums) in English. / 以对话语言填写——叙述性内容跟随创建时对话语言；结构标签（frontmatter 键、状态枚举）保持英文。
+> **Language / 语言**：叙述性内容跟随创建时的对话语言；结构标签（frontmatter 键、状态枚举）保持英文。
 
-> **roadmap 是条件性产物**：仅当范围分解检查判定"一个大目标必须拆成多个子项目"且用户确认拆分方案后创建；单一需求不查、不建、不更新 roadmap。它是分解决策的唯一持久化位置——只活在对话里的子项目清单会随会话结束静默蒸发。
+> 只在一个大目标必须拆成多个子项目、且用户确认了拆分方案时才建 roadmap；单一需求不建。拆分方案只记在这里，没记下来的子项目清单会随会话结束丢失。
 >
-> frontmatter 根键是 `spec_dev_roadmap`（区别于 spec 的 `spec_dev`），漂移守卫不解析本文件。状态回写节点：requirement-analysis 写子项目 spec 时置 `in-progress` 并回填特性目录；executing-plans 合并交付后置 `delivered`；用户裁决放弃置 `dropped` 并记一行原因；全部子项目 delivered/dropped 后 `status` 翻 `done`。
+> NN 是当日两位序号，与 `.spec-dev/` 下其他带日期前缀的产物共用一个序列，规则见 requirement-analysis 的 spec 落盘规则。frontmatter 的根键是 `spec_dev_roadmap`，漂移守卫不读本文件。
+>
+> 状态什么时候改：requirement-analysis 写子项目的 spec 时改为 `in-progress` 并填上特性目录；executing-plans 交付后改为 `delivered`；用户决定放弃时改为 `dropped` 并记一行原因；全部子项目都是 delivered 或 dropped 后，`status` 改为 `done`。
 
 ```markdown
 ---
