@@ -43,7 +43,21 @@ export function groupSources(sources){
   return {key,sources:all,divergence:{different:fields.length>0,fields,uncomparable:all.length-usable.length}};
  });
 }
-export async function collectStatus(repoPath,overrides={}){
+// Opt-in commit timestamps. They say when records were committed, not whether anything was delivered.
+async function gitMetrics(io,source){
+ const specs=source.specs.map(s=>s.path),plan=source.key+'/plan';
+ const first=async paths=>{
+  const line=(await io.git(source.worktree,['log','--reverse','--format=%H %aI','--',...paths])).split('\n')[0];
+  if(!line)return null;const [sha,at]=line.split(' ');return {sha,at};
+ };
+ try{
+  const spec=specs.length?await first(specs):null,planned=source.plan?await first([plan]):null;
+  const last=planned?(await io.git(source.worktree,['log','-1','--format=%aI','--',plan])).trim():null;
+  const after=planned&&specs.length?Number((await io.git(source.worktree,['rev-list','--count',planned.sha+'..HEAD','--',...specs])).trim()):null;
+  return {spec_first_commit_at:spec?.at??null,plan_first_commit_at:planned?.at??null,plan_last_commit_at:last||null,spec_commits_after_plan:after};
+ }catch{return null;}
+}
+export async function collectStatus(repoPath,overrides={},options={}){
  const io={...defaults,...overrides},result={schema_version:1,verification:'not_performed',repository:{requested_path:path.resolve(repoPath),worktree:null,common_dir:null},worktrees:[],roadmaps:[],features:[],diagnostics:[],summary:{features:0,source_records:0,suspected_worktree_residues:0},collected_at:io.now()};
  const diagnostic=(worktree,file,e)=>result.diagnostics.push({worktree,path:file,code:e.code&&['missing','invalid_format','unsupported_version','unsupported_syntax','inconsistent','unstable','symlink_skipped'].includes(e.code)?e.code:'unreadable',message:e.message});
  let root,common;
@@ -163,6 +177,7 @@ export async function collectStatus(repoPath,overrides={}){
   const dropped=source.roadmaps.length>0&&source.roadmaps.every(r=>r.status==='dropped')&&associated.every(r=>r.read_status==='ok');
   if(terminal||dropped)source.worktree_residue={reason:terminal?'terminal_plan':'dropped_plan',ownership:owners.length?'recorded':'unbound'};
  }
+ if(options.metrics)for(const source of sources)source.metrics=await gitMetrics(io,source);
  result.features=groupSources(sources);
  const rm=new Map();for(const r of roadmaps){if(!rm.has(r.path))rm.set(r.path,[]);rm.get(r.path).push(r);}result.roadmaps=[...rm].sort(([a],[b])=>sort(a,b)).map(([key,all])=>({key,sources:all}));
  result.summary={features:result.features.length,source_records:sources.length,suspected_worktree_residues:sources.filter(s=>s.worktree_residue).length};
@@ -170,6 +185,19 @@ export async function collectStatus(repoPath,overrides={}){
  return result;
 }
 const display=value=>String(value??'—').replace(/[\u0000-\u001f\u007f-\u009f]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));
+const span=(a,b)=>{const h=(Date.parse(b)-Date.parse(a))/36e5;return Number.isFinite(h)?`（相隔 ${Math.abs(h)<48?h.toFixed(1)+' 小时':(h/24).toFixed(1)+' 天'}）`:'';};
+function metricsLine(source){
+ const m=source.metrics;if(m===null)return '  提交记录：读取失败';
+ const parts=[m.spec_first_commit_at?'spec 首次提交 '+display(m.spec_first_commit_at):'spec 未提交'];
+ if(!source.plan)parts.push('无计划记录');
+ else if(!m.plan_first_commit_at)parts.push('计划未提交');
+ else{
+  parts.push('计划首次提交 '+display(m.plan_first_commit_at)+(m.spec_first_commit_at?span(m.spec_first_commit_at,m.plan_first_commit_at):''));
+  parts.push('计划最近提交 '+display(m.plan_last_commit_at)+span(m.plan_first_commit_at,m.plan_last_commit_at));
+  if(m.spec_commits_after_plan!==null)parts.push(`计划首次提交后 spec 改动 ${m.spec_commits_after_plan} 次`);
+ }
+ return '  提交记录：'+parts.join('；');
+}
 export function renderStatus(snapshot){
  const lines=['本次为进度记录快照，未重新验收，也未核验交付事实。','',`仓库：${display(snapshot.repository.worktree)}`,`特性 ${snapshot.summary.features} 个；来源记录 ${snapshot.summary.source_records} 份`,''];
  if(snapshot.diagnostics.length)lines.push('未知不等于没有：任务读取失败时，不能据空列表断言没有进行中、待验或阻塞任务；这些状态无法判断。','');
@@ -190,6 +218,7 @@ export function renderStatus(snapshot){
    else if(p)summary=p.counts?`已完成记录 ${p.counts.completed}/${p.counts.total}；进行中 ${p.counts.in_progress}；待验 ${p.counts.awaiting_verification}；阻塞 ${p.counts.blocked}`:'比例未知';
    lines.push(`${display(f.key)} | ${display(s.worktree)} | ${s.specs.map(x=>x.status===null?'无生命周期':display(x.status)).join(', ')||'无 spec 记录'} | ${summary}`);
    if(s.worktree_residue)lines.push(`  可疑残留：${s.worktree_residue.reason==='terminal_plan'?'终态计划记录':'关联 roadmap 已废弃'}；${s.worktree_residue.ownership==='recorded'?'记录绑定本工作区':'归属未绑定，仅为候选'}；路径 ${display(s.worktree)}；未核验删除条件。`);
+   if('metrics' in s)lines.push(metricsLine(s));
    for(const file of s.files)lines.push('  文件：'+display(file));
    if(p){lines.push('  记录中的当前票：'+display(p.current));for(const t of p.tasks)lines.push(`  ${display(t.id)} ${display(t.title)} | ${display(t.status)}`);for(const g of p.groups)lines.push(`  组 ${display(g.id)} | ${display(g.status)}`);}
   }
